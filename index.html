@@ -11,7 +11,7 @@
         content="width=device-width, initial-scale=1"
     >
 
-    <title>Asynchronous Class | CPE Department</title>
+    <title>ETS-Async | Asynchronous Learning Portal</title>
 
 
     <!-- Bootstrap 5 -->
@@ -36,8 +36,6 @@
 
             --academic-blue-light: #EAF3FA;
 
-            --accent-teal: #17a2b8;
-
             --text-dark: #212529;
 
             --text-muted: #6C757D;
@@ -46,9 +44,12 @@
 
             --soft-bg: #F7F9FB;
 
-            --gradient-primary: linear-gradient(135deg, #0B4F8A 0%, #083B66 100%);
-
-            --gradient-light: linear-gradient(135deg, #EAF3FA 0%, #DCE8F2 100%);
+            --gradient-primary:
+                linear-gradient(
+                    135deg,
+                    #0B4F8A 0%,
+                    #083B66 100%
+                );
 
         }
 
@@ -58,18 +59,26 @@
         ====================================== */
 
         html {
+
             scroll-behavior: smooth;
+
         }
 
 
         body {
 
             font-family:
-                'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                'Segoe UI',
+                Tahoma,
+                Geneva,
+                Verdana,
+                sans-serif;
 
-            color: var(--text-dark);
+            color:
+                var(--text-dark);
 
-            background: #FFFFFF;
+            background:
+                #FFFFFF;
 
             margin: 0;
 
@@ -79,14 +88,19 @@
 
         }
 
+
         * {
-            transition: all 0.3s ease;
+
+            transition:
+                all 0.3s ease;
+
         }
 
 
         section {
 
-            scroll-margin-top: 80px;
+            scroll-margin-top:
+                80px;
 
         }
 
@@ -105,15 +119,19 @@
 
         .navbar {
 
-            background: #FFFFFF;
+            background:
+                #FFFFFF;
 
             border-bottom:
                 1px solid
                 var(--border-color);
 
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.08);
 
-            backdrop-filter: blur(10px);
+            backdrop-filter:
+                blur(10px);
 
         }
 
@@ -124,44 +142,89 @@
                 var(--academic-blue)
                 !important;
 
-            font-weight: 700;
+            font-weight:
+                700;
 
-            font-size: 1.4rem;
+            font-size:
+                1.4rem;
 
-            letter-spacing: -0.5px;
+            letter-spacing:
+                -0.5px;
+
+        }
+
+
+        .navbar-brand small {
+
+            display:
+                block;
+
+            font-size:
+                10px;
+
+            font-weight:
+                500;
+
+            color:
+                var(--text-muted);
+
+            letter-spacing:
+                0;
 
         }
 
 
         .nav-link {
 
-            color: #495057;
+            color:
+                #495057;
 
-            font-weight: 500;
+            font-weight:
+                500;
 
-            margin: 0 8px;
+            margin:
+                0 8px;
 
-            position: relative;
+            position:
+                relative;
 
         }
 
 
         .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--academic-blue);
-            border-radius: 3px;
+
+            content:
+                '';
+
+            position:
+                absolute;
+
+            bottom:
+                -5px;
+
+            left:
+                0;
+
+            width:
+                0;
+
+            height:
+                3px;
+
+            background:
+                var(--academic-blue);
+
+            border-radius:
+                3px;
+
         }
 
 
         .nav-link:hover::after,
         .nav-link.active::after {
 
-            width: 100%;
+            width:
+                100%;
 
         }
 
@@ -177,32 +240,82 @@
 
         .btn-academic {
 
-            background: var(--gradient-primary);
+            background:
+                var(--gradient-primary);
 
-            border-color: transparent;
+            border-color:
+                transparent;
 
-            color: #FFFFFF;
+            color:
+                #FFFFFF;
 
-            font-weight: 600;
+            font-weight:
+                600;
 
-            border-radius: 6px;
+            border-radius:
+                6px;
 
-            box-shadow: 0 4px 12px rgba(11, 79, 138, 0.3);
+            box-shadow:
+                0 4px 12px
+                rgba(11, 79, 138, 0.3);
 
         }
 
 
         .btn-academic:hover {
 
-            background: var(--academic-blue-dark);
+            background:
+                var(--academic-blue-dark);
 
-            border-color: transparent;
+            color:
+                #FFFFFF;
 
-            color: #FFFFFF;
+            transform:
+                translateY(-2px);
 
-            transform: translateY(-2px);
+        }
 
-            box-shadow: 0 6px 16px rgba(11, 79, 138, 0.4);
+
+        /* =====================================
+           FULL WIDTH PUBMAT
+        ====================================== */
+
+        .pubmat-section {
+
+            width:
+                100%;
+
+            background:
+                #FFFFFF;
+
+            margin:
+                0;
+
+            padding:
+                0;
+
+            overflow:
+                hidden;
+
+        }
+
+
+        .pubmat-full {
+
+            display:
+                block;
+
+            width:
+                100%;
+
+            height:
+                auto;
+
+            margin:
+                0;
+
+            padding:
+                0;
 
         }
 
@@ -213,7 +326,8 @@
 
         .hero {
 
-            background: #FFFFFF;
+            background:
+                #FFFFFF;
 
             padding:
                 90px 0
@@ -228,7 +342,8 @@
 
         .hero-badge {
 
-            display: inline-block;
+            display:
+                inline-block;
 
             background:
                 var(--academic-blue-light);
@@ -239,24 +354,31 @@
             padding:
                 8px 16px;
 
-            border-radius: 4px;
+            border-radius:
+                4px;
 
-            font-size: 14px;
+            font-size:
+                14px;
 
-            font-weight: 600;
+            font-weight:
+                600;
 
-            margin-bottom: 20px;
+            margin-bottom:
+                20px;
 
         }
 
 
         .hero h1 {
 
-            font-size: 48px;
+            font-size:
+                48px;
 
-            font-weight: 700;
+            font-weight:
+                700;
 
-            line-height: 1.15;
+            line-height:
+                1.15;
 
             color:
                 var(--academic-blue-dark);
@@ -266,48 +388,17 @@
 
         .hero p {
 
-            font-size: 19px;
+            font-size:
+                19px;
 
-            line-height: 1.7;
+            line-height:
+                1.7;
 
             color:
                 var(--text-muted);
 
-            max-width: 850px;
-
-        }
-
-
-        /* =====================================
-           FULL WIDTH PUBMAT
-        ====================================== */
-
-        .pubmat-section {
-
-            width: 100%;
-
-            background: #FFFFFF;
-
-            margin: 0;
-
-            padding: 0;
-
-            overflow: hidden;
-
-        }
-
-
-        .pubmat-full {
-
-            display: block;
-
-            width: 100%;
-
-            height: auto;
-
-            margin: 0;
-
-            padding: 0;
+            max-width:
+                850px;
 
         }
 
@@ -337,7 +428,8 @@
             color:
                 var(--academic-blue-dark);
 
-            font-weight: 700;
+            font-weight:
+                700;
 
         }
 
@@ -347,15 +439,17 @@
             color:
                 var(--text-muted);
 
-            max-width: 700px;
+            max-width:
+                700px;
 
-            margin: auto;
+            margin:
+                auto;
 
         }
 
 
         /* =====================================
-           INSTRUCTOR
+           ABOUT CARD
         ====================================== */
 
         .instructor-card {
@@ -364,18 +458,22 @@
                 1px solid
                 var(--border-color);
 
-            border-radius: 8px;
+            border-radius:
+                8px;
 
-            background: #FFFFFF;
+            background:
+                #FFFFFF;
 
         }
 
 
         .instructor-line {
 
-            width: 60px;
+            width:
+                60px;
 
-            height: 4px;
+            height:
+                4px;
 
             background:
                 var(--academic-blue);
@@ -391,7 +489,34 @@
             color:
                 var(--academic-blue-dark);
 
-            font-weight: 700;
+            font-weight:
+                700;
+
+        }
+
+
+        .department-badge {
+
+            display:
+                inline-block;
+
+            background:
+                var(--academic-blue-light);
+
+            color:
+                var(--academic-blue);
+
+            padding:
+                6px 14px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                13px;
+
+            font-weight:
+                600;
 
         }
 
@@ -402,18 +527,18 @@
 
         .info-card {
 
-            height: 100%;
+            height:
+                100%;
 
-            background: #FFFFFF;
+            background:
+                #FFFFFF;
 
             border:
                 1px solid
                 var(--border-color);
 
-            border-radius: 8px;
-
-            transition:
-                0.2s ease;
+            border-radius:
+                8px;
 
         }
 
@@ -435,15 +560,20 @@
 
         .card-number {
 
-            width: 42px;
+            width:
+                42px;
 
-            height: 42px;
+            height:
+                42px;
 
-            display: flex;
+            display:
+                flex;
 
-            align-items: center;
+            align-items:
+                center;
 
-            justify-content: center;
+            justify-content:
+                center;
 
             background:
                 var(--academic-blue-light);
@@ -451,11 +581,14 @@
             color:
                 var(--academic-blue);
 
-            font-weight: 700;
+            font-weight:
+                700;
 
-            border-radius: 50%;
+            border-radius:
+                50%;
 
-            margin-bottom: 20px;
+            margin-bottom:
+                20px;
 
         }
 
@@ -465,7 +598,8 @@
             color:
                 var(--academic-blue-dark);
 
-            font-weight: 700;
+            font-weight:
+                700;
 
         }
 
@@ -475,7 +609,8 @@
             color:
                 var(--text-muted);
 
-            line-height: 1.6;
+            line-height:
+                1.6;
 
         }
 
@@ -486,15 +621,18 @@
 
         .week-card {
 
-            background: #FFFFFF;
+            background:
+                #FFFFFF;
 
             border:
                 1px solid
                 var(--border-color);
 
-            border-radius: 8px;
+            border-radius:
+                8px;
 
-            height: 100%;
+            height:
+                100%;
 
         }
 
@@ -508,7 +646,8 @@
                 1px solid
                 var(--border-color);
 
-            padding: 20px;
+            padding:
+                20px;
 
         }
 
@@ -518,11 +657,14 @@
             color:
                 var(--academic-blue);
 
-            font-size: 13px;
+            font-size:
+                13px;
 
-            font-weight: 700;
+            font-weight:
+                700;
 
-            letter-spacing: 1px;
+            letter-spacing:
+                1px;
 
         }
 
@@ -532,23 +674,27 @@
             color:
                 var(--academic-blue-dark);
 
-            font-weight: 700;
+            font-weight:
+                700;
 
-            margin-top: 5px;
+            margin-top:
+                5px;
 
         }
 
 
         .week-body {
 
-            padding: 25px;
+            padding:
+                25px;
 
         }
 
 
         .week-body li {
 
-            margin-bottom: 12px;
+            margin-bottom:
+                12px;
 
             color:
                 var(--text-muted);
@@ -569,9 +715,11 @@
             background:
                 var(--academic-blue-light);
 
-            padding: 25px;
+            padding:
+                25px;
 
-            border-radius: 5px;
+            border-radius:
+                5px;
 
         }
 
@@ -581,13 +729,14 @@
             color:
                 var(--academic-blue-dark);
 
-            font-weight: 700;
+            font-weight:
+                700;
 
         }
 
 
         /* =====================================
-           LOGIN SECTION
+           LOGIN CTA
         ====================================== */
 
         .login-section {
@@ -603,9 +752,11 @@
 
         .login-section h2 {
 
-            color: #FFFFFF;
+            color:
+                #FFFFFF;
 
-            font-weight: 700;
+            font-weight:
+                700;
 
         }
 
@@ -620,7 +771,8 @@
 
         .btn-login-white {
 
-            background: #FFFFFF;
+            background:
+                #FFFFFF;
 
             color:
                 var(--academic-blue);
@@ -629,7 +781,8 @@
                 2px solid
                 #FFFFFF;
 
-            font-weight: 700;
+            font-weight:
+                700;
 
             padding:
                 12px 35px;
@@ -639,7 +792,8 @@
 
         .btn-login-white:hover {
 
-            background: #F1F1F1;
+            background:
+                #F1F1F1;
 
             color:
                 var(--academic-blue-dark);
@@ -664,7 +818,19 @@
 
         footer strong {
 
-            color: #FFFFFF;
+            color:
+                #FFFFFF;
+
+        }
+
+
+        .footer-department {
+
+            color:
+                #FFFFFF;
+
+            font-weight:
+                600;
 
         }
 
@@ -686,14 +852,16 @@
 
             .hero h1 {
 
-                font-size: 36px;
+                font-size:
+                    36px;
 
             }
 
 
             .hero p {
 
-                font-size: 17px;
+                font-size:
+                    17px;
 
             }
 
@@ -702,6 +870,14 @@
 
                 padding:
                     55px 0;
+
+            }
+
+
+            .navbar-brand {
+
+                font-size:
+                    1.2rem;
 
             }
 
@@ -730,7 +906,13 @@
             class="navbar-brand"
             href="index.html"
         >
-           ETS-Async
+
+            ETS-Async
+
+            <small>
+                Asynchronous Learning Portal
+            </small>
+
         </a>
 
 
@@ -744,7 +926,9 @@
             aria-label="Toggle navigation"
         >
 
-            <span class="navbar-toggler-icon"></span>
+            <span
+                class="navbar-toggler-icon"
+            ></span>
 
         </button>
 
@@ -758,13 +942,16 @@
                 class="navbar-nav ms-auto align-items-lg-center"
             >
 
+
                 <li class="nav-item">
 
                     <a
                         class="nav-link active"
                         href="#home"
                     >
+
                         Home
+
                     </a>
 
                 </li>
@@ -776,7 +963,9 @@
                         class="nav-link"
                         href="#about"
                     >
+
                         About
+
                     </a>
 
                 </li>
@@ -788,24 +977,32 @@
                         class="nav-link"
                         href="#plan"
                     >
+
                         Learning Plan
+
                     </a>
 
                 </li>
 
 
                 <li
-                    class="nav-item ms-lg-3 mt-2 mt-lg-0"
+                    class="nav-item
+                           ms-lg-3
+                           mt-2
+                           mt-lg-0"
                 >
 
                     <a
                         href="login.html"
                         class="btn btn-academic px-4"
                     >
+
                         Login
+
                     </a>
 
                 </li>
+
 
             </ul>
 
@@ -816,15 +1013,25 @@
 </nav>
 
 
-<section class="pubmat-section">
+
+<!-- =====================================
+     FULL WIDTH PUBMAT
+====================================== -->
+
+<section
+    class="pubmat-section"
+>
 
     <img
         src="assets/pubmat/cpe.png"
-        alt="Computer Engineering Department"
+        alt="ETS-Async Asynchronous Learning Portal"
         class="pubmat-full"
     >
 
 </section>
+
+
+
 <!-- =====================================
      HERO
 ====================================== -->
@@ -838,44 +1045,59 @@
 
         <div class="row">
 
-            <div class="col-lg-9 mx-auto">
+            <div
+                class="col-lg-9 mx-auto text-center"
+            >
+
 
                 <span class="hero-badge">
-                    COMPUTER ENGINEERING DEPARTMENT
+
+                    ASYNCHRONOUS LEARNING PORTAL
+
                 </span>
 
 
                 <h1 class="mb-4">
 
-                    Welcome to Our
+                    Welcome to
 
                     <span class="text-academic">
-                        Asynchronous Class
+                        ETS-Async
                     </span>
 
                 </h1>
 
 
-                <p class="mb-4">
+                <p class="mb-4 mx-auto">
 
-                    Welcome, students. For the next two weeks,
-                    we will be conducting our class through an
-                    asynchronous learning approach. This learning
-                    environment will allow you to access the lessons,
-                    study the provided materials, accomplish activities,
-                    and complete assessments at your own pace within
-                    the prescribed schedule.
+                    Welcome, students. This platform is designed
+                    to support our two-week asynchronous learning
+                    period by providing you with access to lessons,
+                    learning materials, activities, and assessments
+                    in one convenient online environment.
+
+                </p>
+
+
+                <p class="mb-4 mx-auto">
+
+                    You may access the learning materials at your
+                    own pace while completing the assigned
+                    activities within the prescribed schedule.
 
                 </p>
 
 
                 <div class="mt-4">
 
+
                     <a
                         href="login.html"
                         class="btn btn-academic btn-lg px-4 me-2"
                     >
+
                         Login to Class
+
                     </a>
 
 
@@ -883,8 +1105,11 @@
                         href="#plan"
                         class="btn btn-outline-secondary btn-lg px-4"
                     >
+
                         View Learning Plan
+
                     </a>
+
 
                 </div>
 
@@ -899,15 +1124,7 @@
 
 
 <!-- =====================================
-     FULL WIDTH PUBMAT
-====================================== -->
-
-
-
-
-
-<!-- =====================================
-     ABOUT THE CLASS
+     ABOUT ETS-ASYNC
 ====================================== -->
 
 <section
@@ -917,61 +1134,118 @@
 
     <div class="container">
 
-        <div class="text-center mb-5">
+
+        <div
+            class="text-center mb-5"
+        >
 
             <h2 class="section-title">
-                About Our Asynchronous Class
+
+                About ETS-Async
+
             </h2>
 
 
             <p class="section-subtitle mt-3">
 
-                This two-week learning period is designed to
-                encourage independent learning, active participation,
-                and practical application of the concepts discussed
-                in our course.
+                A centralized asynchronous learning platform
+                designed to support students and instructors
+                across different academic departments.
 
             </p>
 
         </div>
 
 
-        <div class="row justify-content-center">
+
+        <div
+            class="row justify-content-center"
+        >
 
             <div class="col-lg-9">
 
-                <div class="instructor-card shadow-sm">
 
-                    <div class="card-body text-center p-4 p-md-5">
+                <div
+                    class="instructor-card shadow-sm"
+                >
 
-                        <div class="instructor-line"></div>
-                        <img src="./assets/pubmat/me_suit.png" style="height: 100px; width: 100px; border-radius: 50%;"/>
+                    <div
+                        class="card-body
+                               text-center
+                               p-4
+                               p-md-5"
+                    >
 
-                        <h3 class="instructor-name">
+
+                        <div
+                            class="instructor-line"
+                        ></div>
+
+
+                        <img
+                            src="assets/pubmat/me_suit.png"
+                            alt="Engr. Karl Stephen Evallo"
+                            style="
+                                height:100px;
+                                width:100px;
+                                object-fit:cover;
+                                border-radius:50%;
+                                margin-bottom:20px;
+                            "
+                        >
+
+
+                        <h3
+                            class="instructor-name"
+                        >
 
                             Engr. Karl Stephen Evallo
 
                         </h3>
 
 
-                        <p class="text-academic fw-semibold mb-4">
+                        <p
+                            class="text-academic
+                                   fw-semibold
+                                   mb-3"
+                        >
 
-                            Instructor
+                            Computer Engineering Department
+
+                        </p>
+
+
+                        <span
+                            class="department-badge mb-4"
+                        >
+
+                            Platform Developer / Instructor
+
+                        </span>
+
+
+                        <p
+                            class="text-muted
+                                   mt-4
+                                   mb-0"
+                        >
+
+                            ETS-Async is an asynchronous learning
+                            platform developed by the
+                            <strong>
+                                Computer Engineering Department
+                            </strong>
+                            to provide a structured and accessible
+                            online learning environment for students.
+
+                            The platform may be used by different
+                            academic departments to deliver lessons,
+                            activities, assessments, and other
+                            course requirements during asynchronous
+                            learning periods.
 
                         </p>
 
-
-                        <p class="text-muted mb-0">
-
-                            My goal during this asynchronous class
-                            is to provide you with the necessary learning
-                            resources and activities that will guide you
-                            throughout the two-week period. I encourage
-                            everyone to manage their time effectively,
-                            study the lessons carefully, and actively
-                            participate in the activities provided. Happy Learning!
-
-                        </p>
 
                     </div>
 
@@ -997,21 +1271,27 @@
 
     <div class="container">
 
-        <div class="text-center mb-5">
+
+        <div
+            class="text-center mb-5"
+        >
 
             <h2 class="section-title">
+
                 Your Learning Journey
+
             </h2>
 
 
             <p class="section-subtitle mt-3">
 
-                Throughout the two weeks, you will go through
-                four important stages of learning.
+                Follow these four simple steps throughout
+                the asynchronous learning period.
 
             </p>
 
         </div>
+
 
 
         <div class="row g-4">
@@ -1021,81 +1301,101 @@
 
             <div class="col-md-6 col-lg-3">
 
-                <div class="info-card p-4">
+                <div
+                    class="info-card p-4"
+                >
 
                     <div class="card-number">
+
                         01
+
                     </div>
 
 
                     <h5>
+
                         Learn
+
                     </h5>
 
 
                     <p>
 
-                        Access and study the lessons and
-                        instructional materials provided
-                        for the course.
+                        Access the lessons, presentations,
+                        videos, readings, and other learning
+                        materials provided by your instructor.
 
                     </p>
 
                 </div>
 
             </div>
+
 
 
             <!-- UNDERSTAND -->
 
             <div class="col-md-6 col-lg-3">
 
-                <div class="info-card p-4">
+                <div
+                    class="info-card p-4"
+                >
 
                     <div class="card-number">
+
                         02
+
                     </div>
 
 
                     <h5>
+
                         Understand
+
                     </h5>
 
 
                     <p>
 
-                        Review the examples, demonstrations,
-                        and explanations to strengthen your
-                        understanding of the concepts.
+                        Study the concepts carefully and review
+                        examples and demonstrations to strengthen
+                        your understanding.
 
                     </p>
 
                 </div>
 
             </div>
+
 
 
             <!-- APPLY -->
 
             <div class="col-md-6 col-lg-3">
 
-                <div class="info-card p-4">
+                <div
+                    class="info-card p-4"
+                >
 
                     <div class="card-number">
+
                         03
+
                     </div>
 
 
                     <h5>
+
                         Apply
+
                     </h5>
 
 
                     <p>
 
-                        Complete the activities and exercises
-                        designed to help you apply what you
-                        have learned.
+                        Complete the exercises, activities,
+                        laboratory tasks, and other requirements
+                        assigned by your instructor.
 
                     </p>
 
@@ -1104,27 +1404,34 @@
             </div>
 
 
+
             <!-- SUBMIT -->
 
             <div class="col-md-6 col-lg-3">
 
-                <div class="info-card p-4">
+                <div
+                    class="info-card p-4"
+                >
 
                     <div class="card-number">
+
                         04
+
                     </div>
 
 
                     <h5>
+
                         Submit
+
                     </h5>
 
 
                     <p>
 
-                        Complete your requirements and submit
-                        your outputs within the specified
-                        deadline.
+                        Review your work and submit your required
+                        outputs through the designated platform
+                        before the given deadline.
 
                     </p>
 
@@ -1152,21 +1459,27 @@
 
     <div class="container">
 
-        <div class="text-center mb-5">
+
+        <div
+            class="text-center mb-5"
+        >
 
             <h2 class="section-title">
+
                 Two-Week Learning Plan
+
             </h2>
 
 
             <p class="section-subtitle mt-3">
 
-                Use this plan as a guide for organizing your
-                learning activities during the asynchronous period.
+                Organize your time and complete the assigned
+                learning tasks throughout the asynchronous period.
 
             </p>
 
         </div>
+
 
 
         <div class="row g-4">
@@ -1176,12 +1489,18 @@
 
             <div class="col-lg-6">
 
-                <div class="week-card shadow-sm">
+                <div
+                    class="week-card shadow-sm"
+                >
+
 
                     <div class="week-header">
 
+
                         <div class="week-label">
+
                             WEEK 01
+
                         </div>
 
 
@@ -1194,41 +1513,61 @@
                     </div>
 
 
+
                     <div class="week-body">
+
 
                         <p class="text-muted">
 
-                            Focus on understanding the fundamental
-                            concepts and completing the initial
-                            learning activities.
+                            Focus on studying the lessons and
+                            understanding the concepts introduced
+                            by your instructor.
 
                         </p>
 
 
                         <ul>
 
-                            <li>
-                                Read and study the assigned lessons.
-                            </li>
 
                             <li>
+
+                                Read and study the assigned lessons.
+
+                            </li>
+
+
+                            <li>
+
                                 Watch the provided instructional
                                 videos and demonstrations.
+
                             </li>
 
-                            <li>
-                                Review examples and important concepts.
-                            </li>
 
                             <li>
+
+                                Review examples and important
+                                concepts.
+
+                            </li>
+
+
+                            <li>
+
                                 Take notes while studying.
+
                             </li>
 
+
                             <li>
+
                                 Complete the assigned activities.
+
                             </li>
+
 
                         </ul>
+
 
                     </div>
 
@@ -1242,12 +1581,18 @@
 
             <div class="col-lg-6">
 
-                <div class="week-card shadow-sm">
+                <div
+                    class="week-card shadow-sm"
+                >
+
 
                     <div class="week-header">
 
+
                         <div class="week-label">
+
                             WEEK 02
+
                         </div>
 
 
@@ -1260,41 +1605,61 @@
                     </div>
 
 
+
                     <div class="week-body">
+
 
                         <p class="text-muted">
 
                             Apply your knowledge through exercises,
-                            activities, and assessments.
+                            activities, assessments, and other
+                            course requirements.
 
                         </p>
 
 
                         <ul>
 
+
                             <li>
+
                                 Review the concepts from Week 1.
+
                             </li>
 
+
                             <li>
+
                                 Complete the assigned exercises.
+
                             </li>
 
+
                             <li>
+
                                 Apply the concepts to the given
                                 problems or activities.
+
                             </li>
 
+
                             <li>
+
                                 Review and verify your outputs.
+
                             </li>
 
+
                             <li>
+
                                 Submit all required requirements
                                 before the deadline.
+
                             </li>
 
+
                         </ul>
+
 
                     </div>
 
@@ -1321,31 +1686,45 @@
 
     <div class="container">
 
-        <div class="row justify-content-center">
+
+        <div
+            class="row justify-content-center"
+        >
 
             <div class="col-lg-9">
 
-                <div class="reminder-box">
+
+                <div
+                    class="reminder-box"
+                >
+
 
                     <h4 class="mb-3">
+
                         Important Reminders
+
                     </h4>
 
 
-                    <ul class="mb-0 text-muted">
+                    <ul
+                        class="mb-0 text-muted"
+                    >
+
 
                         <li class="mb-2">
 
                             Check the learning portal regularly
-                            for lessons and announcements.
+                            for lessons, announcements, and
+                            updated instructions.
 
                         </li>
 
 
                         <li class="mb-2">
 
-                            Read the instructions for every activity
-                            carefully before submitting your work.
+                            Read the instructions for every
+                            activity carefully before submitting
+                            your work.
 
                         </li>
 
@@ -1368,13 +1747,15 @@
 
                         <li>
 
-                            If you encounter difficulties, contact
-                            your instructor through the designated
-                            communication channel.
+                            If you encounter difficulties,
+                            contact your instructor through the
+                            designated communication channel.
 
                         </li>
 
+
                     </ul>
+
 
                 </div>
 
@@ -1392,19 +1773,29 @@
      LOGIN CTA
 ====================================== -->
 
-<section class="login-section">
+<section
+    class="login-section"
+>
 
     <div class="container text-center">
 
+
         <h2>
+
             Ready to Begin?
+
         </h2>
 
 
-        <p class="lead mt-3 mb-4">
+        <p
+            class="lead
+                   mt-3
+                   mb-4"
+        >
 
-            Log in to access your lessons,
-            activities, and learning materials.
+            Log in to access your assigned
+            courses, lessons, activities,
+            and learning materials.
 
         </p>
 
@@ -1413,8 +1804,11 @@
             href="login.html"
             class="btn btn-login-white btn-lg"
         >
+
             Login to Class
+
         </a>
+
 
     </div>
 
@@ -1426,14 +1820,19 @@
      FOOTER
 ====================================== -->
 
-<footer class="py-4">
+<footer
+    class="py-4"
+>
 
     <div class="container text-center">
+
 
         <p class="mb-1">
 
             <strong>
-                Engr. Karl Stephen Evallo
+
+                ETS-Async
+
             </strong>
 
         </p>
@@ -1441,7 +1840,34 @@
 
         <p class="mb-2">
 
-            Computer Engineering Department
+            Asynchronous Learning Portal
+
+        </p>
+
+
+        <p class="mb-2">
+
+            Developed by the
+
+            <span class="footer-department">
+
+                Computer Engineering Department
+
+            </span>
+
+        </p>
+
+
+        <p class="mb-0">
+
+            <small>
+
+                Developed by
+                <strong>
+                    Engr. Karl Stephen Evallo
+                </strong>
+
+            </small>
 
         </p>
 
@@ -1452,6 +1878,7 @@
             All Rights Reserved.
 
         </small>
+
 
     </div>
 
