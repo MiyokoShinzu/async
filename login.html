@@ -1,0 +1,1076 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>Login | CPE Asynchronous Class</title>
+
+
+    <!-- Bootstrap 5 -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <style>
+
+        /* =====================================
+           COLOR PALETTE
+        ====================================== */
+
+        :root {
+
+            --academic-blue: #0B4F8A;
+
+            --academic-blue-dark: #083B66;
+
+            --academic-blue-light: #EAF3FA;
+
+            --text-dark: #212529;
+
+            --text-muted: #6C757D;
+
+            --border-color: #DEE2E6;
+
+        }
+
+
+        /* =====================================
+           GENERAL
+        ====================================== */
+
+        html,
+        body {
+
+            min-height: 100%;
+
+        }
+
+
+        body {
+
+            font-family:
+                'Segoe UI',
+                Tahoma,
+                Geneva,
+                Verdana,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #F7F9FB 0%,
+                    #FFFFFF 50%,
+                    #EAF3FA 100%
+                );
+
+            color:
+                var(--text-dark);
+
+            min-height: 100vh;
+
+            margin: 0;
+
+        }
+
+
+        /* =====================================
+           NAVBAR
+        ====================================== */
+
+        .navbar {
+
+            background: #FFFFFF;
+
+            border-bottom:
+                1px solid
+                var(--border-color);
+
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .navbar-brand {
+
+            color:
+                var(--academic-blue)
+                !important;
+
+            font-weight: 700;
+
+            font-size: 1.3rem;
+
+        }
+
+
+        .back-link {
+
+            color:
+                var(--academic-blue);
+
+            text-decoration: none;
+
+            font-weight: 500;
+
+        }
+
+
+        .back-link:hover {
+
+            color:
+                var(--academic-blue-dark);
+
+        }
+
+
+        /* =====================================
+           LOGIN AREA
+        ====================================== */
+
+        .login-wrapper {
+
+            min-height:
+                calc(100vh - 73px);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                40px 15px;
+
+        }
+
+
+        .login-card {
+
+            width: 100%;
+
+            max-width: 440px;
+
+            background: #FFFFFF;
+
+            border:
+                1px solid
+                var(--border-color);
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 12px 40px
+                rgba(0, 0, 0, 0.08);
+
+            overflow: hidden;
+
+        }
+
+
+        /* =====================================
+           CARD HEADER
+        ====================================== */
+
+        .login-header {
+
+            background:
+                var(--academic-blue);
+
+            color: #FFFFFF;
+
+            padding:
+                35px 30px;
+
+            text-align: center;
+
+        }
+
+
+        .login-icon {
+
+            width: 70px;
+
+            height: 70px;
+
+            margin:
+                0 auto 18px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255, 255, 255, 0.15);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 30px;
+
+        }
+
+
+        .login-header h1 {
+
+            font-size: 27px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .login-header p {
+
+            margin: 0;
+
+            color:
+                #EAF3FA;
+
+            font-size: 15px;
+
+        }
+
+
+        /* =====================================
+           FORM
+        ====================================== */
+
+        .login-body {
+
+            padding:
+                35px 30px 30px;
+
+        }
+
+
+        .form-label {
+
+            font-weight: 600;
+
+            color:
+                var(--academic-blue-dark);
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .form-control {
+
+            height: 50px;
+
+            border:
+                1px solid
+                #CED4DA;
+
+            border-radius: 6px;
+
+            padding:
+                10px 14px;
+
+        }
+
+
+        .form-control:focus {
+
+            border-color:
+                var(--academic-blue);
+
+            box-shadow:
+                0 0 0 0.2rem
+                rgba(11, 79, 138, 0.15);
+
+        }
+
+
+        .password-wrapper {
+
+            position: relative;
+
+        }
+
+
+        .password-toggle {
+
+            position: absolute;
+
+            right: 12px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            color:
+                var(--text-muted);
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+        }
+
+
+        .password-toggle:hover {
+
+            color:
+                var(--academic-blue);
+
+        }
+
+
+        /* =====================================
+           LOGIN BUTTON
+        ====================================== */
+
+        .login-button {
+
+            width: 100%;
+
+            height: 50px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0B4F8A 0%,
+                    #083B66 100%
+                );
+
+            color: #FFFFFF;
+
+            font-weight: 600;
+
+            font-size: 16px;
+
+            box-shadow:
+                0 4px 12px
+                rgba(11, 79, 138, 0.25);
+
+        }
+
+
+        .login-button:hover {
+
+            background:
+                var(--academic-blue-dark);
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 6px 16px
+                rgba(11, 79, 138, 0.3);
+
+        }
+
+
+        .login-button:disabled {
+
+            opacity: 0.7;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+
+        /* =====================================
+           MESSAGE
+        ====================================== */
+
+        #loginMessage {
+
+            display: none;
+
+            border-radius: 6px;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =====================================
+           FOOTER
+        ====================================== */
+
+        .login-footer {
+
+            text-align: center;
+
+            border-top:
+                1px solid
+                var(--border-color);
+
+            padding:
+                20px 30px;
+
+            color:
+                var(--text-muted);
+
+            font-size: 13px;
+
+        }
+
+
+        .login-footer strong {
+
+            color:
+                var(--academic-blue-dark);
+
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ====================================== */
+
+        @media (max-width: 576px) {
+
+            .login-wrapper {
+
+                padding:
+                    25px 15px;
+
+            }
+
+
+            .login-body {
+
+                padding:
+                    30px 22px 25px;
+
+            }
+
+
+            .login-header {
+
+                padding:
+                    30px 20px;
+
+            }
+
+
+            .login-header h1 {
+
+                font-size: 24px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================
+     NAVIGATION
+====================================== -->
+
+<nav class="navbar">
+
+    <div class="container">
+
+        <div
+            class="d-flex
+                   justify-content-between
+                   align-items-center
+                   w-100"
+        >
+
+            <a
+                class="navbar-brand"
+                href="../index.html"
+            >
+
+                CPE Department
+
+            </a>
+
+
+            <a
+                href="../index.html"
+                class="back-link"
+            >
+
+                ← Back to Home
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =====================================
+     LOGIN
+====================================== -->
+
+<main class="login-wrapper">
+
+
+    <div class="login-card">
+
+
+        <!-- HEADER -->
+
+        <div class="login-header">
+
+
+            <div class="login-icon">
+
+                🔐
+
+            </div>
+
+
+            <h1>
+
+                Welcome Back
+
+            </h1>
+
+
+            <p>
+
+                CPE Asynchronous Class
+
+            </p>
+
+
+        </div>
+
+
+
+        <!-- BODY -->
+
+        <div class="login-body">
+
+
+            <!-- MESSAGE -->
+
+            <div
+                id="loginMessage"
+                class="alert mb-4"
+                role="alert"
+            ></div>
+
+
+
+            <!-- LOGIN FORM -->
+
+            <form
+                id="loginForm"
+                autocomplete="on"
+            >
+
+
+                <!-- USERNAME -->
+
+                <div class="mb-4">
+
+                    <label
+                        for="username"
+                        class="form-label"
+                    >
+
+                        Username
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        autocomplete="username"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="mb-4">
+
+                    <label
+                        for="password"
+                        class="form-label"
+                    >
+
+                        Password
+
+                    </label>
+
+
+                    <div class="password-wrapper">
+
+
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="togglePassword"
+                        >
+
+                            Show
+
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- REMEMBER -->
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="remember"
+                            name="remember"
+                        >
+
+
+                        <label
+                            class="form-check-label text-muted"
+                            for="remember"
+                        >
+
+                            Remember me
+
+                        </label>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- LOGIN -->
+
+                <button
+                    type="submit"
+                    class="login-button"
+                    id="loginButton"
+                >
+
+                    Login
+
+                </button>
+
+
+            </form>
+
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="login-footer">
+
+
+            <div>
+
+                <strong>
+                    Engr. Karl Stephen Evallo
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                Computer Engineering Department
+
+            </div>
+
+
+            <div class="mt-1">
+
+                Asynchronous Learning Portal
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</main>
+
+
+
+<!-- =====================================
+     JAVASCRIPT
+====================================== -->
+
+<script>
+
+
+    /*
+     * ====================================
+     * CONFIGURATION
+     * ====================================
+     *
+     * Change this later to your actual
+     * authentication API endpoint.
+     *
+     * Example:
+     *
+     * const LOGIN_API = "login.php";
+     *
+     * or:
+     *
+     * const LOGIN_API = "../api/login.php";
+     *
+     */
+
+    const LOGIN_API = "login.php";
+
+
+
+    /* ====================================
+       PASSWORD SHOW / HIDE
+    ==================================== */
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const togglePassword =
+        document.getElementById("togglePassword");
+
+
+    togglePassword.addEventListener(
+        "click",
+        function () {
+
+            if (
+                passwordInput.type === "password"
+            ) {
+
+                passwordInput.type = "text";
+
+                togglePassword.textContent =
+                    "Hide";
+
+            }
+
+            else {
+
+                passwordInput.type =
+                    "password";
+
+                togglePassword.textContent =
+                    "Show";
+
+            }
+
+        }
+    );
+
+
+
+    /* ====================================
+       MESSAGE FUNCTION
+    ==================================== */
+
+    function showMessage(
+        message,
+        type
+    ) {
+
+        const loginMessage =
+            document.getElementById(
+                "loginMessage"
+            );
+
+
+        loginMessage.className =
+            "alert mb-4 alert-" + type;
+
+
+        loginMessage.textContent =
+            message;
+
+
+        loginMessage.style.display =
+            "block";
+
+    }
+
+
+
+    /* ====================================
+       LOGIN FORM
+    ==================================== */
+
+    const loginForm =
+        document.getElementById(
+            "loginForm"
+        );
+
+
+    const loginButton =
+        document.getElementById(
+            "loginButton"
+        );
+
+
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const username =
+                document
+                    .getElementById("username")
+                    .value
+                    .trim();
+
+
+            const password =
+                document
+                    .getElementById("password")
+                    .value;
+
+
+            const remember =
+                document
+                    .getElementById("remember")
+                    .checked;
+
+
+
+            /* Basic validation */
+
+            if (
+                username === "" ||
+                password === ""
+            ) {
+
+                showMessage(
+                    "Please enter your username and password.",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+
+
+            /* Disable button */
+
+            loginButton.disabled = true;
+
+            loginButton.textContent =
+                "Logging in...";
+
+
+
+            try {
+
+
+                /*
+                 * Send login request to API.
+                 *
+                 * The API should eventually
+                 * return JSON.
+                 */
+
+                const response =
+                    await fetch(
+                        LOGIN_API,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                username:
+                                    username,
+
+                                password:
+                                    password,
+
+                                remember:
+                                    remember
+
+                            })
+
+                        }
+                    );
+
+
+
+                const data =
+                    await response.json();
+
+
+
+                /* =========================
+                   SUCCESS
+                ========================== */
+
+                if (
+                    response.ok &&
+                    data.success
+                ) {
+
+                    showMessage(
+                        data.message ||
+                        "Login successful.",
+                        "success"
+                    );
+
+
+                    /*
+                     * Redirect after
+                     * successful login.
+                     *
+                     * Change this later
+                     * to your dashboard.
+                     */
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "../dashboard.html";
+
+                        },
+                        800
+                    );
+
+                }
+
+
+                /* =========================
+                   ERROR
+                ========================== */
+
+                else {
+
+                    showMessage(
+                        data.message ||
+                        "Invalid username or password.",
+                        "danger"
+                    );
+
+
+                    loginButton.disabled =
+                        false;
+
+                    loginButton.textContent =
+                        "Login";
+
+                }
+
+
+            }
+
+
+            catch (error) {
+
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+
+                showMessage(
+                    "Unable to connect to the login server. Please try again.",
+                    "danger"
+                );
+
+
+                loginButton.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "Login";
+
+            }
+
+        }
+    );
+
+</script>
+
+
+
+<!-- Bootstrap JS -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+
+</body>
+
+</html>
