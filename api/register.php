@@ -3,10 +3,10 @@
 
 /* ============================================
    STUDENT REGISTRATION API
+   GET VERSION - FOR TESTING
    ============================================ */
 
 header("Content-Type: application/json; charset=UTF-8");
-
 
 
 /* ============================================
@@ -16,47 +16,21 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once "../src/connection.php";
 
 
-
 /* ============================================
-   ONLY ALLOW POST REQUEST
+   ONLY ALLOW GET REQUEST
    ============================================ */
 
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+if ($_SERVER["REQUEST_METHOD"] !== "GET") {
 
     http_response_code(405);
 
     echo json_encode([
         "success" => false,
-        "message" => "Invalid request method."
+        "message" => "Only GET requests are allowed."
     ]);
 
     exit;
 }
-
-
-
-/* ============================================
-   GET JSON DATA
-   ============================================ */
-
-$input = json_decode(
-    file_get_contents("php://input"),
-    true
-);
-
-
-if (!is_array($input)) {
-
-    http_response_code(400);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid request data."
-    ]);
-
-    exit;
-}
-
 
 
 /* ============================================
@@ -64,34 +38,33 @@ if (!is_array($input)) {
    ============================================ */
 
 $last_name =
-    trim($input["last_name"] ?? "");
+    trim($_GET["last_name"] ?? "");
 
 $first_name =
-    trim($input["first_name"] ?? "");
+    trim($_GET["first_name"] ?? "");
 
 $middle_initial =
     strtoupper(
-        trim($input["middle_initial"] ?? "")
+        trim($_GET["middle_initial"] ?? "")
     );
 
 $department =
-    trim($input["department"] ?? "");
+    trim($_GET["department"] ?? "");
 
 $year_section =
-    trim($input["year_section"] ?? "");
+    trim($_GET["year_section"] ?? "");
 
 $student_id =
-    trim($input["student_id"] ?? "");
+    trim($_GET["student_id"] ?? "");
 
 $email =
-    trim($input["email"] ?? "");
+    trim($_GET["email"] ?? "");
 
 $username =
-    trim($input["username"] ?? "");
+    trim($_GET["username"] ?? "");
 
 $password =
-    $input["password"] ?? "";
-
+    $_GET["password"] ?? "";
 
 
 /* ============================================
@@ -120,7 +93,6 @@ if (
 }
 
 
-
 /* ============================================
    EMAIL VALIDATION
    ============================================ */
@@ -136,7 +108,6 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
     exit;
 }
-
 
 
 /* ============================================
@@ -156,7 +127,6 @@ if (strlen($username) < 4) {
 }
 
 
-
 /* ============================================
    PASSWORD VALIDATION
    ============================================ */
@@ -172,7 +142,6 @@ if (strlen($password) < 8) {
 
     exit;
 }
-
 
 
 /* ============================================
@@ -225,20 +194,14 @@ if ($result->num_rows > 0) {
         $result->fetch_assoc();
 
 
-    if (
-        $existing["username"] ===
-        $username
-    ) {
+    if ($existing["username"] === $username) {
 
         $message =
             "Username is already registered.";
 
     }
 
-    elseif (
-        $existing["email"] ===
-        $email
-    ) {
+    elseif ($existing["email"] === $email) {
 
         $message =
             "Email address is already registered.";
@@ -269,7 +232,6 @@ if ($result->num_rows > 0) {
 $stmt->close();
 
 
-
 /* ============================================
    HASH PASSWORD
    ============================================ */
@@ -294,10 +256,12 @@ if ($password_hash === false) {
 }
 
 
-
 /* ============================================
    INSERT ACCOUNT
    ============================================ */
+
+$access = "student";
+
 
 $stmt = $mysqli->prepare("
     INSERT INTO accounts
@@ -331,15 +295,6 @@ if (!$stmt) {
 }
 
 
-
-/*
- * New registrations are automatically
- * assigned student access.
- */
-
-$access = "student";
-
-
 $stmt->bind_param(
     "ssssssssss",
     $last_name,
@@ -353,7 +308,6 @@ $stmt->bind_param(
     $password_hash,
     $access
 );
-
 
 
 /* ============================================
@@ -372,11 +326,6 @@ if ($stmt->execute()) {
 }
 
 else {
-
-    /*
-     * Handle duplicate entries that may
-     * occur because of database UNIQUE keys.
-     */
 
     if ($stmt->errno === 1062) {
 
