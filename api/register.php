@@ -2,8 +2,7 @@
 <?php
 
 /* ============================================
-   STUDENT REGISTRATION API
-   GET VERSION - FOR TESTING
+   STUDENT REGISTRATION API - GET VERSION
    ============================================ */
 
 header("Content-Type: application/json; charset=UTF-8");
@@ -34,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
 
 
 /* ============================================
-   GET FORM DATA
+   GET DATA
    ============================================ */
 
 $last_name =
@@ -194,14 +193,18 @@ if ($result->num_rows > 0) {
         $result->fetch_assoc();
 
 
-    if ($existing["username"] === $username) {
+    if (
+        $existing["username"] === $username
+    ) {
 
         $message =
             "Username is already registered.";
 
     }
 
-    elseif ($existing["email"] === $email) {
+    elseif (
+        $existing["email"] === $email
+    ) {
 
         $message =
             "Email address is already registered.";
@@ -257,11 +260,15 @@ if ($password_hash === false) {
 
 
 /* ============================================
-   INSERT ACCOUNT
+   ACCESS
    ============================================ */
 
 $access = "student";
 
+
+/* ============================================
+   INSERT ACCOUNT
+   ============================================ */
 
 $stmt = $mysqli->prepare("
     INSERT INTO accounts
@@ -311,7 +318,7 @@ $stmt->bind_param(
 
 
 /* ============================================
-   EXECUTE INSERT
+   EXECUTE
    ============================================ */
 
 if ($stmt->execute()) {
@@ -320,7 +327,9 @@ if ($stmt->execute()) {
 
     echo json_encode([
         "success" => true,
-        "message" => "Student account created successfully."
+        "message" => "Student account created successfully.",
+        "username" => $username,
+        "access" => $access
     ]);
 
 }
