@@ -433,6 +433,7 @@
 
 
 
+
 <!-- =====================================
      HERO
 ===================================== -->
@@ -441,6 +442,80 @@
     class="hero"
     id="home"
 >
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-9">
+
+                <span class="hero-badge">
+                    COMPUTER ENGINEERING DEPARTMENT
+                </span>
+
+                <h1 class="mb-4">
+
+                    Welcome to Our
+                    <span class="text-academic">
+                        Asynchronous Class
+                    </span>
+
+                </h1>
+
+                <p class="mb-4">
+
+                    Welcome, students. For the next two weeks,
+                    we will be conducting our class through an
+                    asynchronous learning approach. This learning
+                    environment will allow you to access the lessons,
+                    study the provided materials, accomplish activities,
+                    and complete assessments at your own pace within
+                    the prescribed schedule.
+
+                </p>
+
+                <div class="mt-4">
+
+                    <a
+                        href="login.php"
+                        class="btn btn-academic btn-lg px-4 me-2"
+                    >
+                        Login to Class
+                    </a>
+
+                    <a
+                        href="#plan"
+                        class="btn btn-outline-secondary btn-lg px-4"
+                    >
+                        View Learning Plan
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     FULL WIDTH PUBMAT
+===================================== -->
+
+<section class="pubmat-section">
+
+    <img
+        src="assets/pubmat/cpe.png"
+        alt="Computer Engineering Department"
+        class="pubmat-full"
+    >
+
+</section>
+
+
 
     <div class="container">
 
