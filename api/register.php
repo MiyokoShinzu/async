@@ -2,7 +2,7 @@
 <?php
 
 /* ============================================
-   STUDENT REGISTRATION API - GET VERSION
+   STUDENT REGISTRATION API
    ============================================ */
 
 header("Content-Type: application/json; charset=UTF-8");
@@ -16,16 +16,39 @@ require_once "../src/connection.php";
 
 
 /* ============================================
-   ONLY ALLOW GET REQUEST
+   ONLY ALLOW POST
    ============================================ */
 
-if ($_SERVER["REQUEST_METHOD"] !== "GET") {
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
     http_response_code(405);
 
     echo json_encode([
         "success" => false,
-        "message" => "Only GET requests are allowed."
+        "message" => "Only POST requests are allowed."
+    ]);
+
+    exit;
+}
+
+
+/* ============================================
+   GET JSON DATA
+   ============================================ */
+
+$input = json_decode(
+    file_get_contents("php://input"),
+    true
+);
+
+
+if (!is_array($input)) {
+
+    http_response_code(400);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid request data."
     ]);
 
     exit;
@@ -37,33 +60,27 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
    ============================================ */
 
 $last_name =
-    trim($_GET["last_name"] ?? "");
+    trim($input["last_name"] ?? "");
 
 $first_name =
-    trim($_GET["first_name"] ?? "");
+    trim($input["first_name"] ?? "");
 
 $middle_initial =
     strtoupper(
-        trim($_GET["middle_initial"] ?? "")
+        trim($input["middle_initial"] ?? "")
     );
 
 $department =
-    trim($_GET["department"] ?? "");
+    trim($input["department"] ?? "");
 
 $year_section =
-    trim($_GET["year_section"] ?? "");
-
-$student_id =
-    trim($_GET["student_id"] ?? "");
-
-$email =
-    trim($_GET["email"] ?? "");
+    trim($input["year_section"] ?? "");
 
 $username =
-    trim($_GET["username"] ?? "");
+    trim($input["username"] ?? "");
 
 $password =
-    $_GET["password"] ?? "";
+    $input["password"] ?? "";
 
 
 /* ============================================
@@ -75,8 +92,6 @@ if (
     $first_name === "" ||
     $department === "" ||
     $year_section === "" ||
-    $student_id === "" ||
-    $email === "" ||
     $username === "" ||
     $password === ""
 ) {
@@ -93,16 +108,62 @@ if (
 
 
 /* ============================================
-   EMAIL VALIDATION
+   SPLIT YEAR AND SECTION
    ============================================ */
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+$parts = explode("-", $year_section);
+
+
+if (count($parts) !== 2) {
 
     http_response_code(400);
 
     echo json_encode([
         "success" => false,
-        "message" => "Please enter a valid email address."
+        "message" => "Invalid year and section."
+    ]);
+
+    exit;
+}
+
+
+$year_level =
+    trim($parts[0]);
+
+$section =
+    strtoupper(
+        trim($parts[1])
+    );
+
+
+/* ============================================
+   VALIDATE YEAR LEVEL
+   ============================================ */
+
+if (!in_array($year_level, ["1", "2", "3", "4"])) {
+
+    http_response_code(400);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid year level."
+    ]);
+
+    exit;
+}
+
+
+/* ============================================
+   VALIDATE SECTION
+   ============================================ */
+
+if ($section === "") {
+
+    http_response_code(400);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid section."
     ]);
 
     exit;
@@ -144,18 +205,13 @@ if (strlen($password) < 8) {
 
 
 /* ============================================
-   CHECK EXISTING ACCOUNT
+   CHECK USERNAME
    ============================================ */
 
 $stmt = $mysqli->prepare("
-    SELECT
-        username,
-        email,
-        student_id
+    SELECT id
     FROM accounts
     WHERE username = ?
-       OR email = ?
-       OR student_id = ?
     LIMIT 1
 ");
 
@@ -174,56 +230,25 @@ if (!$stmt) {
 
 
 $stmt->bind_param(
-    "sss",
-    $username,
-    $email,
-    $student_id
+    "s",
+    $username
 );
 
 
 $stmt->execute();
 
 
-$result = $stmt->get_result();
+$result =
+    $stmt->get_result();
 
 
 if ($result->num_rows > 0) {
-
-    $existing =
-        $result->fetch_assoc();
-
-
-    if (
-        $existing["username"] === $username
-    ) {
-
-        $message =
-            "Username is already registered.";
-
-    }
-
-    elseif (
-        $existing["email"] === $email
-    ) {
-
-        $message =
-            "Email address is already registered.";
-
-    }
-
-    else {
-
-        $message =
-            "Student ID is already registered.";
-
-    }
-
 
     http_response_code(409);
 
     echo json_encode([
         "success" => false,
-        "message" => $message
+        "message" => "Username is already registered."
     ]);
 
     $stmt->close();
@@ -260,7 +285,7 @@ if ($password_hash === false) {
 
 
 /* ============================================
-   ACCESS
+   DEFAULT ACCESS
    ============================================ */
 
 $access = "student";
@@ -277,15 +302,14 @@ $stmt = $mysqli->prepare("
         first_name,
         middle_initial,
         department,
-        year_section,
-        student_id,
-        email,
+        year_level,
+        section,
         username,
         password,
         access
     )
     VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
 
 
@@ -302,15 +326,18 @@ if (!$stmt) {
 }
 
 
+/* ============================================
+   BIND PARAMETERS
+   ============================================ */
+
 $stmt->bind_param(
-    "ssssssssss",
+    "sssssssss",
     $last_name,
     $first_name,
     $middle_initial,
     $department,
-    $year_section,
-    $student_id,
-    $email,
+    $year_level,
+    $section,
     $username,
     $password_hash,
     $access
@@ -318,7 +345,7 @@ $stmt->bind_param(
 
 
 /* ============================================
-   EXECUTE
+   INSERT
    ============================================ */
 
 if ($stmt->execute()) {
@@ -327,36 +354,19 @@ if ($stmt->execute()) {
 
     echo json_encode([
         "success" => true,
-        "message" => "Student account created successfully.",
-        "username" => $username,
-        "access" => $access
+        "message" => "Student account created successfully."
     ]);
 
 }
 
 else {
 
-    if ($stmt->errno === 1062) {
+    http_response_code(500);
 
-        http_response_code(409);
-
-        echo json_encode([
-            "success" => false,
-            "message" => "Username, email, or student ID is already registered."
-        ]);
-
-    }
-
-    else {
-
-        http_response_code(500);
-
-        echo json_encode([
-            "success" => false,
-            "message" => "Unable to create the student account."
-        ]);
-
-    }
+    echo json_encode([
+        "success" => false,
+        "message" => "Unable to create the student account."
+    ]);
 
 }
 
