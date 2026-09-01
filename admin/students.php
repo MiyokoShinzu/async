@@ -2598,9 +2598,7 @@ function getStudentPhotoUrl($profilePhoto)
 
                                             <?= ++$number ?>
                                             <?php
-echo '<pre>';
-var_dump($student["profile_photo"]);
-echo '</pre>';
+
 ?>
 
                                         </td>
