@@ -1,8 +1,23 @@
+
 <?php
 
 /* =========================================================
    STUDENT PROFILE PHOTO UPLOAD
    ETS-Async Learning Portal
+
+   DIRECTORY STRUCTURE:
+
+   public_html/
+   ├── async/
+   │   └── student/
+   │       └── profile_photo_upload.php
+   │
+   └── shared/
+       └── uploads/
+           └── profile_photos/
+
+   IMPORTANT:
+   shared and async are SIBLINGS.
    ========================================================= */
 
 session_start();
@@ -35,16 +50,18 @@ require_once "../src/connection.php";
 
 $user = $_SESSION["user"];
 
-$studentId =
-    $user["student_id"] ?? "";
+$studentId = trim(
+    $user["student_id"] ?? ""
+);
+
 
 if ($studentId === "") {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Student account information is missing."
-            )
+        urlencode(
+            "Student account information is missing."
+        )
     );
 
     exit;
@@ -52,7 +69,7 @@ if ($studentId === "") {
 
 
 /* =========================================================
-   CHECK REQUEST
+   REQUEST METHOD
 ========================================================= */
 
 if (
@@ -68,27 +85,70 @@ if (
 
 
 /* =========================================================
-   CHECK FILE
+   CHECK UPLOAD
 ========================================================= */
 
 if (
-    !isset($_FILES["profile_photo"]) ||
-    $_FILES["profile_photo"]["error"] !== UPLOAD_ERR_OK
+    !isset($_FILES["profile_photo"])
 ) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Please select a photo to upload."
-            )
+        urlencode(
+            "Please select a photo to upload."
+        )
     );
 
     exit;
 }
 
 
-$file =
-    $_FILES["profile_photo"];
+$file = $_FILES["profile_photo"];
+
+
+/* =========================================================
+   CHECK UPLOAD ERROR
+========================================================= */
+
+if (
+    $file["error"] !== UPLOAD_ERR_OK
+) {
+
+    $message = "Unable to upload the photo.";
+
+    switch ($file["error"]) {
+
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:
+
+            $message =
+                "The uploaded photo is too large.";
+
+            break;
+
+        case UPLOAD_ERR_NO_FILE:
+
+            $message =
+                "Please select a photo to upload.";
+
+            break;
+
+        case UPLOAD_ERR_PARTIAL:
+
+            $message =
+                "The photo upload was incomplete.";
+
+            break;
+    }
+
+
+    header(
+        "Location: profile_photo.php?error=" .
+        urlencode($message)
+    );
+
+    exit;
+}
 
 
 /* =========================================================
@@ -96,7 +156,22 @@ $file =
 ========================================================= */
 
 $maxSize =
-    5 * 1024 * 1024; // 5 MB
+    5 * 1024 * 1024;
+
+
+if (
+    $file["size"] <= 0
+) {
+
+    header(
+        "Location: profile_photo.php?error=" .
+        urlencode(
+            "The uploaded photo is empty."
+        )
+    );
+
+    exit;
+}
 
 
 if (
@@ -105,9 +180,30 @@ if (
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The photo must not exceed 5 MB."
-            )
+        urlencode(
+            "The photo must not exceed 5 MB."
+        )
+    );
+
+    exit;
+}
+
+
+/* =========================================================
+   VERIFY UPLOADED FILE
+========================================================= */
+
+if (
+    !is_uploaded_file(
+        $file["tmp_name"]
+    )
+) {
+
+    header(
+        "Location: profile_photo.php?error=" .
+        urlencode(
+            "Invalid uploaded file."
+        )
     );
 
     exit;
@@ -119,7 +215,7 @@ if (
 ========================================================= */
 
 $imageInfo =
-    getimagesize(
+    @getimagesize(
         $file["tmp_name"]
     );
 
@@ -130,9 +226,9 @@ if (
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The uploaded file is not a valid image."
-            )
+        urlencode(
+            "The uploaded file is not a valid image."
+        )
     );
 
     exit;
@@ -140,7 +236,7 @@ if (
 
 
 /* =========================================================
-   MIME TYPE
+   ALLOWED MIME TYPES
 ========================================================= */
 
 $allowedMimeTypes = [
@@ -166,9 +262,9 @@ if (
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Only JPG, PNG, and WEBP images are allowed."
-            )
+        urlencode(
+            "Only JPG, PNG, and WEBP images are allowed."
+        )
     );
 
     exit;
@@ -181,32 +277,21 @@ $extension =
 
 /* =========================================================
    UPLOAD DIRECTORY
-
-   Actual structure:
-
-   public_html/
-   │
-   ├── async/
-   │   └── student/
-   │       └── profile_photo_upload.php
-   │
-   └── shared/
-       └── uploads/
-           └── profile_photos/
-
-   From:
-
-   async/student/
-
-   we go:
-
-   ../        -> async/
-   ../../     -> public_html/
-
-   then:
-
-   shared/uploads/profile_photos/
 ========================================================= */
+
+/*
+   Current file:
+
+   /public_html/async/student/profile_photo_upload.php
+
+   We need:
+
+   /public_html/shared/uploads/profile_photos/
+
+   Therefore:
+
+   ../../shared/uploads/profile_photos/
+*/
 
 $uploadDirectory =
     __DIR__ .
@@ -214,7 +299,7 @@ $uploadDirectory =
 
 
 /* =========================================================
-   CREATE UPLOAD DIRECTORY IF NEEDED
+   CREATE DIRECTORY
 ========================================================= */
 
 if (
@@ -231,9 +316,9 @@ if (
 
         header(
             "Location: profile_photo.php?error=" .
-                urlencode(
-                    "Unable to create the upload directory."
-                )
+            urlencode(
+                "Unable to create the upload directory."
+            )
         );
 
         exit;
@@ -242,8 +327,23 @@ if (
 
 
 /* =========================================================
-   CHECK DIRECTORY WRITABLE
+   CHECK DIRECTORY
 ========================================================= */
+
+if (
+    !is_dir($uploadDirectory)
+) {
+
+    header(
+        "Location: profile_photo.php?error=" .
+        urlencode(
+            "Upload directory does not exist."
+        )
+    );
+
+    exit;
+}
+
 
 if (
     !is_writable($uploadDirectory)
@@ -251,9 +351,9 @@ if (
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The upload directory is not writable."
-            )
+        urlencode(
+            "The upload directory is not writable."
+        )
     );
 
     exit;
@@ -283,9 +383,9 @@ if (!$stmt) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Unable to access your profile."
-            )
+        urlencode(
+            "Unable to access your profile."
+        )
     );
 
     exit;
@@ -321,7 +421,7 @@ $stmt->close();
 
 
 /* =========================================================
-   GENERATE SAFE STUDENT ID
+   SAFE STUDENT ID
 ========================================================= */
 
 $safeStudentId =
@@ -332,22 +432,42 @@ $safeStudentId =
     );
 
 
+if (
+    $safeStudentId === ""
+) {
+
+    $safeStudentId = "student";
+}
+
+
 /* =========================================================
-   GENERATE UNIQUE FILE NAME
+   UNIQUE FILE NAME
 ========================================================= */
+
+try {
+
+    $randomString =
+        bin2hex(
+            random_bytes(8)
+        );
+
+} catch (Exception $e) {
+
+    $randomString =
+        uniqid();
+}
+
 
 $fileName =
     $safeStudentId .
     "_" .
-    bin2hex(
-        random_bytes(8)
-    ) .
+    $randomString .
     "." .
     $extension;
 
 
 /* =========================================================
-   FULL SERVER DESTINATION
+   SERVER DESTINATION
 ========================================================= */
 
 $destination =
@@ -356,7 +476,7 @@ $destination =
 
 
 /* =========================================================
-   MOVE UPLOADED FILE
+   MOVE FILE
 ========================================================= */
 
 if (
@@ -368,9 +488,9 @@ if (
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Unable to save the uploaded photo."
-            )
+        urlencode(
+            "Unable to save the uploaded photo."
+        )
     );
 
     exit;
@@ -378,20 +498,16 @@ if (
 
 
 /* =========================================================
-   DATABASE PHOTO PATH
-
-   Stored in database as:
-
-   shared/uploads/profile_photos/photo.jpg
-
-   NOT:
-
-   /shared/...
-
-   NOT:
-
-   async/shared/...
+   DATABASE PATH
 ========================================================= */
+
+/*
+   DO NOT store the server filesystem path.
+
+   Store the browser-accessible path:
+
+   shared/uploads/profile_photos/file.jpg
+*/
 
 $photoPath =
     "shared/uploads/profile_photos/" .
@@ -399,7 +515,7 @@ $photoPath =
 
 
 /* =========================================================
-   SAVE PHOTO PATH TO DATABASE
+   UPDATE DATABASE
 ========================================================= */
 
 $sql = "
@@ -415,9 +531,6 @@ $stmt =
 
 if (!$stmt) {
 
-    /* Remove uploaded file
-       if SQL preparation fails */
-
     if (
         file_exists($destination)
     ) {
@@ -428,9 +541,9 @@ if (!$stmt) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Unable to update your profile."
-            )
+        urlencode(
+            "Unable to update your profile."
+        )
     );
 
     exit;
@@ -445,15 +558,12 @@ $stmt->bind_param(
 
 
 /* =========================================================
-   EXECUTE DATABASE UPDATE
+   EXECUTE UPDATE
 ========================================================= */
 
 if (
     !$stmt->execute()
 ) {
-
-    /* Remove uploaded file
-       if database update fails */
 
     if (
         file_exists($destination)
@@ -468,9 +578,9 @@ if (
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Unable to update your profile."
-            )
+        urlencode(
+            "Unable to update your profile."
+        )
     );
 
     exit;
@@ -485,39 +595,46 @@ $stmt->close();
 ========================================================= */
 
 if (
-    $oldPhoto !== "" &&
-    strpos(
-        $oldPhoto,
-        "shared/uploads/profile_photos/"
-    ) === 0
+    $oldPhoto !== ""
 ) {
 
     /*
-       Database:
-
-       shared/uploads/profile_photos/photo.jpg
-
-       Server:
-
-       public_html/shared/uploads/profile_photos/photo.jpg
+       Only delete files that belong to our
+       shared profile photo directory.
     */
 
-    $oldFile =
-        __DIR__ .
-        "/../../" .
-        $oldPhoto;
-
-
-    /* =====================================================
-       MAKE SURE OLD FILE IS NOT THE NEW FILE
-    ===================================================== */
-
     if (
-        file_exists($oldFile) &&
-        realpath($oldFile) !== realpath($destination)
+        strpos(
+            $oldPhoto,
+            "shared/uploads/profile_photos/"
+        ) === 0
     ) {
 
-        unlink($oldFile);
+        $oldFile =
+            __DIR__ .
+            "/../../" .
+            $oldPhoto;
+
+
+        $oldRealPath =
+            realpath($oldFile);
+
+
+        $newRealPath =
+            realpath($destination);
+
+
+        if (
+            $oldRealPath !== false &&
+            $newRealPath !== false &&
+            $oldRealPath !== $newRealPath &&
+            is_file($oldRealPath)
+        ) {
+
+            @unlink(
+                $oldRealPath
+            );
+        }
     }
 }
 
@@ -528,9 +645,9 @@ if (
 
 header(
     "Location: profile_photo.php?success=" .
-        urlencode(
-            "Profile photo updated successfully."
-        )
+    urlencode(
+        "Profile photo updated successfully."
+    )
 );
 
 exit;
