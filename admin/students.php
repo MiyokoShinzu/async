@@ -1,3 +1,4 @@
+
 <?php
 
 /* =========================================================
@@ -18,9 +19,7 @@ if (
     !isset($_SESSION["user"]) ||
     ($_SESSION["user"]["access"] ?? "") !== "admin"
 ) {
-
     header("Location: ../login.php");
-
     exit;
 }
 
@@ -36,26 +35,14 @@ $user = $_SESSION["user"];
    USER DATA
    ========================================================= */
 
-$firstName =
-    $user["first_name"] ?? "";
+$firstName = $user["first_name"] ?? "";
+$lastName = $user["last_name"] ?? "";
+$middleInitial = $user["middle_initial"] ?? "";
+$extensionName = $user["extension_name"] ?? "";
 
-$lastName =
-    $user["last_name"] ?? "";
-
-$middleInitial =
-    $user["middle_initial"] ?? "";
-
-$extensionName =
-    $user["extension_name"] ?? "";
-
-$email =
-    $user["email"] ?? "";
-
-$username =
-    $user["username"] ?? "";
-
-$access =
-    $user["access"] ?? "admin";
+$email = $user["email"] ?? "";
+$username = $user["username"] ?? "";
+$access = $user["access"] ?? "admin";
 
 
 /* =========================================================
@@ -63,23 +50,18 @@ $access =
    ========================================================= */
 
 $fullName = trim(
-
     $firstName . " " .
-
         (
             $middleInitial !== ""
             ? $middleInitial . ". "
             : ""
         ) .
-
         $lastName .
-
         (
             $extensionName !== ""
             ? " " . $extensionName
             : ""
         )
-
 );
 
 
@@ -90,17 +72,11 @@ $fullName = trim(
 $initials = "";
 
 if ($firstName !== "") {
-
-    $initials .= strtoupper(
-        substr($firstName, 0, 1)
-    );
+    $initials .= strtoupper(substr($firstName, 0, 1));
 }
 
 if ($lastName !== "") {
-
-    $initials .= strtoupper(
-        substr($lastName, 0, 1)
-    );
+    $initials .= strtoupper(substr($lastName, 0, 1));
 }
 
 
@@ -115,17 +91,10 @@ require_once "../src/connection.php";
    FILTER VALUES
    ========================================================= */
 
-$department =
-    trim($_GET["department"] ?? "");
-
-$year =
-    trim($_GET["year"] ?? "");
-
-$section =
-    trim($_GET["section"] ?? "");
-
-$search =
-    trim($_GET["search"] ?? "");
+$department = trim($_GET["department"] ?? "");
+$year       = trim($_GET["year"] ?? "");
+$section    = trim($_GET["section"] ?? "");
+$search     = trim($_GET["search"] ?? "");
 
 
 /* =========================================================
@@ -134,13 +103,11 @@ $search =
 
 $recordsPerPage = 10;
 
-$page =
-    isset($_GET["page"])
+$page = isset($_GET["page"])
     ? (int) $_GET["page"]
     : 1;
 
 if ($page < 1) {
-
     $page = 1;
 }
 
@@ -155,25 +122,25 @@ $departmentSQL = "
     SELECT DISTINCT department
     FROM accounts
     WHERE access = 'student'
+      AND department IS NOT NULL
+      AND department <> ''
     ORDER BY department ASC
 ";
 
-$departmentResult =
-    $mysqli->query($departmentSQL);
+$departmentResult = $mysqli->query($departmentSQL);
 
 if ($departmentResult) {
 
     while ($row = $departmentResult->fetch_assoc()) {
 
-        if (
-            isset($row["department"]) &&
-            $row["department"] !== ""
-        ) {
+        $dept = trim($row["department"] ?? "");
 
-            $departments[] =
-                $row["department"];
+        if ($dept !== "") {
+            $departments[] = $dept;
         }
     }
+
+    $departmentResult->free();
 }
 
 
@@ -187,87 +154,110 @@ $yearSectionSQL = "
     SELECT DISTINCT year_section
     FROM accounts
     WHERE access = 'student'
+      AND year_section IS NOT NULL
+      AND year_section <> ''
     ORDER BY year_section ASC
 ";
 
-$yearSectionResult =
-    $mysqli->query($yearSectionSQL);
+$yearSectionResult = $mysqli->query($yearSectionSQL);
 
 if ($yearSectionResult) {
 
     while ($row = $yearSectionResult->fetch_assoc()) {
 
-        if (
-            isset($row["year_section"]) &&
-            $row["year_section"] !== ""
-        ) {
+        $value = trim($row["year_section"] ?? "");
 
-            $yearSections[] =
-                $row["year_section"];
+        if ($value !== "") {
+            $yearSections[] = $value;
+        }
+    }
+
+    $yearSectionResult->free();
+}
+
+
+/* =========================================================
+   EXTRACT YEARS AND SECTIONS
+   ========================================================= */
+
+$years = [];
+$sections = [];
+
+foreach ($yearSections as $value) {
+
+    /*
+     * Expected format examples:
+     *
+     * 1-A
+     * 2-B
+     * 3-C
+     * 4-D
+     *
+     * Also supports:
+     *
+     * 1 - A
+     * 2 - B
+     */
+
+    $normalized = preg_replace('/\s*-\s*/', '-', $value);
+
+    if (strpos($normalized, "-") !== false) {
+
+        $parts = explode("-", $normalized, 2);
+
+        $itemYear = trim($parts[0]);
+        $itemSection = trim($parts[1]);
+
+        if ($itemYear !== "") {
+            $years[] = $itemYear;
+        }
+
+        if ($itemSection !== "") {
+            $sections[] = $itemSection;
+        }
+    } else {
+
+        /*
+         * Fallback if the database contains
+         * values such as "1A", "2B", etc.
+         */
+
+        if (preg_match('/^([0-9]+)\s*(.+)$/', $normalized, $matches)) {
+
+            $itemYear = trim($matches[1]);
+            $itemSection = trim($matches[2]);
+
+            if ($itemYear !== "") {
+                $years[] = $itemYear;
+            }
+
+            if ($itemSection !== "") {
+                $sections[] = $itemSection;
+            }
         }
     }
 }
 
 
 /* =========================================================
-   EXTRACT YEARS
+   CLEAN YEAR / SECTION ARRAYS
    ========================================================= */
 
-$years = [];
+$years = array_values(array_unique($years));
+$sections = array_values(array_unique($sections));
 
-foreach ($yearSections as $value) {
+usort($years, function ($a, $b) {
 
-    $parts =
-        preg_split(
-            '/[-\s]+/',
-            $value
-        );
-
-    if (
-        isset($parts[0]) &&
-        $parts[0] !== ""
-    ) {
-
-        $years[] =
-            trim($parts[0]);
+    if (is_numeric($a) && is_numeric($b)) {
+        return (int)$a <=> (int)$b;
     }
-}
 
-$years =
-    array_unique($years);
+    return strcasecmp($a, $b);
+});
 
-sort($years);
-
-
-/* =========================================================
-   EXTRACT SECTIONS
-   ========================================================= */
-
-$sections = [];
-
-foreach ($yearSections as $value) {
-
-    $parts =
-        preg_split(
-            '/[-\s]+/',
-            $value,
-            2
-        );
-
-    if (
-        isset($parts[1]) &&
-        $parts[1] !== ""
-    ) {
-
-        $sections[] =
-            trim($parts[1]);
-    }
-}
-
-$sections =
-    array_unique($sections);
-
-sort($sections);
+usort($sections, function ($a, $b) {
+    return strcasecmp($a, $b);
+});
 
 
 /* =========================================================
@@ -279,7 +269,6 @@ $where = [
 ];
 
 $params = [];
-
 $types = "";
 
 
@@ -289,11 +278,9 @@ $types = "";
 
 if ($department !== "") {
 
-    $where[] =
-        "department = ?";
+    $where[] = "department = ?";
 
-    $params[] =
-        $department;
+    $params[] = $department;
 
     $types .= "s";
 }
@@ -305,13 +292,29 @@ if ($department !== "") {
 
 if ($year !== "") {
 
-    $where[] =
-        "year_section LIKE ?";
+    /*
+     * Matches:
+     *
+     * 1-A
+     * 1-B
+     * 1-C
+     *
+     * but not:
+     *
+     * 10-A
+     */
 
-    $params[] =
-        $year . "-%";
+    $where[] = "
+        (
+            year_section = ?
+            OR year_section LIKE ?
+        )
+    ";
 
-    $types .= "s";
+    $params[] = $year;
+    $params[] = $year . "-%";
+
+    $types .= "ss";
 }
 
 
@@ -321,13 +324,28 @@ if ($year !== "") {
 
 if ($section !== "") {
 
-    $where[] =
-        "year_section LIKE ?";
+    /*
+     * Matches:
+     *
+     * 1-A
+     * 2-A
+     * 3-A
+     *
+     * but avoids matching random text
+     * containing the section.
+     */
 
-    $params[] =
-        "%-" . $section;
+    $where[] = "
+        (
+            year_section = ?
+            OR year_section LIKE ?
+        )
+    ";
 
-    $types .= "s";
+    $params[] = $section;
+    $params[] = "%-" . $section;
+
+    $types .= "ss";
 }
 
 
@@ -347,8 +365,7 @@ if ($search !== "") {
         )
     ";
 
-    $searchValue =
-        "%" . $search . "%";
+    $searchValue = "%" . $search . "%";
 
     $params[] = $searchValue;
     $params[] = $searchValue;
@@ -364,11 +381,7 @@ if ($search !== "") {
    WHERE CLAUSE
    ========================================================= */
 
-$whereSQL =
-    implode(
-        " AND ",
-        $where
-    );
+$whereSQL = implode(" AND ", $where);
 
 
 /* =========================================================
@@ -381,14 +394,14 @@ $countSQL = "
     WHERE $whereSQL
 ";
 
-$countStmt =
-    $mysqli->prepare($countSQL);
+$countStmt = $mysqli->prepare($countSQL);
 
 if (!$countStmt) {
 
     die("Count query error: " .
         htmlspecialchars($mysqli->error));
 }
+
 
 if ($types !== "") {
 
@@ -398,16 +411,14 @@ if ($types !== "") {
     );
 }
 
+
 $countStmt->execute();
 
-$countResult =
-    $countStmt->get_result();
+$countResult = $countStmt->get_result();
 
-$totalStudents =
-    (int) (
-        $countResult->fetch_assoc()["total"]
-        ?? 0
-    );
+$countRow = $countResult->fetch_assoc();
+
+$totalStudents = (int)($countRow["total"] ?? 0);
 
 $countStmt->close();
 
@@ -416,24 +427,20 @@ $countStmt->close();
    PAGINATION CALCULATION
    ========================================================= */
 
-$totalPages =
-    max(
-        1,
-        (int) ceil(
-            $totalStudents /
-                $recordsPerPage
-        )
-    );
+$totalPages = max(
+    1,
+    (int)ceil(
+        $totalStudents / $recordsPerPage
+    )
+);
+
 
 if ($page > $totalPages) {
-
-    $page =
-        $totalPages;
+    $page = $totalPages;
 }
 
-$offset =
-    ($page - 1) *
-    $recordsPerPage;
+
+$offset = ($page - 1) * $recordsPerPage;
 
 
 /* =========================================================
@@ -458,13 +465,13 @@ $studentSQL = "
     WHERE $whereSQL
     ORDER BY
         last_name ASC,
-        first_name ASC
+        first_name ASC,
+        id ASC
     LIMIT ? OFFSET ?
 ";
 
 
-$studentStmt =
-    $mysqli->prepare($studentSQL);
+$studentStmt = $mysqli->prepare($studentSQL);
 
 if (!$studentStmt) {
 
@@ -474,20 +481,15 @@ if (!$studentStmt) {
 
 
 /* =========================================================
-   BIND PARAMETERS
+   BIND STUDENT PARAMETERS
    ========================================================= */
 
-$studentParams =
-    $params;
+$studentParams = $params;
 
-$studentParams[] =
-    $recordsPerPage;
+$studentParams[] = $recordsPerPage;
+$studentParams[] = $offset;
 
-$studentParams[] =
-    $offset;
-
-$studentTypes =
-    $types . "ii";
+$studentTypes = $types . "ii";
 
 
 $studentStmt->bind_param(
@@ -498,29 +500,24 @@ $studentStmt->bind_param(
 
 $studentStmt->execute();
 
-
-$students =
-    $studentStmt->get_result();
+$students = $studentStmt->get_result();
 
 
 /* =========================================================
-   FUNCTION FOR FILTER URL
+   BUILD PAGINATION URL
    ========================================================= */
 
 function buildPageUrl($page)
 {
+    $params = $_GET;
 
-    $params =
-        $_GET;
+    $params["page"] = $page;
 
-    $params["page"] =
-        $page;
-
-    return "?" .
-        http_build_query($params);
+    return "?" . http_build_query($params);
 }
 
 ?>
+
 
 <!DOCTYPE html>
 
@@ -531,8 +528,8 @@ function buildPageUrl($page)
 
 <style>
     /* =========================================================
-                STUDENTS PAGE — PROFESSIONAL RESPONSIVE STYLE
-                ========================================================= */
+   STUDENTS PAGE
+   ========================================================= */
 
     :root {
 
@@ -561,7 +558,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    MAIN PAGE
-========================================================= */
+   ========================================================= */
 
     .main-content {
 
@@ -574,14 +571,13 @@ function buildPageUrl($page)
     }
 
     .content-wrapper {
-
         width: 100%;
     }
 
 
     /* =========================================================
    PAGE HEADER
-========================================================= */
+   ========================================================= */
 
     .page-header {
 
@@ -641,7 +637,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    FILTER CARD
-========================================================= */
+   ========================================================= */
 
     .filter-card {
 
@@ -683,7 +679,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    FORM LABELS
-========================================================= */
+   ========================================================= */
 
     .filter-card .form-label {
 
@@ -703,7 +699,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    FORM CONTROLS
-========================================================= */
+   ========================================================= */
 
     .filter-card .form-control,
     .filter-card .form-select {
@@ -733,16 +729,12 @@ function buildPageUrl($page)
     }
 
     .filter-card .form-control::placeholder {
-
-        color:
-            #98A2B3;
+        color: #98A2B3;
     }
 
     .filter-card .form-control:hover,
     .filter-card .form-select:hover {
-
-        border-color:
-            #B8C5D1;
+        border-color: #B8C5D1;
     }
 
     .filter-card .form-control:focus,
@@ -761,7 +753,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    FILTER BUTTON
-========================================================= */
+   ========================================================= */
 
     .filter-card .btn-primary {
 
@@ -815,7 +807,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    RESET BUTTON
-========================================================= */
+   ========================================================= */
 
     .filter-card .btn-outline-secondary {
 
@@ -850,7 +842,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    TABLE CARD
-========================================================= */
+   ========================================================= */
 
     .table-card {
 
@@ -876,7 +868,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    TABLE HEADER
-========================================================= */
+   ========================================================= */
 
     .table-header {
 
@@ -949,7 +941,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    TABLE
-========================================================= */
+   ========================================================= */
 
     .student-table {
 
@@ -1018,15 +1010,13 @@ function buildPageUrl($page)
     }
 
     .student-table tbody tr:last-child td {
-
-        border-bottom:
-            none;
+        border-bottom: none;
     }
 
 
     /* =========================================================
    TABLE ROW
-========================================================= */
+   ========================================================= */
 
     .student-table tbody tr {
 
@@ -1036,15 +1026,13 @@ function buildPageUrl($page)
     }
 
     .student-table tbody tr:hover td {
-
-        background:
-            #F8FBFE;
+        background: #F8FBFE;
     }
 
 
     /* =========================================================
    NUMBER COLUMN
-========================================================= */
+   ========================================================= */
 
     .student-table tbody td:first-child {
 
@@ -1061,7 +1049,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    STUDENT PROFILE
-========================================================= */
+   ========================================================= */
 
     .student-profile {
 
@@ -1081,7 +1069,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    AVATAR
-========================================================= */
+   ========================================================= */
 
     .student-avatar {
 
@@ -1159,7 +1147,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    AVATAR PLACEHOLDER
-========================================================= */
+   ========================================================= */
 
     .avatar-placeholder {
 
@@ -1191,20 +1179,16 @@ function buildPageUrl($page)
     }
 
     .avatar-placeholder i {
-
-        opacity:
-            .85;
+        opacity: .85;
     }
 
 
     /* =========================================================
    STUDENT INFORMATION
-========================================================= */
+   ========================================================= */
 
     .student-info {
-
-        min-width:
-            0;
+        min-width: 0;
     }
 
     .student-name {
@@ -1235,7 +1219,6 @@ function buildPageUrl($page)
     }
 
     .student-table tbody tr:hover .student-name {
-
         color:
             var(--student-primary);
     }
@@ -1255,7 +1238,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    STUDENT ID
-========================================================= */
+   ========================================================= */
 
     .student-id-badge {
 
@@ -1305,7 +1288,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    YEAR / SECTION BADGE
-========================================================= */
+   ========================================================= */
 
     .student-table .badge.text-bg-light {
 
@@ -1334,7 +1317,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    EMAIL
-========================================================= */
+   ========================================================= */
 
     .student-email {
 
@@ -1363,7 +1346,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    VIEW BUTTON
-========================================================= */
+   ========================================================= */
 
     .student-view-btn {
 
@@ -1411,13 +1394,11 @@ function buildPageUrl($page)
     }
 
     .student-view-btn i {
-
         transition:
             transform .25s ease;
     }
 
     .student-view-btn:hover i {
-
         transform:
             scale(1.12);
     }
@@ -1425,7 +1406,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    EMPTY STATE
-========================================================= */
+   ========================================================= */
 
     .empty-state {
 
@@ -1494,15 +1475,13 @@ function buildPageUrl($page)
     }
 
     .empty-state p {
-
-        font-size:
-            14px;
+        font-size: 14px;
     }
 
 
     /* =========================================================
    PAGINATION
-========================================================= */
+   ========================================================= */
 
     .pagination-wrapper {
 
@@ -1517,9 +1496,7 @@ function buildPageUrl($page)
     }
 
     .pagination {
-
-        gap:
-            4px;
+        gap: 4px;
     }
 
     .pagination .page-link {
@@ -1611,7 +1588,7 @@ function buildPageUrl($page)
 
     /* =========================================================
    TABLE SCROLLBAR
-========================================================= */
+   ========================================================= */
 
     .table-responsive {
 
@@ -1623,15 +1600,11 @@ function buildPageUrl($page)
     }
 
     .table-responsive::-webkit-scrollbar {
-
-        height:
-            7px;
+        height: 7px;
     }
 
     .table-responsive::-webkit-scrollbar-track {
-
-        background:
-            #F3F6F8;
+        background: #F3F6F8;
     }
 
     .table-responsive::-webkit-scrollbar-thumb {
@@ -1644,7 +1617,6 @@ function buildPageUrl($page)
     }
 
     .table-responsive::-webkit-scrollbar-thumb:hover {
-
         background:
             var(--student-primary);
     }
@@ -1652,14 +1624,13 @@ function buildPageUrl($page)
 
     /* =========================================================
    ANIMATIONS
-========================================================= */
+   ========================================================= */
 
     @keyframes studentFadeUp {
 
         from {
 
-            opacity:
-                0;
+            opacity: 0;
 
             transform:
                 translateY(18px);
@@ -1667,13 +1638,11 @@ function buildPageUrl($page)
 
         to {
 
-            opacity:
-                1;
+            opacity: 1;
 
             transform:
                 translateY(0);
         }
-
     }
 
 
@@ -1681,8 +1650,7 @@ function buildPageUrl($page)
 
         from {
 
-            opacity:
-                0;
+            opacity: 0;
 
             transform:
                 translateY(-15px);
@@ -1690,13 +1658,11 @@ function buildPageUrl($page)
 
         to {
 
-            opacity:
-                1;
+            opacity: 1;
 
             transform:
                 translateY(0);
         }
-
     }
 
 
@@ -1714,26 +1680,21 @@ function buildPageUrl($page)
             transform:
                 translateY(-5px);
         }
-
     }
 
 
     /* =========================================================
    RESPONSIVE — TABLET
-========================================================= */
+   ========================================================= */
 
     @media (max-width: 991.98px) {
 
         .filter-card {
-
-            padding:
-                18px;
+            padding: 18px;
         }
 
         .student-table {
-
-            min-width:
-                1050px;
+            min-width: 1050px;
         }
 
         .table-responsive {
@@ -1746,227 +1707,166 @@ function buildPageUrl($page)
         }
 
         .table-header {
-
-            padding:
-                16px 18px;
+            padding: 16px 18px;
         }
-
     }
 
 
     /* =========================================================
    RESPONSIVE — MOBILE
-========================================================= */
+   ========================================================= */
 
     @media (max-width: 767.98px) {
 
         .page-header {
-
-            margin-bottom:
-                18px;
+            margin-bottom: 18px;
         }
 
         .page-header h2 {
-
-            font-size:
-                23px;
+            font-size: 23px;
         }
 
         .page-header h2::before {
 
-            height:
-                22px;
+            height: 22px;
 
-            width:
-                4px;
+            width: 4px;
 
-            vertical-align:
-                -3px;
+            vertical-align: -3px;
         }
 
         .page-header p {
 
-            margin-left:
-                14px;
+            margin-left: 14px;
 
-            font-size:
-                13px;
+            font-size: 13px;
         }
 
         .filter-card {
 
-            padding:
-                16px;
+            padding: 16px;
 
-            border-radius:
-                10px;
+            border-radius: 10px;
         }
 
         .filter-card .row {
-
-            --bs-gutter-y:
-                12px;
+            --bs-gutter-y: 12px;
         }
 
         .filter-card .btn-primary {
-
-            flex:
-                1;
+            flex: 1;
         }
 
         .table-card {
-
-            border-radius:
-                10px;
+            border-radius: 10px;
         }
 
         .table-header {
 
-            padding:
-                15px;
+            padding: 15px;
 
-            min-height:
-                58px;
+            min-height: 58px;
         }
 
         .table-header-title {
-
-            font-size:
-                14px;
+            font-size: 14px;
         }
 
         .student-table {
-
-            min-width:
-                1000px;
+            min-width: 1000px;
         }
 
         .student-profile {
-
-            min-width:
-                210px;
+            min-width: 210px;
         }
 
         .student-avatar {
 
-            width:
-                44px;
+            width: 44px;
 
-            height:
-                44px;
+            height: 44px;
 
-            min-width:
-                44px;
+            min-width: 44px;
         }
 
         .student-name {
-
-            max-width:
-                190px;
+            max-width: 190px;
         }
 
         .student-email {
-
-            max-width:
-                180px;
+            max-width: 180px;
         }
 
         .pagination-wrapper {
-
-            padding:
-                12px;
+            padding: 12px;
         }
-
     }
 
 
     /* =========================================================
    RESPONSIVE — SMALL MOBILE
-========================================================= */
+   ========================================================= */
 
     @media (max-width: 575.98px) {
 
         .content-wrapper {
 
-            padding-left:
-                10px;
+            padding-left: 10px;
 
-            padding-right:
-                10px;
+            padding-right: 10px;
         }
 
         .page-header h2 {
-
-            font-size:
-                21px;
+            font-size: 21px;
         }
 
         .filter-card {
-
-            padding:
-                14px;
+            padding: 14px;
         }
 
         .filter-card .form-control,
         .filter-card .form-select {
 
-            min-height:
-                42px;
+            min-height: 42px;
         }
 
         .filter-card .btn-primary,
         .filter-card .btn-outline-secondary {
 
-            min-height:
-                42px;
+            min-height: 42px;
         }
 
         .table-header {
-
-            padding:
-                13px;
+            padding: 13px;
         }
 
         .table-header .badge {
-
-            min-width:
-                30px;
+            min-width: 30px;
         }
 
         .student-table {
-
-            min-width:
-                950px;
+            min-width: 950px;
         }
 
         .student-avatar {
 
-            width:
-                42px;
+            width: 42px;
 
-            height:
-                42px;
+            height: 42px;
 
-            min-width:
-                42px;
+            min-width: 42px;
         }
 
         .student-name {
-
-            max-width:
-                165px;
+            max-width: 165px;
         }
 
         .student-profile {
-
-            min-width:
-                190px;
+            min-width: 190px;
         }
 
         .empty-state {
-
-            padding:
-                55px 15px;
+            padding: 55px 15px;
         }
 
         .pagination {
@@ -1977,13 +1877,12 @@ function buildPageUrl($page)
             flex-wrap:
                 wrap;
         }
-
     }
 
 
     /* =========================================================
    REDUCED MOTION
-========================================================= */
+   ========================================================= */
 
     @media (prefers-reduced-motion: reduce) {
 
@@ -1997,7 +1896,6 @@ function buildPageUrl($page)
             transition:
                 none !important;
         }
-
     }
 </style>
 
@@ -2006,22 +1904,22 @@ function buildPageUrl($page)
 
 
     <!-- =========================================================
-     SIDEBAR
-========================================================= -->
+         SIDEBAR
+    ========================================================= -->
 
     <?php include 'globals/sidebar.php'; ?>
 
 
     <!-- =========================================================
-     TOPBAR
-========================================================= -->
+         TOPBAR
+    ========================================================= -->
 
     <?php include 'globals/topbar.php'; ?>
 
 
     <!-- =========================================================
-     MAIN CONTENT
-========================================================= -->
+         MAIN CONTENT
+    ========================================================= -->
 
     <main class="main-content">
 
@@ -2029,8 +1927,8 @@ function buildPageUrl($page)
 
 
             <!-- =====================================================
-             PAGE HEADER
-        ===================================================== -->
+                 PAGE HEADER
+            ===================================================== -->
 
             <div class="page-header">
 
@@ -2046,8 +1944,8 @@ function buildPageUrl($page)
 
 
             <!-- =====================================================
-             FILTERS
-        ===================================================== -->
+                 FILTERS
+            ===================================================== -->
 
             <div class="filter-card">
 
@@ -2071,7 +1969,11 @@ function buildPageUrl($page)
                                 name="search"
                                 class="form-control"
                                 placeholder="Name, student ID, email..."
-                                value="<?= htmlspecialchars($search) ?>">
+                                value="<?= htmlspecialchars(
+                                            $search,
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>">
 
                         </div>
 
@@ -2095,10 +1997,20 @@ function buildPageUrl($page)
                                 <?php foreach ($departments as $dept): ?>
 
                                     <option
-                                        value="<?= htmlspecialchars($dept) ?>"
-                                        <?= ($department === $dept) ? 'selected' : '' ?>>
+                                        value="<?= htmlspecialchars(
+                                                    $dept,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>"
+                                        <?= ($department === $dept)
+                                            ? 'selected'
+                                            : '' ?>>
 
-                                        <?= htmlspecialchars($dept) ?>
+                                        <?= htmlspecialchars(
+                                            $dept,
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>
 
                                     </option>
 
@@ -2128,10 +2040,20 @@ function buildPageUrl($page)
                                 <?php foreach ($years as $itemYear): ?>
 
                                     <option
-                                        value="<?= htmlspecialchars($itemYear) ?>"
-                                        <?= ($year === $itemYear) ? 'selected' : '' ?>>
+                                        value="<?= htmlspecialchars(
+                                                    $itemYear,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>"
+                                        <?= ($year === $itemYear)
+                                            ? 'selected'
+                                            : '' ?>>
 
-                                        <?= htmlspecialchars($itemYear) ?>
+                                        <?= htmlspecialchars(
+                                            $itemYear,
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>
 
                                     </option>
 
@@ -2161,10 +2083,20 @@ function buildPageUrl($page)
                                 <?php foreach ($sections as $itemSection): ?>
 
                                     <option
-                                        value="<?= htmlspecialchars($itemSection) ?>"
-                                        <?= ($section === $itemSection) ? 'selected' : '' ?>>
+                                        value="<?= htmlspecialchars(
+                                                    $itemSection,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>"
+                                        <?= ($section === $itemSection)
+                                            ? 'selected'
+                                            : '' ?>>
 
-                                        <?= htmlspecialchars($itemSection) ?>
+                                        <?= htmlspecialchars(
+                                            $itemSection,
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>
 
                                     </option>
 
@@ -2209,8 +2141,8 @@ function buildPageUrl($page)
 
 
             <!-- =====================================================
-             STUDENT TABLE
-        ===================================================== -->
+                 STUDENT TABLE
+            ===================================================== -->
 
             <div class="table-card">
 
@@ -2241,8 +2173,8 @@ function buildPageUrl($page)
 
 
                     <!-- =================================================
-                     RESPONSIVE TABLE
-                ================================================= -->
+                         RESPONSIVE TABLE
+                    ================================================= -->
 
                     <div class="table-responsive">
 
@@ -2294,8 +2226,7 @@ function buildPageUrl($page)
 
                                 <?php
 
-                                $number =
-                                    $offset;
+                                $number = $offset;
 
                                 ?>
 
@@ -2306,48 +2237,46 @@ function buildPageUrl($page)
                                     <?php
 
                                     /* =================================================
-                               STUDENT NAME
-                            ================================================= */
+                                       STUDENT NAME
+                                    ================================================= */
 
-                                    $firstName =
+                                    $studentFirstName =
                                         $student["first_name"] ?? "";
 
-                                    $middleInitial =
+                                    $studentMiddleInitial =
                                         $student["middle_initial"] ?? "";
 
-                                    $lastName =
+                                    $studentLastName =
                                         $student["last_name"] ?? "";
 
-                                    $extensionName =
+                                    $studentExtensionName =
                                         $student["extension_name"] ?? "";
 
 
-                                    $studentName =
-                                        trim(
+                                    $studentName = trim(
 
-                                            $firstName .
-                                                " " .
+                                        $studentFirstName .
+                                            " " .
 
-                                                (
-                                                    !empty($middleInitial)
-                                                    ? $middleInitial . ". "
-                                                    : ""
-                                                ) .
+                                            (
+                                                $studentMiddleInitial !== ""
+                                                ? $studentMiddleInitial . ". "
+                                                : ""
+                                            ) .
 
-                                                $lastName .
+                                            $studentLastName .
 
-                                                (
-                                                    !empty($extensionName)
-                                                    ? " " . $extensionName
-                                                    : ""
-                                                )
-
-                                        );
+                                            (
+                                                $studentExtensionName !== ""
+                                                ? " " . $studentExtensionName
+                                                : ""
+                                            )
+                                    );
 
 
                                     /* =================================================
-   PROFILE PHOTO
-================================================= */
+                                       PROFILE PHOTO
+                                    ================================================= */
 
                                     $profilePhoto = trim(
                                         $student["profile_photo"] ?? ""
@@ -2355,114 +2284,127 @@ function buildPageUrl($page)
 
                                     $photoUrl = "";
 
+
                                     if ($profilePhoto !== "") {
 
                                         /*
-     * Database example:
-     *
-     * uploads/profile_photos/23-26528_ad9aad8cf89e1e2f.jpg
-     *
-     * Actual filesystem:
-     *
-     * ./student/uploads/profile_photos/23-26528_ad9aad8cf89e1e2f.jpg
-     */
+                                         * Normalize slashes.
+                                         */
+
+                                        $profilePhoto = str_replace(
+                                            "\\",
+                                            "/",
+                                            $profilePhoto
+                                        );
 
                                         $profilePhoto = ltrim(
-                                            str_replace("\\", "/", $profilePhoto),
+                                            $profilePhoto,
                                             "/"
                                         );
 
+
                                         /*
-     * Allowed image extensions
-     */
-
-                                        $extension = strtolower(
-                                            pathinfo(
-                                                $profilePhoto,
-                                                PATHINFO_EXTENSION
-                                            )
-                                        );
-
-                                        $allowedExtensions = [
-                                            "jpg",
-                                            "jpeg",
-                                            "png",
-                                            "gif",
-                                            "webp"
-                                        ];
+                                         * Prevent directory traversal.
+                                         */
 
                                         if (
-                                            in_array(
-                                                $extension,
-                                                $allowedExtensions,
-                                                true
-                                            )
+                                            strpos($profilePhoto, "..") === false
                                         ) {
 
-                                            /*
-         * Actual file on server
-         *
-         * students.php is inside:
-         * ./admin/
-         *
-         * student folder is:
-         * ./student/
-         */
-
-                                            $photoPath = __DIR__ .
-                                                "/../student/" .
-                                                $profilePhoto;
+                                            $extension = strtolower(
+                                                pathinfo(
+                                                    $profilePhoto,
+                                                    PATHINFO_EXTENSION
+                                                )
+                                            );
 
 
-                                            /*
-         * Check if the physical file exists
-         */
+                                            $allowedExtensions = [
+                                                "jpg",
+                                                "jpeg",
+                                                "png",
+                                                "gif",
+                                                "webp"
+                                            ];
+
 
                                             if (
-                                                is_file($photoPath) &&
-                                                is_readable($photoPath)
+                                                in_array(
+                                                    $extension,
+                                                    $allowedExtensions,
+                                                    true
+                                                )
                                             ) {
 
                                                 /*
-             * URL used by browser
-             */
+                                                 * Physical file path.
+                                                 */
 
-                                                $photoUrl =
-                                                    "../student/" .
-                                                    implode(
+                                                $photoPath =
+                                                    __DIR__ .
+                                                    "/../student/" .
+                                                    $profilePhoto;
+
+
+                                                /*
+                                                 * Verify file exists.
+                                                 */
+
+                                                if (
+                                                    is_file($photoPath) &&
+                                                    is_readable($photoPath)
+                                                ) {
+
+                                                    /*
+                                                     * Browser URL.
+                                                     */
+
+                                                    $photoParts = explode(
                                                         "/",
-                                                        array_map(
-                                                            "rawurlencode",
-                                                            explode(
-                                                                "/",
-                                                                $profilePhoto
-                                                            )
-                                                        )
+                                                        $profilePhoto
                                                     );
+
+                                                    $encodedParts = [];
+
+                                                    foreach (
+                                                        $photoParts
+                                                        as $part
+                                                    ) {
+
+                                                        $encodedParts[] =
+                                                            rawurlencode($part);
+                                                    }
+
+
+                                                    $photoUrl =
+                                                        "../student/" .
+                                                        implode(
+                                                            "/",
+                                                            $encodedParts
+                                                        );
+                                                }
                                             }
                                         }
                                     }
 
+
                                     /* =================================================
-                               CREATED DATE
-                            ================================================= */
+                                       CREATED DATE
+                                    ================================================= */
 
                                     $createdDate = "";
 
+                                    $createdAt =
+                                        $student["created_at"] ?? "";
 
-                                    if (
-                                        !empty($student["created_at"] ?? "")
-                                    ) {
+
+                                    if ($createdAt !== "") {
 
                                         $timestamp =
-                                            strtotime(
-                                                $student["created_at"]
-                                            );
+                                            strtotime($createdAt);
 
 
-                                        if (
-                                            $timestamp !== false
-                                        ) {
+                                        if ($timestamp !== false) {
 
                                             $createdDate =
                                                 date(
@@ -2472,12 +2414,52 @@ function buildPageUrl($page)
                                         }
                                     }
 
+
+                                    /* =================================================
+                                       STUDENT ID
+                                    ================================================= */
+
+                                    $studentID =
+                                        $student["student_id"] ?? "";
+
+
+                                    /* =================================================
+                                       DEPARTMENT
+                                    ================================================= */
+
+                                    $studentDepartment =
+                                        $student["department"] ?? "";
+
+
+                                    /* =================================================
+                                       YEAR / SECTION
+                                    ================================================= */
+
+                                    $studentYearSection =
+                                        $student["year_section"] ?? "";
+
+
+                                    /* =================================================
+                                       EMAIL
+                                    ================================================= */
+
+                                    $studentEmail =
+                                        $student["email"] ?? "";
+
+
+                                    /* =================================================
+                                       ACCOUNT ID
+                                    ================================================= */
+
+                                    $studentAccountID =
+                                        (int)($student["id"] ?? 0);
+
                                     ?>
 
 
                                     <!-- =================================================
-                                 STUDENT ROW
-                            ================================================= -->
+                                         STUDENT ROW
+                                    ================================================= -->
 
                                     <tr>
 
@@ -2491,9 +2473,7 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- =================================================
-                                     STUDENT PROFILE
-                                ================================================= -->
+                                        <!-- STUDENT PROFILE -->
 
                                         <td class="align-middle">
 
@@ -2507,10 +2487,22 @@ function buildPageUrl($page)
                                                     <?php if ($photoUrl !== ""): ?>
 
                                                         <img
-                                                            src="<?= htmlspecialchars($photoUrl, ENT_QUOTES, 'UTF-8') ?>"
-                                                            alt="<?= htmlspecialchars($studentName, ENT_QUOTES, 'UTF-8') ?>"
+                                                            src="<?= htmlspecialchars(
+                                                                        $photoUrl,
+                                                                        ENT_QUOTES,
+                                                                        'UTF-8'
+                                                                    ) ?>"
+                                                            alt="<?= htmlspecialchars(
+                                                                        $studentName,
+                                                                        ENT_QUOTES,
+                                                                        'UTF-8'
+                                                                    ) ?>"
                                                             loading="lazy"
-                                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                            onerror="
+                                                                this.style.display='none';
+                                                                this.nextElementSibling.style.display='flex';
+                                                            ">
+
 
                                                         <div
                                                             class="avatar-placeholder"
@@ -2540,7 +2532,11 @@ function buildPageUrl($page)
 
                                                     <div class="student-name">
 
-                                                        <?= htmlspecialchars($studentName) ?>
+                                                        <?= htmlspecialchars(
+                                                            $studentName,
+                                                            ENT_QUOTES,
+                                                            'UTF-8'
+                                                        ) ?>
 
                                                     </div>
 
@@ -2558,16 +2554,16 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- =================================================
-                                     STUDENT ID
-                                ================================================= -->
+                                        <!-- STUDENT ID -->
 
                                         <td class="align-middle">
 
                                             <span class="student-id-badge">
 
                                                 <?= htmlspecialchars(
-                                                    $student["student_id"] ?? ""
+                                                    $studentID,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
                                                 ) ?>
 
                                             </span>
@@ -2575,29 +2571,29 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- =================================================
-                                     DEPARTMENT
-                                ================================================= -->
+                                        <!-- DEPARTMENT -->
 
                                         <td class="align-middle">
 
                                             <?= htmlspecialchars(
-                                                $student["department"] ?? ""
+                                                $studentDepartment,
+                                                ENT_QUOTES,
+                                                'UTF-8'
                                             ) ?>
 
                                         </td>
 
 
-                                        <!-- =================================================
-                                     YEAR / SECTION
-                                ================================================= -->
+                                        <!-- YEAR / SECTION -->
 
                                         <td class="align-middle">
 
                                             <span class="badge text-bg-light border">
 
                                                 <?= htmlspecialchars(
-                                                    $student["year_section"] ?? ""
+                                                    $studentYearSection,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
                                                 ) ?>
 
                                             </span>
@@ -2605,16 +2601,16 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- =================================================
-                                     EMAIL
-                                ================================================= -->
+                                        <!-- EMAIL -->
 
                                         <td class="align-middle">
 
                                             <span class="student-email">
 
                                                 <?= htmlspecialchars(
-                                                    $student["email"] ?? ""
+                                                    $studentEmail,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
                                                 ) ?>
 
                                             </span>
@@ -2622,34 +2618,45 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- =================================================
-                                     CREATED
-                                ================================================= -->
+                                        <!-- CREATED -->
 
                                         <td class="align-middle">
 
                                             <?= htmlspecialchars(
-                                                $createdDate
+                                                $createdDate,
+                                                ENT_QUOTES,
+                                                'UTF-8'
                                             ) ?>
 
                                         </td>
 
 
-                                        <!-- =================================================
-                                     ACTION
-                                ================================================= -->
+                                        <!-- ACTION -->
 
                                         <td class="text-center align-middle">
 
-                                            <a
-                                                href="student_view.php?id=<?= (int)($student["id"] ?? 0) ?>"
-                                                class="btn btn-sm btn-outline-primary student-view-btn">
+                                            <?php if ($studentAccountID > 0): ?>
 
-                                                <i class="bi bi-eye me-1"></i>
+                                                <a
+                                                    href="student_view.php?id=<?= $studentAccountID ?>"
+                                                    class="btn btn-sm btn-outline-primary student-view-btn">
 
-                                                View
+                                                    <i class="bi bi-eye me-1"></i>
 
-                                            </a>
+                                                    View
+
+                                                </a>
+
+                                            <?php else: ?>
+
+                                                <span
+                                                    class="text-muted small">
+
+                                                    N/A
+
+                                                </span>
+
+                                            <?php endif; ?>
 
                                         </td>
 
@@ -2671,8 +2678,8 @@ function buildPageUrl($page)
 
 
                     <!-- =================================================
-                     EMPTY STATE
-                ================================================= -->
+                         EMPTY STATE
+                    ================================================= -->
 
                     <div class="empty-state">
 
@@ -2704,8 +2711,8 @@ function buildPageUrl($page)
 
 
                 <!-- =================================================
-                 PAGINATION
-            ================================================= -->
+                     PAGINATION
+                ================================================= -->
 
                 <?php if ($totalPages > 1): ?>
 
@@ -2722,14 +2729,18 @@ function buildPageUrl($page)
 
                                 <li
                                     class="page-item
-                                <?= $page <= 1 ? "disabled" : "" ?>">
+                                    <?= $page <= 1
+                                        ? "disabled"
+                                        : "" ?>">
 
                                     <?php if ($page > 1): ?>
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl($page - 1)
+                                                        buildPageUrl($page - 1),
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
                                                     ) ?>">
 
                                             <i class="bi bi-chevron-left"></i>
@@ -2767,7 +2778,6 @@ function buildPageUrl($page)
                                         $page - 2
                                     );
 
-
                                 $endPage =
                                     min(
                                         $totalPages,
@@ -2777,24 +2787,58 @@ function buildPageUrl($page)
                                 ?>
 
 
+                                <?php if ($startPage > 1): ?>
+
+                                    <li class="page-item">
+
+                                        <a
+                                            class="page-link"
+                                            href="<?= htmlspecialchars(
+                                                        buildPageUrl(1),
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ) ?>">
+
+                                            1
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <?php if ($startPage > 2): ?>
+
+                                        <li class="page-item disabled">
+
+                                            <span class="page-link">
+                                                ...
+                                            </span>
+
+                                        </li>
+
+                                    <?php endif; ?>
+
+                                <?php endif; ?>
+
+
                                 <?php for (
                                     $i = $startPage;
                                     $i <= $endPage;
                                     $i++
                                 ): ?>
 
-
                                     <li
                                         class="page-item
-                                    <?= $i === $page
-                                        ? "active"
-                                        : ""
-                                    ?>">
+                                        <?= $i === $page
+                                            ? "active"
+                                            : "" ?>">
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl($i)
+                                                        buildPageUrl($i),
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
                                                     ) ?>">
 
                                             <?= $i ?>
@@ -2803,25 +2847,59 @@ function buildPageUrl($page)
 
                                     </li>
 
-
                                 <?php endfor; ?>
+
+
+                                <?php if ($endPage < $totalPages): ?>
+
+                                    <?php if ($endPage < $totalPages - 1): ?>
+
+                                        <li class="page-item disabled">
+
+                                            <span class="page-link">
+                                                ...
+                                            </span>
+
+                                        </li>
+
+                                    <?php endif; ?>
+
+
+                                    <li class="page-item">
+
+                                        <a
+                                            class="page-link"
+                                            href="<?= htmlspecialchars(
+                                                        buildPageUrl($totalPages),
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ) ?>">
+
+                                            <?= $totalPages ?>
+
+                                        </a>
+
+                                    </li>
+
+                                <?php endif; ?>
 
 
                                 <!-- NEXT -->
 
                                 <li
                                     class="page-item
-                                <?= $page >= $totalPages
-                                    ? "disabled"
-                                    : ""
-                                ?>">
+                                    <?= $page >= $totalPages
+                                        ? "disabled"
+                                        : "" ?>">
 
                                     <?php if ($page < $totalPages): ?>
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl($page + 1)
+                                                        buildPageUrl($page + 1),
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
                                                     ) ?>">
 
                                             <span class="d-none d-sm-inline">
@@ -2867,8 +2945,8 @@ function buildPageUrl($page)
 
 
     <!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
+         JAVASCRIPT
+    ========================================================= -->
 
     <?php include 'globals/scripts.php'; ?>
 
@@ -2876,3 +2954,16 @@ function buildPageUrl($page)
 </body>
 
 </html>
+
+
+<?php
+
+/* =========================================================
+   CLOSE DATABASE RESOURCES
+   ========================================================= */
+
+$studentStmt->close();
+
+$mysqli->close();
+
+?>
