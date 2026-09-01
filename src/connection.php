@@ -1,14 +1,23 @@
 <?php
 
-$servername = "localhost"; // Change server name
-$username = "u659629058_evallo"; // Change username
-$password = "c6ehxV57."; // Change password
-$dbname = "u659629058_async"; // Change database name
+$servername = "localhost";
+$username = "u659629058_evallo";
+$password = "c6ehxV57.";
+$dbname = "u659629058_async";
 
-$mysqli = new mysqli($servername, $username, $password, $dbname);
-$mysqli->query("SET time_zone = '+08:00'");
+$mysqli = new mysqli(
+    $servername,
+    $username,
+    $password,
+    $dbname
+);
+
+/* Check connection first */
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
-?>
+/* Set MySQL timezone to Philippine Time */
+if (!$mysqli->query("SET time_zone = '+08:00'")) {
+    die("Timezone configuration failed: " . $mysqli->error);
+}
