@@ -1,846 +1,1421 @@
-
 <?php include 'globals/checks.php'; ?>
-
 
 <!DOCTYPE html>
 
 <html lang="en">
 
-
 <?php include 'globals/head.php'; ?>
+<style>
+    /* =========================================================
+   STUDENTS PAGE — PROFESSIONAL RESPONSIVE STYLE
+========================================================= */
+
+    :root {
+        --student-primary: #0B4F8A;
+        --student-primary-dark: #083B66;
+        --student-primary-light: #EAF3FA;
+
+        --student-text: #212529;
+        --student-muted: #6C757D;
+
+        --student-border: #E2E8F0;
+        --student-bg: #F6F8FB;
+        --student-white: #FFFFFF;
+
+        --student-success: #198754;
+
+        --student-shadow-sm:
+            0 3px 12px rgba(0, 0, 0, 0.05);
+
+        --student-shadow-md:
+            0 10px 30px rgba(0, 0, 0, 0.08);
+
+        --student-radius: 12px;
+    }
 
 
-<head>
+    /* =========================================================
+   MAIN PAGE
+========================================================= */
 
-    <style>
-        /* =========================================================
-           STUDENT MANAGEMENT PAGE
-        ========================================================= */
+    .main-content {
+        background:
+            linear-gradient(180deg,
+                #F8FAFC 0%,
+                #FFFFFF 100%);
 
-        .content-wrapper {
-            width: 100%;
-            max-width: 100%;
+        min-height: 100vh;
+    }
+
+
+    .content-wrapper {
+        width: 100%;
+    }
+
+
+    /* =========================================================
+   PAGE HEADER
+========================================================= */
+
+    .page-header {
+        margin-bottom: 24px;
+
+        animation:
+            studentFadeDown .6s ease both;
+    }
+
+
+    .page-header h2 {
+        color: var(--student-primary-dark);
+
+        font-size: 28px;
+
+        font-weight: 700;
+
+        margin-bottom: 5px;
+
+        letter-spacing: -.3px;
+    }
+
+
+    .page-header h2::before {
+        content: "";
+
+        display: inline-block;
+
+        width: 5px;
+
+        height: 27px;
+
+        margin-right: 10px;
+
+        vertical-align: -4px;
+
+        background:
+            linear-gradient(180deg,
+                var(--student-primary),
+                var(--student-primary-dark));
+
+        border-radius: 5px;
+    }
+
+
+    .page-header p {
+        margin: 0 0 0 15px;
+
+        color: var(--student-muted);
+
+        font-size: 14px;
+    }
+
+
+    /* =========================================================
+   FILTER CARD
+========================================================= */
+
+    .filter-card {
+        background: var(--student-white);
+
+        border: 1px solid var(--student-border);
+
+        border-radius: var(--student-radius);
+
+        padding: 22px;
+
+        margin-bottom: 24px;
+
+        box-shadow: var(--student-shadow-sm);
+
+        animation:
+            studentFadeUp .65s ease .1s both;
+
+        transition:
+            box-shadow .3s ease,
+            border-color .3s ease;
+    }
+
+
+    .filter-card:hover {
+        border-color:
+            rgba(11, 79, 138, .18);
+
+        box-shadow:
+            var(--student-shadow-md);
+    }
+
+
+    /* =========================================================
+   FORM LABELS
+========================================================= */
+
+    .filter-card .form-label {
+        color: #344054;
+
+        font-size: 13px;
+
+        font-weight: 600;
+
+        margin-bottom: 7px;
+    }
+
+
+    /* =========================================================
+   FORM CONTROLS
+========================================================= */
+
+    .filter-card .form-control,
+    .filter-card .form-select {
+        min-height: 44px;
+
+        border:
+            1px solid #D9E0E7;
+
+        border-radius: 8px;
+
+        color:
+            var(--student-text);
+
+        font-size: 14px;
+
+        background-color:
+            #FFFFFF;
+
+        transition:
+            border-color .2s ease,
+            box-shadow .2s ease,
+            transform .2s ease;
+    }
+
+
+    .filter-card .form-control::placeholder {
+        color: #98A2B3;
+    }
+
+
+    .filter-card .form-control:hover,
+    .filter-card .form-select:hover {
+        border-color:
+            #B8C5D1;
+    }
+
+
+    .filter-card .form-control:focus,
+    .filter-card .form-select:focus {
+        border-color:
+            var(--student-primary);
+
+        box-shadow:
+            0 0 0 3px rgba(11, 79, 138, .10);
+
+        outline: none;
+    }
+
+
+    /* =========================================================
+   FILTER BUTTON
+========================================================= */
+
+    .filter-card .btn-primary {
+        min-height: 44px;
+
+        background:
+            linear-gradient(135deg,
+                var(--student-primary),
+                var(--student-primary-dark));
+
+        border: none;
+
+        border-radius: 8px;
+
+        padding:
+            0 18px;
+
+        font-size: 14px;
+
+        font-weight: 600;
+
+        box-shadow:
+            0 4px 12px rgba(11, 79, 138, .18);
+
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease,
+            background .2s ease;
+    }
+
+
+    .filter-card .btn-primary:hover {
+        transform:
+            translateY(-2px);
+
+        box-shadow:
+            0 7px 18px rgba(11, 79, 138, .25);
+    }
+
+
+    .filter-card .btn-primary:active {
+        transform:
+            translateY(0);
+    }
+
+
+    /* =========================================================
+   RESET BUTTON
+========================================================= */
+
+    .filter-card .btn-outline-secondary {
+        min-height: 44px;
+
+        min-width: 44px;
+
+        border-radius: 8px;
+
+        transition:
+            all .2s ease;
+    }
+
+
+    .filter-card .btn-outline-secondary:hover {
+        color:
+            var(--student-primary);
+
+        border-color:
+            var(--student-primary);
+
+        background:
+            var(--student-primary-light);
+
+        transform:
+            translateY(-2px);
+    }
+
+
+    /* =========================================================
+   TABLE CARD
+========================================================= */
+
+    .table-card {
+        background:
+            var(--student-white);
+
+        border:
+            1px solid var(--student-border);
+
+        border-radius:
+            var(--student-radius);
+
+        overflow:
+            hidden;
+
+        box-shadow:
+            var(--student-shadow-sm);
+
+        animation:
+            studentFadeUp .7s ease .2s both;
+    }
+
+
+    /* =========================================================
+   TABLE HEADER
+========================================================= */
+
+    .table-header {
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            space-between;
+
+        padding:
+            18px 22px;
+
+        background:
+            linear-gradient(180deg,
+                #FFFFFF,
+                #FBFCFE);
+
+        border-bottom:
+            1px solid var(--student-border);
+    }
+
+
+    .table-header-title {
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        color:
+            #344054;
+
+        font-size:
+            15px;
+
+        font-weight:
+            700;
+    }
+
+
+    .table-header-title i {
+        font-size:
+            18px;
+
+        color:
+            var(--student-primary);
+    }
+
+
+    .table-header .badge {
+        min-width:
+            34px;
+
+        padding:
+            6px 10px;
+
+        border-radius:
+            20px;
+
+        font-size:
+            12px;
+
+        font-weight:
+            600;
+    }
+
+
+    /* =========================================================
+   TABLE
+========================================================= */
+
+    .student-table {
+        width:
+            100%;
+
+        margin:
+            0;
+
+        vertical-align:
+            middle;
+
+        border-collapse:
+            separate;
+
+        border-spacing:
+            0;
+    }
+
+
+    .student-table thead th {
+        background:
+            #F8FAFC;
+
+        color:
+            #667085;
+
+        border-bottom:
+            1px solid var(--student-border);
+
+        padding:
+            14px 14px;
+
+        font-size:
+            11px;
+
+        font-weight:
+            700;
+
+        letter-spacing:
+            .5px;
+
+        text-transform:
+            uppercase;
+
+        white-space:
+            nowrap;
+    }
+
+
+    .student-table tbody td {
+        padding:
+            14px;
+
+        border-bottom:
+            1px solid #EEF1F4;
+
+        color:
+            #475467;
+
+        font-size:
+            14px;
+
+        background:
+            #FFFFFF;
+    }
+
+
+    .student-table tbody tr:last-child td {
+        border-bottom:
+            none;
+    }
+
+
+    /* =========================================================
+   TABLE ROW ANIMATION
+========================================================= */
+
+    .student-table tbody tr {
+        transition:
+            background-color .25s ease,
+            box-shadow .25s ease;
+    }
+
+
+    .student-table tbody tr:hover td {
+        background:
+            #F8FBFE;
+    }
+
+
+    /* =========================================================
+   NUMBER COLUMN
+========================================================= */
+
+    .student-table tbody td:first-child {
+        color:
+            #98A2B3;
+
+        font-size:
+            13px;
+
+        font-weight:
+            600;
+    }
+
+
+    /* =========================================================
+   STUDENT PROFILE
+========================================================= */
+
+    .student-profile {
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        gap:
+            12px;
+
+        min-width:
+            230px;
+    }
+
+
+    /* =========================================================
+   AVATAR
+========================================================= */
+
+    .student-avatar {
+        position:
+            relative;
+
+        width:
+            48px;
+
+        height:
+            48px;
+
+        min-width:
+            48px;
+
+        border-radius:
+            50%;
+
+        overflow:
+            hidden;
+
+        background:
+            linear-gradient(135deg,
+                #EAF3FA,
+                #DDECF7);
+
+        border:
+            2px solid #D7E6F1;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        box-shadow:
+            0 3px 8px rgba(11, 79, 138, .08);
+
+        transition:
+            transform .3s ease,
+            box-shadow .3s ease,
+            border-color .3s ease;
+    }
+
+
+    .student-table tbody tr:hover .student-avatar {
+        transform:
+            scale(1.07);
+
+        border-color:
+            var(--student-primary);
+
+        box-shadow:
+            0 5px 14px rgba(11, 79, 138, .16);
+    }
+
+
+    .student-avatar img {
+        width:
+            100%;
+
+        height:
+            100%;
+
+        object-fit:
+            cover;
+
+        display:
+            block;
+    }
+
+
+    /* =========================================================
+   AVATAR PLACEHOLDER
+========================================================= */
+
+    .avatar-placeholder {
+        width:
+            100%;
+
+        height:
+            100%;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        background:
+            linear-gradient(135deg,
+                #EAF3FA,
+                #DCECF7);
+
+        color:
+            var(--student-primary);
+
+        font-size:
+            21px;
+    }
+
+
+    .avatar-placeholder i {
+        opacity:
+            .85;
+    }
+
+
+    /* =========================================================
+   STUDENT INFORMATION
+========================================================= */
+
+    .student-info {
+        min-width:
+            0;
+    }
+
+
+    .student-name {
+        max-width:
+            250px;
+
+        color:
+            #1D2939;
+
+        font-size:
+            14px;
+
+        font-weight:
+            650;
+
+        white-space:
+            nowrap;
+
+        overflow:
+            hidden;
+
+        text-overflow:
+            ellipsis;
+
+        transition:
+            color .2s ease;
+    }
+
+
+    .student-table tbody tr:hover .student-name {
+        color:
+            var(--student-primary);
+    }
+
+
+    .student-info small {
+        display:
+            block;
+
+        margin-top:
+            2px;
+
+        font-size:
+            12px;
+    }
+
+
+    /* =========================================================
+   STUDENT ID
+========================================================= */
+
+    .student-id-badge {
+        display:
+            inline-flex;
+
+        align-items:
+            center;
+
+        padding:
+            6px 10px;
+
+        background:
+            #F1F7FB;
+
+        color:
+            var(--student-primary);
+
+        border:
+            1px solid #D9E9F5;
+
+        border-radius:
+            7px;
+
+        font-size:
+            12px;
+
+        font-weight:
+            700;
+
+        white-space:
+            nowrap;
+
+        transition:
+            all .2s ease;
+    }
+
+
+    .student-table tbody tr:hover .student-id-badge {
+        background:
+            var(--student-primary-light);
+
+        border-color:
+            #BBD7EA;
+    }
+
+
+    /* =========================================================
+   YEAR / SECTION BADGE
+========================================================= */
+
+    .student-table .badge.text-bg-light {
+        background:
+            #F8FAFC !important;
+
+        color:
+            #475467 !important;
+
+        border:
+            1px solid #E4E7EC !important;
+
+        border-radius:
+            6px;
+
+        padding:
+            6px 9px;
+
+        font-size:
+            12px;
+
+        font-weight:
+            600;
+    }
+
+
+    /* =========================================================
+   EMAIL
+========================================================= */
+
+    .student-email {
+        display:
+            inline-block;
+
+        max-width:
+            220px;
+
+        color:
+            #667085;
+
+        font-size:
+            13px;
+
+        white-space:
+            nowrap;
+
+        overflow:
+            hidden;
+
+        text-overflow:
+            ellipsis;
+    }
+
+
+    /* =========================================================
+   VIEW BUTTON
+========================================================= */
+
+    .student-view-btn {
+        display:
+            inline-flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        min-width:
+            72px;
+
+        border-radius:
+            7px;
+
+        font-size:
+            13px;
+
+        font-weight:
+            600;
+
+        transition:
+            all .25s ease;
+    }
+
+
+    .student-view-btn:hover {
+        color:
+            #FFFFFF;
+
+        background:
+            var(--student-primary);
+
+        border-color:
+            var(--student-primary);
+
+        transform:
+            translateY(-2px);
+
+        box-shadow:
+            0 4px 10px rgba(11, 79, 138, .18);
+    }
+
+
+    .student-view-btn i {
+        transition:
+            transform .25s ease;
+    }
+
+
+    .student-view-btn:hover i {
+        transform:
+            scale(1.12);
+    }
+
+
+    /* =========================================================
+   EMPTY STATE
+========================================================= */
+
+    .empty-state {
+        padding:
+            75px 20px;
+
+        text-align:
+            center;
+
+        color:
+            var(--student-muted);
+
+        animation:
+            studentFadeUp .5s ease both;
+    }
+
+
+    .empty-icon {
+        width:
+            76px;
+
+        height:
+            76px;
+
+        margin:
+            0 auto 20px;
+
+        border-radius:
+            50%;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        background:
+            var(--student-primary-light);
+
+        color:
+            var(--student-primary);
+
+        font-size:
+            31px;
+
+        animation:
+            studentFloat 3s ease-in-out infinite;
+    }
+
+
+    .empty-state h5 {
+        margin-bottom:
+            7px;
+
+        color:
+            #344054;
+
+        font-size:
+            16px;
+
+        font-weight:
+            700;
+    }
+
+
+    .empty-state p {
+        font-size:
+            14px;
+    }
+
+
+    /* =========================================================
+   PAGINATION
+========================================================= */
+
+    .pagination-wrapper {
+        padding:
+            16px 20px;
+
+        border-top:
+            1px solid var(--student-border);
+
+        background:
+            #FCFDFE;
+    }
+
+
+    .pagination {
+        gap:
+            4px;
+    }
+
+
+    .pagination .page-link {
+        min-width:
+            36px;
+
+        height:
+            36px;
+
+        display:
+            inline-flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        border:
+            1px solid #E1E6EB;
+
+        border-radius:
+            7px !important;
+
+        color:
+            var(--student-primary);
+
+        background:
+            #FFFFFF;
+
+        font-size:
+            13px;
+
+        font-weight:
+            600;
+
+        transition:
+            all .2s ease;
+    }
+
+
+    .pagination .page-link:hover {
+        background:
+            var(--student-primary-light);
+
+        border-color:
+            var(--student-primary);
+
+        color:
+            var(--student-primary);
+
+        transform:
+            translateY(-1px);
+    }
+
+
+    .pagination .active .page-link {
+        background:
+            linear-gradient(135deg,
+                var(--student-primary),
+                var(--student-primary-dark));
+
+        border-color:
+            var(--student-primary);
+
+        color:
+            #FFFFFF;
+
+        box-shadow:
+            0 3px 8px rgba(11, 79, 138, .18);
+    }
+
+
+    .pagination .disabled .page-link {
+        color:
+            #98A2B3;
+
+        background:
+            #F8FAFC;
+
+        border-color:
+            #E7EAEE;
+
+        cursor:
+            not-allowed;
+    }
+
+
+    /* =========================================================
+   TABLE SCROLLBAR
+========================================================= */
+
+    .table-responsive {
+        scrollbar-width:
+            thin;
+
+        scrollbar-color:
+            #B8C9D8 #F3F6F8;
+    }
+
+
+    .table-responsive::-webkit-scrollbar {
+        height:
+            7px;
+    }
+
+
+    .table-responsive::-webkit-scrollbar-track {
+        background:
+            #F3F6F8;
+    }
+
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background:
+            #B8C9D8;
+
+        border-radius:
+            10px;
+    }
+
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background:
+            var(--student-primary);
+    }
+
+
+    /* =========================================================
+   ANIMATIONS
+========================================================= */
+
+    @keyframes studentFadeUp {
+
+        from {
+            opacity:
+                0;
+
+            transform:
+                translateY(18px);
         }
 
+        to {
+            opacity:
+                1;
 
-        /* =========================================================
-           PAGE HEADER
-        ========================================================= */
-
-        .page-header {
-            margin-bottom: 25px;
+            transform:
+                translateY(0);
         }
 
-        .page-header h2 {
-            font-weight: 700;
-            color: #083B66;
-            margin-bottom: 5px;
+    }
+
+
+    @keyframes studentFadeDown {
+
+        from {
+            opacity:
+                0;
+
+            transform:
+                translateY(-15px);
         }
 
-        .page-header p {
-            color: #6C757D;
-            margin-bottom: 0;
+        to {
+            opacity:
+                1;
+
+            transform:
+                translateY(0);
         }
 
+    }
 
-        /* =========================================================
-           FILTER CARD
-        ========================================================= */
+
+    @keyframes studentFloat {
+
+        0%,
+        100% {
+            transform:
+                translateY(0);
+        }
+
+        50% {
+            transform:
+                translateY(-5px);
+        }
+
+    }
+
+
+    /* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
+
+    @media (max-width: 991.98px) {
 
         .filter-card {
-            background: #FFFFFF;
-            border: 1px solid #DEE2E6;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-
-            box-shadow:
-                0 4px 15px rgba(0, 0, 0, .04);
-        }
-
-
-        .filter-card .form-label {
-            font-weight: 600;
-            color: #495057;
-            font-size: 14px;
-        }
-
-
-        .filter-card .form-control,
-        .filter-card .form-select {
-            min-height: 44px;
-            border-radius: 8px;
-        }
-
-
-        .filter-card .form-control:focus,
-        .filter-card .form-select:focus {
-            border-color: #0B4F8A;
-
-            box-shadow:
-                0 0 0 .2rem rgba(11, 79, 138, .12);
-        }
-
-
-        /* =========================================================
-           TABLE CARD
-        ========================================================= */
-
-        .table-card {
-            background: #FFFFFF;
-
-            border:
-                1px solid #DEE2E6;
-
-            border-radius:
-                12px;
-
-            overflow:
-                hidden;
-
-            box-shadow:
-                0 4px 15px rgba(0, 0, 0, .04);
-        }
-
-
-        /* =========================================================
-           TABLE HEADER
-        ========================================================= */
-
-        .table-header {
-            min-height:
-                65px;
-
             padding:
-                15px 20px;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                space-between;
-
-            border-bottom:
-                1px solid #DEE2E6;
+                18px;
         }
 
 
-        .table-header-title {
-
-            font-size:
-                16px;
-
-            font-weight:
-                700;
-
-            color:
-                #083B66;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
+        .student-table {
+            min-width:
+                1050px;
         }
 
 
-        .table-header .badge {
-
-            font-size:
-                12px;
-
-            padding:
-                7px 10px;
-
-        }
-
-
-        /* =========================================================
-           RESPONSIVE TABLE
-        ========================================================= */
-
-        .student-table-wrapper {
-
-            width:
-                100%;
-
+        .table-responsive {
             overflow-x:
                 auto;
 
             -webkit-overflow-scrolling:
                 touch;
-
-            scrollbar-width:
-                thin;
-
         }
 
 
-        .student-table-wrapper::-webkit-scrollbar {
-
-            height:
-                7px;
-
+        .table-header {
+            padding:
+                16px 18px;
         }
 
-
-        .student-table-wrapper::-webkit-scrollbar-track {
-
-            background:
-                #F1F3F5;
-
-        }
+    }
 
 
-        .student-table-wrapper::-webkit-scrollbar-thumb {
+    /* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
 
-            background:
-                #B8C7D3;
+    @media (max-width: 767.98px) {
 
-            border-radius:
-                10px;
-
-        }
-
-
-        /* =========================================================
-           TABLE
-        ========================================================= */
-
-        .student-table {
-
+        .page-header {
             margin-bottom:
-                0;
+                18px;
+        }
+
+
+        .page-header h2 {
+            font-size:
+                23px;
+        }
+
+
+        .page-header h2::before {
+            height:
+                22px;
+
+            width:
+                4px;
 
             vertical-align:
-                middle;
-
-            min-width:
-                1050px;
-
+                -3px;
         }
 
 
-        .student-table thead th {
-
-            background:
-                #F7F9FB;
-
-            color:
-                #495057;
+        .page-header p {
+            margin-left:
+                14px;
 
             font-size:
                 13px;
+        }
 
-            font-weight:
-                700;
 
-            white-space:
-                nowrap;
-
+        .filter-card {
             padding:
-                14px 15px;
-
-            border-bottom:
-                1px solid #DEE2E6;
-
-        }
-
-
-        .student-table tbody td {
-
-            padding:
-                14px 15px;
-
-            font-size:
-                14px;
-
-            color:
-                #495057;
-
-        }
-
-
-        .student-table tbody tr {
-
-            transition:
-                background .2s ease;
-
-        }
-
-
-        .student-table tbody tr:hover {
-
-            background:
-                #F8FBFE;
-
-        }
-
-
-        /* =========================================================
-           STUDENT PROFILE
-        ========================================================= */
-
-        .student-profile {
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            gap:
-                12px;
-
-            min-width:
-                240px;
-
-        }
-
-
-        /* =========================================================
-           PROFILE PHOTO
-        ========================================================= */
-
-        .student-photo {
-
-            width:
-                48px;
-
-            height:
-                48px;
-
-            min-width:
-                48px;
-
-            object-fit:
-                cover;
+                16px;
 
             border-radius:
-                50%;
-
-            border:
-                3px solid #EAF3FA;
-
-            background:
-                #EAF3FA;
-
-            transition:
-                transform .3s ease,
-                box-shadow .3s ease;
-
+                10px;
         }
 
 
-        .student-table tbody tr:hover .student-photo {
-
-            transform:
-                scale(1.08);
-
-            box-shadow:
-                0 4px 12px rgba(11, 79, 138, .20);
-
+        .filter-card .row {
+            --bs-gutter-y:
+                12px;
         }
 
 
-        /* =========================================================
-           STUDENT INFORMATION
-        ========================================================= */
+        .filter-card .btn-primary {
+            flex:
+                1;
+        }
 
-        .student-info {
+
+        .table-card {
+            border-radius:
+                10px;
+        }
+
+
+        .table-header {
+            padding:
+                15px;
+
+            min-height:
+                58px;
+        }
+
+
+        .table-header-title {
+            font-size:
+                14px;
+        }
+
+
+        .student-table {
+            min-width:
+                1000px;
+        }
+
+
+        .student-profile {
+            min-width:
+                210px;
+        }
+
+
+        .student-avatar {
+            width:
+                44px;
+
+            height:
+                44px;
 
             min-width:
-                0;
-
+                44px;
         }
 
 
         .student-name {
-
-            color:
-                #083B66;
-
-            font-weight:
-                600;
-
-            white-space:
-                nowrap;
-
-            overflow:
-                hidden;
-
-            text-overflow:
-                ellipsis;
-
             max-width:
-                210px;
-
+                190px;
         }
 
-
-        .student-username {
-
-            color:
-                #6C757D;
-
-            font-size:
-                12px;
-
-            margin-top:
-                2px;
-
-            white-space:
-                nowrap;
-
-            overflow:
-                hidden;
-
-            text-overflow:
-                ellipsis;
-
-            max-width:
-                210px;
-
-        }
-
-
-        /* =========================================================
-           STUDENT ID
-        ========================================================= */
-
-        .student-id {
-
-            font-weight:
-                600;
-
-            color:
-                #0B4F8A;
-
-            white-space:
-                nowrap;
-
-        }
-
-
-        /* =========================================================
-           DEPARTMENT
-        ========================================================= */
-
-        .department-text {
-
-            white-space:
-                nowrap;
-
-        }
-
-
-        /* =========================================================
-           YEAR / SECTION
-        ========================================================= */
-
-        .year-section-badge {
-
-            display:
-                inline-flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            background:
-                #F7F9FB;
-
-            border:
-                1px solid #DEE2E6;
-
-            color:
-                #495057;
-
-            padding:
-                5px 9px;
-
-            border-radius:
-                6px;
-
-            font-size:
-                12px;
-
-            font-weight:
-                600;
-
-            white-space:
-                nowrap;
-
-        }
-
-
-        /* =========================================================
-           EMAIL
-        ========================================================= */
 
         .student-email {
-
             max-width:
-                220px;
-
-            white-space:
-                nowrap;
-
-            overflow:
-                hidden;
-
-            text-overflow:
-                ellipsis;
-
+                180px;
         }
 
 
-        /* =========================================================
-           ACTION
-        ========================================================= */
+        .pagination-wrapper {
+            padding:
+                12px;
+        }
 
-        .student-action {
+    }
 
-            white-space:
-                nowrap;
 
+    /* =========================================================
+   RESPONSIVE — SMALL MOBILE
+========================================================= */
+
+    @media (max-width: 575.98px) {
+
+        .content-wrapper {
+            padding-left:
+                10px;
+
+            padding-right:
+                10px;
         }
 
 
-        .student-action .btn {
-
-            border-radius:
-                7px;
-
-            font-weight:
-                600;
-
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease;
-
+        .page-header h2 {
+            font-size:
+                21px;
         }
 
 
-        .student-action .btn:hover {
-
-            transform:
-                translateY(-2px);
-
-            box-shadow:
-                0 4px 10px rgba(11, 79, 138, .12);
-
+        .filter-card {
+            padding:
+                14px;
         }
 
 
-        /* =========================================================
-           EMPTY STATE
-        ========================================================= */
+        .filter-card .form-control,
+        .filter-card .form-select {
+            min-height:
+                42px;
+        }
+
+
+        .filter-card .btn-primary,
+        .filter-card .btn-outline-secondary {
+            min-height:
+                42px;
+        }
+
+
+        .table-header {
+            padding:
+                13px;
+        }
+
+
+        .table-header .badge {
+            min-width:
+                30px;
+        }
+
+
+        .student-table {
+            min-width:
+                950px;
+        }
+
+
+        .student-avatar {
+            width:
+                42px;
+
+            height:
+                42px;
+
+            min-width:
+                42px;
+        }
+
+
+        .student-name {
+            max-width:
+                165px;
+        }
+
+
+        .student-profile {
+            min-width:
+                190px;
+        }
+
 
         .empty-state {
-
-            text-align:
-                center;
-
             padding:
-                70px 20px;
-
-            color:
-                #6C757D;
-
+                55px 15px;
         }
 
-
-        .empty-state i {
-
-            display:
-                block;
-
-            font-size:
-                48px;
-
-            color:
-                #B8C7D3;
-
-            margin-bottom:
-                15px;
-
-        }
-
-
-        .empty-state h5 {
-
-            color:
-                #495057;
-
-            font-weight:
-                700;
-
-        }
-
-
-        /* =========================================================
-           PAGINATION
-        ========================================================= */
 
         .pagination {
+            justify-content:
+                center !important;
 
             flex-wrap:
                 wrap;
-
-            gap:
-                3px;
-
         }
 
+    }
 
-        .pagination .page-link {
 
-            border-radius:
-                6px !important;
+    /* =========================================================
+   REDUCED MOTION
+========================================================= */
 
-            margin:
-                1px;
+    @media (prefers-reduced-motion: reduce) {
 
-            color:
-                #0B4F8A;
+        *,
+        *::before,
+        *::after {
+            animation:
+                none !important;
 
+            transition:
+                none !important;
         }
 
-
-        .pagination .page-item.active .page-link {
-
-            background:
-                #0B4F8A;
-
-            border-color:
-                #0B4F8A;
-
-        }
-
-
-        /* =========================================================
-           MOBILE
-        ========================================================= */
-
-        @media (max-width: 768px) {
-
-            .main-content {
-
-                width:
-                    100%;
-
-            }
-
-
-            .content-wrapper {
-
-                padding-left:
-                    12px;
-
-                padding-right:
-                    12px;
-
-            }
-
-
-            .page-header {
-
-                margin-bottom:
-                    18px;
-
-            }
-
-
-            .page-header h2 {
-
-                font-size:
-                    24px;
-
-            }
-
-
-            .filter-card {
-
-                padding:
-                    15px;
-
-                border-radius:
-                    10px;
-
-            }
-
-
-            .table-header {
-
-                padding:
-                    13px 15px;
-
-            }
-
-
-            .table-header-title {
-
-                font-size:
-                    14px;
-
-            }
-
-
-            .student-table {
-
-                min-width:
-                    1000px;
-
-            }
-
-
-            .student-table thead th,
-            .student-table tbody td {
-
-                padding:
-                    11px 12px;
-
-                font-size:
-                    13px;
-
-            }
-
-
-            .student-photo {
-
-                width:
-                    42px;
-
-                height:
-                    42px;
-
-                min-width:
-                    42px;
-
-            }
-
-
-            .student-profile {
-
-                gap:
-                    9px;
-
-            }
-
-
-            .student-name {
-
-                max-width:
-                    180px;
-
-            }
-
-
-            .student-username {
-
-                max-width:
-                    180px;
-
-            }
-
-
-            .student-email {
-
-                max-width:
-                    180px;
-
-            }
-
-
-            .pagination {
-
-                justify-content:
-                    center !important;
-
-            }
-
-        }
-
-
-        /* =========================================================
-           SMALL MOBILE
-        ========================================================= */
-
-        @media (max-width: 480px) {
-
-            .content-wrapper {
-
-                padding-left:
-                    8px;
-
-                padding-right:
-                    8px;
-
-            }
-
-
-            .filter-card {
-
-                padding:
-                    12px;
-
-            }
-
-
-            .table-header {
-
-                padding:
-                    12px;
-
-            }
-
-
-            .table-header-title {
-
-                font-size:
-                    13px;
-
-            }
-
-
-            .student-table {
-
-                min-width:
-                    950px;
-
-            }
-
-        }
-
-
-        /* =========================================================
-           REDUCED MOTION
-        ========================================================= */
-
-        @media (prefers-reduced-motion: reduce) {
-
-            * {
-
-                transition:
-                    none !important;
-
-                animation:
-                    none !important;
-
-            }
-
-        }
-    </style>
-
-</head>
-
+    }
+</style>
 
 <body>
 
@@ -865,7 +1440,6 @@
 
     <main class="main-content">
 
-
         <div class="content-wrapper">
 
 
@@ -876,16 +1450,11 @@
             <div class="page-header">
 
                 <h2>
-
                     Students
-
                 </h2>
 
-
                 <p>
-
                     View and manage registered students.
-
                 </p>
 
             </div>
@@ -897,11 +1466,9 @@
 
             <div class="filter-card">
 
-
                 <form
                     method="GET"
                     action="students.php">
-
 
                     <div class="row g-3">
 
@@ -910,63 +1477,47 @@
 
                         <div class="col-lg-4">
 
-                            <label
-                                class="form-label">
-
+                            <label class="form-label">
                                 Search
-
                             </label>
-
 
                             <input
                                 type="text"
                                 name="search"
                                 class="form-control"
                                 placeholder="Name, student ID, email..."
-                                value="<?= htmlspecialchars($search) ?>">
+                                value="<?= htmlspecialchars($search ?? '') ?>">
 
                         </div>
 
 
                         <!-- DEPARTMENT -->
 
-                        <div
-                            class="col-md-4 col-lg-2">
+                        <div class="col-md-4 col-lg-2">
 
-                            <label
-                                class="form-label">
-
+                            <label class="form-label">
                                 Department
-
                             </label>
-
 
                             <select
                                 name="department"
                                 class="form-select">
 
-
                                 <option value="">
-
                                     All Departments
-
                                 </option>
 
-
-                                <?php foreach ($departments as $dept): ?>
-
+                                <?php foreach (($departments ?? []) as $dept): ?>
 
                                     <option
                                         value="<?= htmlspecialchars($dept) ?>"
-                                        <?= $department === $dept ? "selected" : "" ?>>
+                                        <?= (($department ?? '') === $dept) ? 'selected' : '' ?>>
 
                                         <?= htmlspecialchars($dept) ?>
 
                                     </option>
 
-
                                 <?php endforeach; ?>
-
 
                             </select>
 
@@ -975,43 +1526,31 @@
 
                         <!-- YEAR -->
 
-                        <div
-                            class="col-md-4 col-lg-2">
+                        <div class="col-md-4 col-lg-2">
 
-                            <label
-                                class="form-label">
-
+                            <label class="form-label">
                                 Year
-
                             </label>
-
 
                             <select
                                 name="year"
                                 class="form-select">
 
-
                                 <option value="">
-
                                     All Years
-
                                 </option>
 
-
-                                <?php foreach ($years as $itemYear): ?>
-
+                                <?php foreach (($years ?? []) as $itemYear): ?>
 
                                     <option
                                         value="<?= htmlspecialchars($itemYear) ?>"
-                                        <?= $year === $itemYear ? "selected" : "" ?>>
+                                        <?= (($year ?? '') === $itemYear) ? 'selected' : '' ?>>
 
                                         <?= htmlspecialchars($itemYear) ?>
 
                                     </option>
 
-
                                 <?php endforeach; ?>
-
 
                             </select>
 
@@ -1020,43 +1559,31 @@
 
                         <!-- SECTION -->
 
-                        <div
-                            class="col-md-4 col-lg-2">
+                        <div class="col-md-4 col-lg-2">
 
-                            <label
-                                class="form-label">
-
+                            <label class="form-label">
                                 Section
-
                             </label>
-
 
                             <select
                                 name="section"
                                 class="form-select">
 
-
                                 <option value="">
-
                                     All Sections
-
                                 </option>
 
-
-                                <?php foreach ($sections as $itemSection): ?>
-
+                                <?php foreach (($sections ?? []) as $itemSection): ?>
 
                                     <option
                                         value="<?= htmlspecialchars($itemSection) ?>"
-                                        <?= $section === $itemSection ? "selected" : "" ?>>
+                                        <?= (($section ?? '') === $itemSection) ? 'selected' : '' ?>>
 
                                         <?= htmlspecialchars($itemSection) ?>
 
                                     </option>
 
-
                                 <?php endforeach; ?>
-
 
                             </select>
 
@@ -1065,17 +1592,13 @@
 
                         <!-- BUTTONS -->
 
-                        <div
-                            class="col-md-12 col-lg-2 d-flex align-items-end gap-2">
-
+                        <div class="col-md-12 col-lg-2 d-flex align-items-end gap-2">
 
                             <button
                                 type="submit"
                                 class="btn btn-primary">
 
-                                <i
-                                    class="bi bi-funnel me-1">
-                                </i>
+                                <i class="bi bi-funnel me-1"></i>
 
                                 Filter
 
@@ -1084,23 +1607,18 @@
 
                             <a
                                 href="students.php"
-                                class="btn btn-outline-secondary">
+                                class="btn btn-outline-secondary"
+                                title="Reset filters">
 
-                                <i
-                                    class="bi bi-arrow-counterclockwise">
-                                </i>
+                                <i class="bi bi-arrow-counterclockwise"></i>
 
                             </a>
 
-
                         </div>
-
 
                     </div>
 
-
                 </form>
-
 
             </div>
 
@@ -1116,91 +1634,70 @@
 
                 <div class="table-header">
 
-
                     <div class="table-header-title">
 
-                        <i
-                            class="bi bi-people me-2 text-primary">
-                        </i>
+                        <i class="bi bi-people me-2 text-primary"></i>
 
                         Student Records
 
                     </div>
 
 
-                    <span
-                        class="badge text-bg-primary">
+                    <span class="badge text-bg-primary">
 
-                        <?= number_format($totalStudents) ?>
+                        <?= number_format($totalStudents ?? 0) ?>
 
                     </span>
-
 
                 </div>
 
 
-                <?php if ($students->num_rows > 0): ?>
+                <?php if (isset($students) && $students->num_rows > 0): ?>
 
 
                     <!-- =================================================
                          RESPONSIVE TABLE
                     ================================================= -->
 
-                    <div
-                        class="student-table-wrapper">
+                    <div class="table-responsive">
 
+                        <table class="table table-hover student-table">
 
-                        <table
-                            class="table table-hover student-table">
-
-
-                            <thead>
+                            <thead class="table-light">
 
                                 <tr>
-
 
                                     <th>
                                         #
                                     </th>
 
+                                    <th>
+                                        Student
+                                    </th>
 
                                     <th>
                                         Student ID
                                     </th>
 
-
-                                    <th>
-                                        Student
-                                    </th>
-
-
                                     <th>
                                         Department
                                     </th>
-
 
                                     <th>
                                         Year / Section
                                     </th>
 
-
                                     <th>
                                         Email
                                     </th>
-
 
                                     <th>
                                         Created
                                     </th>
 
-
-                                    <th
-                                        class="text-center">
-
+                                    <th class="text-center">
                                         Action
-
                                     </th>
-
 
                                 </tr>
 
@@ -1212,175 +1709,274 @@
 
                                 <?php
 
-                                $number =
-                                    $offset + 1;
+                                $number = $offset ?? 0;
 
                                 ?>
 
 
-                                <?php while (
-                                    $student =
-                                    $students->fetch_assoc()
-                                ): ?>
+                                <?php while ($student = $students->fetch_assoc()): ?>
 
 
                                     <?php
 
-                                    /* =================================================
-                                       BUILD FULL NAME
-                                    ================================================= */
+                                    /*
+                                     * =================================================
+                                     * STUDENT NAME
+                                     * =================================================
+                                     */
+
+                                    $firstName =
+                                        $student["first_name"] ?? "";
+
+                                    $middleInitial =
+                                        $student["middle_initial"] ?? "";
+
+                                    $lastName =
+                                        $student["last_name"] ?? "";
+
+                                    $extensionName =
+                                        $student["extension_name"] ?? "";
+
 
                                     $studentName =
                                         trim(
 
-                                            $student["first_name"] .
+                                            $firstName .
                                                 " " .
 
                                                 (
-                                                    !empty($student["middle_initial"])
-                                                    ? $student["middle_initial"] . ". "
+                                                    !empty($middleInitial)
+                                                    ? $middleInitial . ". "
                                                     : ""
                                                 ) .
 
-                                                $student["last_name"] .
+                                                $lastName .
 
                                                 (
-                                                    !empty($student["extension_name"])
-                                                    ? " " .
-                                                    $student["extension_name"]
+                                                    !empty($extensionName)
+                                                    ? " " . $extensionName
                                                     : ""
                                                 )
 
                                         );
 
 
-                                    /* =================================================
-                                       PROFILE PHOTO
+                                    /*
+                                     * =================================================
+                                     * PROFILE PHOTO
+                                     *
+                                     * Database:
+                                     * accounts.profile_photo
+                                     *
+                                     * Physical folder:
+                                     * ../students/uploads/
+                                     * =================================================
+                                     */
 
-                                       DATABASE:
-                                       profile_photo
+                                    $profilePhoto =
+                                        trim(
+                                            $student["profile_photo"] ?? ""
+                                        );
 
-                                       FOLDER:
-                                       ../students/uploads/
 
-                                       Example:
-                                       ../students/uploads/student123.jpg
-                                    ================================================= */
+                                    $photoUrl = "";
+
+
+                                    if ($profilePhoto !== "") {
+
+                                        /*
+                                         * Get only the filename.
+                                         *
+                                         * This prevents paths such as:
+                                         *
+                                         * uploads/profile_photos/photo.jpg
+                                         *
+                                         * from breaking the image URL.
+                                         */
+
+                                        $photoFile =
+                                            basename(
+                                                $profilePhoto
+                                            );
+
+
+                                        /*
+                                         * Primary location:
+                                         *
+                                         * ../students/uploads/
+                                         */
+
+                                        $photoPath =
+                                            __DIR__ .
+                                            "/../students/uploads/" .
+                                            $photoFile;
+
+
+                                        if (file_exists($photoPath)) {
+
+                                            $photoUrl =
+                                                "../students/uploads/" .
+                                                rawurlencode(
+                                                    $photoFile
+                                                );
+                                        } else {
+
+                                            /*
+                                             * Also check:
+                                             *
+                                             * ../students/uploads/profile_photos/
+                                             *
+                                             * This provides compatibility
+                                             * if the upload system uses
+                                             * a profile_photos subfolder.
+                                             */
+
+                                            $alternativePath =
+                                                __DIR__ .
+                                                "/../students/uploads/profile_photos/" .
+                                                $photoFile;
+
+
+                                            if (
+                                                file_exists(
+                                                    $alternativePath
+                                                )
+                                            ) {
+
+                                                $photoUrl =
+                                                    "../students/uploads/profile_photos/" .
+                                                    rawurlencode(
+                                                        $photoFile
+                                                    );
+                                            }
+                                        }
+                                    }
+
+
+                                    /*
+                                     * =================================================
+                                     * CREATED DATE
+                                     * =================================================
+                                     */
+
+                                    $createdDate = "";
+
 
                                     if (
-                                        !empty($student["profile_photo"])
+                                        !empty($student["created_at"] ?? "")
                                     ) {
 
-                                        $profilePhoto =
-                                            "../students/uploads/" .
-                                            basename(
-                                                $student["profile_photo"]
+                                        $timestamp =
+                                            strtotime(
+                                                $student["created_at"]
                                             );
-                                    } else {
 
-                                        $profilePhoto =
-                                            "../students/uploads/default-avatar.png";
+
+                                        if ($timestamp !== false) {
+
+                                            $createdDate =
+                                                date(
+                                                    "M d, Y",
+                                                    $timestamp
+                                                );
+                                        }
                                     }
 
                                     ?>
 
+
+                                    <!-- =================================================
+                                         STUDENT ROW
+                                    ================================================= -->
 
                                     <tr>
 
 
                                         <!-- NUMBER -->
 
-                                        <td>
+                                        <td class="align-middle">
 
-                                            <?= $number++ ?>
-
-                                        </td>
-
-
-                                        <!-- STUDENT ID -->
-
-                                        <td>
-
-                                            <span
-                                                class="student-id">
-
-                                                <?= htmlspecialchars(
-                                                    $student["student_id"]
-                                                ) ?>
-
-                                            </span>
+                                            <?= ++$number ?>
 
                                         </td>
 
 
-                                        <!-- PROFILE -->
+                                        <!-- =================================================
+                                             STUDENT PROFILE
+                                        ================================================= -->
 
-                                        <td>
+                                        <td class="align-middle">
 
-
-                                            <div
-                                                class="student-profile">
-
-
-                                                <img
-                                                    src="<?= htmlspecialchars($profilePhoto) ?>"
-                                                    alt="<?= htmlspecialchars($studentName) ?>"
-                                                    class="student-photo"
-                                                    loading="lazy"
-                                                    onerror="this.onerror=null;this.src='../students/uploads/default-avatar.png';">
+                                            <div class="student-profile">
 
 
-                                                <div
-                                                    class="student-info">
+                                                <!-- PROFILE IMAGE -->
 
+                                                <div class="student-avatar">
 
-                                                    <div
-                                                        class="student-name"
-                                                        title="<?= htmlspecialchars($studentName) ?>">
+                                                    <?php if ($photoUrl !== ""): ?>
 
-                                                        <?= htmlspecialchars(
-                                                            $studentName
-                                                        ) ?>
-
-                                                    </div>
-
-
-                                                    <?php if (
-                                                        !empty($student["username"])
-                                                    ): ?>
-
+                                                        <img
+                                                            src="<?= htmlspecialchars($photoUrl) ?>"
+                                                            alt="<?= htmlspecialchars($studentName) ?>"
+                                                            loading="lazy"
+                                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
                                                         <div
-                                                            class="student-username">
+                                                            class="avatar-placeholder"
+                                                            style="display:none;">
 
-                                                            @<?= htmlspecialchars(
-                                                                    $student["username"]
-                                                                ) ?>
+                                                            <i class="bi bi-person-fill"></i>
 
                                                         </div>
 
+                                                    <?php else: ?>
+
+                                                        <div class="avatar-placeholder">
+
+                                                            <i class="bi bi-person-fill"></i>
+
+                                                        </div>
 
                                                     <?php endif; ?>
-
 
                                                 </div>
 
 
-                                            </div>
+                                                <!-- NAME -->
 
+                                                <div class="student-info">
+
+                                                    <div class="student-name">
+
+                                                        <?= htmlspecialchars($studentName) ?>
+
+                                                    </div>
+
+
+                                                    <small class="text-muted">
+
+                                                        Student
+
+                                                    </small>
+
+                                                </div>
+
+                                            </div>
 
                                         </td>
 
 
-                                        <!-- DEPARTMENT -->
+                                        <!-- =================================================
+                                             STUDENT ID
+                                        ================================================= -->
 
-                                        <td>
+                                        <td class="align-middle">
 
-                                            <span
-                                                class="department-text">
+                                            <span class="student-id-badge">
 
                                                 <?= htmlspecialchars(
-                                                    $student["department"]
+                                                    $student["student_id"] ?? ""
                                                 ) ?>
 
                                             </span>
@@ -1388,15 +1984,29 @@
                                         </td>
 
 
-                                        <!-- YEAR / SECTION -->
+                                        <!-- =================================================
+                                             DEPARTMENT
+                                        ================================================= -->
 
-                                        <td>
+                                        <td class="align-middle">
 
-                                            <span
-                                                class="year-section-badge">
+                                            <?= htmlspecialchars(
+                                                $student["department"] ?? ""
+                                            ) ?>
+
+                                        </td>
+
+
+                                        <!-- =================================================
+                                             YEAR / SECTION
+                                        ================================================= -->
+
+                                        <td class="align-middle">
+
+                                            <span class="badge text-bg-light border">
 
                                                 <?= htmlspecialchars(
-                                                    $student["year_section"]
+                                                    $student["year_section"] ?? ""
                                                 ) ?>
 
                                             </span>
@@ -1404,73 +2014,49 @@
                                         </td>
 
 
-                                        <!-- EMAIL -->
+                                        <!-- =================================================
+                                             EMAIL
+                                        ================================================= -->
 
-                                        <td>
+                                        <td class="align-middle">
 
-                                            <div
-                                                class="student-email"
-                                                title="<?= htmlspecialchars(
-                                                            $student["email"]
-                                                        ) ?>">
+                                            <span class="student-email">
 
                                                 <?= htmlspecialchars(
-                                                    $student["email"]
+                                                    $student["email"] ?? ""
                                                 ) ?>
 
-                                            </div>
+                                            </span>
 
                                         </td>
 
 
-                                        <!-- CREATED -->
+                                        <!-- =================================================
+                                             CREATED
+                                        ================================================= -->
 
-                                        <td>
+                                        <td class="align-middle">
 
-                                            <?php
-
-                                            if (
-                                                !empty($student["created_at"])
-                                            ) {
-
-                                                echo htmlspecialchars(
-
-                                                    date(
-                                                        "M d, Y",
-                                                        strtotime(
-                                                            $student["created_at"]
-                                                        )
-                                                    )
-
-                                                );
-                                            }
-
-                                            ?>
+                                            <?= htmlspecialchars($createdDate) ?>
 
                                         </td>
 
 
-                                        <!-- ACTION -->
+                                        <!-- =================================================
+                                             ACTION
+                                        ================================================= -->
 
-                                        <td
-                                            class="text-center student-action">
-
+                                        <td class="text-center align-middle">
 
                                             <a
-                                                href="student_view.php?id=<?= (int)$student["id"] ?>"
-                                                class="btn btn-sm btn-outline-primary">
+                                                href="student_view.php?id=<?= (int)($student["id"] ?? 0) ?>"
+                                                class="btn btn-sm btn-outline-primary student-view-btn">
 
-
-                                                <i
-                                                    class="bi bi-eye me-1">
-                                                </i>
-
+                                                <i class="bi bi-eye me-1"></i>
 
                                                 View
 
-
                                             </a>
-
 
                                         </td>
 
@@ -1483,9 +2069,7 @@
 
                             </tbody>
 
-
                         </table>
-
 
                     </div>
 
@@ -1495,32 +2079,28 @@
 
                     <!-- =================================================
                          EMPTY STATE
-                    ================================================== -->
+                    ================================================= -->
 
-                    <div
-                        class="empty-state">
+                    <div class="empty-state">
 
+                        <div class="empty-icon">
 
-                        <i
-                            class="bi bi-people">
-                        </i>
+                            <i class="bi bi-people"></i>
+
+                        </div>
 
 
                         <h5>
-
                             No students found
-
                         </h5>
 
 
-                        <p
-                            class="mb-0">
+                        <p class="mb-0">
 
                             No student records match
                             your current filters.
 
                         </p>
-
 
                     </div>
 
@@ -1530,60 +2110,54 @@
 
                 <!-- =================================================
                      PAGINATION
-                ================================================== -->
+                ================================================= -->
 
-                <?php if ($totalPages > 1): ?>
+                <?php if (($totalPages ?? 0) > 1): ?>
 
 
-                    <div
-                        class="border-top p-3">
-
+                    <div class="pagination-wrapper">
 
                         <nav
                             aria-label="Student pagination">
 
-
-                            <ul
-                                class="pagination justify-content-end mb-0">
+                            <ul class="pagination justify-content-end mb-0">
 
 
                                 <!-- PREVIOUS -->
 
                                 <li
                                     class="page-item
-                                    <?= $page <= 1
-                                        ? "disabled"
-                                        : ""
-                                    ?>">
+                                    <?= ($page ?? 1) <= 1 ? "disabled" : "" ?>">
 
+                                    <?php if (($page ?? 1) > 1): ?>
 
-                                    <a
-                                        class="page-link"
-                                        href="<?= $page > 1
-                                                    ? htmlspecialchars(
-                                                        buildPageUrl(
-                                                            $page - 1
-                                                        )
-                                                    )
-                                                    : "#"
-                                                ?>">
+                                        <a
+                                            class="page-link"
+                                            href="<?= htmlspecialchars(
+                                                        buildPageUrl(($page ?? 1) - 1)
+                                                    ) ?>">
 
+                                            <i class="bi bi-chevron-left"></i>
 
-                                        <i
-                                            class="bi bi-chevron-left">
-                                        </i>
+                                            <span class="d-none d-sm-inline">
+                                                Previous
+                                            </span>
 
+                                        </a>
 
-                                        <span
-                                            class="d-none d-sm-inline">
+                                    <?php else: ?>
 
-                                            Previous
+                                        <span class="page-link">
+
+                                            <i class="bi bi-chevron-left"></i>
+
+                                            <span class="d-none d-sm-inline">
+                                                Previous
+                                            </span>
 
                                         </span>
 
-
-                                    </a>
-
+                                    <?php endif; ?>
 
                                 </li>
 
@@ -1595,14 +2169,14 @@
                                 $startPage =
                                     max(
                                         1,
-                                        $page - 2
+                                        ($page ?? 1) - 2
                                     );
 
 
                                 $endPage =
                                     min(
-                                        $totalPages,
-                                        $page + 2
+                                        ($totalPages ?? 1),
+                                        ($page ?? 1) + 2
                                     );
 
                                 ?>
@@ -1617,26 +2191,20 @@
 
                                     <li
                                         class="page-item
-                                        <?= $i === $page
+                                        <?= $i === ($page ?? 1)
                                             ? "active"
                                             : ""
                                         ?>">
 
-
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl(
-                                                            $i
-                                                        )
+                                                        buildPageUrl($i)
                                                     ) ?>">
-
 
                                             <?= $i ?>
 
-
                                         </a>
-
 
                                     </li>
 
@@ -1648,48 +2216,47 @@
 
                                 <li
                                     class="page-item
-                                    <?= $page >= $totalPages
+                                    <?= ($page ?? 1) >= ($totalPages ?? 1)
                                         ? "disabled"
                                         : ""
                                     ?>">
 
+                                    <?php if (($page ?? 1) < ($totalPages ?? 1)): ?>
 
-                                    <a
-                                        class="page-link"
-                                        href="<?= $page < $totalPages
-                                                    ? htmlspecialchars(
-                                                        buildPageUrl(
-                                                            $page + 1
-                                                        )
-                                                    )
-                                                    : "#"
-                                                ?>">
+                                        <a
+                                            class="page-link"
+                                            href="<?= htmlspecialchars(
+                                                        buildPageUrl(($page ?? 1) + 1)
+                                                    ) ?>">
 
+                                            <span class="d-none d-sm-inline">
+                                                Next
+                                            </span>
 
-                                        <span
-                                            class="d-none d-sm-inline">
+                                            <i class="bi bi-chevron-right"></i>
 
-                                            Next
+                                        </a>
+
+                                    <?php else: ?>
+
+                                        <span class="page-link">
+
+                                            <span class="d-none d-sm-inline">
+                                                Next
+                                            </span>
+
+                                            <i class="bi bi-chevron-right"></i>
 
                                         </span>
 
-
-                                        <i
-                                            class="bi bi-chevron-right">
-                                        </i>
-
-
-                                    </a>
-
+                                    <?php endif; ?>
 
                                 </li>
 
 
                             </ul>
 
-
                         </nav>
-
 
                     </div>
 
@@ -1702,8 +2269,389 @@
 
         </div>
 
-
     </main>
+
+
+    <!-- =========================================================
+         PAGE-SPECIFIC STYLE
+    ========================================================= -->
+
+    <style>
+        /* =====================================================
+           STUDENT PROFILE
+        ===================================================== */
+
+        .student-profile {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            min-width: 220px;
+
+        }
+
+
+        .student-avatar {
+
+            width: 48px;
+
+            height: 48px;
+
+            min-width: 48px;
+
+            border-radius: 50%;
+
+            overflow: hidden;
+
+            background: #eaf3fa;
+
+            border: 2px solid #d9e9f5;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            position: relative;
+
+        }
+
+
+        .student-avatar img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+
+        }
+
+
+        .avatar-placeholder {
+
+            width: 100%;
+
+            height: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #eaf3fa;
+
+            color: #0b4f8a;
+
+            font-size: 22px;
+
+        }
+
+
+        .student-info {
+
+            min-width: 0;
+
+        }
+
+
+        .student-name {
+
+            font-weight: 600;
+
+            color: #212529;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            max-width: 230px;
+
+        }
+
+
+        .student-id-badge {
+
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            background: #f1f7fb;
+
+            color: #0b4f8a;
+
+            border: 1px solid #d9e9f5;
+
+            border-radius: 6px;
+
+            font-weight: 600;
+
+            font-size: 13px;
+
+            white-space: nowrap;
+
+        }
+
+
+        .student-email {
+
+            color: #6c757d;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .student-table {
+
+            margin-bottom: 0;
+
+            vertical-align: middle;
+
+        }
+
+
+        .student-table thead th {
+
+            white-space: nowrap;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #495057;
+
+            text-transform: uppercase;
+
+            letter-spacing: .3px;
+
+            padding: 14px 12px;
+
+            border-bottom: 1px solid #dee2e6;
+
+        }
+
+
+        .student-table tbody td {
+
+            padding: 13px 12px;
+
+            border-color: #edf0f2;
+
+        }
+
+
+        .student-table tbody tr {
+
+            transition:
+                background-color .2s ease,
+                transform .2s ease;
+
+        }
+
+
+        .student-table tbody tr:hover {
+
+            background-color: #f8fbfd;
+
+        }
+
+
+        /* =====================================================
+           VIEW BUTTON
+        ===================================================== */
+
+        .student-view-btn {
+
+            white-space: nowrap;
+
+            transition:
+                all .2s ease;
+
+        }
+
+
+        .student-view-btn:hover {
+
+            transform: translateY(-1px);
+
+        }
+
+
+        /* =====================================================
+           PAGINATION
+        ===================================================== */
+
+        .pagination-wrapper {
+
+            border-top: 1px solid #dee2e6;
+
+            padding: 16px;
+
+        }
+
+
+        .pagination .page-link {
+
+            color: #0b4f8a;
+
+            border-color: #dee2e6;
+
+            transition:
+                all .2s ease;
+
+        }
+
+
+        .pagination .page-link:hover {
+
+            background: #eaf3fa;
+
+            border-color: #0b4f8a;
+
+        }
+
+
+        .pagination .active .page-link {
+
+            background: #0b4f8a;
+
+            border-color: #0b4f8a;
+
+            color: #fff;
+
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 70px 20px;
+
+            color: #6c757d;
+
+        }
+
+
+        .empty-icon {
+
+            width: 70px;
+
+            height: 70px;
+
+            margin: 0 auto 18px;
+
+            border-radius: 50%;
+
+            background: #eaf3fa;
+
+            color: #0b4f8a;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 30px;
+
+        }
+
+
+        .empty-state h5 {
+
+            color: #343a40;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE TABLE
+        ===================================================== */
+
+        @media (max-width: 991.98px) {
+
+            .student-table {
+
+                min-width: 950px;
+
+            }
+
+            .table-responsive {
+
+                overflow-x: auto;
+
+                -webkit-overflow-scrolling: touch;
+
+            }
+
+        }
+
+
+        @media (max-width: 575.98px) {
+
+            .student-profile {
+
+                min-width: 190px;
+
+            }
+
+
+            .student-avatar {
+
+                width: 42px;
+
+                height: 42px;
+
+                min-width: 42px;
+
+            }
+
+
+            .student-name {
+
+                max-width: 150px;
+
+            }
+
+
+            .student-table {
+
+                min-width: 900px;
+
+            }
+
+
+            .pagination-wrapper {
+
+                padding: 12px;
+
+            }
+
+        }
+    </style>
 
 
     <!-- =========================================================
@@ -1714,6 +2662,5 @@
 
 
 </body>
-
 
 </html>
