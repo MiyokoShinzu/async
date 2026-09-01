@@ -1,3 +1,4 @@
+
 <?php
 
 /* =========================================================
@@ -11,20 +12,21 @@
    │
    ├── async/
    │   ├── src/
-   │   │   └── connection.php
-   │   │
-   │   ├── student/
-   │   │   ├── profile_photo.php
-   │   │   └── profile_photo_upload.php
-   │   │
-   │   └── admin/
-   │       └── students.php
+   │   └── student/
+   │       ├── profile_photo.php
+   │       └── profile_photo_upload.php
    │
    └── shared/
        └── uploads/
            └── profile_photos/
 
-   async and shared are SIBLINGS.
+   IMPORTANT:
+   "shared" is OUTSIDE "async".
+
+   We therefore DO NOT use $_SERVER["DOCUMENT_ROOT"]
+   to determine the upload directory.
+
+   Instead, we calculate public_html from __DIR__.
    ========================================================= */
 
 session_start();
@@ -67,9 +69,9 @@ if ($studentId === "") {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Student account information is missing."
-            )
+        urlencode(
+            "Student account information is missing."
+        )
     );
 
     exit;
@@ -80,9 +82,7 @@ if ($studentId === "") {
    ONLY ALLOW POST
 ========================================================= */
 
-if (
-    $_SERVER["REQUEST_METHOD"] !== "POST"
-) {
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
     header(
         "Location: profile_photo.php"
@@ -96,15 +96,13 @@ if (
    CHECK FILE EXISTS
 ========================================================= */
 
-if (
-    !isset($_FILES["profile_photo"])
-) {
+if (!isset($_FILES["profile_photo"])) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "No photo was received by the server."
-            )
+        urlencode(
+            "No photo was received by the server."
+        )
     );
 
     exit;
@@ -123,9 +121,7 @@ if (
     $file["error"] !== UPLOAD_ERR_OK
 ) {
 
-    $message =
-        "Photo upload failed.";
-
+    $message = "Photo upload failed.";
 
     switch ($file["error"] ?? -1) {
 
@@ -136,14 +132,12 @@ if (
 
             break;
 
-
         case UPLOAD_ERR_FORM_SIZE:
 
             $message =
                 "The photo is larger than the allowed size.";
 
             break;
-
 
         case UPLOAD_ERR_PARTIAL:
 
@@ -152,14 +146,12 @@ if (
 
             break;
 
-
         case UPLOAD_ERR_NO_FILE:
 
             $message =
                 "Please select a photo.";
 
             break;
-
 
         case UPLOAD_ERR_NO_TMP_DIR:
 
@@ -168,14 +160,12 @@ if (
 
             break;
 
-
         case UPLOAD_ERR_CANT_WRITE:
 
             $message =
                 "Server error: PHP cannot write the uploaded file.";
 
             break;
-
 
         case UPLOAD_ERR_EXTENSION:
 
@@ -185,10 +175,9 @@ if (
             break;
     }
 
-
     header(
         "Location: profile_photo.php?error=" .
-            urlencode($message)
+        urlencode($message)
     );
 
     exit;
@@ -206,9 +195,9 @@ if (
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The uploaded file is invalid."
-            )
+        urlencode(
+            "The uploaded file is invalid."
+        )
     );
 
     exit;
@@ -219,34 +208,29 @@ if (
    CHECK FILE SIZE
 ========================================================= */
 
-$maxSize =
-    5 * 1024 * 1024;
+$maxSize = 5 * 1024 * 1024;
 
 
-if (
-    $file["size"] <= 0
-) {
+if ($file["size"] <= 0) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The uploaded photo is empty."
-            )
+        urlencode(
+            "The uploaded photo is empty."
+        )
     );
 
     exit;
 }
 
 
-if (
-    $file["size"] > $maxSize
-) {
+if ($file["size"] > $maxSize) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The photo must not exceed 5 MB."
-            )
+        urlencode(
+            "The photo must not exceed 5 MB."
+        )
     );
 
     exit;
@@ -257,21 +241,18 @@ if (
    VERIFY IMAGE
 ========================================================= */
 
-$imageInfo =
-    @getimagesize(
-        $file["tmp_name"]
-    );
+$imageInfo = @getimagesize(
+    $file["tmp_name"]
+);
 
 
-if (
-    $imageInfo === false
-) {
+if ($imageInfo === false) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The uploaded file is not a valid image."
-            )
+        urlencode(
+            "The uploaded file is not a valid image."
+        )
     );
 
     exit;
@@ -285,29 +266,22 @@ if (
 $allowedMimeTypes = [
 
     "image/jpeg" => "jpg",
-
-    "image/png" => "png",
-
+    "image/png"  => "png",
     "image/webp" => "webp"
 
 ];
 
 
-$mimeType =
-    $imageInfo["mime"] ?? "";
+$mimeType = $imageInfo["mime"] ?? "";
 
 
-if (
-    !isset(
-        $allowedMimeTypes[$mimeType]
-    )
-) {
+if (!isset($allowedMimeTypes[$mimeType])) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Only JPG, PNG, and WEBP images are allowed."
-            )
+        urlencode(
+            "Only JPG, PNG, and WEBP images are allowed."
+        )
     );
 
     exit;
@@ -319,25 +293,55 @@ $extension =
 
 
 /* =========================================================
-   HOSTINGER DOCUMENT ROOT
+   DETERMINE REAL PUBLIC_HTML DIRECTORY
 ========================================================= */
 
-$documentRoot =
-    rtrim(
-        $_SERVER["DOCUMENT_ROOT"] ?? "",
-        "/"
-    );
+/*
+   THIS IS THE IMPORTANT FIX.
 
+   Current PHP file:
+
+   public_html/
+       async/
+           student/
+               profile_photo_upload.php
+
+   __DIR__ therefore points to:
+
+   public_html/async/student
+
+   dirname(__DIR__) points to:
+
+   public_html/async
+
+   dirname(dirname(__DIR__)) points to:
+
+   public_html
+
+   Therefore we can safely reach the sibling "shared"
+   directory without depending on DOCUMENT_ROOT.
+*/
+
+$publicHtml = dirname(
+    dirname(
+        __DIR__
+    )
+);
+
+
+/* =========================================================
+   VERIFY PUBLIC_HTML
+========================================================= */
 
 if (
-    $documentRoot === ""
+    !is_dir($publicHtml)
 ) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Unable to determine the website document root."
-            )
+        urlencode(
+            "Unable to determine the public_html directory."
+        )
     );
 
     exit;
@@ -349,25 +353,17 @@ if (
 ========================================================= */
 
 /*
-    IMPORTANT:
+   CORRECT:
 
-    async and shared are SIBLINGS.
+   public_html/shared/uploads/profile_photos/
 
-    DOCUMENT ROOT:
+   NOT:
 
-    public_html/
-
-    Therefore:
-
-    public_html/shared/uploads/profile_photos/
-
-    is:
-
-    $documentRoot/shared/uploads/profile_photos/
+   public_html/async/shared/uploads/profile_photos/
 */
 
 $uploadDirectory =
-    $documentRoot .
+    $publicHtml .
     "/shared/uploads/profile_photos/";
 
 
@@ -375,17 +371,13 @@ $uploadDirectory =
    CREATE UPLOAD DIRECTORY
 ========================================================= */
 
-if (
-    !is_dir($uploadDirectory)
-) {
+if (!is_dir($uploadDirectory)) {
 
-    $created =
-        @mkdir(
-            $uploadDirectory,
-            0755,
-            true
-        );
-
+    $created = @mkdir(
+        $uploadDirectory,
+        0755,
+        true
+    );
 
     if (
         !$created &&
@@ -394,9 +386,9 @@ if (
 
         header(
             "Location: profile_photo.php?error=" .
-                urlencode(
-                    "Unable to create the profile photo directory."
-                )
+            urlencode(
+                "Unable to create the profile photo directory."
+            )
         );
 
         exit;
@@ -408,15 +400,13 @@ if (
    CHECK DIRECTORY
 ========================================================= */
 
-if (
-    !is_dir($uploadDirectory)
-) {
+if (!is_dir($uploadDirectory)) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Profile photo directory does not exist."
-            )
+        urlencode(
+            "Profile photo directory does not exist."
+        )
     );
 
     exit;
@@ -427,15 +417,13 @@ if (
    CHECK WRITABLE
 ========================================================= */
 
-if (
-    !is_writable($uploadDirectory)
-) {
+if (!is_writable($uploadDirectory)) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The profile photo directory is not writable. Check Hostinger file permissions."
-            )
+        urlencode(
+            "The profile photo directory is not writable. Check Hostinger file permissions."
+        )
     );
 
     exit;
@@ -457,17 +445,16 @@ $sql = "
 ";
 
 
-$stmt =
-    $mysqli->prepare($sql);
+$stmt = $mysqli->prepare($sql);
 
 
 if (!$stmt) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Unable to access your profile."
-            )
+        urlencode(
+            "Unable to access your profile."
+        )
     );
 
     exit;
@@ -483,19 +470,14 @@ $stmt->bind_param(
 $stmt->execute();
 
 
-$result =
-    $stmt->get_result();
+$result = $stmt->get_result();
 
 
-if (
-    $row =
-    $result->fetch_assoc()
-) {
+if ($row = $result->fetch_assoc()) {
 
-    $oldPhoto =
-        trim(
-            $row["profile_photo"] ?? ""
-        );
+    $oldPhoto = trim(
+        $row["profile_photo"] ?? ""
+    );
 }
 
 
@@ -506,20 +488,16 @@ $stmt->close();
    SAFE STUDENT ID
 ========================================================= */
 
-$safeStudentId =
-    preg_replace(
-        "/[^a-zA-Z0-9_-]/",
-        "_",
-        $studentId
-    );
+$safeStudentId = preg_replace(
+    "/[^a-zA-Z0-9_-]/",
+    "_",
+    $studentId
+);
 
 
-if (
-    $safeStudentId === ""
-) {
+if ($safeStudentId === "") {
 
-    $safeStudentId =
-        "student";
+    $safeStudentId = "student";
 }
 
 
@@ -529,16 +507,13 @@ if (
 
 try {
 
-    $randomString =
-        bin2hex(
-            random_bytes(8)
-        );
-} catch (
-    Exception $e
-) {
+    $randomString = bin2hex(
+        random_bytes(8)
+    );
 
-    $randomString =
-        uniqid();
+} catch (Exception $e) {
+
+    $randomString = uniqid();
 }
 
 
@@ -563,18 +538,16 @@ $destination =
    MOVE UPLOADED FILE
 ========================================================= */
 
-if (
-    !move_uploaded_file(
-        $file["tmp_name"],
-        $destination
-    )
-) {
+if (!move_uploaded_file(
+    $file["tmp_name"],
+    $destination
+)) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Hostinger could not save the uploaded photo. Check folder permissions."
-            )
+        urlencode(
+            "Hostinger could not save the uploaded photo. Check folder permissions."
+        )
     );
 
     exit;
@@ -582,18 +555,16 @@ if (
 
 
 /* =========================================================
-   VERIFY FILE WAS ACTUALLY SAVED
+   VERIFY FILE WAS SAVED
 ========================================================= */
 
-if (
-    !file_exists($destination)
-) {
+if (!file_exists($destination)) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "The photo upload completed but the saved file could not be found."
-            )
+        urlencode(
+            "The photo upload completed but the saved file could not be found."
+        )
     );
 
     exit;
@@ -605,15 +576,19 @@ if (
 ========================================================= */
 
 /*
-    Store the WEB path relative to public_html.
+   Store the WEB path.
 
-    Example:
+   Correct:
 
-    shared/uploads/profile_photos/12345_abcd1234.jpg
+   shared/uploads/profile_photos/filename.jpg
 
-    The physical file is:
+   NOT:
 
-    public_html/shared/uploads/profile_photos/12345_abcd1234.jpg
+   async/shared/uploads/profile_photos/filename.jpg
+
+   NOT:
+
+   /home/username/.../public_html/...
 */
 
 $photoPath =
@@ -632,8 +607,7 @@ $sql = "
 ";
 
 
-$stmt =
-    $mysqli->prepare($sql);
+$stmt = $mysqli->prepare($sql);
 
 
 if (!$stmt) {
@@ -642,9 +616,9 @@ if (!$stmt) {
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Unable to prepare the profile update."
-            )
+        urlencode(
+            "Unable to prepare the profile update."
+        )
     );
 
     exit;
@@ -662,9 +636,7 @@ $stmt->bind_param(
    EXECUTE DATABASE UPDATE
 ========================================================= */
 
-if (
-    !$stmt->execute()
-) {
+if (!$stmt->execute()) {
 
     @unlink($destination);
 
@@ -672,9 +644,9 @@ if (
 
     header(
         "Location: profile_photo.php?error=" .
-            urlencode(
-                "Unable to save the photo information to the database."
-            )
+        urlencode(
+            "Unable to save the photo information to the database."
+        )
     );
 
     exit;
@@ -689,33 +661,18 @@ $stmt->close();
 ========================================================= */
 
 /*
-    Old database value should look like:
+   Only delete files from:
 
-    shared/uploads/profile_photos/old_photo.jpg
-
-    Physical location:
-
-    public_html/shared/uploads/profile_photos/old_photo.jpg
+   public_html/shared/uploads/profile_photos/
 */
 
-if (
-    $oldPhoto !== ""
-) {
+if ($oldPhoto !== "") {
 
-    /* -----------------------------------------------------
-       Normalize old database path
-    ----------------------------------------------------- */
+    $oldPhoto = ltrim(
+        $oldPhoto,
+        "/"
+    );
 
-    $oldPhoto =
-        ltrim(
-            $oldPhoto,
-            "/"
-        );
-
-
-    /* -----------------------------------------------------
-       Only process our own profile photo directory
-    ----------------------------------------------------- */
 
     $allowedOldPrefix =
         "shared/uploads/profile_photos/";
@@ -728,12 +685,18 @@ if (
         ) === 0
     ) {
 
-        /* -------------------------------------------------
-           Convert database path to server path
-        ------------------------------------------------- */
+        /*
+           Convert:
+
+           shared/uploads/profile_photos/file.jpg
+
+           into:
+
+           public_html/shared/uploads/profile_photos/file.jpg
+        */
 
         $oldFile =
-            $documentRoot .
+            $publicHtml .
             "/" .
             $oldPhoto;
 
@@ -745,14 +708,6 @@ if (
         $newRealPath =
             realpath($destination);
 
-
-        /* -------------------------------------------------
-           Delete only the old file
-
-           1. It exists
-           2. It is a file
-           3. It is not the new file
-        ------------------------------------------------- */
 
         if (
             $oldRealPath !== false &&
@@ -775,9 +730,10 @@ if (
 
 header(
     "Location: profile_photo.php?success=" .
-        urlencode(
-            "Profile photo updated successfully."
-        )
+    urlencode(
+        "Profile photo updated successfully."
+    )
 );
 
 exit;
+
