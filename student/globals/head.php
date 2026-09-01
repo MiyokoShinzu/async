@@ -4848,6 +4848,299 @@
             }
 
         }
+
+     
+        /* =========================================================
+   ETS-ASYNC SIDEBAR RESPONSIVE CONTROL
+========================================================= */
+
+
+        /* =========================================================
+   SIDEBAR CLOSE BUTTON
+   Visible on desktop, tablet, and mobile
+========================================================= */
+
+        .sidebar-close {
+
+            display: flex !important;
+
+            align-items: center;
+
+            justify-content: center;
+
+            width: 36px;
+
+            height: 36px;
+
+            margin-left: auto;
+
+            padding: 0;
+
+            flex-shrink: 0;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: transparent;
+
+            color: var(--text-secondary);
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            transition:
+                background-color 0.2s ease,
+                color 0.2s ease,
+                transform 0.15s ease;
+
+        }
+
+
+        .sidebar-close:hover {
+
+            background:
+                var(--academic-blue-light);
+
+            color:
+                var(--academic-blue);
+
+        }
+
+
+        .sidebar-close:active {
+
+            transform:
+                scale(0.92);
+
+        }
+
+
+        /* =========================================================
+   DESKTOP SIDEBAR TOGGLE BUTTON
+   Show hamburger on desktop
+========================================================= */
+
+        @media (min-width: 992px) {
+
+            .sidebar-toggle {
+
+                display: flex !important;
+
+                align-items: center;
+
+                justify-content: center;
+
+                width: 38px;
+
+                height: 38px;
+
+                margin-right: 12px;
+
+                padding: 0;
+
+                border: none;
+
+                border-radius: 7px;
+
+                background: transparent;
+
+                color: var(--academic-blue);
+
+                font-size: 23px;
+
+                cursor: pointer;
+
+                transition:
+                    background-color 0.2s ease,
+                    color 0.2s ease;
+
+            }
+
+
+            .sidebar-toggle:hover {
+
+                background:
+                    var(--academic-blue-light);
+
+                color:
+                    var(--academic-blue-dark);
+
+            }
+
+        }
+
+
+        /* =========================================================
+   DESKTOP
+   SIDEBAR CLOSED
+========================================================= */
+
+        @media (min-width: 992px) {
+
+            body.sidebar-collapsed .sidebar {
+
+                transform:
+                    translateX(-100%);
+
+            }
+
+
+            body.sidebar-collapsed .topbar {
+
+                left: 0 !important;
+
+            }
+
+
+            body.sidebar-collapsed .main-content {
+
+                margin-left: 0 !important;
+
+            }
+
+        }
+
+
+        /* =========================================================
+   MOBILE / TABLET
+========================================================= */
+
+        @media (max-width: 991px) {
+
+            .sidebar {
+
+                transform:
+                    translateX(-100%);
+
+            }
+
+
+            .sidebar.show {
+
+                transform:
+                    translateX(0);
+
+            }
+
+
+            .topbar {
+
+                left: 0 !important;
+
+                width: 100%;
+
+            }
+
+
+            .main-content {
+
+                margin-left: 0 !important;
+
+            }
+
+
+            .sidebar-toggle {
+
+                display: flex !important;
+
+                align-items: center;
+
+                justify-content: center;
+
+                width: 38px;
+
+                height: 38px;
+
+                margin-right: 10px;
+
+                padding: 0;
+
+                border: none;
+
+                border-radius: 7px;
+
+                background: transparent;
+
+                color: var(--academic-blue);
+
+                font-size: 23px;
+
+                cursor: pointer;
+
+            }
+
+
+            .sidebar-toggle:hover {
+
+                background:
+                    var(--academic-blue-light);
+
+            }
+
+        }
+
+
+        /* =========================================================
+   MOBILE OVERLAY
+========================================================= */
+
+        .sidebar-overlay {
+
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0, 0, 0, 0.50);
+
+            z-index: 1045;
+
+        }
+
+
+        @media (max-width: 991px) {
+
+            .sidebar-overlay.show {
+
+                display: block;
+
+            }
+
+        }
+
+
+        /* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+        @media (max-width: 576px) {
+
+            .sidebar-close {
+
+                width: 34px;
+
+                height: 34px;
+
+            }
+
+
+            .sidebar-toggle {
+
+                width: 36px;
+
+                height: 36px;
+
+                margin-right: 8px;
+
+            }
+
+        }
+
+        
     </style>
 
 </head>

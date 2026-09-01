@@ -2,6 +2,7 @@
 
 /* =========================================================
    TOPBAR STUDENT PROFILE
+   ETS-Async Learning Portal
    ========================================================= */
 
 $topbarProfilePhoto = "";
@@ -10,7 +11,7 @@ $topbarStudentId = "";
 
 /* =========================================================
    GET STUDENT ID
-   ========================================================= */
+========================================================= */
 
 if (isset($_SESSION["user"]["student_id"])) {
 
@@ -21,7 +22,7 @@ if (isset($_SESSION["user"]["student_id"])) {
 
 /* =========================================================
    GET PROFILE PHOTO
-   ========================================================= */
+========================================================= */
 
 if (
     $topbarStudentId !== "" &&
@@ -40,6 +41,7 @@ if (
             $topbarPhotoSQL
         );
 
+
     if ($topbarPhotoStmt) {
 
         $topbarPhotoStmt->bind_param(
@@ -49,8 +51,10 @@ if (
 
         $topbarPhotoStmt->execute();
 
+
         $topbarPhotoResult =
             $topbarPhotoStmt->get_result();
+
 
         if (
             $topbarPhotoRow =
@@ -63,13 +67,21 @@ if (
                 );
         }
 
+
         $topbarPhotoStmt->close();
     }
 }
 
 ?>
 
-<header class="topbar">
+
+<!-- =========================================================
+     TOPBAR
+========================================================= -->
+
+<header
+    class="topbar"
+    id="topbar">
 
 
     <!-- =====================================================
@@ -78,21 +90,29 @@ if (
 
     <div class="topbar-left">
 
+
+        <!-- SIDEBAR TOGGLE -->
+
         <button
             type="button"
             class="sidebar-toggle"
-            id="sidebarToggle">
+            id="sidebarToggle"
+            aria-label="Toggle sidebar"
+            title="Toggle sidebar">
 
             <i class="bi bi-list"></i>
 
         </button>
 
 
+        <!-- TITLE -->
+
         <div class="topbar-title">
 
             Student Dashboard
 
         </div>
+
 
     </div>
 
@@ -104,6 +124,8 @@ if (
     <div class="topbar-user">
 
 
+        <!-- USER INFORMATION -->
+
         <div class="topbar-user-info">
 
             <div class="topbar-name">
@@ -111,6 +133,7 @@ if (
                 <?= htmlspecialchars($fullName) ?>
 
             </div>
+
 
             <div class="topbar-access">
 
@@ -121,9 +144,7 @@ if (
         </div>
 
 
-        <!-- =================================================
-             PROFILE AVATAR
-        ================================================== -->
+        <!-- PROFILE AVATAR -->
 
         <a
             href="profile_photo.php"
@@ -150,94 +171,313 @@ if (
 
 
         </a>
+
+
+        <!-- THEME TOGGLE -->
+
         <button
             type="button"
             class="btn btn-theme"
             id="themeToggle"
-            title="Toggle dark mode">
+            title="Toggle dark mode"
+            aria-label="Toggle dark mode">
 
-            <i class="bi bi-moon-fill" id="themeIcon"></i>
+            <i
+                class="bi bi-moon-fill"
+                id="themeIcon">
+            </i>
 
         </button>
-        
-            <script>
-
-                document.addEventListener("DOMContentLoaded", function() {
-
-                    const themeToggle = document.getElementById("themeToggle");
-                    const themeIcon = document.getElementById("themeIcon");
-
-                    if (!themeToggle) {
-                        return;
-                    }
-
-
-                    function updateThemeIcon() {
-
-                        const currentTheme =
-                            document.documentElement.getAttribute("data-theme");
-
-
-                        if (currentTheme === "dark") {
-
-                            themeIcon.className =
-                                "bi bi-sun-fill";
-
-                            themeToggle.title =
-                                "Switch to light mode";
-
-                        } else {
-
-                            themeIcon.className =
-                                "bi bi-moon-fill";
-
-                            themeToggle.title =
-                                "Switch to dark mode";
-                        }
-                    }
-
-
-                    updateThemeIcon();
-
-
-                    themeToggle.addEventListener("click", function() {
-
-                        const currentTheme =
-                            document.documentElement.getAttribute("data-theme");
-
-
-                        if (currentTheme === "dark") {
-
-                            document.documentElement
-                                .setAttribute("data-theme", "light");
-
-                            localStorage.setItem(
-                                "ets-theme",
-                                "light"
-                            );
-
-                        } else {
-
-                            document.documentElement
-                                .setAttribute("data-theme", "dark");
-
-                            localStorage.setItem(
-                                "ets-theme",
-                                "dark"
-                            );
-                        }
-
-
-                        updateThemeIcon();
-
-                    });
-
-                });
-        
-        </script>
 
 
     </div>
 
 
 </header>
+
+
+<!-- =========================================================
+     TOPBAR SIDEBAR TOGGLE
+========================================================= -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const sidebarToggle =
+            document.getElementById("sidebarToggle");
+
+        if (!sidebarToggle) {
+            return;
+        }
+
+
+        sidebarToggle.addEventListener("click", function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            /* =====================================================
+               USE CENTRAL SIDEBAR CONTROLLER
+            ====================================================== */
+
+            if (typeof window.toggleSidebar === "function") {
+
+                window.toggleSidebar();
+
+            }
+
+        });
+
+    });
+</script>
+
+<!-- =========================================================
+     DARK MODE SCRIPT
+========================================================= -->
+
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+
+            const themeToggle =
+                document.getElementById("themeToggle");
+
+            const themeIcon =
+                document.getElementById("themeIcon");
+
+
+            if (
+                !themeToggle ||
+                !themeIcon
+            ) {
+
+                return;
+
+            }
+
+
+            /* =====================================================
+               UPDATE ICON
+            ====================================================== */
+
+            function updateThemeIcon() {
+
+
+                const currentTheme =
+                    document.documentElement.getAttribute(
+                        "data-theme"
+                    );
+
+
+                if (currentTheme === "dark") {
+
+                    themeIcon.className =
+                        "bi bi-sun-fill";
+
+                    themeToggle.title =
+                        "Switch to light mode";
+
+                } else {
+
+                    themeIcon.className =
+                        "bi bi-moon-fill";
+
+                    themeToggle.title =
+                        "Switch to dark mode";
+
+                }
+
+            }
+
+
+            /* =====================================================
+               INITIAL ICON
+            ====================================================== */
+
+            updateThemeIcon();
+
+
+            /* =====================================================
+               THEME TOGGLE
+            ====================================================== */
+
+            themeToggle.addEventListener(
+                "click",
+                function() {
+
+
+                    const currentTheme =
+                        document.documentElement.getAttribute(
+                            "data-theme"
+                        );
+
+
+                    if (
+                        currentTheme === "dark"
+                    ) {
+
+                        document.documentElement
+                            .setAttribute(
+                                "data-theme",
+                                "light"
+                            );
+
+
+                        localStorage.setItem(
+                            "ets-theme",
+                            "light"
+                        );
+
+                    } else {
+
+                        document.documentElement
+                            .setAttribute(
+                                "data-theme",
+                                "dark"
+                            );
+
+
+                        localStorage.setItem(
+                            "ets-theme",
+                            "dark"
+                        );
+
+                    }
+
+
+                    updateThemeIcon();
+
+                }
+            );
+
+
+        }
+    );
+</script>
+
+
+<!-- =========================================================
+     TOPBAR RESPONSIVE CSS
+========================================================= -->
+
+<style>
+    /* =========================================================
+   TOPBAR
+========================================================= */
+
+    .topbar {
+
+        transition:
+            margin-left 0.3s ease,
+            width 0.3s ease;
+
+    }
+
+
+    /* =========================================================
+   DESKTOP
+========================================================= */
+
+    @media (min-width: 992px) {
+
+
+        body.sidebar-collapsed .topbar {
+
+            margin-left: 0 !important;
+
+            width: 100% !important;
+
+        }
+
+    }
+
+
+    /* =========================================================
+   TABLET / MOBILE
+========================================================= */
+
+    @media (max-width: 991px) {
+
+
+        .topbar {
+
+            margin-left: 0 !important;
+
+            width: 100% !important;
+
+        }
+
+
+        .topbar-user {
+
+            display: flex;
+
+            align-items: center;
+
+        }
+
+    }
+
+
+    /* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+    @media (max-width: 576px) {
+
+
+        .topbar-title {
+
+            font-size: 16px;
+
+        }
+
+
+        .topbar-name {
+
+            font-size: 13px;
+
+        }
+
+
+        .topbar-access {
+
+            font-size: 11px;
+
+        }
+
+
+        .topbar-user-info {
+
+            max-width: 130px;
+
+        }
+
+    }
+
+
+    /* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+    @media (max-width: 400px) {
+
+
+        .topbar-title {
+
+            font-size: 14px;
+
+        }
+
+
+        .topbar-user-info {
+
+            display: none;
+
+        }
+
+    }
+</style>
