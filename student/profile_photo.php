@@ -1,4 +1,3 @@
-
 <?php
 
 /* =========================================================
@@ -31,12 +30,14 @@ require_once "../src/connection.php";
 
 
 /* =========================================================
-   STUDENT DATA
+   STUDENT ID
 ========================================================= */
 
 $user = $_SESSION["user"];
 
-$studentId = $user["student_id"] ?? "";
+$studentId = trim(
+    $user["student_id"] ?? ""
+);
 
 if ($studentId === "") {
     die("Student account information is missing.");
@@ -44,7 +45,7 @@ if ($studentId === "") {
 
 
 /* =========================================================
-   GET ACCOUNT
+   GET STUDENT ACCOUNT
 ========================================================= */
 
 $sql = "
@@ -65,7 +66,8 @@ $sql = "
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
-    die("Database query failed: " . $mysqli->error);
+    die("Database query failed: " .
+        htmlspecialchars($mysqli->error));
 }
 
 $stmt->bind_param(
@@ -145,7 +147,7 @@ if ($yearSection !== "") {
 
 
 /* =========================================================
-   PROFILE PHOTO
+   PROFILE PHOTO FROM DATABASE
 ========================================================= */
 
 $profilePhoto = trim(
@@ -154,43 +156,34 @@ $profilePhoto = trim(
 
 
 /* =========================================================
-   BUILD PROFILE PHOTO URL
+   BUILD BROWSER PHOTO URL
 ========================================================= */
 
 /*
-   IMPORTANT:
+    IMPORTANT:
 
-   async and shared are siblings.
+    SERVER:
 
-   Server:
+    public_html/
+        async/
+        shared/
 
-   public_html/
-       async/
-       shared/
+    Therefore the browser URL is:
 
-   Browser:
-
-   /shared/uploads/profile_photos/photo.jpg
-
-   Therefore DO NOT use:
-
-   ./shared/...
-   ../shared/...
-
-   in the image src.
-
-   The browser should use:
-
-   /shared/uploads/profile_photos/...
+    /shared/uploads/profile_photos/filename.jpg
 */
 
 $profilePhotoURL = "";
 
 if ($profilePhoto !== "") {
 
-    /* -----------------------------------------------------
-       Complete URL
-    ----------------------------------------------------- */
+    /*
+        CASE 1
+        Database contains complete URL.
+
+        Example:
+        https://example.com/shared/uploads/profile_photos/a.jpg
+    */
 
     if (
         preg_match(
@@ -203,26 +196,70 @@ if ($profilePhoto !== "") {
     }
 
 
-    /* -----------------------------------------------------
-       Already root-relative
-       Example:
-       /shared/uploads/profile_photos/photo.jpg
-    ----------------------------------------------------- */ elseif (
-        substr($profilePhoto, 0, 1) === "/"
+    /*
+        CASE 2
+        Database contains:
+
+        /shared/uploads/profile_photos/a.jpg
+    */ elseif (
+        strpos(
+            $profilePhoto,
+            "/shared/uploads/profile_photos/"
+        ) === 0
     ) {
 
         $profilePhotoURL = $profilePhoto;
     }
 
 
-    /* -----------------------------------------------------
-       Relative database path
-       Example:
-       shared/uploads/profile_photos/photo.jpg
+    /*
+        CASE 3
+        Database contains:
 
-       Convert to:
-       /shared/uploads/profile_photos/photo.jpg
-    ----------------------------------------------------- */ else {
+        shared/uploads/profile_photos/a.jpg
+    */ elseif (
+        strpos(
+            $profilePhoto,
+            "shared/uploads/profile_photos/"
+        ) === 0
+    ) {
+
+        $profilePhotoURL =
+            "/" .
+            $profilePhoto;
+    }
+
+
+    /*
+        CASE 4
+        Database accidentally contains:
+
+        async/shared/uploads/profile_photos/a.jpg
+
+        Remove async/ because shared is
+        outside async.
+    */ elseif (
+        strpos(
+            $profilePhoto,
+            "async/shared/uploads/profile_photos/"
+        ) === 0
+    ) {
+
+        $profilePhotoURL =
+            "/" .
+            substr(
+                $profilePhoto,
+                strlen("async/")
+            );
+    }
+
+
+    /*
+        CASE 5
+        Anything else.
+
+        Make it root-relative.
+    */ else {
 
         $profilePhotoURL =
             "/" .
@@ -272,12 +309,14 @@ if ($initials === "") {
 
 
 /* =========================================================
-   MESSAGE
+   MESSAGES
 ========================================================= */
 
-$success = $_GET["success"] ?? "";
+$success =
+    $_GET["success"] ?? "";
 
-$error = $_GET["error"] ?? "";
+$error =
+    $_GET["error"] ?? "";
 
 ?>
 
@@ -285,37 +324,35 @@ $error = $_GET["error"] ?? "";
 
 <html lang="en">
 
-<?php include 'globals/head.php'; ?>
+<?php include "globals/head.php"; ?>
 
 <body>
 
+    <!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+    <?php include "globals/sidebar.php"; ?>
 
     <!-- =========================================================
-         SIDEBAR
-    ========================================================= -->
+     TOPBAR
+========================================================= -->
 
-    <?php include 'globals/sidebar.php'; ?>
-
-
-    <!-- =========================================================
-         TOPBAR
-    ========================================================= -->
-
-    <?php include 'globals/topbar.php'; ?>
-
+    <?php include "globals/topbar.php"; ?>
 
     <!-- =========================================================
-         MAIN CONTENT
-    ========================================================= -->
+     MAIN CONTENT
+========================================================= -->
 
     <main class="main-content">
 
+     
         <div class="content-wrapper">
 
 
-            <!-- =================================================
-                 PAGE HEADER
-            ================================================= -->
+            <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
 
             <div class="page-header">
 
@@ -334,9 +371,9 @@ $error = $_GET["error"] ?? "";
             </div>
 
 
-            <!-- =================================================
-                 ALERTS
-            ================================================= -->
+            <!-- =====================================================
+         SUCCESS MESSAGE
+    ====================================================== -->
 
             <?php if ($success !== ""): ?>
 
@@ -351,6 +388,10 @@ $error = $_GET["error"] ?? "";
             <?php endif; ?>
 
 
+            <!-- =====================================================
+         ERROR MESSAGE
+    ====================================================== -->
+
             <?php if ($error !== ""): ?>
 
                 <div class="alert alert-danger profile-alert">
@@ -364,19 +405,18 @@ $error = $_GET["error"] ?? "";
             <?php endif; ?>
 
 
-            <!-- =================================================
-                 PROFILE CARD
-            ================================================= -->
+            <!-- =====================================================
+         PROFILE CARD
+    ====================================================== -->
 
             <div class="profile-photo-card">
 
 
                 <!-- =================================================
-                     PHOTO AREA
-                ================================================= -->
+             PROFILE PHOTO
+        ================================================== -->
 
                 <div class="profile-photo-section">
-
 
                     <div class="profile-photo-wrapper">
 
@@ -387,7 +427,7 @@ $error = $_GET["error"] ?? "";
                                 alt="Profile Photo"
                                 class="profile-photo"
                                 id="profilePreview"
-                                onerror="this.style.display='none'; document.getElementById('photoError').style.display='block';">
+                                onerror="profilePhotoError();">
 
                             <div
                                 id="photoError"
@@ -430,13 +470,12 @@ $error = $_GET["error"] ?? "";
 
                     </div>
 
-
                 </div>
 
 
                 <!-- =================================================
-                     STUDENT INFORMATION
-                ================================================== -->
+             STUDENT INFORMATION
+        ================================================== -->
 
                 <div class="student-information">
 
@@ -502,8 +541,8 @@ $error = $_GET["error"] ?? "";
 
 
                 <!-- =================================================
-                     UPLOAD
-                ================================================== -->
+             UPLOAD SECTION
+        ================================================== -->
 
                 <div class="profile-upload-section">
 
@@ -551,8 +590,8 @@ $error = $_GET["error"] ?? "";
 
 
                         <!-- =================================================
-                             UPLOAD PREVIEW
-                        ================================================== -->
+                     UPLOAD PREVIEW
+                ================================================== -->
 
                         <div
                             id="uploadPreviewContainer"
@@ -576,7 +615,6 @@ $error = $_GET["error"] ?? "";
 
                         <div class="profile-upload-footer">
 
-
                             <button
                                 type="submit"
                                 class="btn btn-primary"
@@ -588,12 +626,10 @@ $error = $_GET["error"] ?? "";
 
                             </button>
 
-
                         </div>
 
 
                     </form>
-
 
                 </div>
 
@@ -602,13 +638,43 @@ $error = $_GET["error"] ?? "";
 
 
         </div>
+      
 
     </main>
 
+    <!-- =========================================================
+     PROFILE IMAGE ERROR HANDLER
+========================================================= -->
+
+    <script>
+        function profilePhotoError() {
+            const image =
+                document.getElementById(
+                    "profilePreview"
+                );
+
+            const error =
+                document.getElementById(
+                    "photoError"
+                );
+
+            if (image) {
+
+                image.style.display =
+                    "none";
+            }
+
+            if (error) {
+
+                error.style.display =
+                    "block";
+            }
+        }
+    </script>
 
     <!-- =========================================================
-         JAVASCRIPT
-    ========================================================= -->
+     IMAGE PREVIEW
+========================================================= -->
 
     <script>
         const photoInput =
@@ -616,22 +682,16 @@ $error = $_GET["error"] ?? "";
                 "profile_photo"
             );
 
-
         const uploadPreview =
             document.getElementById(
                 "uploadPreview"
             );
-
 
         const uploadPreviewContainer =
             document.getElementById(
                 "uploadPreviewContainer"
             );
 
-
-        /* =========================================================
-           IMAGE PREVIEW
-        ========================================================= */
 
         if (photoInput) {
 
@@ -651,10 +711,6 @@ $error = $_GET["error"] ?? "";
                         return;
                     }
 
-
-                    /* -------------------------------------------------
-                       CHECK FILE TYPE
-                    ------------------------------------------------- */
 
                     const allowedTypes = [
 
@@ -677,7 +733,6 @@ $error = $_GET["error"] ?? "";
                             "Please select a JPG, JPEG, PNG, or WEBP image."
                         );
 
-
                         this.value = "";
 
                         uploadPreviewContainer.style.display =
@@ -686,10 +741,6 @@ $error = $_GET["error"] ?? "";
                         return;
                     }
 
-
-                    /* -------------------------------------------------
-                       CHECK FILE SIZE
-                    ------------------------------------------------- */
 
                     if (
                         file.size >
@@ -700,7 +751,6 @@ $error = $_GET["error"] ?? "";
                             "The selected image is larger than 5 MB."
                         );
 
-
                         this.value = "";
 
                         uploadPreviewContainer.style.display =
@@ -709,10 +759,6 @@ $error = $_GET["error"] ?? "";
                         return;
                     }
 
-
-                    /* -------------------------------------------------
-                       PREVIEW
-                    ------------------------------------------------- */
 
                     const reader =
                         new FileReader();
@@ -724,27 +770,25 @@ $error = $_GET["error"] ?? "";
                             uploadPreview.src =
                                 event.target.result;
 
-
                             uploadPreviewContainer.style.display =
                                 "block";
 
                         };
 
 
-                    reader.readAsDataURL(
-                        file
-                    );
+                    reader.readAsDataURL(file);
 
                 }
             );
 
         }
+    </script>
 
+    <!-- =========================================================
+     UPLOAD BUTTON
+========================================================= -->
 
-        /* =========================================================
-           SUBMIT BUTTON
-        ========================================================= */
-
+    <script>
         const profilePhotoForm =
             document.getElementById(
                 "profilePhotoForm"
@@ -763,11 +807,15 @@ $error = $_GET["error"] ?? "";
                         );
 
 
-                    button.disabled = true;
+                    if (button) {
 
+                        button.disabled =
+                            true;
 
-                    button.innerHTML =
-                        '<span class="spinner-border spinner-border-sm me-1"></span> Uploading...';
+                        button.innerHTML =
+                            '<span class="spinner-border spinner-border-sm me-1"></span> Uploading...';
+
+                    }
 
                 }
             );
@@ -775,9 +823,11 @@ $error = $_GET["error"] ?? "";
         }
     </script>
 
+    <!-- =========================================================
+     GLOBAL SCRIPTS
+========================================================= -->
 
-    <?php include 'globals/scripts.php'; ?>
-
+    <?php include "globals/scripts.php"; ?>
 
 </body>
 
