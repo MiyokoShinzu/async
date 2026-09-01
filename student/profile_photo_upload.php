@@ -5,15 +5,20 @@
    ETS-Async Learning Portal
    =========================================================
 
-   HOSTINGER STRUCTURE:
+   ACTUAL HOSTINGER STRUCTURE:
 
    public_html/
    │
    ├── async/
    │   ├── src/
-   │   └── student/
-   │       ├── profile_photo.php
-   │       └── profile_photo_upload.php
+   │   │   └── connection.php
+   │   │
+   │   ├── student/
+   │   │   ├── profile_photo.php
+   │   │   └── profile_photo_upload.php
+   │   │
+   │   └── admin/
+   │       └── students.php
    │
    └── shared/
        └── uploads/
@@ -317,18 +322,6 @@ $extension =
    HOSTINGER DOCUMENT ROOT
 ========================================================= */
 
-/*
-    This should normally be:
-
-    /home/USERNAME/domains/YOURDOMAIN/public_html
-
-    or:
-
-    /home/USERNAME/public_html
-
-    depending on your Hostinger setup.
-*/
-
 $documentRoot =
     rtrim(
         $_SERVER["DOCUMENT_ROOT"] ?? "",
@@ -358,15 +351,17 @@ if (
 /*
     IMPORTANT:
 
-    async:
+    async and shared are SIBLINGS.
 
-    $documentRoot/async/
+    DOCUMENT ROOT:
 
-    shared:
-
-    $documentRoot/shared/
+    public_html/
 
     Therefore:
+
+    public_html/shared/uploads/profile_photos/
+
+    is:
 
     $documentRoot/shared/uploads/profile_photos/
 */
@@ -610,20 +605,15 @@ if (
 ========================================================= */
 
 /*
-    Store ONLY the web path.
+    Store the WEB path relative to public_html.
 
     Example:
 
     shared/uploads/profile_photos/12345_abcd1234.jpg
 
-    DO NOT store:
+    The physical file is:
 
-    /home/u123456/domains/example.com/public_html/...
-
-    DO NOT store:
-
-    async/shared/...
-
+    public_html/shared/uploads/profile_photos/12345_abcd1234.jpg
 */
 
 $photoPath =
@@ -649,7 +639,6 @@ $stmt =
 if (!$stmt) {
 
     @unlink($destination);
-
 
     header(
         "Location: profile_photo.php?error=" .
@@ -681,7 +670,6 @@ if (
 
     $stmt->close();
 
-
     header(
         "Location: profile_photo.php?error=" .
             urlencode(
@@ -701,18 +689,22 @@ $stmt->close();
 ========================================================= */
 
 /*
-    Only delete old files that are inside:
+    Old database value should look like:
 
-    shared/uploads/profile_photos/
+    shared/uploads/profile_photos/old_photo.jpg
+
+    Physical location:
+
+    public_html/shared/uploads/profile_photos/old_photo.jpg
 */
 
 if (
     $oldPhoto !== ""
 ) {
 
-    /*
-        Normalize old database path.
-    */
+    /* -----------------------------------------------------
+       Normalize old database path
+    ----------------------------------------------------- */
 
     $oldPhoto =
         ltrim(
@@ -721,9 +713,9 @@ if (
         );
 
 
-    /*
-        Only process our own profile photo directory.
-    */
+    /* -----------------------------------------------------
+       Only process our own profile photo directory
+    ----------------------------------------------------- */
 
     $allowedOldPrefix =
         "shared/uploads/profile_photos/";
@@ -736,15 +728,9 @@ if (
         ) === 0
     ) {
 
-        /*
-            Convert database path to server path.
-
-            shared/uploads/profile_photos/file.jpg
-
-            becomes:
-
-            DOCUMENT_ROOT/shared/uploads/profile_photos/file.jpg
-        */
+        /* -------------------------------------------------
+           Convert database path to server path
+        ------------------------------------------------- */
 
         $oldFile =
             $documentRoot .
@@ -760,13 +746,13 @@ if (
             realpath($destination);
 
 
-        /*
-            Delete only if:
+        /* -------------------------------------------------
+           Delete only the old file
 
-            1. It exists
-            2. It is a file
-            3. It is not the newly uploaded file
-        */
+           1. It exists
+           2. It is a file
+           3. It is not the new file
+        ------------------------------------------------- */
 
         if (
             $oldRealPath !== false &&
@@ -795,4 +781,3 @@ header(
 );
 
 exit;
-   
