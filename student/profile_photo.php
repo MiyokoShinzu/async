@@ -516,7 +516,7 @@ $error =
 
 
                     <div class="student-id">
-
+                            <?php echo htmlspecialchars($profilePhotoURL); ?>
                         Student ID:
 
                         <?= htmlspecialchars($studentId) ?>
