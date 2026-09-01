@@ -2588,7 +2588,6 @@ function getStudentPhotoUrl($profilePhoto)
                                                             ENT_QUOTES,
                                                             'UTF-8'
                                                         ) ?>
-
                                                     </div>
                                                     <small class="text-muted">
                                                         Student 
