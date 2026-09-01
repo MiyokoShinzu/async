@@ -1,11 +1,516 @@
 
-<?php include 'globals/checks.php'; ?>
+<?php
+
+/* =========================================================
+   ADMIN STUDENTS
+   ETS-Async Learning Portal
+   ========================================================= */
+
+session_start();
+
+
+/* =========================================================
+   AUTHENTICATION CHECK
+   ========================================================= */
+
+if (
+    !isset($_SESSION["logged_in"]) ||
+    $_SESSION["logged_in"] !== true ||
+    !isset($_SESSION["user"]) ||
+    ($_SESSION["user"]["access"] ?? "") !== "admin"
+) {
+
+    header("Location: ../login.php");
+
+    exit;
+}
+
+
+/* =========================================================
+   GET ADMIN USER
+   ========================================================= */
+
+$user = $_SESSION["user"];
+
+
+/* =========================================================
+   USER DATA
+   ========================================================= */
+
+$firstName =
+    $user["first_name"] ?? "";
+
+$lastName =
+    $user["last_name"] ?? "";
+
+$middleInitial =
+    $user["middle_initial"] ?? "";
+
+$extensionName =
+    $user["extension_name"] ?? "";
+
+$email =
+    $user["email"] ?? "";
+
+$username =
+    $user["username"] ?? "";
+
+$access =
+    $user["access"] ?? "admin";
+
+
+/* =========================================================
+   BUILD FULL NAME
+   ========================================================= */
+
+$fullName = trim(
+
+    $firstName . " " .
+
+        ($middleInitial !== ""
+            ? $middleInitial . ". "
+            : "") .
+
+        $lastName .
+
+        ($extensionName !== ""
+            ? " " . $extensionName
+            : "")
+
+);
+
+
+/* =========================================================
+   INITIALS
+   ========================================================= */
+
+$initials = "";
+
+if ($firstName !== "") {
+
+    $initials .= strtoupper(
+        substr($firstName, 0, 1)
+    );
+}
+
+if ($lastName !== "") {
+
+    $initials .= strtoupper(
+        substr($lastName, 0, 1)
+    );
+}
+
+
+/* =========================================================
+   DATABASE CONNECTION
+   ========================================================= */
+
+require_once "../src/connection.php";
+
+
+/* =========================================================
+   FILTER VALUES
+   ========================================================= */
+
+$department =
+    trim($_GET["department"] ?? "");
+
+$year =
+    trim($_GET["year"] ?? "");
+
+$section =
+    trim($_GET["section"] ?? "");
+
+$search =
+    trim($_GET["search"] ?? "");
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+$recordsPerPage = 10;
+
+$page =
+    isset($_GET["page"])
+    ? (int) $_GET["page"]
+    : 1;
+
+if ($page < 1) {
+
+    $page = 1;
+}
+
+
+/* =========================================================
+   GET DEPARTMENTS
+   ========================================================= */
+
+$departments = [];
+
+$departmentSQL = "
+    SELECT DISTINCT department
+    FROM accounts
+    WHERE access = 'student'
+    ORDER BY department ASC
+";
+
+$departmentResult =
+    $mysqli->query($departmentSQL);
+
+if ($departmentResult) {
+
+    while ($row = $departmentResult->fetch_assoc()) {
+
+        if (
+            isset($row["department"]) &&
+            $row["department"] !== ""
+        ) {
+
+            $departments[] =
+                $row["department"];
+        }
+    }
+}
+
+
+/* =========================================================
+   GET YEAR / SECTION VALUES
+   ========================================================= */
+
+$yearSections = [];
+
+$yearSectionSQL = "
+    SELECT DISTINCT year_section
+    FROM accounts
+    WHERE access = 'student'
+    ORDER BY year_section ASC
+";
+
+$yearSectionResult =
+    $mysqli->query($yearSectionSQL);
+
+if ($yearSectionResult) {
+
+    while ($row = $yearSectionResult->fetch_assoc()) {
+
+        if (
+            isset($row["year_section"]) &&
+            $row["year_section"] !== ""
+        ) {
+
+            $yearSections[] =
+                $row["year_section"];
+        }
+    }
+}
+
+
+/* =========================================================
+   EXTRACT YEARS
+   ========================================================= */
+
+$years = [];
+
+foreach ($yearSections as $value) {
+
+    $parts =
+        preg_split(
+            '/[-\s]+/',
+            $value
+        );
+
+    if (
+        isset($parts[0]) &&
+        $parts[0] !== ""
+    ) {
+
+        $years[] =
+            trim($parts[0]);
+    }
+}
+
+$years =
+    array_unique($years);
+
+sort($years);
+
+
+/* =========================================================
+   EXTRACT SECTIONS
+   ========================================================= */
+
+$sections = [];
+
+foreach ($yearSections as $value) {
+
+    $parts =
+        preg_split(
+            '/[-\s]+/',
+            $value,
+            2
+        );
+
+    if (
+        isset($parts[1]) &&
+        $parts[1] !== ""
+    ) {
+
+        $sections[] =
+            trim($parts[1]);
+    }
+}
+
+$sections =
+    array_unique($sections);
+
+sort($sections);
+
+
+/* =========================================================
+   BUILD STUDENT QUERY
+   ========================================================= */
+
+$where = [
+    "access = 'student'"
+];
+
+$params = [];
+
+$types = "";
+
+
+/* =========================================================
+   DEPARTMENT FILTER
+   ========================================================= */
+
+if ($department !== "") {
+
+    $where[] =
+        "department = ?";
+
+    $params[] =
+        $department;
+
+    $types .= "s";
+}
+
+
+/* =========================================================
+   YEAR FILTER
+   ========================================================= */
+
+if ($year !== "") {
+
+    $where[] =
+        "year_section LIKE ?";
+
+    $params[] =
+        $year . "-%";
+
+    $types .= "s";
+}
+
+
+/* =========================================================
+   SECTION FILTER
+   ========================================================= */
+
+if ($section !== "") {
+
+    $where[] =
+        "year_section LIKE ?";
+
+    $params[] =
+        "%-" . $section;
+
+    $types .= "s";
+}
+
+
+/* =========================================================
+   SEARCH FILTER
+   ========================================================= */
+
+if ($search !== "") {
+
+    $where[] = "
+        (
+            student_id LIKE ?
+            OR first_name LIKE ?
+            OR last_name LIKE ?
+            OR email LIKE ?
+            OR username LIKE ?
+        )
+    ";
+
+    $searchValue =
+        "%" . $search . "%";
+
+    $params[] = $searchValue;
+    $params[] = $searchValue;
+    $params[] = $searchValue;
+    $params[] = $searchValue;
+    $params[] = $searchValue;
+
+    $types .= "sssss";
+}
+
+
+/* =========================================================
+   WHERE CLAUSE
+   ========================================================= */
+
+$whereSQL =
+    implode(
+        " AND ",
+        $where
+    );
+
+
+/* =========================================================
+   COUNT TOTAL STUDENTS
+   ========================================================= */
+
+$countSQL = "
+    SELECT COUNT(*) AS total
+    FROM accounts
+    WHERE $whereSQL
+";
+
+$countStmt =
+    $mysqli->prepare($countSQL);
+
+if ($types !== "") {
+
+    $countStmt->bind_param(
+        $types,
+        ...$params
+    );
+}
+
+$countStmt->execute();
+
+$countResult =
+    $countStmt->get_result();
+
+$totalStudents =
+    (int) (
+        $countResult->fetch_assoc()["total"]
+        ?? 0
+    );
+
+$countStmt->close();
+
+
+/* =========================================================
+   PAGINATION CALCULATION
+   ========================================================= */
+
+$totalPages =
+    max(
+        1,
+        ceil(
+            $totalStudents /
+                $recordsPerPage
+        )
+    );
+
+if ($page > $totalPages) {
+
+    $page =
+        $totalPages;
+}
+
+$offset =
+    ($page - 1) *
+    $recordsPerPage;
+
+
+/* =========================================================
+   GET STUDENTS
+   ========================================================= */
+
+$studentSQL = "
+    SELECT
+        id,
+        last_name,
+        first_name,
+        middle_initial,
+        extension_name,
+        department,
+        year_section,
+        student_id,
+        email,
+        username,
+        created_at,
+        profile_photo
+    FROM accounts
+    WHERE $whereSQL
+    ORDER BY
+        last_name ASC,
+        first_name ASC
+    LIMIT ? OFFSET ?
+";
+
+$studentStmt =
+    $mysqli->prepare($studentSQL);
+
+
+/* =========================================================
+   BIND PARAMETERS
+   ========================================================= */
+
+$studentParams =
+    $params;
+
+$studentParams[] =
+    $recordsPerPage;
+
+$studentParams[] =
+    $offset;
+
+$studentTypes =
+    $types . "ii";
+
+$studentStmt->bind_param(
+    $studentTypes,
+    ...$studentParams
+);
+
+$studentStmt->execute();
+
+$students =
+    $studentStmt->get_result();
+
+
+/* =========================================================
+   FUNCTION FOR FILTER URL
+   ========================================================= */
+
+function buildPageUrl($page)
+{
+
+    $params =
+        $_GET;
+
+    $params["page"] =
+        $page;
+
+    return "?" .
+        http_build_query($params);
+}
+
+?>
+
 
 <!DOCTYPE html>
 
 <html lang="en">
 
+
 <?php include 'globals/head.php'; ?>
+
 
 <style>
     /* =========================================================
@@ -71,46 +576,60 @@
 
     .page-header h2 {
 
-        color: var(--student-primary-dark);
+        color:
+            var(--student-primary-dark);
 
-        font-size: 28px;
+        font-size:
+            28px;
 
-        font-weight: 700;
+        font-weight:
+            700;
 
-        margin-bottom: 5px;
+        margin-bottom:
+            5px;
 
-        letter-spacing: -.3px;
+        letter-spacing:
+            -.3px;
     }
 
     .page-header h2::before {
 
         content: "";
 
-        display: inline-block;
+        display:
+            inline-block;
 
-        width: 5px;
+        width:
+            5px;
 
-        height: 27px;
+        height:
+            27px;
 
-        margin-right: 10px;
+        margin-right:
+            10px;
 
-        vertical-align: -4px;
+        vertical-align:
+            -4px;
 
         background:
             linear-gradient(180deg,
                 var(--student-primary),
                 var(--student-primary-dark));
 
-        border-radius: 5px;
+        border-radius:
+            5px;
     }
 
     .page-header p {
 
-        margin: 0 0 0 15px;
+        margin:
+            0 0 0 15px;
 
-        color: var(--student-muted);
+        color:
+            var(--student-muted);
 
-        font-size: 14px;
+        font-size:
+            14px;
     }
 
 
@@ -120,17 +639,23 @@
 
     .filter-card {
 
-        background: var(--student-white);
+        background:
+            var(--student-white);
 
-        border: 1px solid var(--student-border);
+        border:
+            1px solid var(--student-border);
 
-        border-radius: var(--student-radius);
+        border-radius:
+            var(--student-radius);
 
-        padding: 22px;
+        padding:
+            22px;
 
-        margin-bottom: 24px;
+        margin-bottom:
+            24px;
 
-        box-shadow: var(--student-shadow-sm);
+        box-shadow:
+            var(--student-shadow-sm);
 
         animation:
             studentFadeUp .65s ease .1s both;
@@ -156,13 +681,17 @@
 
     .filter-card .form-label {
 
-        color: #344054;
+        color:
+            #344054;
 
-        font-size: 13px;
+        font-size:
+            13px;
 
-        font-weight: 600;
+        font-weight:
+            600;
 
-        margin-bottom: 7px;
+        margin-bottom:
+            7px;
     }
 
 
@@ -173,17 +702,20 @@
     .filter-card .form-control,
     .filter-card .form-select {
 
-        min-height: 44px;
+        min-height:
+            44px;
 
         border:
             1px solid #D9E0E7;
 
-        border-radius: 8px;
+        border-radius:
+            8px;
 
         color:
             var(--student-text);
 
-        font-size: 14px;
+        font-size:
+            14px;
 
         background-color:
             #FFFFFF;
@@ -196,7 +728,8 @@
 
     .filter-card .form-control::placeholder {
 
-        color: #98A2B3;
+        color:
+            #98A2B3;
     }
 
     .filter-card .form-control:hover,
@@ -215,7 +748,8 @@
         box-shadow:
             0 0 0 3px rgba(11, 79, 138, .10);
 
-        outline: none;
+        outline:
+            none;
     }
 
 
@@ -225,23 +759,28 @@
 
     .filter-card .btn-primary {
 
-        min-height: 44px;
+        min-height:
+            44px;
 
         background:
             linear-gradient(135deg,
                 var(--student-primary),
                 var(--student-primary-dark));
 
-        border: none;
+        border:
+            none;
 
-        border-radius: 8px;
+        border-radius:
+            8px;
 
         padding:
             0 18px;
 
-        font-size: 14px;
+        font-size:
+            14px;
 
-        font-weight: 600;
+        font-weight:
+            600;
 
         box-shadow:
             0 4px 12px rgba(11, 79, 138, .18);
@@ -274,11 +813,14 @@
 
     .filter-card .btn-outline-secondary {
 
-        min-height: 44px;
+        min-height:
+            44px;
 
-        min-width: 44px;
+        min-width:
+            44px;
 
-        border-radius: 8px;
+        border-radius:
+            8px;
 
         transition:
             all .2s ease;
@@ -433,7 +975,7 @@
             1px solid var(--student-border);
 
         padding:
-            14px 14px;
+            14px;
 
         font-size:
             11px;
@@ -1746,7 +2288,8 @@
 
                                 <?php
 
-                                $number = $offset ?? 0;
+                                $number =
+                                    $offset ?? 0;
 
                                 ?>
 
@@ -1757,39 +2300,39 @@
                                     <?php
 
                                     /* =================================================
-                               STUDENT NAME
-                            ================================================= */
+                                   STUDENT NAME
+                                ================================================= */
 
-                                    $firstName =
+                                    $studentFirstName =
                                         $student["first_name"] ?? "";
 
-                                    $middleInitial =
+                                    $studentMiddleInitial =
                                         $student["middle_initial"] ?? "";
 
-                                    $lastName =
+                                    $studentLastName =
                                         $student["last_name"] ?? "";
 
-                                    $extensionName =
+                                    $studentExtensionName =
                                         $student["extension_name"] ?? "";
 
 
                                     $studentName =
                                         trim(
 
-                                            $firstName .
+                                            $studentFirstName .
                                                 " " .
 
                                                 (
-                                                    !empty($middleInitial)
-                                                    ? $middleInitial . ". "
+                                                    !empty($studentMiddleInitial)
+                                                    ? $studentMiddleInitial . ". "
                                                     : ""
                                                 ) .
 
-                                                $lastName .
+                                                $studentLastName .
 
                                                 (
-                                                    !empty($extensionName)
-                                                    ? " " . $extensionName
+                                                    !empty($studentExtensionName)
+                                                    ? " " . $studentExtensionName
                                                     : ""
                                                 )
 
@@ -1797,41 +2340,46 @@
 
 
                                     /* =================================================
-                               PROFILE PHOTO
-                               
-                               DATABASE:
-                               accounts.profile_photo
-                               
-                               This expects your SQL query to include:
-                               accounts.profile_photo
-                            ================================================= */
+                                   PROFILE PHOTO
+
+                                   DATABASE:
+                                   accounts.profile_photo
+
+                                   ACTUAL FILE LOCATION:
+                                   ./student/uploads/profile_photos/
+
+                                   students.php:
+                                   ./admin/students.php
+
+                                   Therefore browser URL:
+                                   ../student/uploads/profile_photos/
+
+                                   checks.php is not involved here.
+                                ================================================= */
 
                                     $profilePhoto =
                                         trim(
                                             $student["profile_photo"] ?? ""
                                         );
 
-
-                                    $photoUrl = "";
-
+                                    $photoUrl =
+                                        "";
 
                                     if ($profilePhoto !== "") {
 
                                         /*
-                                 * Extract only the filename.
-                                 *
-                                 * Example:
-                                 *
-                                 * profile.jpg
-                                 *
-                                 * uploads/profile.jpg
-                                 *
-                                 * profile_photos/profile.jpg
-                                 *
-                                 * will all become:
-                                 *
-                                 * profile.jpg
-                                 */
+                                     * Only get the filename.
+                                     *
+                                     * Example:
+                                     *
+                                     * 20260001.jpg
+                                     * uploads/20260001.jpg
+                                     * profile_photos/20260001.jpg
+                                     *
+                                     * becomes:
+                                     *
+                                     * 20260001.jpg
+                                     */
 
                                         $photoFile =
                                             basename(
@@ -1840,12 +2388,10 @@
 
 
                                         /*
-                                 * SECURITY:
-                                 *
-                                 * Only allow common image extensions.
-                                 */
+                                     * Get extension
+                                     */
 
-                                        $extension =
+                                        $photoExtension =
                                             strtolower(
                                                 pathinfo(
                                                     $photoFile,
@@ -1853,6 +2399,10 @@
                                                 )
                                             );
 
+
+                                        /*
+                                     * Allowed image extensions
+                                     */
 
                                         $allowedExtensions = [
                                             "jpg",
@@ -1863,27 +2413,38 @@
                                         ];
 
 
+                                        /*
+                                     * Validate extension
+                                     */
+
                                         if (
                                             in_array(
-                                                $extension,
+                                                $photoExtension,
                                                 $allowedExtensions,
                                                 true
                                             )
                                         ) {
 
                                             /*
-                                     * =================================================
-                                     * LOCATION 1
-                                     *
-                                     * ../students/uploads/
-                                     * =================================================
-                                     */
+                                         * ACTUAL SERVER FILE PATH
+                                         *
+                                         * students.php:
+                                         * ./admin/students.php
+                                         *
+                                         * photo:
+                                         * ./student/uploads/profile_photos/
+                                         */
 
                                             $photoPath =
                                                 __DIR__ .
-                                                "/../student/uploads/" .
+                                                "/../student/uploads/profile_photos/" .
                                                 $photoFile;
 
+
+                                            /*
+                                         * If file exists,
+                                         * create browser URL.
+                                         */
 
                                             if (
                                                 file_exists(
@@ -1892,49 +2453,21 @@
                                             ) {
 
                                                 $photoUrl =
-                                                    "../student/uploads/" .
+                                                    "../student/uploads/profile_photos/" .
                                                     rawurlencode(
                                                         $photoFile
                                                     );
-                                            } else {
-
-                                                /*
-                                         * =================================================
-                                         * LOCATION 2
-                                         *
-                                         * ../students/uploads/profile_photos/
-                                         * =================================================
-                                         */
-
-                                                $alternativePath =
-                                                    __DIR__ .
-                                                    "/../student/uploads/profile_photos/" .
-                                                    $photoFile;
-
-
-                                                if (
-                                                    file_exists(
-                                                        $alternativePath
-                                                    )
-                                                ) {
-
-                                                    $photoUrl =
-                                                        "../student/uploads/profile_photos/" .
-                                                        rawurlencode(
-                                                            $photoFile
-                                                        );
-                                                }
                                             }
                                         }
                                     }
 
 
                                     /* =================================================
-                               CREATED DATE
-                            ================================================= */
+                                   CREATED DATE
+                                ================================================= */
 
-                                    $createdDate = "";
-
+                                    $createdDate =
+                                        "";
 
                                     if (
                                         !empty($student["created_at"] ?? "")
@@ -1944,7 +2477,6 @@
                                             strtotime(
                                                 $student["created_at"]
                                             );
-
 
                                         if (
                                             $timestamp !== false
@@ -1962,8 +2494,8 @@
 
 
                                     <!-- =================================================
-                                 STUDENT ROW
-                            ================================================= -->
+                                     STUDENT ROW
+                                ================================================= -->
 
                                     <tr>
 
@@ -1977,9 +2509,7 @@
                                         </td>
 
 
-                                        <!-- =================================================
-                                     STUDENT PROFILE
-                                ================================================= -->
+                                        <!-- STUDENT -->
 
                                         <td class="align-middle">
 
@@ -1998,7 +2528,6 @@
                                                             loading="lazy"
                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
-
                                                         <div
                                                             class="avatar-placeholder"
                                                             style="display:none;">
@@ -2006,7 +2535,6 @@
                                                             <i class="bi bi-person-fill"></i>
 
                                                         </div>
-
 
                                                     <?php else: ?>
 
@@ -2045,9 +2573,7 @@
                                         </td>
 
 
-                                        <!-- =================================================
-                                     STUDENT ID
-                                ================================================= -->
+                                        <!-- STUDENT ID -->
 
                                         <td class="align-middle">
 
@@ -2062,9 +2588,7 @@
                                         </td>
 
 
-                                        <!-- =================================================
-                                     DEPARTMENT
-                                ================================================= -->
+                                        <!-- DEPARTMENT -->
 
                                         <td class="align-middle">
 
@@ -2075,9 +2599,7 @@
                                         </td>
 
 
-                                        <!-- =================================================
-                                     YEAR / SECTION
-                                ================================================= -->
+                                        <!-- YEAR / SECTION -->
 
                                         <td class="align-middle">
 
@@ -2092,9 +2614,7 @@
                                         </td>
 
 
-                                        <!-- =================================================
-                                     EMAIL
-                                ================================================= -->
+                                        <!-- EMAIL -->
 
                                         <td class="align-middle">
 
@@ -2109,9 +2629,7 @@
                                         </td>
 
 
-                                        <!-- =================================================
-                                     CREATED
-                                ================================================= -->
+                                        <!-- CREATED -->
 
                                         <td class="align-middle">
 
@@ -2122,9 +2640,7 @@
                                         </td>
 
 
-                                        <!-- =================================================
-                                     ACTION
-                                ================================================= -->
+                                        <!-- ACTION -->
 
                                         <td class="text-center align-middle">
 
@@ -2255,7 +2771,6 @@
                                         1,
                                         ($page ?? 1) - 2
                                     );
-
 
                                 $endPage =
                                     min(
