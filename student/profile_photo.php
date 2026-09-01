@@ -1,3 +1,4 @@
+
 <?php
 
 /* =========================================================
@@ -40,6 +41,7 @@ $studentId = trim(
 );
 
 if ($studentId === "") {
+
     die("Student account information is missing.");
 }
 
@@ -63,28 +65,38 @@ $sql = "
     LIMIT 1
 ";
 
+
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
+
     die("Database query failed: " .
-        htmlspecialchars($mysqli->error));
+        htmlspecialchars(
+            $mysqli->error
+        ));
 }
+
 
 $stmt->bind_param(
     "s",
     $studentId
 );
 
+
 $stmt->execute();
+
 
 $result = $stmt->get_result();
 
+
 $student = $result->fetch_assoc();
+
 
 $stmt->close();
 
 
 if (!$student) {
+
     die("Student account not found.");
 }
 
@@ -109,7 +121,9 @@ $department = trim(
     $student["department"] ?? ""
 );
 
+
 if ($department === "") {
+
     $department = "—";
 }
 
@@ -122,8 +136,10 @@ $yearSection = trim(
     $student["year_section"] ?? ""
 );
 
+
 $year = "—";
 $section = "—";
+
 
 if ($yearSection !== "") {
 
@@ -133,21 +149,32 @@ if ($yearSection !== "") {
         2
     );
 
-    if (isset($parts[0])) {
-        $year = trim($parts[0]);
+
+    if (
+        isset($parts[0]) &&
+        trim($parts[0]) !== ""
+    ) {
+
+        $year = trim(
+            $parts[0]
+        );
     }
+
 
     if (
         isset($parts[1]) &&
         trim($parts[1]) !== ""
     ) {
-        $section = trim($parts[1]);
+
+        $section = trim(
+            $parts[1]
+        );
     }
 }
 
 
 /* =========================================================
-   PROFILE PHOTO FROM DATABASE
+   PROFILE PHOTO
 ========================================================= */
 
 $profilePhoto = trim(
@@ -156,34 +183,39 @@ $profilePhoto = trim(
 
 
 /* =========================================================
-   BUILD BROWSER PHOTO URL
+   BUILD PROFILE PHOTO URL
 ========================================================= */
 
 /*
-    IMPORTANT:
-
-    SERVER:
+    IMPORTANT FOLDER STRUCTURE:
 
     public_html/
-        async/
-        shared/
+    ├── async/
+    │   └── student/
+    │       └── profile_photo.php
+    │
+    └── shared/
+        └── uploads/
+            └── profile_photos/
 
-    Therefore the browser URL is:
+    The database stores:
 
-    /shared/uploads/profile_photos/filename.jpg
+    shared/uploads/profile_photos/photo.jpg
+
+    The browser must load:
+
+    /shared/uploads/profile_photos/photo.jpg
 */
 
 $profilePhotoURL = "";
 
+
 if ($profilePhoto !== "") {
 
-    /*
-        CASE 1
-        Database contains complete URL.
-
-        Example:
-        https://example.com/shared/uploads/profile_photos/a.jpg
-    */
+    /* =====================================================
+       CASE 1
+       Complete URL
+    ====================================================== */
 
     if (
         preg_match(
@@ -192,32 +224,38 @@ if ($profilePhoto !== "") {
         )
     ) {
 
-        $profilePhotoURL = $profilePhoto;
+        $profilePhotoURL =
+            $profilePhoto;
     }
 
 
-    /*
-        CASE 2
-        Database contains:
+    /* =====================================================
+       CASE 2
+       Already root-relative
 
-        /shared/uploads/profile_photos/a.jpg
-    */ elseif (
+       /shared/uploads/profile_photos/photo.jpg
+    ====================================================== */ elseif (
         strpos(
             $profilePhoto,
             "/shared/uploads/profile_photos/"
         ) === 0
     ) {
 
-        $profilePhotoURL = $profilePhoto;
+        $profilePhotoURL =
+            $profilePhoto;
     }
 
 
-    /*
-        CASE 3
-        Database contains:
+    /* =====================================================
+       CASE 3
+       Database path
 
-        shared/uploads/profile_photos/a.jpg
-    */ elseif (
+       shared/uploads/profile_photos/photo.jpg
+
+       Convert to:
+
+       /shared/uploads/profile_photos/photo.jpg
+    ====================================================== */ elseif (
         strpos(
             $profilePhoto,
             "shared/uploads/profile_photos/"
@@ -230,15 +268,16 @@ if ($profilePhoto !== "") {
     }
 
 
-    /*
-        CASE 4
-        Database accidentally contains:
+    /* =====================================================
+       CASE 4
+       Old/incorrect path
 
-        async/shared/uploads/profile_photos/a.jpg
+       async/shared/uploads/profile_photos/photo.jpg
 
-        Remove async/ because shared is
-        outside async.
-    */ elseif (
+       Convert to:
+
+       /shared/uploads/profile_photos/photo.jpg
+    ====================================================== */ elseif (
         strpos(
             $profilePhoto,
             "async/shared/uploads/profile_photos/"
@@ -254,12 +293,10 @@ if ($profilePhoto !== "") {
     }
 
 
-    /*
-        CASE 5
-        Anything else.
-
-        Make it root-relative.
-    */ else {
+    /* =====================================================
+       CASE 5
+       Fallback
+    ====================================================== */ else {
 
         $profilePhotoURL =
             "/" .
@@ -277,6 +314,7 @@ if ($profilePhoto !== "") {
 
 $initials = "";
 
+
 if (
     !empty($student["first_name"])
 ) {
@@ -289,6 +327,7 @@ if (
         )
     );
 }
+
 
 if (
     !empty($student["last_name"])
@@ -303,7 +342,9 @@ if (
     );
 }
 
+
 if ($initials === "") {
+
     $initials = "ST";
 }
 
@@ -314,6 +355,7 @@ if ($initials === "") {
 
 $success =
     $_GET["success"] ?? "";
+
 
 $error =
     $_GET["error"] ?? "";
@@ -326,33 +368,36 @@ $error =
 
 <?php include "globals/head.php"; ?>
 
+
 <body>
 
-    <!-- =========================================================
-     SIDEBAR
-========================================================= -->
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
     <?php include "globals/sidebar.php"; ?>
 
-    <!-- =========================================================
-     TOPBAR
-========================================================= -->
+
+    <!-- =====================================================
+         TOPBAR
+    ====================================================== -->
 
     <?php include "globals/topbar.php"; ?>
 
-    <!-- =========================================================
-     MAIN CONTENT
-========================================================= -->
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
 
     <main class="main-content">
 
-     
         <div class="content-wrapper">
 
 
-            <!-- =====================================================
-         PAGE HEADER
-    ====================================================== -->
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================= -->
 
             <div class="page-header">
 
@@ -371,9 +416,9 @@ $error =
             </div>
 
 
-            <!-- =====================================================
-         SUCCESS MESSAGE
-    ====================================================== -->
+            <!-- =================================================
+                 SUCCESS MESSAGE
+            ================================================= -->
 
             <?php if ($success !== ""): ?>
 
@@ -388,9 +433,9 @@ $error =
             <?php endif; ?>
 
 
-            <!-- =====================================================
-         ERROR MESSAGE
-    ====================================================== -->
+            <!-- =================================================
+                 ERROR MESSAGE
+            ================================================= -->
 
             <?php if ($error !== ""): ?>
 
@@ -405,20 +450,22 @@ $error =
             <?php endif; ?>
 
 
-            <!-- =====================================================
-         PROFILE CARD
-    ====================================================== -->
+            <!-- =================================================
+                 PROFILE CARD
+            ================================================= -->
 
             <div class="profile-photo-card">
 
 
                 <!-- =================================================
-             PROFILE PHOTO
-        ================================================== -->
+                     PROFILE PHOTO
+                ================================================== -->
 
                 <div class="profile-photo-section">
 
+
                     <div class="profile-photo-wrapper">
+
 
                         <?php if ($profilePhotoURL !== ""): ?>
 
@@ -428,6 +475,7 @@ $error =
                                 class="profile-photo"
                                 id="profilePreview"
                                 onerror="profilePhotoError();">
+
 
                             <div
                                 id="photoError"
@@ -441,7 +489,9 @@ $error =
 
                             </div>
 
+
                         <?php else: ?>
+
 
                             <div
                                 class="profile-photo-placeholder"
@@ -451,7 +501,9 @@ $error =
 
                             </div>
 
+
                         <?php endif; ?>
+
 
                     </div>
 
@@ -466,19 +518,23 @@ $error =
                     <div class="student-id">
 
                         Student ID:
+
                         <?= htmlspecialchars($studentId) ?>
 
                     </div>
+
 
                 </div>
 
 
                 <!-- =================================================
-             STUDENT INFORMATION
-        ================================================== -->
+                     STUDENT INFORMATION
+                ================================================== -->
 
                 <div class="student-information">
 
+
+                    <!-- DEPARTMENT -->
 
                     <div class="student-info-item">
 
@@ -490,6 +546,7 @@ $error =
 
                         </span>
 
+
                         <strong>
 
                             <?= htmlspecialchars($department) ?>
@@ -498,6 +555,8 @@ $error =
 
                     </div>
 
+
+                    <!-- YEAR -->
 
                     <div class="student-info-item">
 
@@ -509,6 +568,7 @@ $error =
 
                         </span>
 
+
                         <strong>
 
                             <?= htmlspecialchars($year) ?>
@@ -517,6 +577,8 @@ $error =
 
                     </div>
 
+
+                    <!-- SECTION -->
 
                     <div class="student-info-item">
 
@@ -527,6 +589,7 @@ $error =
                             Section
 
                         </span>
+
 
                         <strong>
 
@@ -541,8 +604,8 @@ $error =
 
 
                 <!-- =================================================
-             UPLOAD SECTION
-        ================================================== -->
+                     UPLOAD SECTION
+                ================================================== -->
 
                 <div class="profile-upload-section">
 
@@ -564,10 +627,16 @@ $error =
 
                         JPG, JPEG, PNG, or WEBP.
 
+                        <br>
+
                         Maximum file size: 5 MB.
 
                     </p>
 
+
+                    <!-- =================================================
+                         UPLOAD FORM
+                    ================================================== -->
 
                     <form
                         action="profile_photo_upload.php"
@@ -590,8 +659,8 @@ $error =
 
 
                         <!-- =================================================
-                     UPLOAD PREVIEW
-                ================================================== -->
+                             UPLOAD PREVIEW
+                        ================================================== -->
 
                         <div
                             id="uploadPreviewContainer"
@@ -613,7 +682,12 @@ $error =
                         </div>
 
 
+                        <!-- =================================================
+                             BUTTON
+                        ================================================== -->
+
                         <div class="profile-upload-footer">
+
 
                             <button
                                 type="submit"
@@ -626,10 +700,12 @@ $error =
 
                             </button>
 
+
                         </div>
 
 
                     </form>
+
 
                 </div>
 
@@ -638,43 +714,51 @@ $error =
 
 
         </div>
-      
 
     </main>
 
+
     <!-- =========================================================
-     PROFILE IMAGE ERROR HANDLER
-========================================================= -->
+         PROFILE IMAGE ERROR HANDLER
+    ========================================================= -->
 
     <script>
         function profilePhotoError() {
+
             const image =
                 document.getElementById(
                     "profilePreview"
                 );
+
 
             const error =
                 document.getElementById(
                     "photoError"
                 );
 
+
             if (image) {
 
                 image.style.display =
                     "none";
+
             }
+
 
             if (error) {
 
                 error.style.display =
                     "block";
+
             }
+
         }
     </script>
 
+
     <!-- =========================================================
-     IMAGE PREVIEW
-========================================================= -->
+         IMAGE PREVIEW
+    ========================================================= -->
 
     <script>
         const photoInput =
@@ -682,10 +766,12 @@ $error =
                 "profile_photo"
             );
 
+
         const uploadPreview =
             document.getElementById(
                 "uploadPreview"
             );
+
 
         const uploadPreviewContainer =
             document.getElementById(
@@ -709,8 +795,13 @@ $error =
                             "none";
 
                         return;
+
                     }
 
+
+                    /* =================================================
+                       ALLOWED FILE TYPES
+                    ================================================= */
 
                     const allowedTypes = [
 
@@ -733,14 +824,22 @@ $error =
                             "Please select a JPG, JPEG, PNG, or WEBP image."
                         );
 
+
                         this.value = "";
+
 
                         uploadPreviewContainer.style.display =
                             "none";
 
+
                         return;
+
                     }
 
+
+                    /* =================================================
+                       FILE SIZE
+                    ================================================= */
 
                     if (
                         file.size >
@@ -751,14 +850,22 @@ $error =
                             "The selected image is larger than 5 MB."
                         );
 
+
                         this.value = "";
+
 
                         uploadPreviewContainer.style.display =
                             "none";
 
+
                         return;
+
                     }
 
+
+                    /* =================================================
+                       PREVIEW
+                    ================================================= */
 
                     const reader =
                         new FileReader();
@@ -770,13 +877,16 @@ $error =
                             uploadPreview.src =
                                 event.target.result;
 
+
                             uploadPreviewContainer.style.display =
                                 "block";
 
                         };
 
 
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(
+                        file
+                    );
 
                 }
             );
@@ -784,9 +894,10 @@ $error =
         }
     </script>
 
+
     <!-- =========================================================
-     UPLOAD BUTTON
-========================================================= -->
+         UPLOAD BUTTON
+    ========================================================= -->
 
     <script>
         const profilePhotoForm =
@@ -812,6 +923,7 @@ $error =
                         button.disabled =
                             true;
 
+
                         button.innerHTML =
                             '<span class="spinner-border spinner-border-sm me-1"></span> Uploading...';
 
@@ -823,11 +935,13 @@ $error =
         }
     </script>
 
+
     <!-- =========================================================
-     GLOBAL SCRIPTS
-========================================================= -->
+         GLOBAL SCRIPTS
+    ========================================================= -->
 
     <?php include "globals/scripts.php"; ?>
+
 
 </body>
 
