@@ -183,28 +183,26 @@ $profilePhoto = trim(
 
 
 /* =========================================================
-   BUILD PROFILE PHOTO URL
+   PROFILE PHOTO URL
 ========================================================= */
 
 /*
-    IMPORTANT FOLDER STRUCTURE:
+    WEBSITE STRUCTURE:
 
-    public_html/
-    ├── async/
-    │   └── student/
-    │       └── profile_photo.php
-    │
-    └── shared/
-        └── uploads/
-            └── profile_photos/
+    Main domain:
+    https://vertigation.com/
 
-    The database stores:
+    Student subdomain:
+    https://async.vertigation.com/
 
+    Physical shared folder:
+    public_html/shared/uploads/profile_photos/
+
+    Database value:
     shared/uploads/profile_photos/photo.jpg
 
-    The browser must load:
-
-    /shared/uploads/profile_photos/photo.jpg
+    Final browser URL:
+    https://vertigation.com/shared/uploads/profile_photos/photo.jpg
 */
 
 $profilePhotoURL = "";
@@ -214,7 +212,7 @@ if ($profilePhoto !== "") {
 
     /* =====================================================
        CASE 1
-       Complete URL
+       COMPLETE URL
     ====================================================== */
 
     if (
@@ -231,8 +229,40 @@ if ($profilePhoto !== "") {
 
     /* =====================================================
        CASE 2
-       Already root-relative
+       OLD URL FROM ASYNC SUBDOMAIN
 
+       Example:
+       https://async.vertigation.com/shared/...
+    ====================================================== */ elseif (
+        stripos(
+            $profilePhoto,
+            "async.vertigation.com"
+        ) !== false
+    ) {
+
+        $path = parse_url(
+            $profilePhoto,
+            PHP_URL_PATH
+        );
+
+
+        if (
+            is_string($path) &&
+            $path !== ""
+        ) {
+
+            $profilePhotoURL =
+                "https://vertigation.com" .
+                $path;
+        }
+    }
+
+
+    /* =====================================================
+       CASE 3
+       ROOT RELATIVE PATH
+
+       Example:
        /shared/uploads/profile_photos/photo.jpg
     ====================================================== */ elseif (
         strpos(
@@ -242,19 +272,17 @@ if ($profilePhoto !== "") {
     ) {
 
         $profilePhotoURL =
+            "https://vertigation.com" .
             $profilePhoto;
     }
 
 
     /* =====================================================
-       CASE 3
-       Database path
+       CASE 4
+       DATABASE PATH
 
+       Example:
        shared/uploads/profile_photos/photo.jpg
-
-       Convert to:
-
-       /shared/uploads/profile_photos/photo.jpg
     ====================================================== */ elseif (
         strpos(
             $profilePhoto,
@@ -263,20 +291,20 @@ if ($profilePhoto !== "") {
     ) {
 
         $profilePhotoURL =
-            "/" .
+            "https://vertigation.com/" .
             $profilePhoto;
     }
 
 
     /* =====================================================
-       CASE 4
-       Old/incorrect path
+       CASE 5
+       OLD INCORRECT PATH
 
+       Example:
        async/shared/uploads/profile_photos/photo.jpg
 
        Convert to:
-
-       /shared/uploads/profile_photos/photo.jpg
+       https://vertigation.com/shared/uploads/...
     ====================================================== */ elseif (
         strpos(
             $profilePhoto,
@@ -284,26 +312,34 @@ if ($profilePhoto !== "") {
         ) === 0
     ) {
 
-        $profilePhotoURL =
-            "/" .
+        $cleanPath =
             substr(
                 $profilePhoto,
                 strlen("async/")
             );
+
+
+        $profilePhotoURL =
+            "https://vertigation.com/" .
+            $cleanPath;
     }
 
 
     /* =====================================================
-       CASE 5
-       Fallback
+       CASE 6
+       FALLBACK
     ====================================================== */ else {
 
-        $profilePhotoURL =
-            "/" .
+        $cleanPath =
             ltrim(
                 $profilePhoto,
                 "/"
             );
+
+
+        $profilePhotoURL =
+            "https://vertigation.com/" .
+            $cleanPath;
     }
 }
 
@@ -422,9 +458,11 @@ $error =
 
             <?php if ($success !== ""): ?>
 
-                <div class="alert alert-success profile-alert">
+                <div
+                    class="alert alert-success profile-alert">
 
-                    <i class="bi bi-check-circle me-2"></i>
+                    <i
+                        class="bi bi-check-circle me-2"></i>
 
                     <?= htmlspecialchars($success) ?>
 
@@ -439,9 +477,11 @@ $error =
 
             <?php if ($error !== ""): ?>
 
-                <div class="alert alert-danger profile-alert">
+                <div
+                    class="alert alert-danger profile-alert">
 
-                    <i class="bi bi-exclamation-circle me-2"></i>
+                    <i
+                        class="bi bi-exclamation-circle me-2"></i>
 
                     <?= htmlspecialchars($error) ?>
 
@@ -470,20 +510,31 @@ $error =
                         <?php if ($profilePhotoURL !== ""): ?>
 
                             <img
-                                src="<?= htmlspecialchars($profilePhotoURL) ?>"
+                                src="<?= htmlspecialchars(
+                                            $profilePhotoURL,
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>"
                                 alt="Profile Photo"
                                 class="profile-photo"
                                 id="profilePreview"
                                 onerror="profilePhotoError();">
 
 
+                            <!-- FALLBACK -->
+
                             <div
                                 id="photoError"
                                 style="display:none;">
 
-                                <div class="profile-photo-placeholder">
+                                <div
+                                    class="profile-photo-placeholder">
 
-                                    <?= htmlspecialchars($initials) ?>
+                                    <?= htmlspecialchars(
+                                        $initials,
+                                        ENT_QUOTES,
+                                        'UTF-8'
+                                    ) ?>
 
                                 </div>
 
@@ -493,11 +544,17 @@ $error =
                         <?php else: ?>
 
 
+                            <!-- DEFAULT INITIALS -->
+
                             <div
                                 class="profile-photo-placeholder"
                                 id="profilePlaceholder">
 
-                                <?= htmlspecialchars($initials) ?>
+                                <?= htmlspecialchars(
+                                    $initials,
+                                    ENT_QUOTES,
+                                    'UTF-8'
+                                ) ?>
 
                             </div>
 
@@ -510,16 +567,24 @@ $error =
 
                     <h4>
 
-                        <?= htmlspecialchars($studentName) ?>
+                        <?= htmlspecialchars(
+                            $studentName,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
 
                     </h4>
 
 
                     <div class="student-id">
-                            <?php echo htmlspecialchars($profilePhotoURL); ?>
+
                         Student ID:
 
-                        <?= htmlspecialchars($studentId) ?>
+                        <?= htmlspecialchars(
+                            $studentId,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
 
                     </div>
 
@@ -538,9 +603,11 @@ $error =
 
                     <div class="student-info-item">
 
-                        <span class="student-info-label">
+                        <span
+                            class="student-info-label">
 
-                            <i class="bi bi-building me-2"></i>
+                            <i
+                                class="bi bi-building me-2"></i>
 
                             Department
 
@@ -549,20 +616,26 @@ $error =
 
                         <strong>
 
-                            <?= htmlspecialchars($department) ?>
+                            <?= htmlspecialchars(
+                                $department,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
 
                         </strong>
 
                     </div>
 
 
-                    <!-- YEAR -->
+                    <!-- YEAR LEVEL -->
 
                     <div class="student-info-item">
 
-                        <span class="student-info-label">
+                        <span
+                            class="student-info-label">
 
-                            <i class="bi bi-mortarboard-fill me-2"></i>
+                            <i
+                                class="bi bi-mortarboard-fill me-2"></i>
 
                             Year Level
 
@@ -571,7 +644,11 @@ $error =
 
                         <strong>
 
-                            <?= htmlspecialchars($year) ?>
+                            <?= htmlspecialchars(
+                                $year,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
 
                         </strong>
 
@@ -582,9 +659,11 @@ $error =
 
                     <div class="student-info-item">
 
-                        <span class="student-info-label">
+                        <span
+                            class="student-info-label">
 
-                            <i class="bi bi-people-fill me-2"></i>
+                            <i
+                                class="bi bi-people-fill me-2"></i>
 
                             Section
 
@@ -593,7 +672,11 @@ $error =
 
                         <strong>
 
-                            <?= htmlspecialchars($section) ?>
+                            <?= htmlspecialchars(
+                                $section,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
 
                         </strong>
 
@@ -607,19 +690,23 @@ $error =
                      UPLOAD SECTION
                 ================================================== -->
 
-                <div class="profile-upload-section">
+                <div
+                    class="profile-upload-section">
 
 
-                    <div class="upload-title">
+                    <div
+                        class="upload-title">
 
-                        <i class="bi bi-camera-fill me-2"></i>
+                        <i
+                            class="bi bi-camera-fill me-2"></i>
 
                         Change Profile Photo
 
                     </div>
 
 
-                    <p class="upload-description">
+                    <p
+                        class="upload-description">
 
                         Choose a clear photo of yourself.
 
@@ -645,7 +732,8 @@ $error =
                         id="profilePhotoForm">
 
 
-                        <div class="upload-input-wrapper">
+                        <div
+                            class="upload-input-wrapper">
 
                             <input
                                 type="file"
@@ -667,7 +755,8 @@ $error =
                             class="upload-preview-container"
                             style="display:none;">
 
-                            <p class="preview-label">
+                            <p
+                                class="preview-label">
 
                                 Preview
 
@@ -683,23 +772,23 @@ $error =
 
 
                         <!-- =================================================
-                             BUTTON
+                             UPLOAD BUTTON
                         ================================================== -->
 
-                        <div class="profile-upload-footer">
-
+                        <div
+                            class="profile-upload-footer">
 
                             <button
                                 type="submit"
                                 class="btn btn-primary"
                                 id="uploadButton">
 
-                                <i class="bi bi-cloud-arrow-up me-1"></i>
+                                <i
+                                    class="bi bi-cloud-arrow-up me-1"></i>
 
                                 Upload Photo
 
                             </button>
-
 
                         </div>
 
@@ -800,7 +889,7 @@ $error =
 
 
                     /* =================================================
-                       ALLOWED FILE TYPES
+                       ALLOWED TYPES
                     ================================================= */
 
                     const allowedTypes = [
@@ -821,7 +910,7 @@ $error =
                     ) {
 
                         alert(
-                            "Please select a JPG, JPEG, PNG, or WEBP image."
+                            "Please select a JPG, PNG, or WEBP image."
                         );
 
 
@@ -838,7 +927,7 @@ $error =
 
 
                     /* =================================================
-                       FILE SIZE
+                       MAX SIZE
                     ================================================= */
 
                     if (
@@ -864,7 +953,7 @@ $error =
 
 
                     /* =================================================
-                       PREVIEW
+                       CREATE PREVIEW
                     ================================================= */
 
                     const reader =
