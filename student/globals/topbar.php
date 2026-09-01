@@ -341,7 +341,7 @@ if (
                             ) ?>"
                     alt="Profile Photo"
                     class="topbar-avatar topbar-avatar-image"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="height: 40px; width: 40px; object-fit: cover; border-radius: 50%;"> 
 
 
                 <!-- FALLBACK -->
