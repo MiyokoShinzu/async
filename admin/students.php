@@ -2618,7 +2618,7 @@ echo '</pre>';
                                                 <div class="student-avatar">
 
                                                     <?php if ($photoUrl !== ""): ?>
-
+                                                        
                                                         <img
                                                             src="<?= htmlspecialchars($photoUrl, ENT_QUOTES, 'UTF-8') ?>"
                                                             alt="<?= htmlspecialchars($studentName, ENT_QUOTES, 'UTF-8') ?>"
