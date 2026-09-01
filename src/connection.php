@@ -1,5 +1,5 @@
 <?php
-date_default_timezone_set('Asia/Manila');
+
 $servername = "localhost"; // Change server name
 $username = "u659629058_evallo"; // Change username
 $password = "c6ehxV57."; // Change password

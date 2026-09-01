@@ -1,3 +1,5 @@
+<?php date_default_timezone_set('Asia/Manila'); ?>
+
 <?php
 
 /* =========================================================
@@ -311,8 +313,13 @@ if (
    ========================================================= */
 
 $allowed_departments = [
-    "Computer Engineering", "Civil Engineering", "Electrical Engineering",
-    "Electronics and Communications Engineering", "Geodetic Engineering", "Architecture", "Chemical Engineering"
+    "Computer Engineering",
+    "Civil Engineering",
+    "Electrical Engineering",
+    "Electronics and Communications Engineering",
+    "Geodetic Engineering",
+    "Architecture",
+    "Chemical Engineering"
 ];
 
 
