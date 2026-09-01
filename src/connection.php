@@ -6,7 +6,7 @@ $password = "c6ehxV57."; // Change password
 $dbname = "u659629058_async"; // Change database name
 
 $mysqli = new mysqli($servername, $username, $password, $dbname);
-
+$mysqli->query("SET time_zone = '+08:00'");
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
