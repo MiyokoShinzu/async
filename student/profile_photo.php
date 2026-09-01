@@ -137,7 +137,7 @@ $yearSection = trim(
 );
 
 
-$year = "—";
+$year = "—";    
 $section = "—";
 
 
