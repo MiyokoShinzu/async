@@ -1,3 +1,4 @@
+
 <?php include 'globals/checks.php'; ?>
 
 <!DOCTYPE html>
@@ -5,12 +6,14 @@
 <html lang="en">
 
 <?php include 'globals/head.php'; ?>
+
 <style>
     /* =========================================================
    STUDENTS PAGE — PROFESSIONAL RESPONSIVE STYLE
 ========================================================= */
 
     :root {
+
         --student-primary: #0B4F8A;
         --student-primary-dark: #083B66;
         --student-primary-light: #EAF3FA;
@@ -39,6 +42,7 @@
 ========================================================= */
 
     .main-content {
+
         background:
             linear-gradient(180deg,
                 #F8FAFC 0%,
@@ -47,8 +51,8 @@
         min-height: 100vh;
     }
 
-
     .content-wrapper {
+
         width: 100%;
     }
 
@@ -58,14 +62,15 @@
 ========================================================= */
 
     .page-header {
+
         margin-bottom: 24px;
 
         animation:
             studentFadeDown .6s ease both;
     }
 
-
     .page-header h2 {
+
         color: var(--student-primary-dark);
 
         font-size: 28px;
@@ -77,8 +82,8 @@
         letter-spacing: -.3px;
     }
 
-
     .page-header h2::before {
+
         content: "";
 
         display: inline-block;
@@ -99,8 +104,8 @@
         border-radius: 5px;
     }
 
-
     .page-header p {
+
         margin: 0 0 0 15px;
 
         color: var(--student-muted);
@@ -114,6 +119,7 @@
 ========================================================= */
 
     .filter-card {
+
         background: var(--student-white);
 
         border: 1px solid var(--student-border);
@@ -134,8 +140,8 @@
             border-color .3s ease;
     }
 
-
     .filter-card:hover {
+
         border-color:
             rgba(11, 79, 138, .18);
 
@@ -149,6 +155,7 @@
 ========================================================= */
 
     .filter-card .form-label {
+
         color: #344054;
 
         font-size: 13px;
@@ -165,6 +172,7 @@
 
     .filter-card .form-control,
     .filter-card .form-select {
+
         min-height: 44px;
 
         border:
@@ -186,21 +194,21 @@
             transform .2s ease;
     }
 
-
     .filter-card .form-control::placeholder {
+
         color: #98A2B3;
     }
 
-
     .filter-card .form-control:hover,
     .filter-card .form-select:hover {
+
         border-color:
             #B8C5D1;
     }
 
-
     .filter-card .form-control:focus,
     .filter-card .form-select:focus {
+
         border-color:
             var(--student-primary);
 
@@ -216,6 +224,7 @@
 ========================================================= */
 
     .filter-card .btn-primary {
+
         min-height: 44px;
 
         background:
@@ -243,8 +252,8 @@
             background .2s ease;
     }
 
-
     .filter-card .btn-primary:hover {
+
         transform:
             translateY(-2px);
 
@@ -252,8 +261,8 @@
             0 7px 18px rgba(11, 79, 138, .25);
     }
 
-
     .filter-card .btn-primary:active {
+
         transform:
             translateY(0);
     }
@@ -264,6 +273,7 @@
 ========================================================= */
 
     .filter-card .btn-outline-secondary {
+
         min-height: 44px;
 
         min-width: 44px;
@@ -274,8 +284,8 @@
             all .2s ease;
     }
 
-
     .filter-card .btn-outline-secondary:hover {
+
         color:
             var(--student-primary);
 
@@ -295,6 +305,7 @@
 ========================================================= */
 
     .table-card {
+
         background:
             var(--student-white);
 
@@ -320,6 +331,7 @@
 ========================================================= */
 
     .table-header {
+
         display:
             flex;
 
@@ -341,8 +353,8 @@
             1px solid var(--student-border);
     }
 
-
     .table-header-title {
+
         display:
             flex;
 
@@ -359,8 +371,8 @@
             700;
     }
 
-
     .table-header-title i {
+
         font-size:
             18px;
 
@@ -368,8 +380,8 @@
             var(--student-primary);
     }
 
-
     .table-header .badge {
+
         min-width:
             34px;
 
@@ -392,6 +404,7 @@
 ========================================================= */
 
     .student-table {
+
         width:
             100%;
 
@@ -408,8 +421,8 @@
             0;
     }
 
-
     .student-table thead th {
+
         background:
             #F8FAFC;
 
@@ -438,8 +451,8 @@
             nowrap;
     }
 
-
     .student-table tbody td {
+
         padding:
             14px;
 
@@ -456,25 +469,26 @@
             #FFFFFF;
     }
 
-
     .student-table tbody tr:last-child td {
+
         border-bottom:
             none;
     }
 
 
     /* =========================================================
-   TABLE ROW ANIMATION
+   TABLE ROW
 ========================================================= */
 
     .student-table tbody tr {
+
         transition:
             background-color .25s ease,
             box-shadow .25s ease;
     }
 
-
     .student-table tbody tr:hover td {
+
         background:
             #F8FBFE;
     }
@@ -485,6 +499,7 @@
 ========================================================= */
 
     .student-table tbody td:first-child {
+
         color:
             #98A2B3;
 
@@ -501,6 +516,7 @@
 ========================================================= */
 
     .student-profile {
+
         display:
             flex;
 
@@ -520,6 +536,7 @@
 ========================================================= */
 
     .student-avatar {
+
         position:
             relative;
 
@@ -564,8 +581,8 @@
             border-color .3s ease;
     }
 
-
     .student-table tbody tr:hover .student-avatar {
+
         transform:
             scale(1.07);
 
@@ -576,8 +593,8 @@
             0 5px 14px rgba(11, 79, 138, .16);
     }
 
-
     .student-avatar img {
+
         width:
             100%;
 
@@ -597,6 +614,7 @@
 ========================================================= */
 
     .avatar-placeholder {
+
         width:
             100%;
 
@@ -624,8 +642,8 @@
             21px;
     }
 
-
     .avatar-placeholder i {
+
         opacity:
             .85;
     }
@@ -636,12 +654,13 @@
 ========================================================= */
 
     .student-info {
+
         min-width:
             0;
     }
 
-
     .student-name {
+
         max-width:
             250px;
 
@@ -667,14 +686,14 @@
             color .2s ease;
     }
 
-
     .student-table tbody tr:hover .student-name {
+
         color:
             var(--student-primary);
     }
 
-
     .student-info small {
+
         display:
             block;
 
@@ -691,6 +710,7 @@
 ========================================================= */
 
     .student-id-badge {
+
         display:
             inline-flex;
 
@@ -725,8 +745,8 @@
             all .2s ease;
     }
 
-
     .student-table tbody tr:hover .student-id-badge {
+
         background:
             var(--student-primary-light);
 
@@ -740,6 +760,7 @@
 ========================================================= */
 
     .student-table .badge.text-bg-light {
+
         background:
             #F8FAFC !important;
 
@@ -768,6 +789,7 @@
 ========================================================= */
 
     .student-email {
+
         display:
             inline-block;
 
@@ -796,6 +818,7 @@
 ========================================================= */
 
     .student-view-btn {
+
         display:
             inline-flex;
 
@@ -821,8 +844,8 @@
             all .25s ease;
     }
 
-
     .student-view-btn:hover {
+
         color:
             #FFFFFF;
 
@@ -839,14 +862,14 @@
             0 4px 10px rgba(11, 79, 138, .18);
     }
 
-
     .student-view-btn i {
+
         transition:
             transform .25s ease;
     }
 
-
     .student-view-btn:hover i {
+
         transform:
             scale(1.12);
     }
@@ -857,6 +880,7 @@
 ========================================================= */
 
     .empty-state {
+
         padding:
             75px 20px;
 
@@ -870,8 +894,8 @@
             studentFadeUp .5s ease both;
     }
 
-
     .empty-icon {
+
         width:
             76px;
 
@@ -906,8 +930,8 @@
             studentFloat 3s ease-in-out infinite;
     }
 
-
     .empty-state h5 {
+
         margin-bottom:
             7px;
 
@@ -921,8 +945,8 @@
             700;
     }
 
-
     .empty-state p {
+
         font-size:
             14px;
     }
@@ -933,6 +957,7 @@
 ========================================================= */
 
     .pagination-wrapper {
+
         padding:
             16px 20px;
 
@@ -943,14 +968,14 @@
             #FCFDFE;
     }
 
-
     .pagination {
+
         gap:
             4px;
     }
 
-
     .pagination .page-link {
+
         min-width:
             36px;
 
@@ -988,8 +1013,8 @@
             all .2s ease;
     }
 
-
     .pagination .page-link:hover {
+
         background:
             var(--student-primary-light);
 
@@ -1003,8 +1028,8 @@
             translateY(-1px);
     }
 
-
     .pagination .active .page-link {
+
         background:
             linear-gradient(135deg,
                 var(--student-primary),
@@ -1020,8 +1045,8 @@
             0 3px 8px rgba(11, 79, 138, .18);
     }
 
-
     .pagination .disabled .page-link {
+
         color:
             #98A2B3;
 
@@ -1041,6 +1066,7 @@
 ========================================================= */
 
     .table-responsive {
+
         scrollbar-width:
             thin;
 
@@ -1048,20 +1074,20 @@
             #B8C9D8 #F3F6F8;
     }
 
-
     .table-responsive::-webkit-scrollbar {
+
         height:
             7px;
     }
 
-
     .table-responsive::-webkit-scrollbar-track {
+
         background:
             #F3F6F8;
     }
 
-
     .table-responsive::-webkit-scrollbar-thumb {
+
         background:
             #B8C9D8;
 
@@ -1069,8 +1095,8 @@
             10px;
     }
 
-
     .table-responsive::-webkit-scrollbar-thumb:hover {
+
         background:
             var(--student-primary);
     }
@@ -1083,6 +1109,7 @@
     @keyframes studentFadeUp {
 
         from {
+
             opacity:
                 0;
 
@@ -1091,6 +1118,7 @@
         }
 
         to {
+
             opacity:
                 1;
 
@@ -1104,6 +1132,7 @@
     @keyframes studentFadeDown {
 
         from {
+
             opacity:
                 0;
 
@@ -1112,6 +1141,7 @@
         }
 
         to {
+
             opacity:
                 1;
 
@@ -1126,11 +1156,13 @@
 
         0%,
         100% {
+
             transform:
                 translateY(0);
         }
 
         50% {
+
             transform:
                 translateY(-5px);
         }
@@ -1145,18 +1177,19 @@
     @media (max-width: 991.98px) {
 
         .filter-card {
+
             padding:
                 18px;
         }
 
-
         .student-table {
+
             min-width:
                 1050px;
         }
 
-
         .table-responsive {
+
             overflow-x:
                 auto;
 
@@ -1164,8 +1197,8 @@
                 touch;
         }
 
-
         .table-header {
+
             padding:
                 16px 18px;
         }
@@ -1180,18 +1213,19 @@
     @media (max-width: 767.98px) {
 
         .page-header {
+
             margin-bottom:
                 18px;
         }
 
-
         .page-header h2 {
+
             font-size:
                 23px;
         }
 
-
         .page-header h2::before {
+
             height:
                 22px;
 
@@ -1202,8 +1236,8 @@
                 -3px;
         }
 
-
         .page-header p {
+
             margin-left:
                 14px;
 
@@ -1211,8 +1245,8 @@
                 13px;
         }
 
-
         .filter-card {
+
             padding:
                 16px;
 
@@ -1220,26 +1254,26 @@
                 10px;
         }
 
-
         .filter-card .row {
+
             --bs-gutter-y:
                 12px;
         }
 
-
         .filter-card .btn-primary {
+
             flex:
                 1;
         }
 
-
         .table-card {
+
             border-radius:
                 10px;
         }
 
-
         .table-header {
+
             padding:
                 15px;
 
@@ -1247,26 +1281,26 @@
                 58px;
         }
 
-
         .table-header-title {
+
             font-size:
                 14px;
         }
 
-
         .student-table {
+
             min-width:
                 1000px;
         }
 
-
         .student-profile {
+
             min-width:
                 210px;
         }
 
-
         .student-avatar {
+
             width:
                 44px;
 
@@ -1277,20 +1311,20 @@
                 44px;
         }
 
-
         .student-name {
+
             max-width:
                 190px;
         }
 
-
         .student-email {
+
             max-width:
                 180px;
         }
 
-
         .pagination-wrapper {
+
             padding:
                 12px;
         }
@@ -1305,6 +1339,7 @@
     @media (max-width: 575.98px) {
 
         .content-wrapper {
+
             padding-left:
                 10px;
 
@@ -1312,52 +1347,52 @@
                 10px;
         }
 
-
         .page-header h2 {
+
             font-size:
                 21px;
         }
 
-
         .filter-card {
+
             padding:
                 14px;
         }
 
-
         .filter-card .form-control,
         .filter-card .form-select {
+
             min-height:
                 42px;
         }
-
 
         .filter-card .btn-primary,
         .filter-card .btn-outline-secondary {
+
             min-height:
                 42px;
         }
 
-
         .table-header {
+
             padding:
                 13px;
         }
 
-
         .table-header .badge {
+
             min-width:
                 30px;
         }
 
-
         .student-table {
+
             min-width:
                 950px;
         }
 
-
         .student-avatar {
+
             width:
                 42px;
 
@@ -1368,26 +1403,26 @@
                 42px;
         }
 
-
         .student-name {
+
             max-width:
                 165px;
         }
 
-
         .student-profile {
+
             min-width:
                 190px;
         }
 
-
         .empty-state {
+
             padding:
                 55px 15px;
         }
 
-
         .pagination {
+
             justify-content:
                 center !important;
 
@@ -1407,6 +1442,7 @@
         *,
         *::before,
         *::after {
+
             animation:
                 none !important;
 
@@ -1417,26 +1453,27 @@
     }
 </style>
 
+
 <body>
 
 
     <!-- =========================================================
-         SIDEBAR
-    ========================================================= -->
+     SIDEBAR
+========================================================= -->
 
     <?php include 'globals/sidebar.php'; ?>
 
 
     <!-- =========================================================
-         TOPBAR
-    ========================================================= -->
+     TOPBAR
+========================================================= -->
 
     <?php include 'globals/topbar.php'; ?>
 
 
     <!-- =========================================================
-         MAIN CONTENT
-    ========================================================= -->
+     MAIN CONTENT
+========================================================= -->
 
     <main class="main-content">
 
@@ -1444,8 +1481,8 @@
 
 
             <!-- =====================================================
-                 PAGE HEADER
-            ===================================================== -->
+             PAGE HEADER
+        ===================================================== -->
 
             <div class="page-header">
 
@@ -1461,8 +1498,8 @@
 
 
             <!-- =====================================================
-                 FILTERS
-            ===================================================== -->
+             FILTERS
+        ===================================================== -->
 
             <div class="filter-card">
 
@@ -1624,8 +1661,8 @@
 
 
             <!-- =====================================================
-                 STUDENT TABLE
-            ===================================================== -->
+             STUDENT TABLE
+        ===================================================== -->
 
             <div class="table-card">
 
@@ -1656,8 +1693,8 @@
 
 
                     <!-- =================================================
-                         RESPONSIVE TABLE
-                    ================================================= -->
+                     RESPONSIVE TABLE
+                ================================================= -->
 
                     <div class="table-responsive">
 
@@ -1719,11 +1756,9 @@
 
                                     <?php
 
-                                    /*
-                                     * =================================================
-                                     * STUDENT NAME
-                                     * =================================================
-                                     */
+                                    /* =================================================
+                               STUDENT NAME
+                            ================================================= */
 
                                     $firstName =
                                         $student["first_name"] ?? "";
@@ -1761,17 +1796,15 @@
                                         );
 
 
-                                    /*
-                                     * =================================================
-                                     * PROFILE PHOTO
-                                     *
-                                     * Database:
-                                     * accounts.profile_photo
-                                     *
-                                     * Physical folder:
-                                     * ../students/uploads/
-                                     * =================================================
-                                     */
+                                    /* =================================================
+                               PROFILE PHOTO
+                               
+                               DATABASE:
+                               accounts.profile_photo
+                               
+                               This expects your SQL query to include:
+                               accounts.profile_photo
+                            ================================================= */
 
                                     $profilePhoto =
                                         trim(
@@ -1785,14 +1818,20 @@
                                     if ($profilePhoto !== "") {
 
                                         /*
-                                         * Get only the filename.
-                                         *
-                                         * This prevents paths such as:
-                                         *
-                                         * uploads/profile_photos/photo.jpg
-                                         *
-                                         * from breaking the image URL.
-                                         */
+                                 * Extract only the filename.
+                                 *
+                                 * Example:
+                                 *
+                                 * profile.jpg
+                                 *
+                                 * uploads/profile.jpg
+                                 *
+                                 * profile_photos/profile.jpg
+                                 *
+                                 * will all become:
+                                 *
+                                 * profile.jpg
+                                 */
 
                                         $photoFile =
                                             basename(
@@ -1801,63 +1840,98 @@
 
 
                                         /*
-                                         * Primary location:
-                                         *
-                                         * ../students/uploads/
-                                         */
+                                 * SECURITY:
+                                 *
+                                 * Only allow common image extensions.
+                                 */
 
-                                        $photoPath =
-                                            __DIR__ .
-                                            "/../students/uploads/" .
-                                            $photoFile;
+                                        $extension =
+                                            strtolower(
+                                                pathinfo(
+                                                    $photoFile,
+                                                    PATHINFO_EXTENSION
+                                                )
+                                            );
 
 
-                                        if (file_exists($photoPath)) {
+                                        $allowedExtensions = [
+                                            "jpg",
+                                            "jpeg",
+                                            "png",
+                                            "gif",
+                                            "webp"
+                                        ];
 
-                                            $photoUrl =
-                                                "../students/uploads/" .
-                                                rawurlencode(
-                                                    $photoFile
-                                                );
-                                        } else {
+
+                                        if (
+                                            in_array(
+                                                $extension,
+                                                $allowedExtensions,
+                                                true
+                                            )
+                                        ) {
 
                                             /*
-                                             * Also check:
-                                             *
-                                             * ../students/uploads/profile_photos/
-                                             *
-                                             * This provides compatibility
-                                             * if the upload system uses
-                                             * a profile_photos subfolder.
-                                             */
+                                     * =================================================
+                                     * LOCATION 1
+                                     *
+                                     * ../students/uploads/
+                                     * =================================================
+                                     */
 
-                                            $alternativePath =
+                                            $photoPath =
                                                 __DIR__ .
-                                                "/../students/uploads/profile_photos/" .
+                                                "/../students/uploads/" .
                                                 $photoFile;
 
 
                                             if (
                                                 file_exists(
-                                                    $alternativePath
+                                                    $photoPath
                                                 )
                                             ) {
 
                                                 $photoUrl =
-                                                    "../students/uploads/profile_photos/" .
+                                                    "../students/uploads/" .
                                                     rawurlencode(
                                                         $photoFile
                                                     );
+                                            } else {
+
+                                                /*
+                                         * =================================================
+                                         * LOCATION 2
+                                         *
+                                         * ../students/uploads/profile_photos/
+                                         * =================================================
+                                         */
+
+                                                $alternativePath =
+                                                    __DIR__ .
+                                                    "/../students/uploads/profile_photos/" .
+                                                    $photoFile;
+
+
+                                                if (
+                                                    file_exists(
+                                                        $alternativePath
+                                                    )
+                                                ) {
+
+                                                    $photoUrl =
+                                                        "../students/uploads/profile_photos/" .
+                                                        rawurlencode(
+                                                            $photoFile
+                                                        );
+                                                }
                                             }
                                         }
                                     }
 
 
-                                    /*
-                                     * =================================================
-                                     * CREATED DATE
-                                     * =================================================
-                                     */
+                                    /* =================================================
+                               CREATED DATE
+                            ================================================= */
 
                                     $createdDate = "";
 
@@ -1872,7 +1946,9 @@
                                             );
 
 
-                                        if ($timestamp !== false) {
+                                        if (
+                                            $timestamp !== false
+                                        ) {
 
                                             $createdDate =
                                                 date(
@@ -1886,8 +1962,8 @@
 
 
                                     <!-- =================================================
-                                         STUDENT ROW
-                                    ================================================= -->
+                                 STUDENT ROW
+                            ================================================= -->
 
                                     <tr>
 
@@ -1902,8 +1978,8 @@
 
 
                                         <!-- =================================================
-                                             STUDENT PROFILE
-                                        ================================================= -->
+                                     STUDENT PROFILE
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -1922,6 +1998,7 @@
                                                             loading="lazy"
                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
+
                                                         <div
                                                             class="avatar-placeholder"
                                                             style="display:none;">
@@ -1929,6 +2006,7 @@
                                                             <i class="bi bi-person-fill"></i>
 
                                                         </div>
+
 
                                                     <?php else: ?>
 
@@ -1968,8 +2046,8 @@
 
 
                                         <!-- =================================================
-                                             STUDENT ID
-                                        ================================================= -->
+                                     STUDENT ID
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -1985,8 +2063,8 @@
 
 
                                         <!-- =================================================
-                                             DEPARTMENT
-                                        ================================================= -->
+                                     DEPARTMENT
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -1998,8 +2076,8 @@
 
 
                                         <!-- =================================================
-                                             YEAR / SECTION
-                                        ================================================= -->
+                                     YEAR / SECTION
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -2015,8 +2093,8 @@
 
 
                                         <!-- =================================================
-                                             EMAIL
-                                        ================================================= -->
+                                     EMAIL
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -2032,19 +2110,21 @@
 
 
                                         <!-- =================================================
-                                             CREATED
-                                        ================================================= -->
+                                     CREATED
+                                ================================================= -->
 
                                         <td class="align-middle">
 
-                                            <?= htmlspecialchars($createdDate) ?>
+                                            <?= htmlspecialchars(
+                                                $createdDate
+                                            ) ?>
 
                                         </td>
 
 
                                         <!-- =================================================
-                                             ACTION
-                                        ================================================= -->
+                                     ACTION
+                                ================================================= -->
 
                                         <td class="text-center align-middle">
 
@@ -2078,8 +2158,8 @@
 
 
                     <!-- =================================================
-                         EMPTY STATE
-                    ================================================= -->
+                     EMPTY STATE
+                ================================================= -->
 
                     <div class="empty-state">
 
@@ -2091,7 +2171,9 @@
 
 
                         <h5>
+
                             No students found
+
                         </h5>
 
 
@@ -2109,8 +2191,8 @@
 
 
                 <!-- =================================================
-                     PAGINATION
-                ================================================= -->
+                 PAGINATION
+            ================================================= -->
 
                 <?php if (($totalPages ?? 0) > 1): ?>
 
@@ -2127,14 +2209,16 @@
 
                                 <li
                                     class="page-item
-                                    <?= ($page ?? 1) <= 1 ? "disabled" : "" ?>">
+                                <?= ($page ?? 1) <= 1 ? "disabled" : "" ?>">
 
                                     <?php if (($page ?? 1) > 1): ?>
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl(($page ?? 1) - 1)
+                                                        buildPageUrl(
+                                                            ($page ?? 1) - 1
+                                                        )
                                                     ) ?>">
 
                                             <i class="bi bi-chevron-left"></i>
@@ -2191,10 +2275,10 @@
 
                                     <li
                                         class="page-item
-                                        <?= $i === ($page ?? 1)
-                                            ? "active"
-                                            : ""
-                                        ?>">
+                                    <?= $i === ($page ?? 1)
+                                        ? "active"
+                                        : ""
+                                    ?>">
 
                                         <a
                                             class="page-link"
@@ -2216,17 +2300,19 @@
 
                                 <li
                                     class="page-item
-                                    <?= ($page ?? 1) >= ($totalPages ?? 1)
-                                        ? "disabled"
-                                        : ""
-                                    ?>">
+                                <?= ($page ?? 1) >= ($totalPages ?? 1)
+                                    ? "disabled"
+                                    : ""
+                                ?>">
 
                                     <?php if (($page ?? 1) < ($totalPages ?? 1)): ?>
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl(($page ?? 1) + 1)
+                                                        buildPageUrl(
+                                                            ($page ?? 1) + 1
+                                                        )
                                                     ) ?>">
 
                                             <span class="d-none d-sm-inline">
@@ -2266,397 +2352,14 @@
 
             </div>
 
-
         </div>
 
     </main>
 
 
     <!-- =========================================================
-         PAGE-SPECIFIC STYLE
-    ========================================================= -->
-
-    <style>
-        /* =====================================================
-           STUDENT PROFILE
-        ===================================================== */
-
-        .student-profile {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            min-width: 220px;
-
-        }
-
-
-        .student-avatar {
-
-            width: 48px;
-
-            height: 48px;
-
-            min-width: 48px;
-
-            border-radius: 50%;
-
-            overflow: hidden;
-
-            background: #eaf3fa;
-
-            border: 2px solid #d9e9f5;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            position: relative;
-
-        }
-
-
-        .student-avatar img {
-
-            width: 100%;
-
-            height: 100%;
-
-            object-fit: cover;
-
-            display: block;
-
-        }
-
-
-        .avatar-placeholder {
-
-            width: 100%;
-
-            height: 100%;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            background: #eaf3fa;
-
-            color: #0b4f8a;
-
-            font-size: 22px;
-
-        }
-
-
-        .student-info {
-
-            min-width: 0;
-
-        }
-
-
-        .student-name {
-
-            font-weight: 600;
-
-            color: #212529;
-
-            white-space: nowrap;
-
-            overflow: hidden;
-
-            text-overflow: ellipsis;
-
-            max-width: 230px;
-
-        }
-
-
-        .student-id-badge {
-
-            display: inline-block;
-
-            padding: 5px 9px;
-
-            background: #f1f7fb;
-
-            color: #0b4f8a;
-
-            border: 1px solid #d9e9f5;
-
-            border-radius: 6px;
-
-            font-weight: 600;
-
-            font-size: 13px;
-
-            white-space: nowrap;
-
-        }
-
-
-        .student-email {
-
-            color: #6c757d;
-
-            font-size: 14px;
-
-        }
-
-
-        /* =====================================================
-           TABLE
-        ===================================================== */
-
-        .student-table {
-
-            margin-bottom: 0;
-
-            vertical-align: middle;
-
-        }
-
-
-        .student-table thead th {
-
-            white-space: nowrap;
-
-            font-size: 13px;
-
-            font-weight: 700;
-
-            color: #495057;
-
-            text-transform: uppercase;
-
-            letter-spacing: .3px;
-
-            padding: 14px 12px;
-
-            border-bottom: 1px solid #dee2e6;
-
-        }
-
-
-        .student-table tbody td {
-
-            padding: 13px 12px;
-
-            border-color: #edf0f2;
-
-        }
-
-
-        .student-table tbody tr {
-
-            transition:
-                background-color .2s ease,
-                transform .2s ease;
-
-        }
-
-
-        .student-table tbody tr:hover {
-
-            background-color: #f8fbfd;
-
-        }
-
-
-        /* =====================================================
-           VIEW BUTTON
-        ===================================================== */
-
-        .student-view-btn {
-
-            white-space: nowrap;
-
-            transition:
-                all .2s ease;
-
-        }
-
-
-        .student-view-btn:hover {
-
-            transform: translateY(-1px);
-
-        }
-
-
-        /* =====================================================
-           PAGINATION
-        ===================================================== */
-
-        .pagination-wrapper {
-
-            border-top: 1px solid #dee2e6;
-
-            padding: 16px;
-
-        }
-
-
-        .pagination .page-link {
-
-            color: #0b4f8a;
-
-            border-color: #dee2e6;
-
-            transition:
-                all .2s ease;
-
-        }
-
-
-        .pagination .page-link:hover {
-
-            background: #eaf3fa;
-
-            border-color: #0b4f8a;
-
-        }
-
-
-        .pagination .active .page-link {
-
-            background: #0b4f8a;
-
-            border-color: #0b4f8a;
-
-            color: #fff;
-
-        }
-
-
-        /* =====================================================
-           EMPTY STATE
-        ===================================================== */
-
-        .empty-state {
-
-            text-align: center;
-
-            padding: 70px 20px;
-
-            color: #6c757d;
-
-        }
-
-
-        .empty-icon {
-
-            width: 70px;
-
-            height: 70px;
-
-            margin: 0 auto 18px;
-
-            border-radius: 50%;
-
-            background: #eaf3fa;
-
-            color: #0b4f8a;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 30px;
-
-        }
-
-
-        .empty-state h5 {
-
-            color: #343a40;
-
-            font-weight: 700;
-
-            margin-bottom: 8px;
-
-        }
-
-
-        /* =====================================================
-           RESPONSIVE TABLE
-        ===================================================== */
-
-        @media (max-width: 991.98px) {
-
-            .student-table {
-
-                min-width: 950px;
-
-            }
-
-            .table-responsive {
-
-                overflow-x: auto;
-
-                -webkit-overflow-scrolling: touch;
-
-            }
-
-        }
-
-
-        @media (max-width: 575.98px) {
-
-            .student-profile {
-
-                min-width: 190px;
-
-            }
-
-
-            .student-avatar {
-
-                width: 42px;
-
-                height: 42px;
-
-                min-width: 42px;
-
-            }
-
-
-            .student-name {
-
-                max-width: 150px;
-
-            }
-
-
-            .student-table {
-
-                min-width: 900px;
-
-            }
-
-
-            .pagination-wrapper {
-
-                padding: 12px;
-
-            }
-
-        }
-    </style>
-
-
-    <!-- =========================================================
-         JAVASCRIPT
-    ========================================================= -->
+     JAVASCRIPT
+========================================================= -->
 
     <?php include 'globals/scripts.php'; ?>
 

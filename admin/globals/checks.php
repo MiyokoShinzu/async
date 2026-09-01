@@ -480,7 +480,8 @@ $studentSQL = "
         student_id,
         email,
         username,
-        created_at
+        created_at,
+        profile_photo
     FROM accounts
     WHERE $whereSQL
     ORDER BY
