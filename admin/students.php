@@ -3,7 +3,7 @@
 /* =========================================================
    ADMIN STUDENTS
    ETS-Async Learning Portal
-   ========================================================= */
+========================================================= */
 
 session_start();
 
@@ -155,6 +155,8 @@ $departmentSQL = "
     SELECT DISTINCT department
     FROM accounts
     WHERE access = 'student'
+    AND department IS NOT NULL
+    AND department <> ''
     ORDER BY department ASC
 ";
 
@@ -165,14 +167,8 @@ if ($departmentResult) {
 
     while ($row = $departmentResult->fetch_assoc()) {
 
-        if (
-            isset($row["department"]) &&
-            $row["department"] !== ""
-        ) {
-
-            $departments[] =
-                $row["department"];
-        }
+        $departments[] =
+            $row["department"];
     }
 }
 
@@ -187,6 +183,8 @@ $yearSectionSQL = "
     SELECT DISTINCT year_section
     FROM accounts
     WHERE access = 'student'
+    AND year_section IS NOT NULL
+    AND year_section <> ''
     ORDER BY year_section ASC
 ";
 
@@ -197,14 +195,8 @@ if ($yearSectionResult) {
 
     while ($row = $yearSectionResult->fetch_assoc()) {
 
-        if (
-            isset($row["year_section"]) &&
-            $row["year_section"] !== ""
-        ) {
-
-            $yearSections[] =
-                $row["year_section"];
-        }
+        $yearSections[] =
+            $row["year_section"];
     }
 }
 
@@ -403,11 +395,11 @@ $countStmt->execute();
 $countResult =
     $countStmt->get_result();
 
+$countRow =
+    $countResult->fetch_assoc();
+
 $totalStudents =
-    (int) (
-        $countResult->fetch_assoc()["total"]
-        ?? 0
-    );
+    (int) ($countRow["total"] ?? 0);
 
 $countStmt->close();
 
@@ -517,7 +509,7 @@ function buildPageUrl($page)
 
 
 /* =========================================================
-   PROFILE PHOTO URL FUNCTION
+   PROFILE PHOTO URL
 ========================================================= */
 
 function getStudentPhotoUrl($profilePhoto)
@@ -526,6 +518,7 @@ function getStudentPhotoUrl($profilePhoto)
         trim($profilePhoto ?? "");
 
     if ($profilePhoto === "") {
+
         return "";
     }
 
@@ -549,11 +542,14 @@ function getStudentPhotoUrl($profilePhoto)
 
 
     /* -----------------------------------------------------
-       Security: reject path traversal
+       Security
     ----------------------------------------------------- */
 
     if (
-        strpos($profilePhoto, "..") !== false
+        strpos(
+            $profilePhoto,
+            ".."
+        ) !== false
     ) {
 
         return "";
@@ -593,131 +589,42 @@ function getStudentPhotoUrl($profilePhoto)
 
 
     /* =====================================================
-       POSSIBLE FILE LOCATIONS
+       ACTUAL FILE LOCATION
+
+       admin/students.php
+              ↓
+            ../
+              ↓
+       student/uploads/profile_photos/
     ===================================================== */
 
-    $possibleLocations = [];
-
-
-    /* -----------------------------------------------------
-       OPTION 1
-
-       Database:
-       uploads/profile_photos/file.jpg
-
-       Actual:
-       student/uploads/profile_photos/file.jpg
-    ----------------------------------------------------- */
-
-    $possibleLocations[] = [
-        "filesystem" =>
+    $filesystemPath =
         __DIR__ .
-            "/../student/" .
-            $profilePhoto,
+        "/../student/" .
+        $profilePhoto;
 
-        "url" =>
+
+    /* =====================================================
+       BROWSER URL
+    ===================================================== */
+
+    $urlPath =
         "../student/" .
-            $profilePhoto
-    ];
+        $profilePhoto;
 
 
-    /* -----------------------------------------------------
-       OPTION 2
-
-       If database contains:
-
-       student/uploads/profile_photos/file.jpg
-    ----------------------------------------------------- */
+    /* =====================================================
+       CHECK FILE
+    ===================================================== */
 
     if (
-        strpos(
-            $profilePhoto,
-            "student/"
-        ) === 0
+        is_file($filesystemPath) &&
+        is_readable($filesystemPath)
     ) {
 
-        $relativePath =
-            substr(
-                $profilePhoto,
-                strlen("student/")
-            );
-
-        $possibleLocations[] = [
-            "filesystem" =>
-            __DIR__ .
-                "/../student/" .
-                $relativePath,
-
-            "url" =>
-            "../student/" .
-                $relativePath
-        ];
+        return $urlPath;
     }
 
-
-    /* -----------------------------------------------------
-       OPTION 3
-
-       Database may contain:
-
-       photo/uploads/profile_photos/file.jpg
-
-       If photo is inside student folder.
-    ----------------------------------------------------- */
-
-    $possibleLocations[] = [
-        "filesystem" =>
-        __DIR__ .
-            "/../student/" .
-            $profilePhoto,
-
-        "url" =>
-        "../student/" .
-            $profilePhoto
-    ];
-
-
-    /* -----------------------------------------------------
-       CHECK ALL POSSIBLE LOCATIONS
-    ----------------------------------------------------- */
-
-    foreach (
-        $possibleLocations
-        as $location
-    ) {
-
-        if (
-            is_file(
-                $location["filesystem"]
-            ) &&
-            is_readable(
-                $location["filesystem"]
-            )
-        ) {
-
-            /*
-             * Add cache-busting timestamp.
-             *
-             * This helps when a student replaces
-             * their profile photo.
-             */
-
-            $version =
-                filemtime(
-                    $location["filesystem"]
-                );
-
-            return
-                $location["url"] .
-                "?v=" .
-                $version;
-        }
-    }
-
-
-    /* -----------------------------------------------------
-       No physical file found
-    ----------------------------------------------------- */
 
     return "";
 }
@@ -1877,7 +1784,6 @@ function getStudentPhotoUrl($profilePhoto)
         }
     }
 
-
     @keyframes studentFadeDown {
 
         from {
@@ -1898,7 +1804,6 @@ function getStudentPhotoUrl($profilePhoto)
                 translateY(0);
         }
     }
-
 
     @keyframes studentFloat {
 
@@ -2078,7 +1983,7 @@ function getStudentPhotoUrl($profilePhoto)
 
 
     /* =========================================================
-   RESPONSIVE — SMALL MOBILE
+   SMALL MOBILE
 ========================================================= */
 
     @media (max-width: 575.98px) {
@@ -2225,7 +2130,7 @@ function getStudentPhotoUrl($profilePhoto)
 
             <!-- =====================================================
              PAGE HEADER
-        ===================================================== -->
+        ====================================================== -->
 
             <div class="page-header">
 
@@ -2242,7 +2147,7 @@ function getStudentPhotoUrl($profilePhoto)
 
             <!-- =====================================================
              FILTERS
-        ===================================================== -->
+        ====================================================== -->
 
             <div class="filter-card">
 
@@ -2266,7 +2171,11 @@ function getStudentPhotoUrl($profilePhoto)
                                 name="search"
                                 class="form-control"
                                 placeholder="Name, student ID, email..."
-                                value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>">
+                                value="<?= htmlspecialchars(
+                                            $search,
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>">
 
                         </div>
 
@@ -2290,8 +2199,14 @@ function getStudentPhotoUrl($profilePhoto)
                                 <?php foreach ($departments as $dept): ?>
 
                                     <option
-                                        value="<?= htmlspecialchars($dept, ENT_QUOTES, 'UTF-8') ?>"
-                                        <?= ($department === $dept) ? 'selected' : '' ?>>
+                                        value="<?= htmlspecialchars(
+                                                    $dept,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>"
+                                        <?= ($department === $dept)
+                                            ? 'selected'
+                                            : '' ?>>
 
                                         <?= htmlspecialchars($dept) ?>
 
@@ -2323,8 +2238,14 @@ function getStudentPhotoUrl($profilePhoto)
                                 <?php foreach ($years as $itemYear): ?>
 
                                     <option
-                                        value="<?= htmlspecialchars($itemYear, ENT_QUOTES, 'UTF-8') ?>"
-                                        <?= ($year === $itemYear) ? 'selected' : '' ?>>
+                                        value="<?= htmlspecialchars(
+                                                    $itemYear,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>"
+                                        <?= ($year === $itemYear)
+                                            ? 'selected'
+                                            : '' ?>>
 
                                         <?= htmlspecialchars($itemYear) ?>
 
@@ -2356,8 +2277,14 @@ function getStudentPhotoUrl($profilePhoto)
                                 <?php foreach ($sections as $itemSection): ?>
 
                                     <option
-                                        value="<?= htmlspecialchars($itemSection, ENT_QUOTES, 'UTF-8') ?>"
-                                        <?= ($section === $itemSection) ? 'selected' : '' ?>>
+                                        value="<?= htmlspecialchars(
+                                                    $itemSection,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>"
+                                        <?= ($section === $itemSection)
+                                            ? 'selected'
+                                            : '' ?>>
 
                                         <?= htmlspecialchars($itemSection) ?>
 
@@ -2405,7 +2332,7 @@ function getStudentPhotoUrl($profilePhoto)
 
             <!-- =====================================================
              STUDENT TABLE
-        ===================================================== -->
+        ====================================================== -->
 
             <div class="table-card">
 
@@ -2435,9 +2362,7 @@ function getStudentPhotoUrl($profilePhoto)
                 <?php if ($students && $students->num_rows > 0): ?>
 
 
-                    <!-- =================================================
-                     RESPONSIVE TABLE
-                ================================================= -->
+                    <!-- RESPONSIVE TABLE -->
 
                     <div class="table-responsive">
 
@@ -2495,14 +2420,17 @@ function getStudentPhotoUrl($profilePhoto)
                                 ?>
 
 
-                                <?php while ($student = $students->fetch_assoc()): ?>
+                                <?php while (
+                                    $student =
+                                    $students->fetch_assoc()
+                                ): ?>
 
 
                                     <?php
 
                                     /* =================================================
-                                   STUDENT NAME
-                                ================================================= */
+                               STUDENT NAME
+                            ================================================= */
 
                                     $firstName =
                                         $student["first_name"] ?? "";
@@ -2541,8 +2469,8 @@ function getStudentPhotoUrl($profilePhoto)
 
 
                                     /* =================================================
-                                   PROFILE PHOTO
-                                ================================================= */
+                               PROFILE PHOTO
+                            ================================================= */
 
                                     $profilePhoto =
                                         $student["profile_photo"] ?? "";
@@ -2554,11 +2482,10 @@ function getStudentPhotoUrl($profilePhoto)
 
 
                                     /* =================================================
-                                   CREATED DATE
-                                ================================================= */
+                               CREATED DATE
+                            ================================================= */
 
                                     $createdDate = "";
-
 
                                     if (
                                         !empty($student["created_at"] ?? "")
@@ -2568,7 +2495,6 @@ function getStudentPhotoUrl($profilePhoto)
                                             strtotime(
                                                 $student["created_at"]
                                             );
-
 
                                         if (
                                             $timestamp !== false
@@ -2585,9 +2511,7 @@ function getStudentPhotoUrl($profilePhoto)
                                     ?>
 
 
-                                    <!-- =================================================
-                                     STUDENT ROW
-                                ================================================= -->
+                                    <!-- STUDENT ROW -->
 
                                     <tr>
 
@@ -2597,9 +2521,6 @@ function getStudentPhotoUrl($profilePhoto)
                                         <td class="align-middle">
 
                                             <?= ++$number ?>
-                                            <?php
-
-?>
 
                                         </td>
 
@@ -2616,12 +2537,24 @@ function getStudentPhotoUrl($profilePhoto)
                                                 <div class="student-avatar">
 
                                                     <?php if ($photoUrl !== ""): ?>
-                                                        
+
                                                         <img
-                                                            src="<?= htmlspecialchars($photoUrl, ENT_QUOTES, 'UTF-8') ?>"
-                                                            alt="<?= htmlspecialchars($studentName, ENT_QUOTES, 'UTF-8') ?>"
+                                                            src="<?= htmlspecialchars(
+                                                                        $photoUrl,
+                                                                        ENT_QUOTES,
+                                                                        'UTF-8'
+                                                                    ) ?>"
+                                                            alt="<?= htmlspecialchars(
+                                                                        $studentName,
+                                                                        ENT_QUOTES,
+                                                                        'UTF-8'
+                                                                    ) ?>"
                                                             loading="lazy"
-                                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                            onerror="
+                                                        this.style.display='none';
+                                                        this.nextElementSibling.style.display='flex';
+                                                    ">
+
 
                                                         <div
                                                             class="avatar-placeholder"
@@ -2659,9 +2592,7 @@ function getStudentPhotoUrl($profilePhoto)
                                                     </div>
 
                                                     <small class="text-muted">
-
                                                         Student
-
                                                     </small>
 
                                                 </div>
@@ -2781,9 +2712,7 @@ function getStudentPhotoUrl($profilePhoto)
                 <?php else: ?>
 
 
-                    <!-- =================================================
-                     EMPTY STATE
-                ================================================= -->
+                    <!-- EMPTY STATE -->
 
                     <div class="empty-state">
 
@@ -2816,7 +2745,7 @@ function getStudentPhotoUrl($profilePhoto)
 
                 <!-- =================================================
                  PAGINATION
-            ================================================= -->
+            ================================================== -->
 
                 <?php if ($totalPages > 1): ?>
 
@@ -2833,14 +2762,18 @@ function getStudentPhotoUrl($profilePhoto)
 
                                 <li
                                     class="page-item
-                                <?= $page <= 1 ? "disabled" : "" ?>">
+                                <?= $page <= 1
+                                    ? "disabled"
+                                    : "" ?>">
 
                                     <?php if ($page > 1): ?>
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl($page - 1),
+                                                        buildPageUrl(
+                                                            $page - 1
+                                                        ),
                                                         ENT_QUOTES,
                                                         'UTF-8'
                                                     ) ?>">
@@ -2880,7 +2813,6 @@ function getStudentPhotoUrl($profilePhoto)
                                         $page - 2
                                     );
 
-
                                 $endPage =
                                     min(
                                         $totalPages,
@@ -2901,8 +2833,7 @@ function getStudentPhotoUrl($profilePhoto)
                                         class="page-item
                                     <?= $i === $page
                                         ? "active"
-                                        : ""
-                                    ?>">
+                                        : "" ?>">
 
                                         <a
                                             class="page-link"
@@ -2928,15 +2859,16 @@ function getStudentPhotoUrl($profilePhoto)
                                     class="page-item
                                 <?= $page >= $totalPages
                                     ? "disabled"
-                                    : ""
-                                ?>">
+                                    : "" ?>">
 
                                     <?php if ($page < $totalPages): ?>
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl($page + 1),
+                                                        buildPageUrl(
+                                                            $page + 1
+                                                        ),
                                                         ENT_QUOTES,
                                                         'UTF-8'
                                                     ) ?>">
