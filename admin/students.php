@@ -2597,6 +2597,11 @@ function getStudentPhotoUrl($profilePhoto)
                                         <td class="align-middle">
 
                                             <?= ++$number ?>
+                                            <?php
+echo '<pre>';
+var_dump($student["profile_photo"]);
+echo '</pre>';
+?>
 
                                         </td>
 
