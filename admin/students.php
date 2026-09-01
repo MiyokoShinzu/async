@@ -2592,8 +2592,8 @@ function getStudentPhotoUrl($profilePhoto)
                                                     </div>
 
                                                     <small class="text-muted">
-                                                        Student
-                                                    </small>
+                                                        Student <?php echo $photoUrl;?>
+                                                    </small> 
 
                                                 </div>
 
