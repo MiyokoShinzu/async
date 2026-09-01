@@ -514,59 +514,27 @@ function buildPageUrl($page)
 
 function getStudentPhotoUrl($profilePhoto)
 {
-    $profilePhoto =
-        trim($profilePhoto ?? "");
+    $profilePhoto = trim($profilePhoto ?? "");
 
     if ($profilePhoto === "") {
-
         return "";
     }
 
+    // Normalize Windows/Linux slashes
+    $profilePhoto = str_replace("\\", "/", $profilePhoto);
 
-    /* -----------------------------------------------------
-       Normalize path
-    ----------------------------------------------------- */
+    // Remove leading slash
+    $profilePhoto = ltrim($profilePhoto, "/");
 
-    $profilePhoto =
-        str_replace(
-            "\\",
-            "/",
-            $profilePhoto
-        );
-
-    $profilePhoto =
-        ltrim(
-            $profilePhoto,
-            "/"
-        );
-
-
-    /* -----------------------------------------------------
-       Security
-    ----------------------------------------------------- */
-
-    if (
-        strpos(
-            $profilePhoto,
-            ".."
-        ) !== false
-    ) {
-
+    // Security: prevent directory traversal
+    if (strpos($profilePhoto, "..") !== false) {
         return "";
     }
 
-
-    /* -----------------------------------------------------
-       Allowed image extensions
-    ----------------------------------------------------- */
-
-    $extension =
-        strtolower(
-            pathinfo(
-                $profilePhoto,
-                PATHINFO_EXTENSION
-            )
-        );
+    // Allowed extensions
+    $extension = strtolower(
+        pathinfo($profilePhoto, PATHINFO_EXTENSION)
+    );
 
     $allowedExtensions = [
         "jpg",
@@ -576,55 +544,51 @@ function getStudentPhotoUrl($profilePhoto)
         "webp"
     ];
 
-    if (
-        !in_array(
-            $extension,
-            $allowedExtensions,
-            true
-        )
-    ) {
-
+    if (!in_array($extension, $allowedExtensions, true)) {
         return "";
     }
 
+    /*
+    =========================================================
+    ACTUAL FILE LOCATION
 
-    /* =====================================================
-       ACTUAL FILE LOCATION
-
-       admin/students.php
-              ↓
-            ../
-              ↓
-       student/uploads/profile_photos/
-    ===================================================== */
+    admin/students.php
+          ↓
+        ../
+          ↓
+    students/
+          ↓
+    uploads/profile_photos/
+    =========================================================
+    */
 
     $filesystemPath =
         __DIR__ .
-        "/../student/" .
+        "/../students/" .
         $profilePhoto;
 
-
-    /* =====================================================
-       BROWSER URL
-    ===================================================== */
+    /*
+    =========================================================
+    BROWSER URL
+    =========================================================
+    */
 
     $urlPath =
-        "../student/" .
+        "../students/" .
         $profilePhoto;
 
-
-    /* =====================================================
-       CHECK FILE
-    ===================================================== */
+    /*
+    =========================================================
+    CHECK FILE
+    =========================================================
+    */
 
     if (
         is_file($filesystemPath) &&
         is_readable($filesystemPath)
     ) {
-
         return $urlPath;
     }
-
 
     return "";
 }
