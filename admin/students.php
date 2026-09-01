@@ -67,15 +67,19 @@ $fullName = trim(
 
     $firstName . " " .
 
-        ($middleInitial !== ""
+        (
+            $middleInitial !== ""
             ? $middleInitial . ". "
-            : "") .
+            : ""
+        ) .
 
         $lastName .
 
-        ($extensionName !== ""
+        (
+            $extensionName !== ""
             ? " " . $extensionName
-            : "")
+            : ""
+        )
 
 );
 
@@ -381,6 +385,12 @@ $countSQL = "
 $countStmt =
     $mysqli->prepare($countSQL);
 
+if (!$countStmt) {
+
+    die("Count query error: " .
+        htmlspecialchars($mysqli->error));
+}
+
 if ($types !== "") {
 
     $countStmt->bind_param(
@@ -410,7 +420,7 @@ $countStmt->close();
 $totalPages =
     max(
         1,
-        ceil(
+        (int) ceil(
             $totalStudents /
                 $recordsPerPage
         )
@@ -453,8 +463,15 @@ $studentSQL = "
     LIMIT ? OFFSET ?
 ";
 
+
 $studentStmt =
     $mysqli->prepare($studentSQL);
+
+if (!$studentStmt) {
+
+    die("Student query error: " .
+        htmlspecialchars($mysqli->error));
+}
 
 
 /* =========================================================
@@ -473,12 +490,15 @@ $studentParams[] =
 $studentTypes =
     $types . "ii";
 
+
 $studentStmt->bind_param(
     $studentTypes,
     ...$studentParams
 );
 
+
 $studentStmt->execute();
+
 
 $students =
     $studentStmt->get_result();
@@ -503,11 +523,9 @@ function buildPageUrl($page)
 
 ?>
 
-
 <!DOCTYPE html>
 
 <html lang="en">
-
 
 <?php include 'globals/head.php'; ?>
 
@@ -579,45 +597,35 @@ function buildPageUrl($page)
         color:
             var(--student-primary-dark);
 
-        font-size:
-            28px;
+        font-size: 28px;
 
-        font-weight:
-            700;
+        font-weight: 700;
 
-        margin-bottom:
-            5px;
+        margin-bottom: 5px;
 
-        letter-spacing:
-            -.3px;
+        letter-spacing: -.3px;
     }
 
     .page-header h2::before {
 
         content: "";
 
-        display:
-            inline-block;
+        display: inline-block;
 
-        width:
-            5px;
+        width: 5px;
 
-        height:
-            27px;
+        height: 27px;
 
-        margin-right:
-            10px;
+        margin-right: 10px;
 
-        vertical-align:
-            -4px;
+        vertical-align: -4px;
 
         background:
             linear-gradient(180deg,
                 var(--student-primary),
                 var(--student-primary-dark));
 
-        border-radius:
-            5px;
+        border-radius: 5px;
     }
 
     .page-header p {
@@ -628,8 +636,7 @@ function buildPageUrl($page)
         color:
             var(--student-muted);
 
-        font-size:
-            14px;
+        font-size: 14px;
     }
 
 
@@ -2065,7 +2072,7 @@ function buildPageUrl($page)
                                 name="search"
                                 class="form-control"
                                 placeholder="Name, student ID, email..."
-                                value="<?= htmlspecialchars($search ?? '') ?>">
+                                value="<?= htmlspecialchars($search) ?>">
 
                         </div>
 
@@ -2086,11 +2093,11 @@ function buildPageUrl($page)
                                     All Departments
                                 </option>
 
-                                <?php foreach (($departments ?? []) as $dept): ?>
+                                <?php foreach ($departments as $dept): ?>
 
                                     <option
                                         value="<?= htmlspecialchars($dept) ?>"
-                                        <?= (($department ?? '') === $dept) ? 'selected' : '' ?>>
+                                        <?= ($department === $dept) ? 'selected' : '' ?>>
 
                                         <?= htmlspecialchars($dept) ?>
 
@@ -2119,11 +2126,11 @@ function buildPageUrl($page)
                                     All Years
                                 </option>
 
-                                <?php foreach (($years ?? []) as $itemYear): ?>
+                                <?php foreach ($years as $itemYear): ?>
 
                                     <option
                                         value="<?= htmlspecialchars($itemYear) ?>"
-                                        <?= (($year ?? '') === $itemYear) ? 'selected' : '' ?>>
+                                        <?= ($year === $itemYear) ? 'selected' : '' ?>>
 
                                         <?= htmlspecialchars($itemYear) ?>
 
@@ -2152,11 +2159,11 @@ function buildPageUrl($page)
                                     All Sections
                                 </option>
 
-                                <?php foreach (($sections ?? []) as $itemSection): ?>
+                                <?php foreach ($sections as $itemSection): ?>
 
                                     <option
                                         value="<?= htmlspecialchars($itemSection) ?>"
-                                        <?= (($section ?? '') === $itemSection) ? 'selected' : '' ?>>
+                                        <?= ($section === $itemSection) ? 'selected' : '' ?>>
 
                                         <?= htmlspecialchars($itemSection) ?>
 
@@ -2224,14 +2231,14 @@ function buildPageUrl($page)
 
                     <span class="badge text-bg-primary">
 
-                        <?= number_format($totalStudents ?? 0) ?>
+                        <?= number_format($totalStudents) ?>
 
                     </span>
 
                 </div>
 
 
-                <?php if (isset($students) && $students->num_rows > 0): ?>
+                <?php if ($students && $students->num_rows > 0): ?>
 
 
                     <!-- =================================================
@@ -2289,7 +2296,7 @@ function buildPageUrl($page)
                                 <?php
 
                                 $number =
-                                    $offset ?? 0;
+                                    $offset;
 
                                 ?>
 
@@ -2300,39 +2307,39 @@ function buildPageUrl($page)
                                     <?php
 
                                     /* =================================================
-                                   STUDENT NAME
-                                ================================================= */
+                               STUDENT NAME
+                            ================================================= */
 
-                                    $studentFirstName =
+                                    $firstName =
                                         $student["first_name"] ?? "";
 
-                                    $studentMiddleInitial =
+                                    $middleInitial =
                                         $student["middle_initial"] ?? "";
 
-                                    $studentLastName =
+                                    $lastName =
                                         $student["last_name"] ?? "";
 
-                                    $studentExtensionName =
+                                    $extensionName =
                                         $student["extension_name"] ?? "";
 
 
                                     $studentName =
                                         trim(
 
-                                            $studentFirstName .
+                                            $firstName .
                                                 " " .
 
                                                 (
-                                                    !empty($studentMiddleInitial)
-                                                    ? $studentMiddleInitial . ". "
+                                                    !empty($middleInitial)
+                                                    ? $middleInitial . ". "
                                                     : ""
                                                 ) .
 
-                                                $studentLastName .
+                                                $lastName .
 
                                                 (
-                                                    !empty($studentExtensionName)
-                                                    ? " " . $studentExtensionName
+                                                    !empty($extensionName)
+                                                    ? " " . $extensionName
                                                     : ""
                                                 )
 
@@ -2340,46 +2347,35 @@ function buildPageUrl($page)
 
 
                                     /* =================================================
-                                   PROFILE PHOTO
-
-                                   DATABASE:
-                                   accounts.profile_photo
-
-                                   ACTUAL FILE LOCATION:
-                                   ./student/uploads/profile_photos/
-
-                                   students.php:
-                                   ./admin/students.php
-
-                                   Therefore browser URL:
-                                   ../student/uploads/profile_photos/
-
-                                   checks.php is not involved here.
-                                ================================================= */
+                               PROFILE PHOTO
+                            ================================================= */
 
                                     $profilePhoto =
                                         trim(
                                             $student["profile_photo"] ?? ""
                                         );
 
-                                    $photoUrl =
-                                        "";
+
+                                    $photoUrl = "";
+
 
                                     if ($profilePhoto !== "") {
 
                                         /*
-                                     * Only get the filename.
-                                     *
-                                     * Example:
-                                     *
-                                     * 20260001.jpg
-                                     * uploads/20260001.jpg
-                                     * profile_photos/20260001.jpg
-                                     *
-                                     * becomes:
-                                     *
-                                     * 20260001.jpg
-                                     */
+                                 * Get ONLY the filename.
+                                 *
+                                 * Example:
+                                 *
+                                 * john.jpg
+                                 *
+                                 * student/uploads/john.jpg
+                                 *
+                                 * ../student/uploads/john.jpg
+                                 *
+                                 * will all become:
+                                 *
+                                 * john.jpg
+                                 */
 
                                         $photoFile =
                                             basename(
@@ -2388,10 +2384,10 @@ function buildPageUrl($page)
 
 
                                         /*
-                                     * Get extension
-                                     */
+                                 * Get extension
+                                 */
 
-                                        $photoExtension =
+                                        $extension =
                                             strtolower(
                                                 pathinfo(
                                                     $photoFile,
@@ -2401,8 +2397,8 @@ function buildPageUrl($page)
 
 
                                         /*
-                                     * Allowed image extensions
-                                     */
+                                 * Allowed image formats
+                                 */
 
                                         $allowedExtensions = [
                                             "jpg",
@@ -2413,38 +2409,37 @@ function buildPageUrl($page)
                                         ];
 
 
-                                        /*
-                                     * Validate extension
-                                     */
-
                                         if (
                                             in_array(
-                                                $photoExtension,
+                                                $extension,
                                                 $allowedExtensions,
                                                 true
                                             )
                                         ) {
 
                                             /*
-                                         * ACTUAL SERVER FILE PATH
-                                         *
-                                         * students.php:
-                                         * ./admin/students.php
-                                         *
-                                         * photo:
-                                         * ./student/uploads/profile_photos/
-                                         */
+                                     * =================================================
+                                     * ACTUAL FILE LOCATION
+                                     *
+                                     * Current page:
+                                     *
+                                     * ./admin/students.php
+                                     *
+                                     * Student photos:
+                                     *
+                                     * ./student/uploads/
+                                     * =================================================
+                                     */
 
                                             $photoPath =
                                                 __DIR__ .
-                                                "/../student/uploads/profile_photos/" .
+                                                "/../student/uploads/" .
                                                 $photoFile;
 
 
                                             /*
-                                         * If file exists,
-                                         * create browser URL.
-                                         */
+                                     * Check if file exists
+                                     */
 
                                             if (
                                                 file_exists(
@@ -2452,8 +2447,12 @@ function buildPageUrl($page)
                                                 )
                                             ) {
 
+                                                /*
+                                         * Browser URL
+                                         */
+
                                                 $photoUrl =
-                                                    "../student/uploads/profile_photos/" .
+                                                    "../student/uploads/" .
                                                     rawurlencode(
                                                         $photoFile
                                                     );
@@ -2463,11 +2462,11 @@ function buildPageUrl($page)
 
 
                                     /* =================================================
-                                   CREATED DATE
-                                ================================================= */
+                               CREATED DATE
+                            ================================================= */
 
-                                    $createdDate =
-                                        "";
+                                    $createdDate = "";
+
 
                                     if (
                                         !empty($student["created_at"] ?? "")
@@ -2477,6 +2476,7 @@ function buildPageUrl($page)
                                             strtotime(
                                                 $student["created_at"]
                                             );
+
 
                                         if (
                                             $timestamp !== false
@@ -2494,8 +2494,8 @@ function buildPageUrl($page)
 
 
                                     <!-- =================================================
-                                     STUDENT ROW
-                                ================================================= -->
+                                 STUDENT ROW
+                            ================================================= -->
 
                                     <tr>
 
@@ -2509,7 +2509,9 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- STUDENT -->
+                                        <!-- =================================================
+                                     STUDENT PROFILE
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -2523,8 +2525,8 @@ function buildPageUrl($page)
                                                     <?php if ($photoUrl !== ""): ?>
 
                                                         <img
-                                                            src="<?= htmlspecialchars($photoUrl) ?>"
-                                                            alt="<?= htmlspecialchars($studentName) ?>"
+                                                            src="<?= htmlspecialchars($photoUrl, ENT_QUOTES, 'UTF-8') ?>"
+                                                            alt="<?= htmlspecialchars($studentName, ENT_QUOTES, 'UTF-8') ?>"
                                                             loading="lazy"
                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
@@ -2535,6 +2537,7 @@ function buildPageUrl($page)
                                                             <i class="bi bi-person-fill"></i>
 
                                                         </div>
+
 
                                                     <?php else: ?>
 
@@ -2573,7 +2576,9 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- STUDENT ID -->
+                                        <!-- =================================================
+                                     STUDENT ID
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -2588,7 +2593,9 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- DEPARTMENT -->
+                                        <!-- =================================================
+                                     DEPARTMENT
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -2599,7 +2606,9 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- YEAR / SECTION -->
+                                        <!-- =================================================
+                                     YEAR / SECTION
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -2614,7 +2623,9 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- EMAIL -->
+                                        <!-- =================================================
+                                     EMAIL
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -2629,7 +2640,9 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- CREATED -->
+                                        <!-- =================================================
+                                     CREATED
+                                ================================================= -->
 
                                         <td class="align-middle">
 
@@ -2640,7 +2653,9 @@ function buildPageUrl($page)
                                         </td>
 
 
-                                        <!-- ACTION -->
+                                        <!-- =================================================
+                                     ACTION
+                                ================================================= -->
 
                                         <td class="text-center align-middle">
 
@@ -2710,7 +2725,7 @@ function buildPageUrl($page)
                  PAGINATION
             ================================================= -->
 
-                <?php if (($totalPages ?? 0) > 1): ?>
+                <?php if ($totalPages > 1): ?>
 
 
                     <div class="pagination-wrapper">
@@ -2725,16 +2740,14 @@ function buildPageUrl($page)
 
                                 <li
                                     class="page-item
-                                <?= ($page ?? 1) <= 1 ? "disabled" : "" ?>">
+                                <?= $page <= 1 ? "disabled" : "" ?>">
 
-                                    <?php if (($page ?? 1) > 1): ?>
+                                    <?php if ($page > 1): ?>
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl(
-                                                            ($page ?? 1) - 1
-                                                        )
+                                                        buildPageUrl($page - 1)
                                                     ) ?>">
 
                                             <i class="bi bi-chevron-left"></i>
@@ -2769,13 +2782,14 @@ function buildPageUrl($page)
                                 $startPage =
                                     max(
                                         1,
-                                        ($page ?? 1) - 2
+                                        $page - 2
                                     );
+
 
                                 $endPage =
                                     min(
-                                        ($totalPages ?? 1),
-                                        ($page ?? 1) + 2
+                                        $totalPages,
+                                        $page + 2
                                     );
 
                                 ?>
@@ -2790,7 +2804,7 @@ function buildPageUrl($page)
 
                                     <li
                                         class="page-item
-                                    <?= $i === ($page ?? 1)
+                                    <?= $i === $page
                                         ? "active"
                                         : ""
                                     ?>">
@@ -2815,19 +2829,17 @@ function buildPageUrl($page)
 
                                 <li
                                     class="page-item
-                                <?= ($page ?? 1) >= ($totalPages ?? 1)
+                                <?= $page >= $totalPages
                                     ? "disabled"
                                     : ""
                                 ?>">
 
-                                    <?php if (($page ?? 1) < ($totalPages ?? 1)): ?>
+                                    <?php if ($page < $totalPages): ?>
 
                                         <a
                                             class="page-link"
                                             href="<?= htmlspecialchars(
-                                                        buildPageUrl(
-                                                            ($page ?? 1) + 1
-                                                        )
+                                                        buildPageUrl($page + 1)
                                                     ) ?>">
 
                                             <span class="d-none d-sm-inline">
