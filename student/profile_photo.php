@@ -63,6 +63,10 @@ $sql = "
 
 $stmt = $mysqli->prepare($sql);
 
+if (!$stmt) {
+    die("Database query failed: " . $mysqli->error);
+}
+
 $stmt->bind_param(
     "s",
     $studentId
@@ -99,7 +103,11 @@ $studentName = trim(
    ========================================================= */
 
 $department =
-    $student["department"] ?? "—";
+    trim($student["department"] ?? "");
+
+if ($department === "") {
+    $department = "—";
+}
 
 
 /* =========================================================
@@ -142,12 +150,72 @@ $profilePhoto =
 
 
 /* =========================================================
+   BUILD PHOTO URL
+   ========================================================= */
+
+$profilePhotoURL = "";
+
+if ($profilePhoto !== "") {
+
+    /*
+     * If the database already contains a complete URL,
+     * use it exactly as stored.
+     */
+
+    if (
+        preg_match(
+            '/^https?:\/\//i',
+            $profilePhoto
+        )
+    ) {
+
+        $profilePhotoURL = $profilePhoto;
+    }
+
+    /*
+     * If the database contains a root-relative path,
+     * such as:
+     *
+     * /uploads/profile_photos/photo.jpg
+     *
+     * use it directly.
+     */ elseif (
+        substr($profilePhoto, 0, 1) === "/"
+    ) {
+
+        $profilePhotoURL = $profilePhoto;
+    }
+
+    /*
+     * If the database contains a relative path,
+     * convert it to a root-relative path.
+     *
+     * Example:
+     *
+     * uploads/profile_photos/photo.jpg
+     *
+     * becomes:
+     *
+     * /uploads/profile_photos/photo.jpg
+     */ else {
+
+        $profilePhotoURL =
+            "/" . ltrim(
+                $profilePhoto,
+                "/"
+            );
+    }
+}
+
+
+/* =========================================================
    DEFAULT AVATAR
    ========================================================= */
 
 $initials = "";
 
 if (!empty($student["first_name"])) {
+
     $initials .= strtoupper(
         substr(
             $student["first_name"],
@@ -158,6 +226,7 @@ if (!empty($student["first_name"])) {
 }
 
 if (!empty($student["last_name"])) {
+
     $initials .= strtoupper(
         substr(
             $student["last_name"],
@@ -194,22 +263,22 @@ $error =
 
 
     <!-- =========================================================
-     SIDEBAR
-========================================================= -->
+         SIDEBAR
+    ========================================================= -->
 
     <?php include 'globals/sidebar.php'; ?>
 
 
     <!-- =========================================================
-     TOPBAR
-========================================================= -->
+         TOPBAR
+    ========================================================= -->
 
     <?php include 'globals/topbar.php'; ?>
 
 
     <!-- =========================================================
-     MAIN CONTENT
-========================================================= -->
+         MAIN CONTENT
+    ========================================================= -->
 
     <main class="main-content">
 
@@ -217,8 +286,8 @@ $error =
 
 
             <!-- =================================================
-             PAGE HEADER
-        ================================================== -->
+                 PAGE HEADER
+            ================================================= -->
 
             <div class="page-header">
 
@@ -238,8 +307,8 @@ $error =
 
 
             <!-- =================================================
-             ALERTS
-        ================================================== -->
+                 ALERTS
+            ================================================= -->
 
             <?php if ($success !== ""): ?>
 
@@ -268,28 +337,41 @@ $error =
 
 
             <!-- =================================================
-             PROFILE CARD
-        ================================================== -->
+                 PROFILE CARD
+            ================================================= -->
 
             <div class="profile-photo-card">
 
 
                 <!-- =================================================
-                 PHOTO AREA
-            ================================================== -->
+                     PHOTO AREA
+                ================================================= -->
 
                 <div class="profile-photo-section">
 
 
                     <div class="profile-photo-wrapper">
 
-                        <?php if ($profilePhoto !== ""): ?>
+                        <?php if ($profilePhotoURL !== ""): ?>
 
                             <img
-                                src="<?= htmlspecialchars($profilePhoto) ?>"
+                                src=".<?= htmlspecialchars($profilePhotoURL) ?>"
                                 alt="Profile Photo"
                                 class="profile-photo"
-                                id="profilePreview">
+                                id="profilePreview"
+                                onerror="this.style.display='none'; document.getElementById('photoError').style.display='block';">
+
+                            <div
+                                id="photoError"
+                                style="display:none;">
+
+                                <div class="profile-photo-placeholder">
+
+                                    <?= htmlspecialchars($initials) ?>
+
+                                </div>
+
+                            </div>
 
                         <?php else: ?>
 
@@ -307,7 +389,9 @@ $error =
 
 
                     <h4>
+
                         <?= htmlspecialchars($studentName) ?>
+
                     </h4>
 
 
@@ -323,8 +407,8 @@ $error =
 
 
                 <!-- =================================================
-                 STUDENT INFORMATION
-            ================================================== -->
+                     STUDENT INFORMATION
+                ================================================== -->
 
                 <div class="student-information">
 
@@ -390,8 +474,8 @@ $error =
 
 
                 <!-- =================================================
-                 UPLOAD
-            ================================================== -->
+                     UPLOAD
+                ================================================== -->
 
                 <div class="profile-upload-section">
 
@@ -438,7 +522,9 @@ $error =
                         </div>
 
 
-                        <!-- PREVIEW -->
+                        <!-- =================================================
+                             UPLOAD PREVIEW
+                        ================================================== -->
 
                         <div
                             id="uploadPreviewContainer"
@@ -492,15 +578,17 @@ $error =
 
 
     <!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
+         JAVASCRIPT
+    ========================================================= -->
 
     <script>
         const photoInput =
             document.getElementById("profile_photo");
 
+
         const uploadPreview =
             document.getElementById("uploadPreview");
+
 
         const uploadPreviewContainer =
             document.getElementById(
@@ -521,7 +609,36 @@ $error =
                     const file =
                         this.files[0];
 
+
                     if (!file) {
+
+                        uploadPreviewContainer.style.display =
+                            "none";
+
+                        return;
+                    }
+
+
+                    /* Check file type */
+
+                    const allowedTypes = [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp"
+                    ];
+
+
+                    if (
+                        !allowedTypes.includes(
+                            file.type
+                        )
+                    ) {
+
+                        alert(
+                            "Please select a JPG, JPEG, PNG, or WEBP image."
+                        );
+
+                        this.value = "";
 
                         uploadPreviewContainer.style.display =
                             "none";
@@ -585,6 +702,7 @@ $error =
                 "profilePhotoForm"
             );
 
+
         if (profilePhotoForm) {
 
             profilePhotoForm.addEventListener(
@@ -596,7 +714,9 @@ $error =
                             "uploadButton"
                         );
 
+
                     button.disabled = true;
+
 
                     button.innerHTML =
                         '<span class="spinner-border spinner-border-sm me-1"></span> Uploading...';

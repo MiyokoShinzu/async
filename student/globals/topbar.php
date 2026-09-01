@@ -150,6 +150,91 @@ if (
 
 
         </a>
+        <button
+            type="button"
+            class="btn btn-theme"
+            id="themeToggle"
+            title="Toggle dark mode">
+
+            <i class="bi bi-moon-fill" id="themeIcon"></i>
+
+        </button>
+        
+            <script>
+
+                document.addEventListener("DOMContentLoaded", function() {
+
+                    const themeToggle = document.getElementById("themeToggle");
+                    const themeIcon = document.getElementById("themeIcon");
+
+                    if (!themeToggle) {
+                        return;
+                    }
+
+
+                    function updateThemeIcon() {
+
+                        const currentTheme =
+                            document.documentElement.getAttribute("data-theme");
+
+
+                        if (currentTheme === "dark") {
+
+                            themeIcon.className =
+                                "bi bi-sun-fill";
+
+                            themeToggle.title =
+                                "Switch to light mode";
+
+                        } else {
+
+                            themeIcon.className =
+                                "bi bi-moon-fill";
+
+                            themeToggle.title =
+                                "Switch to dark mode";
+                        }
+                    }
+
+
+                    updateThemeIcon();
+
+
+                    themeToggle.addEventListener("click", function() {
+
+                        const currentTheme =
+                            document.documentElement.getAttribute("data-theme");
+
+
+                        if (currentTheme === "dark") {
+
+                            document.documentElement
+                                .setAttribute("data-theme", "light");
+
+                            localStorage.setItem(
+                                "ets-theme",
+                                "light"
+                            );
+
+                        } else {
+
+                            document.documentElement
+                                .setAttribute("data-theme", "dark");
+
+                            localStorage.setItem(
+                                "ets-theme",
+                                "dark"
+                            );
+                        }
+
+
+                        updateThemeIcon();
+
+                    });
+
+                });
+        
+        </script>
 
 
     </div>
