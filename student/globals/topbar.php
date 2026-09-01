@@ -1,9 +1,14 @@
+
 <?php
 
 /* =========================================================
    TOPBAR STUDENT PROFILE
    ETS-Async Learning Portal
    ========================================================= */
+
+/* =========================================================
+   VARIABLES
+========================================================= */
 
 $topbarProfilePhoto = "";
 $topbarProfilePhotoURL = "";
@@ -14,10 +19,16 @@ $topbarStudentId = "";
    GET STUDENT ID
 ========================================================= */
 
-if (isset($_SESSION["user"]["student_id"])) {
+if (
+    isset(
+        $_SESSION["user"]["student_id"]
+    )
+) {
 
     $topbarStudentId =
-        $_SESSION["user"]["student_id"];
+        trim(
+            $_SESSION["user"]["student_id"]
+        );
 }
 
 
@@ -37,6 +48,7 @@ if (
         LIMIT 1
     ";
 
+
     $topbarPhotoStmt =
         $mysqli->prepare(
             $topbarPhotoSQL
@@ -50,7 +62,9 @@ if (
             $topbarStudentId
         );
 
+
         $topbarPhotoStmt->execute();
+
 
         $topbarPhotoResult =
             $topbarPhotoStmt->get_result();
@@ -77,14 +91,36 @@ if (
    BUILD PROFILE PHOTO URL
 ========================================================= */
 
-if ($topbarProfilePhoto !== "") {
+/*
+    IMPORTANT DOMAIN STRUCTURE:
 
-    /*
-     * Complete URL
-     *
-     * Example:
-     * https://example.com/shared/uploads/...
-     */
+    Student application:
+    https://async.vertigation.com/
+
+    Shared uploads:
+    https://vertigation.com/shared/uploads/profile_photos/
+
+    Database:
+    shared/uploads/profile_photos/photo.jpg
+
+    Therefore the final image URL must be:
+
+    https://vertigation.com/shared/uploads/profile_photos/photo.jpg
+
+    NOT:
+
+    https://async.vertigation.com/shared/uploads/profile_photos/photo.jpg
+*/
+
+if (
+    $topbarProfilePhoto !== ""
+) {
+
+
+    /* =====================================================
+       CASE 1
+       COMPLETE URL
+    ====================================================== */
 
     if (
         preg_match(
@@ -93,45 +129,114 @@ if ($topbarProfilePhoto !== "") {
         )
     ) {
 
-        $topbarProfilePhotoURL =
-            $topbarProfilePhoto;
+        /*
+         * If the database contains an old
+         * async.vertigation.com URL, convert it
+         * to the main domain.
+         */
+
+        $parsedPath =
+            parse_url(
+                $topbarProfilePhoto,
+                PHP_URL_PATH
+            );
+
+
+        if (
+            is_string($parsedPath) &&
+            strpos(
+                $parsedPath,
+                "/shared/uploads/profile_photos/"
+            ) === 0
+        ) {
+
+            $topbarProfilePhotoURL =
+                "https://vertigation.com" .
+                $parsedPath;
+        } else {
+
+            $topbarProfilePhotoURL =
+                $topbarProfilePhoto;
+        }
     }
 
 
-    /*
-     * Already root-relative
-     *
-     * Example:
-     * /shared/uploads/profile_photos/photo.jpg
-     */ elseif (
-        substr(
+    /* =====================================================
+       CASE 2
+       ROOT-RELATIVE PATH
+
+       /shared/uploads/profile_photos/photo.jpg
+    ====================================================== */ elseif (
+        strpos(
             $topbarProfilePhoto,
-            0,
-            1
-        ) === "/"
+            "/shared/uploads/profile_photos/"
+        ) === 0
     ) {
 
         $topbarProfilePhotoURL =
+            "https://vertigation.com" .
             $topbarProfilePhoto;
     }
 
 
-    /*
-     * Database path:
-     *
-     * shared/uploads/profile_photos/photo.jpg
-     *
-     * Browser path:
-     *
-     * /shared/uploads/profile_photos/photo.jpg
-     */ else {
+    /* =====================================================
+       CASE 3
+       NORMAL DATABASE PATH
+
+       shared/uploads/profile_photos/photo.jpg
+    ====================================================== */ elseif (
+        strpos(
+            $topbarProfilePhoto,
+            "shared/uploads/profile_photos/"
+        ) === 0
+    ) {
 
         $topbarProfilePhotoURL =
-            "/" .
+            "https://vertigation.com/" .
+            $topbarProfilePhoto;
+    }
+
+
+    /* =====================================================
+       CASE 4
+       OLD INCORRECT PATH
+
+       async/shared/uploads/profile_photos/photo.jpg
+    ====================================================== */ elseif (
+        strpos(
+            $topbarProfilePhoto,
+            "async/shared/uploads/profile_photos/"
+        ) === 0
+    ) {
+
+        $cleanPath =
+            substr(
+                $topbarProfilePhoto,
+                strlen("async/")
+            );
+
+
+        $topbarProfilePhotoURL =
+            "https://vertigation.com/" .
+            $cleanPath;
+    }
+
+
+    /* =====================================================
+       CASE 5
+       FALLBACK
+    ====================================================== */ else {
+
+        $cleanPath =
             ltrim(
                 $topbarProfilePhoto,
                 "/"
             );
+
+
+        $topbarProfilePhotoURL =
+            "https://vertigation.com/" .
+            $cleanPath;
     }
 }
 
@@ -191,9 +296,14 @@ if ($topbarProfilePhoto !== "") {
 
         <div class="topbar-user-info">
 
+
             <div class="topbar-name">
 
-                <?= htmlspecialchars($fullName) ?>
+                <?= htmlspecialchars(
+                    $fullName ?? "",
+                    ENT_QUOTES,
+                    "UTF-8"
+                ) ?>
 
             </div>
 
@@ -203,6 +313,7 @@ if ($topbarProfilePhoto !== "") {
                 Student Account
 
             </div>
+
 
         </div>
 
@@ -217,36 +328,52 @@ if ($topbarProfilePhoto !== "") {
             title="My Profile Photo">
 
 
-            <?php if ($topbarProfilePhotoURL !== ""): ?>
+            <?php if (
+                $topbarProfilePhotoURL !== ""
+            ): ?>
+
 
                 <img
-                    src="<?= htmlspecialchars($topbarProfilePhotoURL) ?>"
+                    src="<?= htmlspecialchars(
+                                $topbarProfilePhotoURL,
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ) ?>"
                     alt="Profile Photo"
                     class="topbar-avatar topbar-avatar-image"
-                    onerror="this.style.display='none'; document.getElementById('topbarPhotoFallback').style.display='flex';">
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
 
                 <!-- FALLBACK -->
 
                 <div
-                    id="topbarPhotoFallback"
                     class="topbar-avatar"
                     style="display:none;">
 
-                    <?= htmlspecialchars($initials) ?>
+                    <?= htmlspecialchars(
+                        $initials ?? "ST",
+                        ENT_QUOTES,
+                        "UTF-8"
+                    ) ?>
 
                 </div>
 
 
             <?php else: ?>
 
+
                 <!-- DEFAULT INITIALS -->
 
                 <div class="topbar-avatar">
 
-                    <?= htmlspecialchars($initials) ?>
+                    <?= htmlspecialchars(
+                        $initials ?? "ST",
+                        ENT_QUOTES,
+                        "UTF-8"
+                    ) ?>
 
                 </div>
+
 
             <?php endif; ?>
 
@@ -267,8 +394,7 @@ if ($topbarProfilePhoto !== "") {
 
             <i
                 class="bi bi-moon-fill"
-                id="themeIcon">
-            </i>
+                id="themeIcon"></i>
 
         </button>
 
@@ -358,6 +484,10 @@ if ($topbarProfilePhoto !== "") {
             }
 
 
+            /* =====================================================
+               UPDATE ICON
+            ====================================================== */
+
             function updateThemeIcon() {
 
                 const currentTheme =
@@ -373,6 +503,7 @@ if ($topbarProfilePhoto !== "") {
                     themeIcon.className =
                         "bi bi-sun-fill";
 
+
                     themeToggle.title =
                         "Switch to light mode";
 
@@ -380,6 +511,7 @@ if ($topbarProfilePhoto !== "") {
 
                     themeIcon.className =
                         "bi bi-moon-fill";
+
 
                     themeToggle.title =
                         "Switch to dark mode";
@@ -389,8 +521,16 @@ if ($topbarProfilePhoto !== "") {
             }
 
 
+            /* =====================================================
+               INITIAL ICON
+            ====================================================== */
+
             updateThemeIcon();
 
+
+            /* =====================================================
+               TOGGLE THEME
+            ====================================================== */
 
             themeToggle.addEventListener(
                 "click",
