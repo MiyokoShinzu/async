@@ -5,11 +5,6 @@
    ETS-Async Learning Portal
    ========================================================= */
 
-
-/* =========================================================
-   VARIABLES
-========================================================= */
-
 $topbarProfilePhoto = "";
 $topbarProfilePhotoURL = "";
 $topbarStudentId = "";
@@ -19,11 +14,7 @@ $topbarStudentId = "";
    GET STUDENT ID
 ========================================================= */
 
-if (
-    isset(
-        $_SESSION["user"]["student_id"]
-    )
-) {
+if (isset($_SESSION["user"]["student_id"])) {
 
     $topbarStudentId =
         $_SESSION["user"]["student_id"];
@@ -46,7 +37,6 @@ if (
         LIMIT 1
     ";
 
-
     $topbarPhotoStmt =
         $mysqli->prepare(
             $topbarPhotoSQL
@@ -60,9 +50,7 @@ if (
             $topbarStudentId
         );
 
-
         $topbarPhotoStmt->execute();
-
 
         $topbarPhotoResult =
             $topbarPhotoStmt->get_result();
@@ -89,9 +77,7 @@ if (
    BUILD PROFILE PHOTO URL
 ========================================================= */
 
-if (
-    $topbarProfilePhoto !== ""
-) {
+if ($topbarProfilePhoto !== "") {
 
     /*
      * Complete URL
@@ -113,7 +99,7 @@ if (
 
 
     /*
-     * Root-relative path
+     * Already root-relative
      *
      * Example:
      * /shared/uploads/profile_photos/photo.jpg
@@ -131,12 +117,12 @@ if (
 
 
     /*
-     * Relative database path
+     * Database path:
      *
-     * Example:
      * shared/uploads/profile_photos/photo.jpg
      *
-     * Convert to:
+     * Browser path:
+     *
      * /shared/uploads/profile_photos/photo.jpg
      */ else {
 
@@ -240,7 +226,7 @@ if (
                     onerror="this.style.display='none'; document.getElementById('topbarPhotoFallback').style.display='flex';">
 
 
-                <!-- FALLBACK IF IMAGE DOES NOT LOAD -->
+                <!-- FALLBACK -->
 
                 <div
                     id="topbarPhotoFallback"
@@ -254,7 +240,6 @@ if (
 
             <?php else: ?>
 
-
                 <!-- DEFAULT INITIALS -->
 
                 <div class="topbar-avatar">
@@ -262,7 +247,6 @@ if (
                     <?= htmlspecialchars($initials) ?>
 
                 </div>
-
 
             <?php endif; ?>
 
@@ -304,7 +288,6 @@ if (
         "DOMContentLoaded",
         function() {
 
-
             const sidebarToggle =
                 document.getElementById(
                     "sidebarToggle"
@@ -327,10 +310,6 @@ if (
                     event.stopPropagation();
 
 
-                    /* =========================================
-                       USE CENTRAL SIDEBAR CONTROLLER
-                    ========================================== */
-
                     if (
                         typeof window.toggleSidebar ===
                         "function"
@@ -342,7 +321,6 @@ if (
 
                 }
             );
-
 
         }
     );
@@ -357,7 +335,6 @@ if (
     document.addEventListener(
         "DOMContentLoaded",
         function() {
-
 
             const themeToggle =
                 document.getElementById(
@@ -381,12 +358,7 @@ if (
             }
 
 
-            /* ================================================
-               UPDATE ICON
-            ================================================= */
-
             function updateThemeIcon() {
-
 
                 const currentTheme =
                     document.documentElement.getAttribute(
@@ -401,7 +373,6 @@ if (
                     themeIcon.className =
                         "bi bi-sun-fill";
 
-
                     themeToggle.title =
                         "Switch to light mode";
 
@@ -409,7 +380,6 @@ if (
 
                     themeIcon.className =
                         "bi bi-moon-fill";
-
 
                     themeToggle.title =
                         "Switch to dark mode";
@@ -419,21 +389,12 @@ if (
             }
 
 
-            /* ================================================
-               INITIAL ICON
-            ================================================= */
-
             updateThemeIcon();
 
-
-            /* ================================================
-               THEME TOGGLE
-            ================================================= */
 
             themeToggle.addEventListener(
                 "click",
                 function() {
-
 
                     const currentTheme =
                         document.documentElement.getAttribute(
@@ -479,7 +440,6 @@ if (
                 }
             );
 
-
         }
     );
 </script>
@@ -490,10 +450,6 @@ if (
 ========================================================= -->
 
 <style>
-    /* =========================================================
-       TOPBAR
-    ========================================================= */
-
     .topbar {
 
         transition:
@@ -504,8 +460,8 @@ if (
 
 
     /* =========================================================
-       DESKTOP
-    ========================================================= */
+   DESKTOP
+========================================================= */
 
     @media (min-width: 992px) {
 
@@ -521,8 +477,8 @@ if (
 
 
     /* =========================================================
-       TABLET / MOBILE
-    ========================================================= */
+   TABLET / MOBILE
+========================================================= */
 
     @media (max-width: 991px) {
 
@@ -547,8 +503,8 @@ if (
 
 
     /* =========================================================
-       SMALL MOBILE
-    ========================================================= */
+   SMALL MOBILE
+========================================================= */
 
     @media (max-width: 576px) {
 
@@ -583,8 +539,8 @@ if (
 
 
     /* =========================================================
-       VERY SMALL MOBILE
-    ========================================================= */
+   VERY SMALL MOBILE
+========================================================= */
 
     @media (max-width: 400px) {
 
