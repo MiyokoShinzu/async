@@ -2590,7 +2590,6 @@ function getStudentPhotoUrl($profilePhoto)
                                                         ) ?>
 
                                                     </div>
-
                                                     <small class="text-muted">
                                                         Student 
                                                     </small> 
