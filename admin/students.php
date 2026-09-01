@@ -750,7 +750,7 @@ function getStudentPhotoUrl($profilePhoto)
 
         color:
             var(--student-muted);
-
+        
         font-size: 14px;
     }
 
