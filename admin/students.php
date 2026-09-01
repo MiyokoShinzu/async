@@ -2753,7 +2753,7 @@ function getStudentPhotoUrl($profilePhoto)
                                         <td class="text-center align-middle">
 
                                             <a
-                                                href="student_view.php?id=<?= (int)($student["id"] ?? 0) ?>"
+                                                href="#"
                                                 class="btn btn-sm btn-outline-primary student-view-btn">
 
                                                 <i class="bi bi-eye me-1"></i>
