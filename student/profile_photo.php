@@ -10,7 +10,7 @@ session_start();
 
 /* =========================================================
    AUTHENTICATION
-   ========================================================= */
+========================================================= */
 
 if (
     !isset($_SESSION["logged_in"]) ||
@@ -24,27 +24,28 @@ if (
 
 /* =========================================================
    DATABASE
-   ========================================================= */
+========================================================= */
 
 require_once "../src/connection.php";
 
 
 /* =========================================================
    STUDENT DATA
-   ========================================================= */
+========================================================= */
 
 $user = $_SESSION["user"];
 
 $studentId = $user["student_id"] ?? "";
 
 if ($studentId === "") {
+
     die("Student account information is missing.");
 }
 
 
 /* =========================================================
    GET ACCOUNT
-   ========================================================= */
+========================================================= */
 
 $sql = "
     SELECT
@@ -61,64 +62,83 @@ $sql = "
     LIMIT 1
 ";
 
+
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
-    die("Database query failed: " . $mysqli->error);
+
+    die("Database query failed: " .
+        $mysqli->error);
 }
+
 
 $stmt->bind_param(
     "s",
     $studentId
 );
 
+
 $stmt->execute();
+
 
 $result = $stmt->get_result();
 
+
 $student = $result->fetch_assoc();
+
 
 $stmt->close();
 
 
 if (!$student) {
+
     die("Student account not found.");
 }
 
 
 /* =========================================================
    STUDENT NAME
-   ========================================================= */
+========================================================= */
 
 $studentName = trim(
+
     ($student["first_name"] ?? "") . " " .
         ($student["middle_initial"] ?? "") . " " .
         ($student["last_name"] ?? "") . " " .
         ($student["extension_name"] ?? "")
+
 );
 
 
 /* =========================================================
    DEPARTMENT
-   ========================================================= */
+========================================================= */
 
 $department =
-    trim($student["department"] ?? "");
+    trim(
+        $student["department"] ?? ""
+    );
+
 
 if ($department === "") {
+
     $department = "—";
 }
 
 
 /* =========================================================
    YEAR / SECTION
-   ========================================================= */
+========================================================= */
 
 $yearSection =
-    trim($student["year_section"] ?? "");
+    trim(
+        $student["year_section"] ?? ""
+    );
+
 
 $year = "—";
 $section = "—";
+
 
 if ($yearSection !== "") {
 
@@ -128,37 +148,53 @@ if ($yearSection !== "") {
         2
     );
 
+
     if (isset($parts[0])) {
-        $year = trim($parts[0]);
+
+        $year =
+            trim(
+                $parts[0]
+            );
     }
+
 
     if (
         isset($parts[1]) &&
         trim($parts[1]) !== ""
     ) {
-        $section = trim($parts[1]);
+
+        $section =
+            trim(
+                $parts[1]
+            );
     }
 }
 
 
 /* =========================================================
    PROFILE PHOTO
-   ========================================================= */
+========================================================= */
 
 $profilePhoto =
-    trim($student["profile_photo"] ?? "");
+    trim(
+        $student["profile_photo"] ?? ""
+    );
 
 
 /* =========================================================
    BUILD PHOTO URL
-   ========================================================= */
+========================================================= */
 
 $profilePhotoURL = "";
+
 
 if ($profilePhoto !== "") {
 
     /*
-     * If the database already contains a complete URL,
+     * If database contains a complete URL:
+     *
+     * https://example.com/shared/uploads/...
+     *
      * use it exactly as stored.
      */
 
@@ -169,38 +205,43 @@ if ($profilePhoto !== "") {
         )
     ) {
 
-        $profilePhotoURL = $profilePhoto;
+        $profilePhotoURL =
+            $profilePhoto;
     }
 
+
     /*
-     * If the database contains a root-relative path,
-     * such as:
+     * If database contains a root-relative path:
      *
-     * /uploads/profile_photos/photo.jpg
+     * /shared/uploads/profile_photos/photo.jpg
      *
      * use it directly.
      */ elseif (
-        substr($profilePhoto, 0, 1) === "/"
+        substr(
+            $profilePhoto,
+            0,
+            1
+        ) === "/"
     ) {
 
-        $profilePhotoURL = $profilePhoto;
+        $profilePhotoURL =
+            $profilePhoto;
     }
 
+
     /*
-     * If the database contains a relative path,
-     * convert it to a root-relative path.
+     * If database contains:
      *
-     * Example:
+     * shared/uploads/profile_photos/photo.jpg
      *
-     * uploads/profile_photos/photo.jpg
+     * convert it to:
      *
-     * becomes:
-     *
-     * /uploads/profile_photos/photo.jpg
+     * /shared/uploads/profile_photos/photo.jpg
      */ else {
 
         $profilePhotoURL =
-            "/" . ltrim(
+            "/" .
+            ltrim(
                 $profilePhoto,
                 "/"
             );
@@ -210,43 +251,54 @@ if ($profilePhoto !== "") {
 
 /* =========================================================
    DEFAULT AVATAR
-   ========================================================= */
+========================================================= */
 
 $initials = "";
 
-if (!empty($student["first_name"])) {
 
-    $initials .= strtoupper(
-        substr(
-            $student["first_name"],
-            0,
-            1
-        )
-    );
+if (
+    !empty($student["first_name"])
+) {
+
+    $initials .=
+        strtoupper(
+            substr(
+                $student["first_name"],
+                0,
+                1
+            )
+        );
 }
 
-if (!empty($student["last_name"])) {
 
-    $initials .= strtoupper(
-        substr(
-            $student["last_name"],
-            0,
-            1
-        )
-    );
+if (
+    !empty($student["last_name"])
+) {
+
+    $initials .=
+        strtoupper(
+            substr(
+                $student["last_name"],
+                0,
+                1
+            )
+        );
 }
+
 
 if ($initials === "") {
+
     $initials = "ST";
 }
 
 
 /* =========================================================
    MESSAGE
-   ========================================================= */
+========================================================= */
 
 $success =
     $_GET["success"] ?? "";
+
 
 $error =
     $_GET["error"] ?? "";
@@ -257,7 +309,9 @@ $error =
 
 <html lang="en">
 
+
 <?php include 'globals/head.php'; ?>
+
 
 <body>
 
@@ -355,7 +409,7 @@ $error =
                         <?php if ($profilePhotoURL !== ""): ?>
 
                             <img
-                                src=".<?= htmlspecialchars($profilePhotoURL) ?>"
+                                src="<?= htmlspecialchars($profilePhotoURL) ?>"
                                 alt="Profile Photo"
                                 class="profile-photo"
                                 id="profilePreview"
@@ -537,6 +591,7 @@ $error =
 
                             </p>
 
+
                             <img
                                 id="uploadPreview"
                                 class="upload-preview"
@@ -583,11 +638,15 @@ $error =
 
     <script>
         const photoInput =
-            document.getElementById("profile_photo");
+            document.getElementById(
+                "profile_photo"
+            );
 
 
         const uploadPreview =
-            document.getElementById("uploadPreview");
+            document.getElementById(
+                "uploadPreview"
+            );
 
 
         const uploadPreviewContainer =
@@ -616,15 +675,22 @@ $error =
                             "none";
 
                         return;
+
                     }
 
 
-                    /* Check file type */
+                    /* =================================================
+                       CHECK FILE TYPE
+                    ================================================= */
 
                     const allowedTypes = [
+
                         "image/jpeg",
+
                         "image/png",
+
                         "image/webp"
+
                     ];
 
 
@@ -638,16 +704,22 @@ $error =
                             "Please select a JPG, JPEG, PNG, or WEBP image."
                         );
 
+
                         this.value = "";
+
 
                         uploadPreviewContainer.style.display =
                             "none";
 
+
                         return;
+
                     }
 
 
-                    /* Check file size */
+                    /* =================================================
+                       CHECK FILE SIZE
+                    ================================================= */
 
                     if (
                         file.size >
@@ -658,16 +730,22 @@ $error =
                             "The selected image is larger than 5 MB."
                         );
 
+
                         this.value = "";
+
 
                         uploadPreviewContainer.style.display =
                             "none";
 
+
                         return;
+
                     }
 
 
-                    /* Preview */
+                    /* =================================================
+                       PREVIEW
+                    ================================================= */
 
                     const reader =
                         new FileReader();
@@ -679,13 +757,16 @@ $error =
                             uploadPreview.src =
                                 event.target.result;
 
+
                             uploadPreviewContainer.style.display =
                                 "block";
 
                         };
 
 
-                    reader.readAsDataURL(file);
+                    reader.readAsDataURL(
+                        file
+                    );
 
                 }
             );

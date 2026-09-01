@@ -5,7 +5,13 @@
    ETS-Async Learning Portal
    ========================================================= */
 
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
 $topbarProfilePhoto = "";
+$topbarProfilePhotoURL = "";
 $topbarStudentId = "";
 
 
@@ -13,7 +19,11 @@ $topbarStudentId = "";
    GET STUDENT ID
 ========================================================= */
 
-if (isset($_SESSION["user"]["student_id"])) {
+if (
+    isset(
+        $_SESSION["user"]["student_id"]
+    )
+) {
 
     $topbarStudentId =
         $_SESSION["user"]["student_id"];
@@ -36,6 +46,7 @@ if (
         LIMIT 1
     ";
 
+
     $topbarPhotoStmt =
         $mysqli->prepare(
             $topbarPhotoSQL
@@ -48,6 +59,7 @@ if (
             "s",
             $topbarStudentId
         );
+
 
         $topbarPhotoStmt->execute();
 
@@ -69,6 +81,71 @@ if (
 
 
         $topbarPhotoStmt->close();
+    }
+}
+
+
+/* =========================================================
+   BUILD PROFILE PHOTO URL
+========================================================= */
+
+if (
+    $topbarProfilePhoto !== ""
+) {
+
+    /*
+     * Complete URL
+     *
+     * Example:
+     * https://example.com/shared/uploads/...
+     */
+
+    if (
+        preg_match(
+            '/^https?:\/\//i',
+            $topbarProfilePhoto
+        )
+    ) {
+
+        $topbarProfilePhotoURL =
+            $topbarProfilePhoto;
+    }
+
+
+    /*
+     * Root-relative path
+     *
+     * Example:
+     * /shared/uploads/profile_photos/photo.jpg
+     */ elseif (
+        substr(
+            $topbarProfilePhoto,
+            0,
+            1
+        ) === "/"
+    ) {
+
+        $topbarProfilePhotoURL =
+            $topbarProfilePhoto;
+    }
+
+
+    /*
+     * Relative database path
+     *
+     * Example:
+     * shared/uploads/profile_photos/photo.jpg
+     *
+     * Convert to:
+     * /shared/uploads/profile_photos/photo.jpg
+     */ else {
+
+        $topbarProfilePhotoURL =
+            "/" .
+            ltrim(
+                $topbarProfilePhoto,
+                "/"
+            );
     }
 }
 
@@ -144,7 +221,9 @@ if (
         </div>
 
 
-        <!-- PROFILE AVATAR -->
+        <!-- =================================================
+             PROFILE AVATAR
+        ================================================== -->
 
         <a
             href="profile_photo.php"
@@ -152,14 +231,31 @@ if (
             title="My Profile Photo">
 
 
-            <?php if ($topbarProfilePhoto !== ""): ?>
+            <?php if ($topbarProfilePhotoURL !== ""): ?>
 
                 <img
-                    src="<?= htmlspecialchars($topbarProfilePhoto) ?>"
+                    src="<?= htmlspecialchars($topbarProfilePhotoURL) ?>"
                     alt="Profile Photo"
-                    class="topbar-avatar topbar-avatar-image">
+                    class="topbar-avatar topbar-avatar-image"
+                    onerror="this.style.display='none'; document.getElementById('topbarPhotoFallback').style.display='flex';">
+
+
+                <!-- FALLBACK IF IMAGE DOES NOT LOAD -->
+
+                <div
+                    id="topbarPhotoFallback"
+                    class="topbar-avatar"
+                    style="display:none;">
+
+                    <?= htmlspecialchars($initials) ?>
+
+                </div>
+
 
             <?php else: ?>
+
+
+                <!-- DEFAULT INITIALS -->
 
                 <div class="topbar-avatar">
 
@@ -167,13 +263,16 @@ if (
 
                 </div>
 
+
             <?php endif; ?>
 
 
         </a>
 
 
-        <!-- THEME TOGGLE -->
+        <!-- =================================================
+             THEME TOGGLE
+        ================================================== -->
 
         <button
             type="button"
@@ -201,36 +300,54 @@ if (
 ========================================================= -->
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-
-        const sidebarToggle =
-            document.getElementById("sidebarToggle");
-
-        if (!sidebarToggle) {
-            return;
-        }
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
 
 
-        sidebarToggle.addEventListener("click", function(event) {
+            const sidebarToggle =
+                document.getElementById(
+                    "sidebarToggle"
+                );
 
-            event.preventDefault();
-            event.stopPropagation();
 
+            if (!sidebarToggle) {
 
-            /* =====================================================
-               USE CENTRAL SIDEBAR CONTROLLER
-            ====================================================== */
-
-            if (typeof window.toggleSidebar === "function") {
-
-                window.toggleSidebar();
+                return;
 
             }
 
-        });
 
-    });
+            sidebarToggle.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+
+                    /* =========================================
+                       USE CENTRAL SIDEBAR CONTROLLER
+                    ========================================== */
+
+                    if (
+                        typeof window.toggleSidebar ===
+                        "function"
+                    ) {
+
+                        window.toggleSidebar();
+
+                    }
+
+                }
+            );
+
+
+        }
+    );
 </script>
+
 
 <!-- =========================================================
      DARK MODE SCRIPT
@@ -243,10 +360,15 @@ if (
 
 
             const themeToggle =
-                document.getElementById("themeToggle");
+                document.getElementById(
+                    "themeToggle"
+                );
+
 
             const themeIcon =
-                document.getElementById("themeIcon");
+                document.getElementById(
+                    "themeIcon"
+                );
 
 
             if (
@@ -259,9 +381,9 @@ if (
             }
 
 
-            /* =====================================================
+            /* ================================================
                UPDATE ICON
-            ====================================================== */
+            ================================================= */
 
             function updateThemeIcon() {
 
@@ -272,10 +394,13 @@ if (
                     );
 
 
-                if (currentTheme === "dark") {
+                if (
+                    currentTheme === "dark"
+                ) {
 
                     themeIcon.className =
                         "bi bi-sun-fill";
+
 
                     themeToggle.title =
                         "Switch to light mode";
@@ -285,6 +410,7 @@ if (
                     themeIcon.className =
                         "bi bi-moon-fill";
 
+
                     themeToggle.title =
                         "Switch to dark mode";
 
@@ -293,16 +419,16 @@ if (
             }
 
 
-            /* =====================================================
+            /* ================================================
                INITIAL ICON
-            ====================================================== */
+            ================================================= */
 
             updateThemeIcon();
 
 
-            /* =====================================================
+            /* ================================================
                THEME TOGGLE
-            ====================================================== */
+            ================================================= */
 
             themeToggle.addEventListener(
                 "click",
@@ -365,8 +491,8 @@ if (
 
 <style>
     /* =========================================================
-   TOPBAR
-========================================================= */
+       TOPBAR
+    ========================================================= */
 
     .topbar {
 
@@ -378,11 +504,10 @@ if (
 
 
     /* =========================================================
-   DESKTOP
-========================================================= */
+       DESKTOP
+    ========================================================= */
 
     @media (min-width: 992px) {
-
 
         body.sidebar-collapsed .topbar {
 
@@ -396,11 +521,10 @@ if (
 
 
     /* =========================================================
-   TABLET / MOBILE
-========================================================= */
+       TABLET / MOBILE
+    ========================================================= */
 
     @media (max-width: 991px) {
-
 
         .topbar {
 
@@ -423,11 +547,10 @@ if (
 
 
     /* =========================================================
-   SMALL MOBILE
-========================================================= */
+       SMALL MOBILE
+    ========================================================= */
 
     @media (max-width: 576px) {
-
 
         .topbar-title {
 
@@ -460,11 +583,10 @@ if (
 
 
     /* =========================================================
-   VERY SMALL MOBILE
-========================================================= */
+       VERY SMALL MOBILE
+    ========================================================= */
 
     @media (max-width: 400px) {
-
 
         .topbar-title {
 

@@ -96,7 +96,7 @@ $file =
 ========================================================= */
 
 $maxSize =
-    5 * 1024 * 1024;
+    5 * 1024 * 1024; // 5 MB
 
 if ($file["size"] > $maxSize) {
 
@@ -175,12 +175,26 @@ $extension =
 
 /* =========================================================
    UPLOAD DIRECTORY
+   IMPORTANT:
+   shared is OUTSIDE the Git-tracked async directory.
+
+   Structure:
+
+   public_html/
+   ├── async/
+   └── shared/
+       └── uploads/
+           └── profile_photos/
 ========================================================= */
 
 $uploadDirectory =
     __DIR__ .
-    "/uploads/profile_photos/";
+    "/../shared/uploads/profile_photos/";
 
+
+/* =========================================================
+   CREATE UPLOAD DIRECTORY IF NEEDED
+========================================================= */
 
 if (
     !is_dir($uploadDirectory)
@@ -212,6 +226,7 @@ if (
 
 $oldPhoto = "";
 
+
 $sql = "
     SELECT profile_photo
     FROM accounts
@@ -219,18 +234,36 @@ $sql = "
     LIMIT 1
 ";
 
+
 $stmt =
     $mysqli->prepare($sql);
+
+
+if (!$stmt) {
+
+    header(
+        "Location: profile_photo.php?error=" .
+            urlencode(
+                "Unable to access your profile."
+            )
+    );
+
+    exit;
+}
+
 
 $stmt->bind_param(
     "s",
     $studentId
 );
 
+
 $stmt->execute();
+
 
 $result =
     $stmt->get_result();
+
 
 if ($row = $result->fetch_assoc()) {
 
@@ -239,6 +272,7 @@ if ($row = $result->fetch_assoc()) {
             $row["profile_photo"] ?? ""
         );
 }
+
 
 $stmt->close();
 
@@ -265,13 +299,17 @@ $fileName =
     $extension;
 
 
+/* =========================================================
+   FULL SERVER DESTINATION
+========================================================= */
+
 $destination =
     $uploadDirectory .
     $fileName;
 
 
 /* =========================================================
-   MOVE FILE
+   MOVE UPLOADED FILE
 ========================================================= */
 
 if (
@@ -293,16 +331,22 @@ if (
 
 
 /* =========================================================
-   DATABASE PATH
+   DATABASE PHOTO PATH
+   This is the browser-accessible path.
+
+   Example:
+
+   shared/uploads/profile_photos/
+   123456_a8f91c2d.jpg
 ========================================================= */
 
 $photoPath =
-    "uploads/profile_photos/" .
+    "shared/uploads/profile_photos/" .
     $fileName;
 
 
 /* =========================================================
-   SAVE PHOTO URL
+   SAVE PHOTO PATH TO DATABASE
 ========================================================= */
 
 $sql = "
@@ -311,22 +355,15 @@ $sql = "
     WHERE student_id = ?
 ";
 
+
 $stmt =
     $mysqli->prepare($sql);
 
-$stmt->bind_param(
-    "ss",
-    $photoPath,
-    $studentId
-);
 
+if (!$stmt) {
 
-if (!$stmt->execute()) {
-
-    /*
-       Remove newly uploaded file
-       if database update fails.
-    */
+    /* Remove newly uploaded file
+       if SQL preparation fails */
 
     if (
         file_exists($destination)
@@ -335,7 +372,6 @@ if (!$stmt->execute()) {
         unlink($destination);
     }
 
-    $stmt->close();
 
     header(
         "Location: profile_photo.php?error=" .
@@ -346,6 +382,47 @@ if (!$stmt->execute()) {
 
     exit;
 }
+
+
+$stmt->bind_param(
+    "ss",
+    $photoPath,
+    $studentId
+);
+
+
+/* =========================================================
+   EXECUTE DATABASE UPDATE
+========================================================= */
+
+if (
+    !$stmt->execute()
+) {
+
+    /* Remove newly uploaded file
+       if database update fails */
+
+    if (
+        file_exists($destination)
+    ) {
+
+        unlink($destination);
+    }
+
+
+    $stmt->close();
+
+
+    header(
+        "Location: profile_photo.php?error=" .
+            urlencode(
+                "Unable to update your profile."
+            )
+    );
+
+    exit;
+}
+
 
 $stmt->close();
 
@@ -358,19 +435,32 @@ if (
     $oldPhoto !== "" &&
     strpos(
         $oldPhoto,
-        "uploads/profile_photos/"
+        "shared/uploads/profile_photos/"
     ) === 0
 ) {
 
+    /*
+       Convert database path:
+
+       shared/uploads/profile_photos/photo.jpg
+
+       into server path:
+
+       /public_html/shared/uploads/profile_photos/photo.jpg
+    */
+
     $oldFile =
         __DIR__ .
-        "/" .
+        "/../" .
         $oldPhoto;
 
 
+    /* Make sure we don't accidentally
+       delete the new photo */
+
     if (
         file_exists($oldFile) &&
-        $oldFile !== $destination
+        realpath($oldFile) !== realpath($destination)
     ) {
 
         unlink($oldFile);
