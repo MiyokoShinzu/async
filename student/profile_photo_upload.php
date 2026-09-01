@@ -98,7 +98,10 @@ $file =
 $maxSize =
     5 * 1024 * 1024; // 5 MB
 
-if ($file["size"] > $maxSize) {
+
+if (
+    $file["size"] > $maxSize
+) {
 
     header(
         "Location: profile_photo.php?error=" .
@@ -120,7 +123,10 @@ $imageInfo =
         $file["tmp_name"]
     );
 
-if ($imageInfo === false) {
+
+if (
+    $imageInfo === false
+) {
 
     header(
         "Location: profile_photo.php?error=" .
@@ -175,21 +181,36 @@ $extension =
 
 /* =========================================================
    UPLOAD DIRECTORY
-   IMPORTANT:
-   shared is OUTSIDE the Git-tracked async directory.
 
-   Structure:
+   Actual structure:
 
    public_html/
+   │
    ├── async/
+   │   └── student/
+   │       └── profile_photo_upload.php
+   │
    └── shared/
        └── uploads/
            └── profile_photos/
+
+   From:
+
+   async/student/
+
+   we go:
+
+   ../        -> async/
+   ../../     -> public_html/
+
+   then:
+
+   shared/uploads/profile_photos/
 ========================================================= */
 
 $uploadDirectory =
     __DIR__ .
-    "/../shared/uploads/profile_photos/";
+    "/../../shared/uploads/profile_photos/";
 
 
 /* =========================================================
@@ -217,6 +238,25 @@ if (
 
         exit;
     }
+}
+
+
+/* =========================================================
+   CHECK DIRECTORY WRITABLE
+========================================================= */
+
+if (
+    !is_writable($uploadDirectory)
+) {
+
+    header(
+        "Location: profile_photo.php?error=" .
+            urlencode(
+                "The upload directory is not writable."
+            )
+    );
+
+    exit;
 }
 
 
@@ -265,7 +305,10 @@ $result =
     $stmt->get_result();
 
 
-if ($row = $result->fetch_assoc()) {
+if (
+    $row =
+    $result->fetch_assoc()
+) {
 
     $oldPhoto =
         trim(
@@ -278,7 +321,7 @@ $stmt->close();
 
 
 /* =========================================================
-   GENERATE UNIQUE FILE NAME
+   GENERATE SAFE STUDENT ID
 ========================================================= */
 
 $safeStudentId =
@@ -288,6 +331,10 @@ $safeStudentId =
         $studentId
     );
 
+
+/* =========================================================
+   GENERATE UNIQUE FILE NAME
+========================================================= */
 
 $fileName =
     $safeStudentId .
@@ -332,12 +379,18 @@ if (
 
 /* =========================================================
    DATABASE PHOTO PATH
-   This is the browser-accessible path.
 
-   Example:
+   Stored in database as:
 
-   shared/uploads/profile_photos/
-   123456_a8f91c2d.jpg
+   shared/uploads/profile_photos/photo.jpg
+
+   NOT:
+
+   /shared/...
+
+   NOT:
+
+   async/shared/...
 ========================================================= */
 
 $photoPath =
@@ -362,7 +415,7 @@ $stmt =
 
 if (!$stmt) {
 
-    /* Remove newly uploaded file
+    /* Remove uploaded file
        if SQL preparation fails */
 
     if (
@@ -399,7 +452,7 @@ if (
     !$stmt->execute()
 ) {
 
-    /* Remove newly uploaded file
+    /* Remove uploaded file
        if database update fails */
 
     if (
@@ -440,23 +493,24 @@ if (
 ) {
 
     /*
-       Convert database path:
+       Database:
 
        shared/uploads/profile_photos/photo.jpg
 
-       into server path:
+       Server:
 
-       /public_html/shared/uploads/profile_photos/photo.jpg
+       public_html/shared/uploads/profile_photos/photo.jpg
     */
 
     $oldFile =
         __DIR__ .
-        "/../" .
+        "/../../" .
         $oldPhoto;
 
 
-    /* Make sure we don't accidentally
-       delete the new photo */
+    /* =====================================================
+       MAKE SURE OLD FILE IS NOT THE NEW FILE
+    ===================================================== */
 
     if (
         file_exists($oldFile) &&
