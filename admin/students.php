@@ -2594,7 +2594,6 @@ function getStudentPhotoUrl($profilePhoto)
                                                     </small> 
 
                                                 </div>
-
                                             </div>
 
                                         </td>
