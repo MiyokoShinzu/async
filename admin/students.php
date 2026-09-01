@@ -1,4 +1,3 @@
-
 <?php
 
 /* =========================================================
@@ -532,8 +531,8 @@ function buildPageUrl($page)
 
 <style>
     /* =========================================================
-   STUDENTS PAGE — PROFESSIONAL RESPONSIVE STYLE
-========================================================= */
+                STUDENTS PAGE — PROFESSIONAL RESPONSIVE STYLE
+                ========================================================= */
 
     :root {
 
@@ -2347,58 +2346,42 @@ function buildPageUrl($page)
 
 
                                     /* =================================================
-                               PROFILE PHOTO
-                            ================================================= */
+   PROFILE PHOTO
+================================================= */
 
-                                    $profilePhoto =
-                                        trim(
-                                            $student["profile_photo"] ?? ""
-                                        );
-
+                                    $profilePhoto = trim(
+                                        $student["profile_photo"] ?? ""
+                                    );
 
                                     $photoUrl = "";
-
 
                                     if ($profilePhoto !== "") {
 
                                         /*
-                                 * Get ONLY the filename.
-                                 *
-                                 * Example:
-                                 *
-                                 * john.jpg
-                                 *
-                                 * student/uploads/john.jpg
-                                 *
-                                 * ../student/uploads/john.jpg
-                                 *
-                                 * will all become:
-                                 *
-                                 * john.jpg
-                                 */
+     * Database example:
+     *
+     * uploads/profile_photos/23-26528_ad9aad8cf89e1e2f.jpg
+     *
+     * Actual filesystem:
+     *
+     * ./student/uploads/profile_photos/23-26528_ad9aad8cf89e1e2f.jpg
+     */
 
-                                        $photoFile =
-                                            basename(
-                                                $profilePhoto
-                                            );
-
+                                        $profilePhoto = ltrim(
+                                            str_replace("\\", "/", $profilePhoto),
+                                            "/"
+                                        );
 
                                         /*
-                                 * Get extension
-                                 */
+     * Allowed image extensions
+     */
 
-                                        $extension =
-                                            strtolower(
-                                                pathinfo(
-                                                    $photoFile,
-                                                    PATHINFO_EXTENSION
-                                                )
-                                            );
-
-
-                                        /*
-                                 * Allowed image formats
-                                 */
+                                        $extension = strtolower(
+                                            pathinfo(
+                                                $profilePhoto,
+                                                PATHINFO_EXTENSION
+                                            )
+                                        );
 
                                         $allowedExtensions = [
                                             "jpg",
@@ -2407,7 +2390,6 @@ function buildPageUrl($page)
                                             "gif",
                                             "webp"
                                         ];
-
 
                                         if (
                                             in_array(
@@ -2418,48 +2400,48 @@ function buildPageUrl($page)
                                         ) {
 
                                             /*
-                                     * =================================================
-                                     * ACTUAL FILE LOCATION
-                                     *
-                                     * Current page:
-                                     *
-                                     * ./admin/students.php
-                                     *
-                                     * Student photos:
-                                     *
-                                     * ./student/uploads/
-                                     * =================================================
-                                     */
+         * Actual file on server
+         *
+         * students.php is inside:
+         * ./admin/
+         *
+         * student folder is:
+         * ./student/
+         */
 
-                                            $photoPath =
-                                                __DIR__ .
-                                                "/../student/uploads/" .
-                                                $photoFile;
+                                            $photoPath = __DIR__ .
+                                                "/../student/" .
+                                                $profilePhoto;
 
 
                                             /*
-                                     * Check if file exists
-                                     */
+         * Check if the physical file exists
+         */
 
                                             if (
-                                                file_exists(
-                                                    $photoPath
-                                                )
+                                                is_file($photoPath) &&
+                                                is_readable($photoPath)
                                             ) {
 
                                                 /*
-                                         * Browser URL
-                                         */
+             * URL used by browser
+             */
 
                                                 $photoUrl =
-                                                    "../student/uploads/" .
-                                                    rawurlencode(
-                                                        $photoFile
+                                                    "../student/" .
+                                                    implode(
+                                                        "/",
+                                                        array_map(
+                                                            "rawurlencode",
+                                                            explode(
+                                                                "/",
+                                                                $profilePhoto
+                                                            )
+                                                        )
                                                     );
                                             }
                                         }
                                     }
-
 
                                     /* =================================================
                                CREATED DATE
