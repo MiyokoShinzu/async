@@ -2601,7 +2601,6 @@ function getStudentPhotoUrl($profilePhoto)
 
                                         </td>
 
-
                                         <!-- STUDENT ID -->
 
                                         <td class="align-middle">
