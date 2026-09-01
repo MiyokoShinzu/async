@@ -1,3 +1,4 @@
+
 <?php
 
 /* =========================================================
@@ -38,7 +39,6 @@ $user = $_SESSION["user"];
 $studentId = $user["student_id"] ?? "";
 
 if ($studentId === "") {
-
     die("Student account information is missing.");
 }
 
@@ -62,36 +62,27 @@ $sql = "
     LIMIT 1
 ";
 
-
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
-
-    die("Database query failed: " .
-        $mysqli->error);
+    die("Database query failed: " . $mysqli->error);
 }
-
 
 $stmt->bind_param(
     "s",
     $studentId
 );
 
-
 $stmt->execute();
-
 
 $result = $stmt->get_result();
 
-
 $student = $result->fetch_assoc();
-
 
 $stmt->close();
 
 
 if (!$student) {
-
     die("Student account not found.");
 }
 
@@ -101,12 +92,10 @@ if (!$student) {
 ========================================================= */
 
 $studentName = trim(
-
     ($student["first_name"] ?? "") . " " .
         ($student["middle_initial"] ?? "") . " " .
         ($student["last_name"] ?? "") . " " .
         ($student["extension_name"] ?? "")
-
 );
 
 
@@ -114,14 +103,11 @@ $studentName = trim(
    DEPARTMENT
 ========================================================= */
 
-$department =
-    trim(
-        $student["department"] ?? ""
-    );
-
+$department = trim(
+    $student["department"] ?? ""
+);
 
 if ($department === "") {
-
     $department = "—";
 }
 
@@ -130,15 +116,12 @@ if ($department === "") {
    YEAR / SECTION
 ========================================================= */
 
-$yearSection =
-    trim(
-        $student["year_section"] ?? ""
-    );
-
+$yearSection = trim(
+    $student["year_section"] ?? ""
+);
 
 $year = "—";
 $section = "—";
-
 
 if ($yearSection !== "") {
 
@@ -148,25 +131,15 @@ if ($yearSection !== "") {
         2
     );
 
-
     if (isset($parts[0])) {
-
-        $year =
-            trim(
-                $parts[0]
-            );
+        $year = trim($parts[0]);
     }
-
 
     if (
         isset($parts[1]) &&
         trim($parts[1]) !== ""
     ) {
-
-        $section =
-            trim(
-                $parts[1]
-            );
+        $section = trim($parts[1]);
     }
 }
 
@@ -175,28 +148,49 @@ if ($yearSection !== "") {
    PROFILE PHOTO
 ========================================================= */
 
-$profilePhoto =
-    trim(
-        $student["profile_photo"] ?? ""
-    );
+$profilePhoto = trim(
+    $student["profile_photo"] ?? ""
+);
 
 
 /* =========================================================
-   BUILD PHOTO URL
+   BUILD PROFILE PHOTO URL
 ========================================================= */
+
+/*
+   IMPORTANT:
+
+   async and shared are siblings.
+
+   Server:
+
+   public_html/
+       async/
+       shared/
+
+   Browser:
+
+   /shared/uploads/profile_photos/photo.jpg
+
+   Therefore DO NOT use:
+
+   ./shared/...
+   ../shared/...
+
+   in the image src.
+
+   The browser should use:
+
+   /shared/uploads/profile_photos/...
+*/
 
 $profilePhotoURL = "";
 
-
 if ($profilePhoto !== "") {
 
-    /*
-     * If database contains a complete URL:
-     *
-     * https://example.com/shared/uploads/...
-     *
-     * use it exactly as stored.
-     */
+    /* -----------------------------------------------------
+       Complete URL
+    ----------------------------------------------------- */
 
     if (
         preg_match(
@@ -205,39 +199,30 @@ if ($profilePhoto !== "") {
         )
     ) {
 
-        $profilePhotoURL =
-            $profilePhoto;
+        $profilePhotoURL = $profilePhoto;
     }
 
 
-    /*
-     * If database contains a root-relative path:
-     *
-     * /shared/uploads/profile_photos/photo.jpg
-     *
-     * use it directly.
-     */ elseif (
-        substr(
-            $profilePhoto,
-            0,
-            1
-        ) === "/"
+    /* -----------------------------------------------------
+       Already root-relative
+       Example:
+       /shared/uploads/profile_photos/photo.jpg
+    ----------------------------------------------------- */ elseif (
+        substr($profilePhoto, 0, 1) === "/"
     ) {
 
-        $profilePhotoURL =
-            $profilePhoto;
+        $profilePhotoURL = $profilePhoto;
     }
 
 
-    /*
-     * If database contains:
-     *
-     * shared/uploads/profile_photos/photo.jpg
-     *
-     * convert it to:
-     *
-     * /shared/uploads/profile_photos/photo.jpg
-     */ else {
+    /* -----------------------------------------------------
+       Relative database path
+       Example:
+       shared/uploads/profile_photos/photo.jpg
+
+       Convert to:
+       /shared/uploads/profile_photos/photo.jpg
+    ----------------------------------------------------- */ else {
 
         $profilePhotoURL =
             "/" .
@@ -250,44 +235,38 @@ if ($profilePhoto !== "") {
 
 
 /* =========================================================
-   DEFAULT AVATAR
+   DEFAULT AVATAR INITIALS
 ========================================================= */
 
 $initials = "";
-
 
 if (
     !empty($student["first_name"])
 ) {
 
-    $initials .=
-        strtoupper(
-            substr(
-                $student["first_name"],
-                0,
-                1
-            )
-        );
+    $initials .= strtoupper(
+        substr(
+            $student["first_name"],
+            0,
+            1
+        )
+    );
 }
-
 
 if (
     !empty($student["last_name"])
 ) {
 
-    $initials .=
-        strtoupper(
-            substr(
-                $student["last_name"],
-                0,
-                1
-            )
-        );
+    $initials .= strtoupper(
+        substr(
+            $student["last_name"],
+            0,
+            1
+        )
+    );
 }
 
-
 if ($initials === "") {
-
     $initials = "ST";
 }
 
@@ -296,12 +275,9 @@ if ($initials === "") {
    MESSAGE
 ========================================================= */
 
-$success =
-    $_GET["success"] ?? "";
+$success = $_GET["success"] ?? "";
 
-
-$error =
-    $_GET["error"] ?? "";
+$error = $_GET["error"] ?? "";
 
 ?>
 
@@ -309,9 +285,7 @@ $error =
 
 <html lang="en">
 
-
 <?php include 'globals/head.php'; ?>
-
 
 <body>
 
@@ -675,13 +649,12 @@ $error =
                             "none";
 
                         return;
-
                     }
 
 
-                    /* =================================================
+                    /* -------------------------------------------------
                        CHECK FILE TYPE
-                    ================================================= */
+                    ------------------------------------------------- */
 
                     const allowedTypes = [
 
@@ -707,19 +680,16 @@ $error =
 
                         this.value = "";
 
-
                         uploadPreviewContainer.style.display =
                             "none";
 
-
                         return;
-
                     }
 
 
-                    /* =================================================
+                    /* -------------------------------------------------
                        CHECK FILE SIZE
-                    ================================================= */
+                    ------------------------------------------------- */
 
                     if (
                         file.size >
@@ -733,19 +703,16 @@ $error =
 
                         this.value = "";
 
-
                         uploadPreviewContainer.style.display =
                             "none";
 
-
                         return;
-
                     }
 
 
-                    /* =================================================
+                    /* -------------------------------------------------
                        PREVIEW
-                    ================================================= */
+                    ------------------------------------------------- */
 
                     const reader =
                         new FileReader();
