@@ -512,46 +512,44 @@ function buildPageUrl($page)
    PROFILE PHOTO URL
 ========================================================= */
 
+
+/* =========================================================
+   PROFILE PHOTO URL
+========================================================= */
+
 function getStudentPhotoUrl($profilePhoto)
 {
-    $profilePhoto =
-        trim($profilePhoto ?? "");
+    $profilePhoto = trim($profilePhoto ?? "");
 
     if ($profilePhoto === "") {
-
         return "";
     }
-
 
     /* -----------------------------------------------------
        Normalize path
     ----------------------------------------------------- */
 
-    $profilePhoto =
-        str_replace(
-            "\\",
-            "/",
-            $profilePhoto
-        );
+    $profilePhoto = str_replace("\\", "/", $profilePhoto);
 
-    $profilePhoto =
-        ltrim(
-            $profilePhoto,
-            "/"
-        );
+    $profilePhoto = ltrim($profilePhoto, "/");
 
 
     /* -----------------------------------------------------
        Security
     ----------------------------------------------------- */
 
-    if (
-        strpos(
-            $profilePhoto,
-            ".."
-        ) !== false
-    ) {
+    if (strpos($profilePhoto, "..") !== false) {
+        return "";
+    }
 
+
+    /* -----------------------------------------------------
+       Only allow profile photo directory
+    ----------------------------------------------------- */
+
+    $allowedPrefix = "shared/uploads/profile_photos/";
+
+    if (strpos($profilePhoto, $allowedPrefix) !== 0) {
         return "";
     }
 
@@ -560,13 +558,12 @@ function getStudentPhotoUrl($profilePhoto)
        Allowed image extensions
     ----------------------------------------------------- */
 
-    $extension =
-        strtolower(
-            pathinfo(
-                $profilePhoto,
-                PATHINFO_EXTENSION
-            )
-        );
+    $extension = strtolower(
+        pathinfo(
+            $profilePhoto,
+            PATHINFO_EXTENSION
+        )
+    );
 
     $allowedExtensions = [
         "jpg",
@@ -576,14 +573,11 @@ function getStudentPhotoUrl($profilePhoto)
         "webp"
     ];
 
-    if (
-        !in_array(
-            $extension,
-            $allowedExtensions,
-            true
-        )
-    ) {
-
+    if (!in_array(
+        $extension,
+        $allowedExtensions,
+        true
+    )) {
         return "";
     }
 
@@ -591,25 +585,37 @@ function getStudentPhotoUrl($profilePhoto)
     /* =====================================================
        ACTUAL FILE LOCATION
 
-       admin/students.php
-              ↓
-            ../
-              ↓
-       student/uploads/profile_photos/
+       Current file:
+       
+       /public_html/admin/students.php
+
+       Database path:
+
+       shared/uploads/profile_photos/file.jpg
+
+       Therefore:
+
+       /public_html/admin/
+              ↓ ../
+       /public_html/shared/
     ===================================================== */
 
     $filesystemPath =
         __DIR__ .
-        "/../student/" .
+        "/../" .
         $profilePhoto;
 
 
     /* =====================================================
        BROWSER URL
+
+       /admin/students.php
+              ↓ ../
+       /shared/uploads/profile_photos/file.jpg
     ===================================================== */
 
     $urlPath =
-        "../student/" .
+        "../" .
         $profilePhoto;
 
 
@@ -621,13 +627,14 @@ function getStudentPhotoUrl($profilePhoto)
         is_file($filesystemPath) &&
         is_readable($filesystemPath)
     ) {
-
         return $urlPath;
     }
 
 
     return "";
 }
+
+
 
 ?>
 
