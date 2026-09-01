@@ -1881,7 +1881,7 @@
 
                                             $photoPath =
                                                 __DIR__ .
-                                                "/../students/uploads/" .
+                                                "/../student/uploads/" .
                                                 $photoFile;
 
 
@@ -1892,7 +1892,7 @@
                                             ) {
 
                                                 $photoUrl =
-                                                    "../students/uploads/" .
+                                                    "../student/uploads/" .
                                                     rawurlencode(
                                                         $photoFile
                                                     );
