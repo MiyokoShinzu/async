@@ -406,21 +406,7 @@ include "globals/topbar.php";
                  TEACHER AREA
             ============================================== -->
 
-            <div class="teacher-area">
-
-                <div class="teacher-desk">
-
-                    <div class="teacher-icon">
-                        <i class="bi bi-person-workspace"></i>
-                    </div>
-
-                    <div class="teacher-label">
-                        Instructor
-                    </div>
-
-                </div>
-
-            </div>
+           
 
 
             <!-- =============================================
