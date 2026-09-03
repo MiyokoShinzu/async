@@ -1,4 +1,3 @@
-
 <?php
 /* =========================================================
    STUDENT CLASSMATES
@@ -10,7 +9,7 @@ session_start();
 
 /* =========================================================
    AUTHENTICATION CHECK
-   ========================================================= */
+========================================================= */
 
 if (
     !isset($_SESSION["logged_in"]) ||
@@ -27,14 +26,14 @@ if (
 
 /* =========================================================
    DATABASE CONNECTION
-   ========================================================= */
+========================================================= */
 
 require_once "../src/connection.php";
 
 
 /* =========================================================
-   SESSION DATA
-   ========================================================= */
+   CURRENT STUDENT INFORMATION
+========================================================= */
 
 $user = $_SESSION["user"];
 
@@ -42,10 +41,6 @@ $studentId = $user["student_id"] ?? "";
 $department = $user["department"] ?? "";
 $yearSection = $user["year_section"] ?? "";
 
-
-/* =========================================================
-   VALIDATE STUDENT INFORMATION
-   ========================================================= */
 
 if (
     empty($studentId) ||
@@ -58,7 +53,7 @@ if (
 
 /* =========================================================
    LOAD CLASSMATES
-   ========================================================= */
+========================================================= */
 
 $classmates = [];
 
@@ -83,6 +78,7 @@ $stmt = $mysqli->prepare("
         first_name ASC
 ");
 
+
 if (!$stmt) {
     die("Database error: " . $mysqli->error);
 }
@@ -102,7 +98,6 @@ $result = $stmt->get_result();
 
 
 while ($row = $result->fetch_assoc()) {
-
     $classmates[] = $row;
 }
 
@@ -110,16 +105,12 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 
 
-/* =========================================================
-   CLASSMATE COUNT
-   ========================================================= */
-
 $classmateCount = count($classmates);
 
 
 /* =========================================================
-   FORMAT FULL NAME
-   ========================================================= */
+   FORMAT STUDENT NAME
+========================================================= */
 
 function formatStudentName($student)
 {
@@ -130,14 +121,19 @@ function formatStudentName($student)
     }
 
     if (!empty($student["middle_initial"])) {
+
         if ($name !== "") {
             $name .= " ";
         }
 
-        $name .= rtrim($student["middle_initial"], ".") . ".";
+        $name .= rtrim(
+            $student["middle_initial"],
+            "."
+        ) . ".";
     }
 
     if (!empty($student["last_name"])) {
+
         if ($name !== "") {
             $name .= " ";
         }
@@ -146,6 +142,7 @@ function formatStudentName($student)
     }
 
     if (!empty($student["extension_name"])) {
+
         if ($name !== "") {
             $name .= " ";
         }
@@ -159,29 +156,79 @@ function formatStudentName($student)
 
 /* =========================================================
    GET STUDENT INITIALS
-   ========================================================= */
+========================================================= */
 
 function getStudentInitials($student)
 {
-    $firstName = trim($student["first_name"] ?? "");
-    $lastName  = trim($student["last_name"] ?? "");
+    $firstName = trim(
+        $student["first_name"] ?? ""
+    );
+
+    $lastName = trim(
+        $student["last_name"] ?? ""
+    );
 
     $initials = "";
 
+
+    /* -----------------------------------------------------
+       FIRST NAME INITIAL
+    ----------------------------------------------------- */
+
     if ($firstName !== "") {
-        $initials .= strtoupper(substr($firstName, 0, 1));
+
+        $firstCharacters = preg_split(
+            '/\s+/u',
+            $firstName
+        );
+
+        if (!empty($firstCharacters[0])) {
+
+            $initials .= strtoupper(
+                mb_substr(
+                    $firstCharacters[0],
+                    0,
+                    1,
+                    "UTF-8"
+                )
+            );
+        }
     }
+
+
+    /* -----------------------------------------------------
+       LAST NAME INITIAL
+    ----------------------------------------------------- */
 
     if ($lastName !== "") {
-        $initials .= strtoupper(substr($lastName, 0, 1));
+
+        $initials .= strtoupper(
+            mb_substr(
+                $lastName,
+                0,
+                1,
+                "UTF-8"
+            )
+        );
     }
 
-    return $initials !== "" ? $initials : "?";
+
+    /* -----------------------------------------------------
+       FALLBACK
+    ----------------------------------------------------- */
+
+    if ($initials === "") {
+        $initials = "?";
+    }
+
+
+    return $initials;
 }
 
+
 /* =========================================================
-   PROFILE PHOTO PATH
-   ========================================================= */
+   GET PROFILE PHOTO
+========================================================= */
 
 function getProfilePhoto($photo)
 {
@@ -189,23 +236,43 @@ function getProfilePhoto($photo)
         return null;
     }
 
+
     /*
-     * Normalize path
+     * Normalize slashes.
      */
 
-    $photo = str_replace("\\", "/", trim($photo));
+    $photo = str_replace(
+        "\\",
+        "/",
+        trim($photo)
+    );
 
 
     /*
-     * Get only the filename
+     * Extract filename only.
+     *
+     * This allows database values such as:
+     *
+     * uploads/profile_photos/example.png
+     *
+     * or
+     *
+     * shared/uploads/profile_photos/example.png
+     *
+     * to work using the main domain.
      */
 
     $photoName = basename($photo);
 
 
+    if ($photoName === "" || $photoName === ".") {
+        return null;
+    }
+
+
     /*
-     * Profile photos are stored on the main
-     * vertigation.com domain.
+     * Profile photos are stored on the
+     * main vertigation.com domain.
      */
 
     return "https://vertigation.com/shared/uploads/profile_photos/" .
@@ -214,8 +281,8 @@ function getProfilePhoto($photo)
 
 
 /* =========================================================
-   GLOBALS
-   ========================================================= */
+   GLOBAL PAGE COMPONENTS
+========================================================= */
 
 include "globals/head.php";
 include "globals/sidebar.php";
@@ -226,115 +293,56 @@ include "globals/topbar.php";
 
 <!-- =========================================================
      MAIN CONTENT
-     ========================================================= -->
+========================================================= -->
 
 <main class="main-content">
 
     <div class="content-wrapper">
 
 
-        <!-- =====================================================
+        <!-- =================================================
              PAGE HEADER
-        ====================================================== -->
+        ================================================== -->
 
-        <div class="classmates-header">
+        <div class="page-header">
 
-            <div class="page-title-row">
+            <div>
 
-                <div class="page-title-icon">
-
+                <h1 class="page-title">
                     <i class="bi bi-people-fill"></i>
+                    Classmates
+                </h1>
 
-                </div>
-
-                <div>
-
-                    <h2>
-                        Classmates
-                    </h2>
-
-                    <p>
-                        Your class seating view
-                    </p>
-
-                </div>
+                <p class="page-subtitle">
+                    View the students in your class.
+                </p>
 
             </div>
 
 
-            <!-- =================================================
-                 CLASS COUNT
-            ================================================== -->
+            <div class="class-info">
 
-            <div class="class-count">
-
-                <i class="bi bi-people-fill"></i>
-
-                <span>
-
-                    <?= $classmateCount ?>
-
-                    <?= $classmateCount === 1
-                        ? "Classmate"
-                        : "Classmates"
-                    ?>
-
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- =====================================================
-             CLASS INFORMATION
-        ====================================================== -->
-
-        <div class="class-information">
-
-            <div class="class-information-item">
-
-                <div class="class-information-icon">
-
-                    <i class="bi bi-building"></i>
-
-                </div>
-
-                <div>
-
-                    <span class="class-information-label">
-                        Department
-                    </span>
-
-                    <strong>
-                        <?= htmlspecialchars($department) ?>
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="class-information-divider"></div>
-
-
-            <div class="class-information-item">
-
-                <div class="class-information-icon">
+                <div class="class-info-item">
 
                     <i class="bi bi-mortarboard-fill"></i>
 
-                </div>
-
-                <div>
-
-                    <span class="class-information-label">
-                        Year & Section
+                    <span>
+                        <?= htmlspecialchars($department) ?>
                     </span>
 
-                    <strong>
+                </div>
+
+
+                <div class="class-info-divider"></div>
+
+
+                <div class="class-info-item">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
                         <?= htmlspecialchars($yearSection) ?>
-                    </strong>
+                    </span>
 
                 </div>
 
@@ -343,73 +351,102 @@ include "globals/topbar.php";
         </div>
 
 
-        <!-- =====================================================
-             CLASSROOM AREA
-        ====================================================== -->
+        <!-- =================================================
+             CLASSROOM CONTAINER
+        ================================================== -->
 
         <div class="classroom-container">
 
 
-            <!-- =================================================
+            <!-- =============================================
                  CLASSROOM HEADER
-            ================================================== -->
+            ============================================== -->
 
             <div class="classroom-header">
 
                 <div class="classroom-title">
 
-                    <i class="bi bi-easel2-fill"></i>
+                    <div class="classroom-title-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
 
-                    <span>
-                        Classroom
-                    </span>
+                    <div>
+
+                        <h2>
+                            Classroom
+                        </h2>
+
+                        <p>
+                            <?= $classmateCount ?>
+                            <?= $classmateCount === 1
+                                ? "classmate"
+                                : "classmates"
+                            ?>
+                        </p>
+
+                    </div>
 
                 </div>
 
+
                 <div class="classroom-hint">
 
-                    <i class="bi bi-cursor-fill"></i>
+                    <i class="bi bi-mouse"></i>
 
-                    Hover over a classmate to view details
+                    <span>
+                        Hover over a student to view details
+                    </span>
 
                 </div>
 
             </div>
 
 
-            <!-- =================================================
+            <!-- =============================================
                  TEACHER AREA
-            ================================================== -->
+            ============================================== -->
 
             <div class="teacher-area">
 
                 <div class="teacher-desk">
 
-                    <i class="bi bi-person-workspace"></i>
+                    <div class="teacher-icon">
+                        <i class="bi bi-person-workspace"></i>
+                    </div>
 
-                    <span>
+                    <div class="teacher-label">
                         Instructor
-                    </span>
+                    </div>
 
                 </div>
 
             </div>
 
 
-            <!-- =================================================
-                 CLASSMATE SEATS
-            ================================================== -->
+            <!-- =============================================
+                 CLASSMATE SEATING AREA
+            ============================================== -->
 
-            <?php if ($classmateCount > 0): ?>
+            <?php if (!empty($classmates)): ?>
 
                 <div class="seating-area">
 
-                    <?php foreach ($classmates as $index => $classmate): ?>
+                    <?php foreach (
+                        $classmates
+                        as $index => $classmate
+                    ): ?>
 
                         <?php
 
                         $fullName =
-                            formatStudentName($classmate);
+                            formatStudentName(
+                                $classmate
+                            );
+
+                        $initials =
+                            getStudentInitials(
+                                $classmate
+                            );
 
                         $photo =
                             getProfilePhoto(
@@ -418,12 +455,13 @@ include "globals/topbar.php";
 
                         ?>
 
-
-                        <!-- =====================================
+                        <!-- =================================
                              STUDENT SEAT
-                        ====================================== -->
+                        ================================== -->
 
-                        <div class="student-seat">
+                        <div
+                            class="student-seat"
+                            style="--seat-delay: <?= ($index * 0.04) ?>s;">
 
 
                             <!-- =================================
@@ -434,10 +472,11 @@ include "globals/topbar.php";
 
 
                                 <!-- =============================
-                                     PROFILE PHOTO
+                                     PROFILE PHOTO / INITIALS
                                 ============================== -->
 
                                 <div class="seat-photo-container">
+
 
                                     <?php if (!empty($photo)): ?>
 
@@ -446,32 +485,46 @@ include "globals/topbar.php";
                                             alt="<?= htmlspecialchars($fullName) ?>"
                                             class="seat-photo"
                                             loading="lazy"
-                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            onerror="
+                                                this.style.display='none';
+                                                this.nextElementSibling.style.display='flex';
+                                            ">
+
+
+                                        <!-- =========================
+                                             INITIALS FALLBACK
+                                        ========================== -->
 
                                         <div
                                             class="seat-photo-placeholder"
                                             style="display:none;">
-
-                                            <i class="bi bi-person-fill"></i>
-
+                                            <?= htmlspecialchars($initials) ?>
                                         </div>
+
 
                                     <?php else: ?>
 
+
+                                        <!-- =========================
+                                             INITIALS
+                                        ========================== -->
+
                                         <div class="seat-photo-placeholder">
 
-                                            <i class="bi bi-person-fill"></i>
+                                            <?= htmlspecialchars($initials) ?>
 
                                         </div>
 
+
                                     <?php endif; ?>
+
 
                                 </div>
 
 
-                                <!-- =============================
-                                     HOVER DETAILS
-                                ============================== -->
+                                <!-- =================================
+                                     STUDENT DETAILS
+                                ================================== -->
 
                                 <div class="seat-details">
 
@@ -494,11 +547,12 @@ include "globals/topbar.php";
 
                                 </div>
 
+
                             </div>
 
 
                             <!-- =================================
-                                 SEAT BASE
+                                 CHAIR BASE
                             ================================== -->
 
                             <div class="seat-base">
@@ -506,6 +560,7 @@ include "globals/topbar.php";
                                 <span></span>
 
                             </div>
+
 
                         </div>
 
@@ -517,9 +572,9 @@ include "globals/topbar.php";
             <?php else: ?>
 
 
-                <!-- =================================================
-                     EMPTY CLASSROOM
-                ================================================== -->
+                <!-- =============================================
+                     EMPTY STATE
+                ============================================== -->
 
                 <div class="empty-classroom">
 
@@ -529,23 +584,23 @@ include "globals/topbar.php";
 
                     </div>
 
-                    <h4>
+                    <h3>
                         No Classmates Found
-                    </h4>
+                    </h3>
 
                     <p>
-
-                        There are currently no other students registered
-                        in your department and year/section.
-
+                        There are currently no other students
+                        assigned to your class.
                     </p>
 
                 </div>
+
 
             <?php endif; ?>
 
 
         </div>
+
 
     </div>
 
@@ -554,288 +609,169 @@ include "globals/topbar.php";
 
 <!-- =========================================================
      PAGE STYLES
-     ========================================================= -->
+========================================================= -->
 
 <style>
     /* =========================================================
    PAGE HEADER
-   ========================================================= */
+========================================================= */
 
-    .classmates-header {
+    .page-header {
 
         display: flex;
+
+        align-items: center;
 
         justify-content: space-between;
 
-        align-items: center;
-
         gap: 20px;
 
-        margin-bottom: 20px;
+        margin-bottom: 25px;
 
     }
 
 
-    .page-title-row {
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 14px;
-
-    }
-
-
-    .page-title-icon {
-
-        width: 48px;
-
-        height: 48px;
-
-        min-width: 48px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius: 12px;
-
-        background:
-            var(--activity-icon-blue-bg);
-
-        color:
-            var(--activity-icon-blue);
-
-        font-size: 1.35rem;
-
-    }
-
-
-    .page-title-row h2 {
+    .page-title {
 
         margin: 0;
 
-        color:
-            var(--text-color);
-
-        font-size: 1.55rem;
+        font-size: 28px;
 
         font-weight: 700;
 
-    }
-
-
-    .page-title-row p {
-
-        margin: 3px 0 0;
-
-        color:
-            var(--text-secondary);
-
-        font-size: 0.88rem;
-
-    }
-
-
-    /* =========================================================
-   CLASS COUNT
-   ========================================================= */
-
-    .class-count {
+        color: var(--text-color);
 
         display: flex;
 
         align-items: center;
 
-        gap: 8px;
-
-        padding: 9px 14px;
-
-        background:
-            var(--surface-color);
-
-        border:
-            1px solid var(--border-color);
-
-        border-radius: 9px;
-
-        color:
-            var(--text-secondary);
-
-        font-size: 0.85rem;
-
-        white-space: nowrap;
+        gap: 10px;
 
     }
 
 
-    .class-count i {
+    .page-title i {
 
-        color:
-            var(--activity-icon-blue);
+        color: var(--academic-blue);
+
+    }
+
+
+    .page-subtitle {
+
+        margin: 5px 0 0;
+
+        color: var(--text-secondary);
+
+        font-size: 14px;
 
     }
 
 
     /* =========================================================
    CLASS INFORMATION
-   ========================================================= */
+========================================================= */
 
-    .class-information {
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 24px;
-
-        padding: 18px 20px;
-
-        margin-bottom: 24px;
-
-        background:
-            var(--activity-card-bg);
-
-        border:
-            1px solid var(--activity-border);
-
-        border-radius: 12px;
-
-        box-shadow:
-            0 3px 12px var(--shadow-color);
-
-    }
-
-
-    .class-information-item {
+    .class-info {
 
         display: flex;
 
         align-items: center;
 
-        gap: 12px;
+        gap: 15px;
 
-    }
-
-
-    .class-information-icon {
-
-        width: 40px;
-
-        height: 40px;
-
-        min-width: 40px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
+        padding: 10px 16px;
 
         border-radius: 10px;
 
-        background:
-            var(--activity-icon-blue-bg);
+        background: var(--surface-color);
 
-        color:
-            var(--activity-icon-blue);
+        border: 1px solid var(--border-color);
+
+        box-shadow:
+            0 2px 8px var(--shadow-color);
 
     }
 
 
-    .class-information-label {
+    .class-info-item {
 
-        display: block;
+        display: flex;
 
-        margin-bottom: 2px;
+        align-items: center;
 
-        color:
-            var(--text-secondary);
+        gap: 7px;
 
-        font-size: 0.72rem;
+        color: var(--text-secondary);
 
-        text-transform: uppercase;
-
-        letter-spacing: 0.04em;
+        font-size: 13px;
 
         font-weight: 600;
 
     }
 
 
-    .class-information-item strong {
+    .class-info-item i {
 
-        display: block;
+        color: var(--academic-blue);
 
-        color:
-            var(--text-color);
-
-        font-size: 0.9rem;
-
-        font-weight: 600;
+        font-size: 15px;
 
     }
 
 
-    .class-information-divider {
+    .class-info-divider {
 
         width: 1px;
 
-        height: 38px;
+        height: 20px;
 
-        background:
-            var(--border-color);
+        background: var(--border-color);
 
     }
 
 
     /* =========================================================
    CLASSROOM CONTAINER
-   ========================================================= */
+========================================================= */
 
     .classroom-container {
 
         position: relative;
 
-        background:
-            var(--activity-card-bg);
+        overflow: visible;
 
-        border:
-            1px solid var(--activity-border);
+        background: var(--surface-color);
+
+        border: 1px solid var(--border-color);
 
         border-radius: 16px;
 
-        padding: 24px;
-
         box-shadow:
-            0 4px 16px var(--shadow-color);
+            0 4px 18px var(--shadow-color);
 
-        overflow: visible;
+        padding-bottom: 50px;
 
     }
 
 
     /* =========================================================
    CLASSROOM HEADER
-   ========================================================= */
+========================================================= */
 
     .classroom-header {
 
         display: flex;
 
-        justify-content: space-between;
-
         align-items: center;
 
-        gap: 15px;
+        justify-content: space-between;
 
-        padding-bottom: 18px;
+        gap: 20px;
 
-        border-bottom:
-            1px solid var(--activity-border-light);
+        padding: 20px 24px;
+
+        border-bottom: 1px solid var(--border-color);
 
     }
 
@@ -846,22 +782,54 @@ include "globals/topbar.php";
 
         align-items: center;
 
-        gap: 9px;
-
-        color:
-            var(--text-color);
-
-        font-size: 0.95rem;
-
-        font-weight: 700;
+        gap: 12px;
 
     }
 
 
-    .classroom-title i {
+    .classroom-title-icon {
 
-        color:
-            var(--activity-icon-blue);
+        width: 42px;
+
+        height: 42px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 10px;
+
+        background: var(--academic-blue-light);
+
+        color: var(--academic-blue);
+
+        font-size: 19px;
+
+    }
+
+
+    .classroom-title h2 {
+
+        margin: 0;
+
+        font-size: 17px;
+
+        font-weight: 700;
+
+        color: var(--text-color);
+
+    }
+
+
+    .classroom-title p {
+
+        margin: 2px 0 0;
+
+        font-size: 12px;
+
+        color: var(--text-secondary);
 
     }
 
@@ -872,29 +840,25 @@ include "globals/topbar.php";
 
         align-items: center;
 
-        gap: 6px;
+        gap: 7px;
 
-        color:
-            var(--text-secondary);
+        font-size: 12px;
 
-        font-size: 0.75rem;
+        color: var(--text-secondary);
 
     }
 
 
     .classroom-hint i {
 
-        color:
-            var(--activity-icon-blue);
-
-        font-size: 0.7rem;
+        color: var(--academic-blue);
 
     }
 
 
     /* =========================================================
    TEACHER AREA
-   ========================================================= */
+========================================================= */
 
     .teacher-area {
 
@@ -902,53 +866,74 @@ include "globals/topbar.php";
 
         justify-content: center;
 
-        padding: 22px 0 35px;
+        padding-top: 35px;
+
+        padding-bottom: 30px;
 
     }
 
 
     .teacher-desk {
 
-        display: flex;
+        position: relative;
 
-        align-items: center;
+        min-width: 150px;
 
-        justify-content: center;
+        padding: 12px 25px;
 
-        gap: 8px;
+        border-radius: 10px;
 
-        min-width: 160px;
+        background: var(--surface-secondary);
 
-        padding: 10px 22px;
+        border: 1px solid var(--border-color);
 
-        border-radius: 8px;
+        text-align: center;
 
-        background:
-            var(--activity-icon-blue-bg);
+        box-shadow:
+            0 3px 10px var(--shadow-color);
 
-        border:
-            1px solid var(--activity-border);
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
 
-        color:
-            var(--activity-icon-blue);
+    }
 
-        font-size: 0.78rem;
+
+    .teacher-desk:hover {
+
+        transform: translateY(-3px);
+
+        box-shadow:
+            0 7px 18px var(--shadow-color);
+
+    }
+
+
+    .teacher-icon {
+
+        color: var(--academic-blue);
+
+        font-size: 25px;
+
+        margin-bottom: 3px;
+
+    }
+
+
+    .teacher-label {
+
+        color: var(--text-secondary);
+
+        font-size: 12px;
 
         font-weight: 600;
 
     }
 
 
-    .teacher-desk i {
-
-        font-size: 1rem;
-
-    }
-
-
     /* =========================================================
    SEATING AREA
-   ========================================================= */
+========================================================= */
 
     .seating-area {
 
@@ -964,14 +949,14 @@ include "globals/topbar.php";
 
         row-gap: 55px;
 
-        padding: 20px 15px 30px;
+        padding: 20px 45px 30px;
 
     }
 
 
     /* =========================================================
-   STUDENT SEAT
-   ========================================================= */
+   STUDENT SEAT WRAPPER
+========================================================= */
 
     .student-seat {
 
@@ -987,12 +972,19 @@ include "globals/topbar.php";
 
         align-items: center;
 
+        justify-content: flex-start;
+
+        animation:
+            seatAppear 0.5s ease both;
+
+        animation-delay: var(--seat-delay);
+
     }
 
 
     /* =========================================================
    SEAT
-   ========================================================= */
+========================================================= */
 
     .seat {
 
@@ -1002,38 +994,59 @@ include "globals/topbar.php";
 
         height: 100px;
 
+        flex-shrink: 0;
+
+        border-radius: 50%;
+
+        border: 5px solid var(--activity-border);
+
+        background: var(--surface-secondary);
+
         display: flex;
 
         align-items: center;
 
         justify-content: center;
 
-        border-radius: 50%;
-
-        background:
-            var(--surface-secondary);
-
-        border:
-            5px solid var(--activity-border);
-
         box-shadow:
-            0 4px 10px var(--shadow-color);
+            0 4px 12px var(--shadow-color);
 
         cursor: pointer;
 
-        transition:
-            transform 0.25s ease,
-            box-shadow 0.25s ease,
-            border-color 0.25s ease;
+        z-index: 1;
 
-        z-index: 2;
+        transition:
+            transform 0.35s cubic-bezier(.2, .8, .2, 1),
+            border-color 0.3s ease,
+            box-shadow 0.35s ease,
+            background-color 0.3s ease;
 
     }
 
 
     /* =========================================================
-   PROFILE PHOTO CONTAINER
-   ========================================================= */
+   SEAT HOVER
+========================================================= */
+
+    .seat:hover {
+
+        transform: scale(1.55);
+
+        border-color: var(--academic-blue);
+
+        background: var(--surface-color);
+
+        box-shadow:
+            0 12px 30px var(--shadow-color);
+
+        z-index: 100;
+
+    }
+
+
+    /* =========================================================
+   PHOTO CONTAINER
+========================================================= */
 
     .seat-photo-container {
 
@@ -1051,15 +1064,14 @@ include "globals/topbar.php";
 
         justify-content: center;
 
-        background:
-            var(--activity-icon-gray-bg);
+        background: var(--activity-number-bg);
 
     }
 
 
     /* =========================================================
    PROFILE PHOTO
-   ========================================================= */
+========================================================= */
 
     .seat-photo {
 
@@ -1071,12 +1083,27 @@ include "globals/topbar.php";
 
         display: block;
 
+        transition:
+            transform 0.45s cubic-bezier(.2, .8, .2, 1),
+            filter 0.3s ease;
+
     }
 
 
     /* =========================================================
-   PHOTO PLACEHOLDER
-   ========================================================= */
+   PHOTO HOVER
+========================================================= */
+
+    .seat:hover .seat-photo {
+
+        transform: scale(1.04);
+
+    }
+
+
+    /* =========================================================
+   INITIALS PLACEHOLDER
+========================================================= */
 
     .seat-photo-placeholder {
 
@@ -1084,74 +1111,65 @@ include "globals/topbar.php";
 
         height: 100%;
 
+        border-radius: 50%;
+
         display: flex;
 
         align-items: center;
 
         justify-content: center;
 
-        color:
-            var(--activity-icon-gray);
+        background: var(--academic-blue-light);
 
-        background:
-            var(--activity-icon-gray-bg);
+        color: var(--academic-blue);
 
-        font-size: 2.4rem;
+        font-size: 28px;
 
-    }
+        font-weight: 700;
 
+        letter-spacing: 1px;
 
-    /* =========================================================
-   HOVER EFFECT
-   ========================================================= */
+        user-select: none;
 
-    .seat:hover {
-
-        transform:
-            scale(1.55);
-
-        border-color:
-            var(--academic-blue);
-
-        box-shadow:
-            0 12px 30px var(--shadow-color);
-
-        z-index: 100;
+        transition:
+            transform 0.4s cubic-bezier(.2, .8, .2, 1),
+            background-color 0.3s ease,
+            color 0.3s ease;
 
     }
 
 
     /* =========================================================
-   HOVER DETAILS
-   ========================================================= */
+   INITIALS HOVER
+========================================================= */
+
+    .seat:hover .seat-photo-placeholder {
+
+        transform: scale(1.04);
+
+    }
+
+
+    /* =========================================================
+   STUDENT DETAILS
+========================================================= */
 
     .seat-details {
 
         position: absolute;
 
+        top: 108px;
+
         left: 50%;
 
-        top: calc(100% + 10px);
+        min-width: 155px;
+
+        max-width: 220px;
+
+        padding: 8px 11px;
 
         transform:
-            translateX(-50%) translateY(-5px);
-
-        min-width: 180px;
-
-        max-width: 240px;
-
-        padding: 11px 13px;
-
-        background:
-            var(--surface-color);
-
-        border:
-            1px solid var(--border-color);
-
-        border-radius: 9px;
-
-        box-shadow:
-            0 8px 25px var(--shadow-color);
+            translateX(-50%) translateY(-5px) scale(0.96);
 
         opacity: 0;
 
@@ -1159,18 +1177,30 @@ include "globals/topbar.php";
 
         pointer-events: none;
 
-        transition:
-            opacity 0.2s ease,
-            transform 0.2s ease;
+        border-radius: 8px;
+
+        background: var(--surface-color);
+
+        border: 1px solid var(--academic-blue);
+
+        box-shadow:
+            0 8px 24px var(--shadow-color);
 
         text-align: center;
+
+        z-index: 200;
+
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease,
+            transform 0.3s cubic-bezier(.2, .8, .2, 1);
 
     }
 
 
     /* =========================================================
-   SHOW DETAILS
-   ========================================================= */
+   SHOW DETAILS ON HOVER
+========================================================= */
 
     .seat:hover .seat-details {
 
@@ -1179,25 +1209,22 @@ include "globals/topbar.php";
         visibility: visible;
 
         transform:
-            translateX(-50%) translateY(0);
+            translateX(-50%) translateY(0) scale(1);
 
     }
 
 
     /* =========================================================
    STUDENT NAME
-   ========================================================= */
+========================================================= */
 
     .seat-details-name {
 
-        color:
-            var(--text-color);
+        color: var(--text-color);
 
-        font-size: 0.8rem;
+        font-size: 12px;
 
         font-weight: 700;
-
-        line-height: 1.35;
 
         white-space: nowrap;
 
@@ -1210,113 +1237,118 @@ include "globals/topbar.php";
 
     /* =========================================================
    STUDENT ID
-   ========================================================= */
+========================================================= */
 
     .seat-details-id {
 
         display: flex;
 
-        justify-content: center;
-
         align-items: center;
 
-        gap: 5px;
+        justify-content: center;
 
-        margin-top: 5px;
+        gap: 4px;
 
-        color:
-            var(--text-secondary);
+        margin-top: 3px;
 
-        font-size: 0.7rem;
+        color: var(--text-secondary);
+
+        font-size: 10px;
 
     }
 
 
     .seat-details-id i {
 
-        color:
-            var(--activity-icon-blue);
+        color: var(--academic-blue);
 
     }
 
 
     /* =========================================================
    SEAT BASE
-   ========================================================= */
+========================================================= */
 
     .seat-base {
 
-        width: 72px;
+        width: 70px;
 
-        height: 12px;
+        height: 28px;
 
         margin-top: 8px;
 
-        border-radius: 0 0 7px 7px;
+        border-radius: 6px;
 
-        background:
-            var(--activity-border);
+        background: var(--surface-secondary);
 
-        position: relative;
+        border: 1px solid var(--border-color);
 
-    }
+        display: flex;
 
+        align-items: center;
 
-    .seat-base::before {
+        justify-content: center;
 
-        content: "";
-
-        position: absolute;
-
-        left: 50%;
-
-        top: 100%;
-
-        transform:
-            translateX(-50%);
-
-        width: 8px;
-
-        height: 12px;
-
-        background:
-            var(--activity-border);
+        transition:
+            transform 0.35s ease,
+            box-shadow 0.35s ease,
+            background-color 0.3s ease;
 
     }
 
 
     .seat-base span {
 
-        display: block;
+        width: 42px;
 
-        width: 82px;
+        height: 3px;
 
-        height: 4px;
+        border-radius: 10px;
 
-        position: absolute;
+        background: var(--border-color);
 
-        bottom: -12px;
+        transition:
+            background-color 0.3s ease;
 
-        left: 50%;
+    }
 
-        transform:
-            translateX(-50%);
 
-        border-radius: 50%;
+    /* =========================================================
+   BASE HOVER
+========================================================= */
 
-        background:
-            var(--activity-border);
+    .student-seat:hover .seat-base {
+
+        transform: translateY(3px);
+
+        box-shadow:
+            0 4px 10px var(--shadow-color);
+
+    }
+
+
+    .student-seat:hover .seat-base span {
+
+        background: var(--academic-blue);
 
     }
 
 
     /* =========================================================
    EMPTY CLASSROOM
-   ========================================================= */
+========================================================= */
 
     .empty-classroom {
 
-        padding: 60px 25px;
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 80px 20px;
 
         text-align: center;
 
@@ -1329,8 +1361,6 @@ include "globals/topbar.php";
 
         height: 70px;
 
-        margin: 0 auto 18px;
-
         display: flex;
 
         align-items: center;
@@ -1339,52 +1369,103 @@ include "globals/topbar.php";
 
         border-radius: 50%;
 
-        background:
-            var(--activity-icon-gray-bg);
+        background: var(--academic-blue-light);
 
-        color:
-            var(--activity-icon-gray);
+        color: var(--academic-blue);
 
-        font-size: 2rem;
+        font-size: 30px;
+
+        margin-bottom: 15px;
 
     }
 
 
-    .empty-classroom h4 {
+    .empty-classroom h3 {
 
-        margin: 0 0 8px;
+        margin: 0 0 5px;
 
-        color:
-            var(--text-color);
+        color: var(--text-color);
 
-        font-weight: 700;
+        font-size: 18px;
 
     }
 
 
     .empty-classroom p {
 
-        max-width: 500px;
+        margin: 0;
 
-        margin: 0 auto;
+        max-width: 400px;
 
-        color:
-            var(--text-secondary);
+        color: var(--text-secondary);
 
-        font-size: 0.88rem;
-
-        line-height: 1.6;
+        font-size: 13px;
 
     }
 
 
     /* =========================================================
-   MOBILE
-   ========================================================= */
+   SEAT APPEAR ANIMATION
+========================================================= */
 
-    @media (max-width: 767.98px) {
+    @keyframes seatAppear {
 
-        .classmates-header {
+        from {
+
+            opacity: 0;
+
+            transform:
+                translateY(12px) scale(0.94);
+
+        }
+
+        to {
+
+            opacity: 1;
+
+            transform:
+                translateY(0) scale(1);
+
+        }
+
+    }
+
+
+    /* =========================================================
+   DARK MODE
+========================================================= */
+
+    [data-theme="dark"] .seat {
+
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.30);
+
+    }
+
+
+    [data-theme="dark"] .seat:hover {
+
+        box-shadow:
+            0 14px 35px rgba(0, 0, 0, 0.45);
+
+    }
+
+
+    [data-theme="dark"] .seat-details {
+
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.40);
+
+    }
+
+
+    /* =========================================================
+   RESPONSIVE - TABLET
+========================================================= */
+
+    @media (max-width: 992px) {
+
+        .page-header {
 
             align-items: flex-start;
 
@@ -1393,7 +1474,7 @@ include "globals/topbar.php";
         }
 
 
-        .class-count {
+        .class-info {
 
             width: 100%;
 
@@ -1402,134 +1483,89 @@ include "globals/topbar.php";
         }
 
 
-        .class-information {
-
-            flex-direction: column;
-
-            align-items: stretch;
-
-            gap: 15px;
-
-        }
-
-
-        .class-information-divider {
-
-            width: 100%;
-
-            height: 1px;
-
-        }
-
-
-        .classroom-container {
-
-            padding: 16px 10px;
-
-        }
-
-
-        .classroom-header {
-
-            align-items: flex-start;
-
-            flex-direction: column;
-
-        }
-
-
-        .classroom-hint {
-
-            font-size: 0.7rem;
-
-        }
-
-
         .seating-area {
 
-            column-gap: 18px;
+            column-gap: 25px;
 
             row-gap: 50px;
 
-            padding-left: 5px;
+            padding-left: 25px;
 
-            padding-right: 5px;
-
-        }
-
-
-        .student-seat {
-
-            width: 105px;
-
-        }
-
-
-        .seat {
-
-            width: 88px;
-
-            height: 88px;
-
-        }
-
-
-        .seat-photo-container {
-
-            width: 78px;
-
-            height: 78px;
-
-        }
-
-
-        .seat-photo-placeholder {
-
-            font-size: 2rem;
-
-        }
-
-
-        .seat:hover {
-
-            transform:
-                scale(1.35);
-
-        }
-
-
-        .seat-details {
-
-            min-width: 155px;
+            padding-right: 25px;
 
         }
 
     }
 
 
-    @media (max-width: 450px) {
+    /* =========================================================
+   RESPONSIVE - MOBILE
+========================================================= */
+
+    @media (max-width: 576px) {
+
+        .page-title {
+
+            font-size: 23px;
+
+        }
+
+
+        .class-info {
+
+            gap: 10px;
+
+            padding: 9px 12px;
+
+        }
+
+
+        .class-info-item {
+
+            font-size: 11px;
+
+        }
+
+
+        .classroom-header {
+
+            padding: 16px;
+
+        }
+
+
+        .classroom-hint {
+
+            display: none;
+
+        }
+
 
         .seating-area {
 
-            column-gap: 8px;
+            column-gap: 12px;
 
-            row-gap: 45px;
+            row-gap: 40px;
+
+            padding: 15px 10px 25px;
 
         }
 
 
         .student-seat {
 
-            width: 92px;
+            width: 95px;
+
+            height: 125px;
 
         }
 
 
         .seat {
 
-            width: 78px;
+            width: 82px;
 
-            height: 78px;
+            height: 82px;
 
             border-width: 4px;
 
@@ -1538,33 +1574,88 @@ include "globals/topbar.php";
 
         .seat-photo-container {
 
-            width: 70px;
+            width: 74px;
 
-            height: 70px;
+            height: 74px;
+
+        }
+
+
+        .seat-photo-placeholder {
+
+            font-size: 22px;
 
         }
 
 
         .seat:hover {
 
-            transform:
-                scale(1.25);
+            transform: scale(1.30);
 
         }
 
 
         .seat-details {
 
-            min-width: 145px;
+            top: 90px;
 
-            padding: 9px 10px;
+            min-width: 135px;
+
+            max-width: 175px;
+
+            padding: 7px 9px;
 
         }
 
 
         .seat-details-name {
 
-            font-size: 0.72rem;
+            font-size: 10px;
+
+        }
+
+
+        .seat-details-id {
+
+            font-size: 9px;
+
+        }
+
+
+        .seat-base {
+
+            width: 58px;
+
+            height: 24px;
+
+            margin-top: 7px;
+
+        }
+
+    }
+
+
+    /* =========================================================
+   REDUCED MOTION ACCESSIBILITY
+========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .student-seat {
+
+            animation: none;
+
+        }
+
+
+        .seat,
+        .seat-photo,
+        .seat-photo-placeholder,
+        .seat-details,
+        .seat-base,
+        .teacher-desk {
+
+            transition: none !important;
 
         }
 
@@ -1576,7 +1667,7 @@ include "globals/topbar.php";
 
 /* =========================================================
    GLOBAL SCRIPTS
-   ========================================================= */
+========================================================= */
 
 require_once "./globals/scripts.php";
 
