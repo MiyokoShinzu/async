@@ -173,6 +173,17 @@ function sidebarActive($page)
             </span>
 
         </a>
+        <a
+            href="classmates.php"
+            class="sidebar-link <?= sidebarActive('classmates.php') ?>">
+
+            <i class="bi bi-people-fill"></i>
+
+            <span>
+                Classmates
+            </span>
+
+        </a>
 
         <!-- =================================================
              LOGOUT

@@ -313,9 +313,7 @@ include "globals/topbar.php";
                     Classmates
                 </h1>
 
-                <p class="page-subtitle">
-                    View the students in your class.
-                </p>
+              
 
             </div>
 
@@ -394,7 +392,7 @@ include "globals/topbar.php";
                     <i class="bi bi-mouse"></i>
 
                     <span>
-                        Hover over a student to view details
+                        Hover over your classmate to view details
                     </span>
 
                 </div>
