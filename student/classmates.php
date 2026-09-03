@@ -166,6 +166,9 @@ function formatStudentName($student)
 /* =========================================================
    PROFILE PHOTO PATH
    ========================================================= */
+/* =========================================================
+   PROFILE PHOTO PATH
+   ========================================================= */
 
 function getProfilePhoto($photo)
 {
@@ -181,18 +184,18 @@ function getProfilePhoto($photo)
 
 
     /*
-     * External/shared profile photo directory
+     * Get only the filename
      */
 
     $photoName = basename($photo);
 
 
     /*
-     * Return path from classmates.php
-     * to the shared/uploads/profile_photos folder
+     * Profile photos are stored on the main
+     * vertigation.com domain
      */
 
-    return "../../shared/uploads/profile_photos/" .
+    return "https://vertigation.com/shared/uploads/profile_photos/" .
         rawurlencode($photoName);
 }
 
