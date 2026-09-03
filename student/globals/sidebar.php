@@ -1,4 +1,3 @@
-
 <?php
 /* =========================================================
    SIDEBAR ETS-Async Learning Portal
@@ -123,13 +122,29 @@ function sidebarActive($page)
             href="activities.php"
             class="sidebar-link <?= sidebarActive('activities.php') ?>">
 
-            <i class="bi bi-journal-text"></i>
+            <i class="bi bi-play-circle"></i>
 
             <span>
-                My Activities
+                Videos
             </span>
 
         </a>
+        <a
+            href="reading_activities.php"
+            class="sidebar-link <?= sidebarActive('reading_activities.php') ?>">
+
+            <i class="bi bi-book"></i>
+
+            <span>
+                Reading Activities
+            </span>
+
+        </a>
+
+
+        <!-- =================================================
+             PROFILE PHOTO
+        ================================================== -->
 
 
         <!-- =================================================
@@ -147,7 +162,17 @@ function sidebarActive($page)
             </span>
 
         </a>
+        <a
+            href="student_profile.php"
+            class="sidebar-link <?= sidebarActive('student_profile.php') ?>">
 
+            <i class="bi bi-person-fill-gear"></i>
+
+            <span>
+                Edit Account
+            </span>
+
+        </a>
 
         <!-- =================================================
              LOGOUT
