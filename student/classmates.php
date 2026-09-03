@@ -163,6 +163,10 @@ function formatStudentName($student)
    PROFILE PHOTO PATH
    ========================================================= */
 
+/* =========================================================
+   PROFILE PHOTO PATH
+   ========================================================= */
+
 function getProfilePhoto($photo)
 {
     if (empty($photo)) {
@@ -170,36 +174,26 @@ function getProfilePhoto($photo)
     }
 
     /*
-     * Normalize Windows-style paths
+     * Normalize path
      */
 
     $photo = str_replace("\\", "/", trim($photo));
 
 
     /*
-     * Remove leading slash
+     * External/shared profile photo directory
      */
 
-    $photo = ltrim($photo, "/");
+    $photoName = basename($photo);
 
 
     /*
-     * Prevent accidental full URL handling
+     * Return path from classmates.php
+     * to the shared/uploads/profile_photos folder
      */
 
-    if (
-        str_starts_with($photo, "http://") ||
-        str_starts_with($photo, "https://")
-    ) {
-        return $photo;
-    }
-
-
-    /*
-     * Return relative path
-     */
-
-    return "../" . $photo;
+    return "../shared/uploads/profile_photos/" .
+        rawurlencode($photoName);
 }
 
 
