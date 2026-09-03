@@ -184,6 +184,17 @@ function sidebarActive($page)
             </span>
 
         </a>
+        <a
+            href="freedom_walls.php"
+            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
+
+            <i class="bi bi-flag"></i>
+
+            <span>
+                Freedom Walls
+            </span>
+
+        </a>
 
         <!-- =================================================
              LOGOUT
