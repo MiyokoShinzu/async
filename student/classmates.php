@@ -130,16 +130,14 @@ function formatStudentName($student)
     }
 
     if (!empty($student["middle_initial"])) {
-
         if ($name !== "") {
             $name .= " ";
         }
 
-        $name .= $student["middle_initial"] . ".";
+        $name .= rtrim($student["middle_initial"], ".") . ".";
     }
 
     if (!empty($student["last_name"])) {
-
         if ($name !== "") {
             $name .= " ";
         }
@@ -148,7 +146,6 @@ function formatStudentName($student)
     }
 
     if (!empty($student["extension_name"])) {
-
         if ($name !== "") {
             $name .= " ";
         }
@@ -159,6 +156,28 @@ function formatStudentName($student)
     return $name;
 }
 
+
+/* =========================================================
+   GET STUDENT INITIALS
+   ========================================================= */
+
+function getStudentInitials($student)
+{
+    $firstName = trim($student["first_name"] ?? "");
+    $lastName  = trim($student["last_name"] ?? "");
+
+    $initials = "";
+
+    if ($firstName !== "") {
+        $initials .= strtoupper(substr($firstName, 0, 1));
+    }
+
+    if ($lastName !== "") {
+        $initials .= strtoupper(substr($lastName, 0, 1));
+    }
+
+    return $initials !== "" ? $initials : "?";
+}
 
 /* =========================================================
    PROFILE PHOTO PATH
