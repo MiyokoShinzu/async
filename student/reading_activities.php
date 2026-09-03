@@ -1,15 +1,15 @@
 <?php
 
-/* =========================================================  
-   STUDENT LECTURES  
-   ETS-Async Learning Portal  
+/* ========================================================= 
+   STUDENT READING ACTIVITIES 
+   ETS-Async Learning Portal 
    ========================================================= */
 
 session_start();
 
 
-/* =========================================================  
-   AUTHENTICATION  
+/* ========================================================= 
+   AUTHENTICATION 
    ========================================================= */
 
 if (
@@ -23,11 +23,12 @@ if (
     exit;
 }
 
+
 $user = $_SESSION["user"];
 
 
-/* =========================================================  
-   USER DATA  
+/* ========================================================= 
+   USER DATA 
    ========================================================= */
 
 $firstName      = $user["first_name"] ?? "";
@@ -42,8 +43,8 @@ $username       = $user["username"] ?? "";
 $access         = $user["access"] ?? "student";
 
 
-/* =========================================================  
-   FULL NAME  
+/* ========================================================= 
+   FULL NAME 
    ========================================================= */
 
 $fullName = trim(
@@ -58,8 +59,8 @@ $fullName = trim(
 );
 
 
-/* =========================================================  
-   INITIALS  
+/* ========================================================= 
+   INITIALS 
    ========================================================= */
 
 $initials = "";
@@ -67,35 +68,27 @@ $initials = "";
 if ($firstName !== "") {
 
     $initials .= strtoupper(
-        substr(
-            $firstName,
-            0,
-            1
-        )
+        substr($firstName, 0, 1)
     );
 }
 
 if ($lastName !== "") {
 
     $initials .= strtoupper(
-        substr(
-            $lastName,
-            0,
-            1
-        )
+        substr($lastName, 0, 1)
     );
 }
 
 
-/* =========================================================  
-   DATABASE  
+/* ========================================================= 
+   DATABASE 
    ========================================================= */
 
 require_once "../src/connection.php";
 
 
-/* =========================================================  
-   STUDENT DATA  
+/* ========================================================= 
+   STUDENT DATA 
    ========================================================= */
 
 $user = $_SESSION["user"];
@@ -110,8 +103,8 @@ $yearSection =
     $user["year_section"] ?? "";
 
 
-/* =========================================================  
-   EXTRACT YEAR AND SECTION  
+/* ========================================================= 
+   EXTRACT YEAR AND SECTION 
    ========================================================= */
 
 $yearLevel = "";
@@ -141,82 +134,91 @@ if (!empty($parts[1])) {
 }
 
 
-/* =========================================================  
-   GET LECTURES  
+/* ========================================================= 
+   GET READING ACTIVITIES 
    ========================================================= */
 
-$sql = "  
-    SELECT  
-  
-        l.id,  
-  
-        l.title,  
-  
-        l.description,  
-  
-        l.youtube_url,  
-  
-        l.department,  
-  
-        l.year_level,  
-  
-        l.section,  
-  
-        l.start_date,  
-  
-        l.due_date,  
-  
-        lp.started_at,  
-  
-        lp.last_accessed_at,  
-  
-        lp.access_count,  
-  
-        lp.completed_at,  
-  
-        lp.watched_seconds,  
-  
-        lp.video_duration,  
-  
-        lp.status AS progress_status  
-  
-    FROM lectures l  
-  
-    LEFT JOIN lecture_progress lp  
-  
-        ON lp.lecture_id = l.id  
-  
-        AND lp.student_id = ?  
-  
-    WHERE  
-  
-        (  
-            l.department = ?  
-            OR l.department = ''  
-            OR l.department IS NULL  
-        )  
-  
-        AND  
-  
-        (  
-            CAST(l.year_level AS CHAR) = ?  
-            OR l.year_level = ''  
-            OR l.year_level IS NULL  
-        )  
-  
-        AND  
-  
-        (  
-            l.section = ?  
-            OR l.section = ''  
-            OR l.section IS NULL  
-        )  
-  
-    ORDER BY  
-  
-        l.start_date DESC,  
-  
-        l.id DESC  
+$sql = " 
+    SELECT 
+ 
+        r.id, 
+ 
+        r.title, 
+ 
+        r.description, 
+ 
+        r.file_url, 
+ 
+        r.file_type, 
+ 
+        r.department, 
+ 
+        r.year_level, 
+ 
+        r.section, 
+ 
+        r.start_date, 
+ 
+        r.due_date, 
+ 
+        r.required_reading_minutes, 
+ 
+        rp.started_at, 
+ 
+        rp.last_accessed_at, 
+ 
+        rp.access_count, 
+ 
+        rp.completed_at, 
+ 
+        rp.status AS progress_status, 
+ 
+        rp.reading_seconds 
+ 
+    FROM reading_activity_table r 
+ 
+    LEFT JOIN reading_activity_progress rp 
+ 
+        ON rp.reading_activity_id = r.id 
+ 
+        AND rp.student_id = ? 
+ 
+    WHERE 
+ 
+        ( 
+            r.department = ? 
+            OR r.department = '' 
+            OR r.department IS NULL 
+        ) 
+ 
+        AND 
+ 
+        ( 
+            CAST(r.year_level AS CHAR) = ? 
+            OR r.year_level = '' 
+            OR r.year_level IS NULL 
+        ) 
+ 
+        AND 
+ 
+        ( 
+            r.section = ? 
+            OR r.section = '' 
+            OR r.section IS NULL 
+        ) 
+ 
+        AND 
+ 
+        ( 
+            r.status = 'active' 
+            OR r.status IS NULL 
+        ) 
+ 
+    ORDER BY 
+ 
+        r.start_date DESC, 
+ 
+        r.id DESC 
 ";
 
 
@@ -249,96 +251,89 @@ $result =
     $stmt->get_result();
 
 
-/* =========================================================  
-   STORE LECTURES  
+/* ========================================================= 
+   STORE READING ACTIVITIES 
    ========================================================= */
 
-$lectureRecords = [];
+$readingRecords = [];
 
 
 while (
-    $lecture =
+    $reading =
     $result->fetch_assoc()
 ) {
 
-    $lectureRecords[] =
-        $lecture;
+    $readingRecords[] =
+        $reading;
 }
 
 
 $stmt->close();
 
 
-/* =========================================================  
-   STATISTICS  
+/* ========================================================= 
+   STATISTICS 
    ========================================================= */
 
-$totalLectures =
-    count($lectureRecords);
+$totalReadings =
+    count($readingRecords);
 
 
-$completedLectures =
+$completedReadings =
     0;
 
 
-$inProgressLectures =
+$inProgressReadings =
     0;
 
 
-$notStartedLectures =
+$notStartedReadings =
     0;
 
 
-/* =========================================================  
-   CALCULATE STATUS  
+/* ========================================================= 
+   CALCULATE PROGRESS 
    ========================================================= */
 
 foreach (
-    $lectureRecords
-    as $lecture
+    $readingRecords
+    as $reading
 ) {
 
     $status =
-        $lecture["progress_status"] ?? "";
-
-
-    $watchedSeconds =
-        (float)(
-            $lecture["watched_seconds"]
-            ?? 0
-        );
+        $reading["progress_status"] ?? "";
 
 
     if (
-        $status === "completed"
+        $status ===
+        "completed"
     ) {
 
-        $completedLectures++;
+        $completedReadings++;
     } elseif (
-        !empty($lecture["started_at"]) ||
-        $watchedSeconds > 0
+        !empty($reading["started_at"])
     ) {
 
-        $inProgressLectures++;
+        $inProgressReadings++;
     } else {
 
-        $notStartedLectures++;
+        $notStartedReadings++;
     }
 }
 
 
-/* =========================================================  
-   OVERALL COMPLETION  
+/* ========================================================= 
+   OVERALL COMPLETION 
    ========================================================= */
 
 $completionPercentage =
 
-    $totalLectures > 0
+    $totalReadings > 0
 
     ? round(
         (
-            $completedLectures /
-            $totalLectures
+            $completedReadings /
+            $totalReadings
         ) * 100
     )
 
@@ -355,38 +350,36 @@ $completionPercentage =
 
 <body>
 
-     <!-- =========================================================  
- SIDEBAR  
-```
 
+    <!-- ========================================================= 
+ SIDEBAR 
 ========================================================= -->
 
-     <?php include 'globals/sidebar.php'; ?>
+
+    <?php include 'globals/sidebar.php'; ?>
 
 
-    <!-- =========================================================  
- TOPBAR  
-```
-
+    <!-- ========================================================= 
+ TOPBAR 
 ========================================================= -->
 
-     <?php include 'globals/topbar.php'; ?>
+
+    <?php include 'globals/topbar.php'; ?>
 
 
-    <!-- =========================================================  
- MAIN CONTENT  
-```
-
+    <!-- ========================================================= 
+ MAIN CONTENT 
 ========================================================= -->
 
-     <main class="main-content">
+
+    <main class="main-content">
 
 
         <div class="content-wrapper">
 
 
-            <!-- =================================================  
-         PAGE HEADER  
+            <!-- ================================================= 
+         PAGE HEADER 
     ================================================== -->
 
             <div class="page-header">
@@ -394,11 +387,11 @@ $completionPercentage =
                 <div>
 
                     <h2>
-                        Video Lectures/Demos
+                        Readings Activities
                     </h2>
 
                     <p>
-                        Watch your assigned lectures
+                        Read your assigned learning materials
                         and complete your asynchronous learning.
                     </p>
 
@@ -407,8 +400,8 @@ $completionPercentage =
             </div>
 
 
-            <!-- =================================================  
-         STATISTICS  
+            <!-- ================================================= 
+         STATISTICS 
     ================================================== -->
 
             <div class="row g-3 mb-4">
@@ -424,7 +417,7 @@ $completionPercentage =
                             class="student-stat-icon blue">
 
                             <i
-                                class="bi bi-journal-text">
+                                class="bi bi-book">
                             </i>
 
                         </div>
@@ -433,11 +426,11 @@ $completionPercentage =
                         <div>
 
                             <span>
-                                Total Lectures
+                                Total Readings
                             </span>
 
                             <strong>
-                                <?= $totalLectures ?>
+                                <?= $totalReadings ?>
                             </strong>
 
                         </div>
@@ -470,7 +463,7 @@ $completionPercentage =
                             </span>
 
                             <strong>
-                                <?= $notStartedLectures ?>
+                                <?= $notStartedReadings ?>
                             </strong>
 
                         </div>
@@ -490,7 +483,7 @@ $completionPercentage =
                             class="student-stat-icon orange">
 
                             <i
-                                class="bi bi-play-circle">
+                                class="bi bi-book-half">
                             </i>
 
                         </div>
@@ -503,7 +496,7 @@ $completionPercentage =
                             </span>
 
                             <strong>
-                                <?= $inProgressLectures ?>
+                                <?= $inProgressReadings ?>
                             </strong>
 
                         </div>
@@ -537,7 +530,7 @@ $completionPercentage =
 
                             <strong>
 
-                                <?= $completedLectures ?>
+                                <?= $completedReadings ?>
 
                                 <small>
                                     (<?= $completionPercentage ?>%)
@@ -555,8 +548,8 @@ $completionPercentage =
             </div>
 
 
-            <!-- =================================================  
-         OVERALL LEARNING PROGRESS  
+            <!-- ================================================= 
+         OVERALL LEARNING PROGRESS 
     ================================================== -->
 
             <div
@@ -570,12 +563,12 @@ $completionPercentage =
                     <div>
 
                         <h5>
-                            Overall Learning Progress
+                            Overall Reading Progress
                         </h5>
 
                         <p>
                             Your progress through the assigned
-                            asynchronous lectures.
+                            asynchronous reading materials.
                         </p>
 
                     </div>
@@ -621,20 +614,20 @@ $completionPercentage =
 
                     <span>
 
-                        <?= $completedLectures ?>
+                        <?= $completedReadings ?>
 
                         of
 
-                        <?= $totalLectures ?>
+                        <?= $totalReadings ?>
 
-                        lectures completed
+                        readings completed
 
                     </span>
 
 
                     <?php if (
                         $completionPercentage >= 100 &&
-                        $totalLectures > 0
+                        $totalReadings > 0
                     ): ?>
 
 
@@ -644,7 +637,7 @@ $completionPercentage =
                                 class="bi bi-check-circle-fill me-1">
                             </i>
 
-                            All lectures completed
+                            All readings completed
 
                         </span>
 
@@ -666,7 +659,7 @@ $completionPercentage =
 
                         <span>
 
-                            Start your first lecture
+                            Start your first reading
 
                         </span>
 
@@ -680,15 +673,15 @@ $completionPercentage =
             </div>
 
 
-            <!-- =================================================  
-         LECTURE CARD  
+            <!-- ================================================= 
+         READING CARD 
     ================================================== -->
 
             <div class="activity-card">
 
 
-                <!-- =================================================  
-             HEADER  
+                <!-- ================================================= 
+             HEADER 
         ================================================== -->
 
                 <div
@@ -698,11 +691,11 @@ $completionPercentage =
                     <div>
 
                         <h5>
-                            Asynchronous Lectures
+                            Asynchronous Readings
                         </h5>
 
                         <p>
-                            Your assigned learning lectures
+                            Your assigned learning materials
                         </p>
 
                     </div>
@@ -711,9 +704,9 @@ $completionPercentage =
                     <span
                         class="activity-count">
 
-                        <?= $totalLectures ?>
+                        <?= $totalReadings ?>
 
-                        lectures
+                        readings
 
                     </span>
 
@@ -721,12 +714,12 @@ $completionPercentage =
                 </div>
 
 
-                <!-- =================================================  
-             LECTURES  
+                <!-- ================================================= 
+             READINGS 
         ================================================== -->
 
                 <?php if (
-                    $totalLectures > 0
+                    $totalReadings > 0
                 ): ?>
 
 
@@ -736,47 +729,58 @@ $completionPercentage =
 
                         <?php
 
-                        $lectureNumber = 1;
+                        $readingNumber = 1;
 
                         ?>
 
 
                         <?php foreach (
-                            $lectureRecords
-                            as $lecture
+                            $readingRecords
+                            as $reading
                         ): ?>
 
 
                             <?php
 
-                            /* =====================================  
-                       STATUS  
+                            /* ===================================== 
+                       STATUS 
                     ===================================== */
 
                             $status =
-                                $lecture["progress_status"] ?? "";
+                                $reading["progress_status"] ?? "";
 
 
-                            $watchedSeconds =
-                                (float)(
-                                    $lecture["watched_seconds"]
-                                    ?? 0
+                            /* ===================================== 
+                       REQUIRED READING TIME 
+                    ===================================== */
+
+                            $requiredReadingMinutes =
+                                (int)(
+                                    $reading["required_reading_minutes"] ?? 0
                                 );
 
 
-                            $videoDuration =
+                            $requiredReadingSeconds =
+                                $requiredReadingMinutes * 60;
+
+
+                            /* ===================================== 
+                       ACTUAL READING TIME 
+                    ===================================== */
+
+                            $readingSeconds =
                                 (float)(
-                                    $lecture["video_duration"]
-                                    ?? 0
+                                    $reading["reading_seconds"] ?? 0
                                 );
 
 
-                            /* =====================================  
-                       LECTURE PROGRESS  
+                            /* ===================================== 
+                       STATUS AND REAL PROGRESS 
                     ===================================== */
 
                             if (
-                                $status === "completed"
+                                $status ===
+                                "completed"
                             ) {
 
                                 $statusClass =
@@ -789,11 +793,11 @@ $completionPercentage =
                                     "bi-check-circle-fill";
 
 
-                                $lectureProgress =
+                                $readingProgress =
                                     100;
                             } elseif (
-                                $videoDuration > 0 &&
-                                $watchedSeconds > 0
+                                $requiredReadingSeconds > 0 &&
+                                $readingSeconds > 0
                             ) {
 
                                 $statusClass =
@@ -803,49 +807,42 @@ $completionPercentage =
                                     "In Progress";
 
                                 $statusIcon =
-                                    "bi-play-circle-fill";
+                                    "bi-book-half";
 
 
-                                $lectureProgress =
+                                /* 
+                                 * REAL READING PROGRESS
+                                 *
+                                 * Actual reading seconds
+                                 * divided by the required
+                                 * reading seconds.
+                                 */
+
+                                $readingProgress =
                                     (
-                                        $watchedSeconds /
-                                        $videoDuration
+                                        $readingSeconds /
+                                        $requiredReadingSeconds
                                     ) * 100;
 
 
                                 /* 
-                             * Never display 100% unless 
-                             * the lecture is actually 
-                             * marked completed. 
-                             */
+                                 * Never visually reach 100%
+                                 * until the activity is
+                                 * actually completed.
+                                 */
 
-                                $lectureProgress =
+                                $readingProgress =
                                     min(
                                         99.99,
-                                        $lectureProgress
+                                        $readingProgress
                                     );
 
 
-                                $lectureProgress =
+                                $readingProgress =
                                     round(
-                                        $lectureProgress,
+                                        $readingProgress,
                                         2
                                     );
-                            } elseif (
-                                !empty($lecture["started_at"])
-                            ) {
-
-                                $statusClass =
-                                    "in-progress";
-
-                                $statusText =
-                                    "In Progress";
-
-                                $statusIcon =
-                                    "bi-play-circle-fill";
-
-                                $lectureProgress =
-                                    0;
                             } else {
 
                                 $statusClass =
@@ -857,25 +854,26 @@ $completionPercentage =
                                 $statusIcon =
                                     "bi-circle";
 
-                                $lectureProgress =
+
+                                $readingProgress =
                                     0;
                             }
 
 
-                            /* =====================================  
-                       DUE DATE  
+                            /* ===================================== 
+                       DUE DATE 
                     ===================================== */
 
                             $dueText = "";
 
 
                             if (
-                                !empty($lecture["due_date"])
+                                !empty($reading["due_date"])
                             ) {
 
                                 $timestamp =
                                     strtotime(
-                                        $lecture["due_date"]
+                                        $reading["due_date"]
                                     );
 
 
@@ -892,20 +890,20 @@ $completionPercentage =
                             }
 
 
-                            /* =====================================  
-                       START DATE  
+                            /* ===================================== 
+                       START DATE 
                     ===================================== */
 
                             $startText = "";
 
 
                             if (
-                                !empty($lecture["start_date"])
+                                !empty($reading["start_date"])
                             ) {
 
                                 $timestamp =
                                     strtotime(
-                                        $lecture["start_date"]
+                                        $reading["start_date"]
                                     );
 
 
@@ -922,11 +920,73 @@ $completionPercentage =
                             }
 
 
+                            /* ===================================== 
+                       FILE TYPE 
+                    ===================================== */
+
+                            $fileType =
+                                strtolower(
+                                    trim(
+                                        $reading["file_type"] ?? ""
+                                    )
+                                );
+
+
+                            /* ===================================== 
+                       FILE ICON 
+                    ===================================== */
+
+                            switch ($fileType) {
+
+                                case "pdf":
+
+                                    $fileIcon =
+                                        "bi-file-earmark-pdf";
+
+                                    break;
+
+
+                                case "doc":
+
+                                case "docx":
+
+                                    $fileIcon =
+                                        "bi-file-earmark-word";
+
+                                    break;
+
+
+                                case "ppt":
+
+                                case "pptx":
+
+                                    $fileIcon =
+                                        "bi-file-earmark-ppt";
+
+                                    break;
+
+                                default:
+
+                                    $fileIcon =
+                                        "bi-file-earmark-text";
+
+                                    break;
+                            }
+
+
+                            /* ===================================== 
+                       CLEAN READING ID 
+                    ===================================== */
+
+                            $readingId =
+                                (int)$reading["id"];
+
+
                             ?>
 
 
-                            <!-- =================================  
-                         LECTURE ITEM  
+                            <!-- ================================= 
+                         READING ITEM 
                     ================================== -->
 
                             <div
@@ -938,7 +998,7 @@ $completionPercentage =
                                 <div
                                     class="activity-number">
 
-                                    <?= $lectureNumber++ ?>
+                                    <?= $readingNumber++ ?>
 
                                 </div>
 
@@ -968,7 +1028,7 @@ $completionPercentage =
                                     <h5>
 
                                         <?= htmlspecialchars(
-                                            $lecture["title"]
+                                            $reading["title"]
                                         ) ?>
 
                                     </h5>
@@ -1010,6 +1070,7 @@ $completionPercentage =
                                                 </i>
 
                                                 Due
+
                                                 <?= htmlspecialchars(
                                                     $dueText
                                                 ) ?>
@@ -1018,11 +1079,48 @@ $completionPercentage =
 
                                         <?php endif; ?>
 
+
+                                        <span>
+
+                                            <i
+                                                class="bi bi-file-earmark">
+                                            </i>
+
+                                            <?= htmlspecialchars(
+                                                strtoupper(
+                                                    $fileType
+                                                )
+                                            ) ?>
+
+                                        </span>
+
+
+                                        <?php if (
+                                            $requiredReadingMinutes > 0
+                                        ): ?>
+
+                                            <span>
+
+                                                <i
+                                                    class="bi bi-hourglass-split">
+                                                </i>
+
+                                                <?= number_format(
+                                                    $requiredReadingMinutes
+                                                ) ?>
+
+                                                min reading
+
+                                            </span>
+
+                                        <?php endif; ?>
+
+
                                     </div>
 
 
-                                    <!-- =================================  
-                                 INDIVIDUAL PROGRESS  
+                                    <!-- ================================= 
+                                 INDIVIDUAL PROGRESS 
                             ================================== -->
 
                                     <div
@@ -1036,13 +1134,13 @@ $completionPercentage =
                                             <div
                                                 class=" 
                                         lecture-progress-fill 
-                                        <?= $lectureProgress >= 100
+                                        <?= $readingProgress >= 100
                                             ? "completed"
                                             : ""
                                         ?>"
                                                 style=" 
                                             width: 
-                                            <?= $lectureProgress ?>%; 
+                                            <?= $readingProgress ?>%; 
                                         ">
                                             </div>
 
@@ -1053,7 +1151,7 @@ $completionPercentage =
                                         <span>
 
                                             <?= number_format(
-                                                $lectureProgress,
+                                                $readingProgress,
                                                 2
                                             ) ?>%
 
@@ -1061,6 +1159,7 @@ $completionPercentage =
 
 
                                     </div>
+
 
                                 </div>
 
@@ -1090,14 +1189,14 @@ $completionPercentage =
 
 
                                     <?php if (
-                                        !empty($lecture["access_count"])
+                                        !empty($reading["access_count"])
                                     ): ?>
 
 
                                         <small>
 
                                             <?= (int)(
-                                                $lecture["access_count"]
+                                                $reading["access_count"]
                                             ) ?>
 
                                             access(es)
@@ -1117,7 +1216,16 @@ $completionPercentage =
                                     class="activity-action">
 
 
-                                    <a href="activity_view.php?id=<?= (int)$lecture["id"] ?>" class="btn btn-primary">
+                                    <!-- 
+                                    IMPORTANT:
+                                    Keep this URL on ONE LINE.
+                                    Do NOT add whitespace around
+                                    the ID.
+                                -->
+
+                                    <a
+                                        href="reading_activity_view.php?id=<?= $readingId ?>"
+                                        class="btn btn-primary">
 
 
                                         <?php if (
@@ -1136,14 +1244,13 @@ $completionPercentage =
 
 
                                         <?php elseif (
-                                            !empty($lecture["started_at"]) ||
-                                            $watchedSeconds > 0
+                                            !empty($reading["started_at"])
                                         ): ?>
 
                                             <i
                                                 class=" 
                                         bi 
-                                        bi-play-fill 
+                                        bi-book-half 
                                         me-1">
                                             </i>
 
@@ -1155,11 +1262,11 @@ $completionPercentage =
                                             <i
                                                 class=" 
                                         bi 
-                                        bi-play-fill 
+                                        bi-book-half 
                                         me-1">
                                             </i>
 
-                                            Watch
+                                            Read
 
                                         <?php endif; ?>
 
@@ -1182,8 +1289,8 @@ $completionPercentage =
                 <?php else: ?>
 
 
-                    <!-- =========================================  
-                 EMPTY STATE  
+                    <!-- ========================================= 
+                 EMPTY STATE 
             ========================================== -->
 
                     <div
@@ -1193,7 +1300,7 @@ $completionPercentage =
                         <div
                             class="activity-empty-icon">
 
-                            <i class="bi bi-journal-x">
+                            <i class="bi bi-book-x">
                             </i>
 
                         </div>
@@ -1201,7 +1308,7 @@ $completionPercentage =
 
                         <h5>
 
-                            No lectures yet
+                            No readings yet
 
                         </h5>
 
@@ -1209,8 +1316,8 @@ $completionPercentage =
                         <p>
 
                             There are currently no
-                            asynchronous lectures assigned
-                            to your class.
+                            asynchronous reading materials
+                            assigned to your class.
 
                         </p>
 
@@ -1230,14 +1337,14 @@ $completionPercentage =
     </main>
 
 
-    <!-- =========================================================  
- JAVASCRIPT  
-```
-
+    <!-- ========================================================= 
+ JAVASCRIPT 
 ========================================================= -->
 
-     <?php include 'globals/scripts.php'; ?>
- 
+
+    <?php include 'globals/scripts.php'; ?>
+
+
 </body>
 
 </html>

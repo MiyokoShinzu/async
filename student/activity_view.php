@@ -663,7 +663,7 @@ $youtubeId =
                         class="bi bi-arrow-left me-1">
                     </i>
 
-                    Back to Activities
+                    Back to Video Lectures/Demos
 
                 </a>
 
