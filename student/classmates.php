@@ -192,7 +192,7 @@ function getProfilePhoto($photo)
      * to the shared/uploads/profile_photos folder
      */
 
-    return "../shared/uploads/profile_photos/" .
+    return "../../" .
         rawurlencode($photoName);
 }
 
