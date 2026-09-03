@@ -188,7 +188,7 @@ function sidebarActive($page)
             href="freedom_walls.php"
             class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
 
-            <i class="bi bi-flag"></i>
+            <i class="bi bi-chat-square-heart-fill"></i>
 
             <span>
                 Freedom Walls
