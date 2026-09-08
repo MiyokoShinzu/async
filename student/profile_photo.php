@@ -190,7 +190,7 @@ $profilePhoto = trim(
     WEBSITE STRUCTURE:
 
     Main domain:
-    http://localhost/
+    https://vertigation.com//
 
     Student subdomain:
     https://async.vertigation.com/
@@ -202,7 +202,7 @@ $profilePhoto = trim(
     shared/uploads/profile_photos/photo.jpg
 
     Final browser URL:
-    http://localhost/shared/uploads/profile_photos/photo.jpg
+    https://vertigation.com//shared/uploads/profile_photos/photo.jpg
 */
 
 $profilePhotoURL = "";
@@ -252,7 +252,7 @@ if ($profilePhoto !== "") {
         ) {
 
             $profilePhotoURL =
-                "http://localhost" .
+                "https://vertigation.com/" .
                 $path;
         }
     }
@@ -272,7 +272,7 @@ if ($profilePhoto !== "") {
     ) {
 
         $profilePhotoURL =
-            "http://localhost" .
+            "https://vertigation.com/" .
             $profilePhoto;
     }
 
@@ -291,7 +291,7 @@ if ($profilePhoto !== "") {
     ) {
 
         $profilePhotoURL =
-            "http://localhost/" .
+            "https://vertigation.com//" .
             $profilePhoto;
     }
 
@@ -304,7 +304,7 @@ if ($profilePhoto !== "") {
        async/shared/uploads/profile_photos/photo.jpg
 
        Convert to:
-       http://localhost/shared/uploads/...
+       https://vertigation.com//shared/uploads/...
     ====================================================== */ elseif (
         strpos(
             $profilePhoto,
@@ -320,7 +320,7 @@ if ($profilePhoto !== "") {
 
 
         $profilePhotoURL =
-            "http://localhost/" .
+            "https://vertigation.com//" .
             $cleanPath;
     }
 
@@ -338,7 +338,7 @@ if ($profilePhoto !== "") {
 
 
         $profilePhotoURL =
-            "http://localhost/" .
+            "https://vertigation.com//" .
             $cleanPath;
     }
 }
