@@ -4,83 +4,60 @@
 session_start();
 
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set("display_errors", 1);
 
-echo "<h2>Forgot Password Debug</h2>";
+require_once "src/connection.php";
+
 
 /*
 |--------------------------------------------------------------------------
-| Check request
+| Only allow POST requests
 |--------------------------------------------------------------------------
 */
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-
-    echo "<p style='color:red;'>ERROR: Request is not POST.</p>";
+    header("Location: forgot_password.php");
     exit;
 }
-
-echo "<p>✓ POST request received.</p>";
 
 
 /*
 |--------------------------------------------------------------------------
-| Check email
+| Get email
 |--------------------------------------------------------------------------
 */
 
 $email = trim($_POST["email"] ?? "");
 
-echo "<p>Email received: <strong>"
-    . htmlspecialchars($email)
-    . "</strong></p>";
+
+/*
+|--------------------------------------------------------------------------
+| Validate email
+|--------------------------------------------------------------------------
+*/
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-    echo "<p style='color:red;'>ERROR: Invalid email address.</p>";
+    $_SESSION["reset_message"] =
+        "Please enter a valid email address.";
+
+    header("Location: forgot_password.php");
     exit;
 }
-
-echo "<p>✓ Email format is valid.</p>";
 
 
 /*
 |--------------------------------------------------------------------------
-| Database connection
+| Generic response
+|
+| We use the same message whether the account exists or not.
+| This prevents account enumeration.
 |--------------------------------------------------------------------------
 */
 
-require_once "src/connection.php";
-
-echo "<p>✓ connection.php loaded.</p>";
-
-
-/*
-|--------------------------------------------------------------------------
-| Check mysqli connection
-|--------------------------------------------------------------------------
-*/
-
-if (!isset($mysqli)) {
-
-    echo "<p style='color:red;'>
-        ERROR: \$mysqli does not exist.
-    </p>";
-
-    exit;
-}
-
-if ($mysqli->connect_error) {
-
-    echo "<p style='color:red;'>
-        DATABASE ERROR:
-        " . htmlspecialchars($mysqli->connect_error) . "
-    </p>";
-
-    exit;
-}
-
-echo "<p>✓ Database connection successful.</p>";
+$genericMessage =
+    "If an account is associated with that email address, "
+    . "a password reset link has been sent.";
 
 
 /*
@@ -96,95 +73,103 @@ $stmt = $mysqli->prepare("
     LIMIT 1
 ");
 
+
 if (!$stmt) {
 
-    echo "<p style='color:red;'>
-        SQL PREPARE ERROR:
-        " . htmlspecialchars($mysqli->error) . "
-    </p>";
+    error_log(
+        "Forgot Password SQL Error: "
+            . $mysqli->error
+    );
 
+    $_SESSION["reset_message"] =
+        "Something went wrong. Please try again later.";
+
+    header("Location: forgot_password.php");
     exit;
 }
-
-echo "<p>✓ SQL statement prepared.</p>";
 
 
 $stmt->bind_param("s", $email);
 
-if (!$stmt->execute()) {
-
-    echo "<p style='color:red;'>
-        SQL EXECUTE ERROR:
-        " . htmlspecialchars($stmt->error) . "
-    </p>";
-
-    exit;
-}
-
-echo "<p>✓ SQL query executed.</p>";
-
+$stmt->execute();
 
 $result = $stmt->get_result();
-
-if (!$result) {
-
-    echo "<p style='color:red;'>
-        ERROR: Could not retrieve query result.
-    </p>";
-
-    exit;
-}
-
 
 $user = $result->fetch_assoc();
 
 $stmt->close();
 
 
+/*
+|--------------------------------------------------------------------------
+| Account does not exist
+|--------------------------------------------------------------------------
+*/
+
 if (!$user) {
 
-    echo "<p style='color:red;'>
-        NO ACCOUNT FOUND for this email address.
-    </p>";
+    $_SESSION["reset_message"] =
+        $genericMessage;
 
+    header("Location: forgot_password.php");
     exit;
 }
 
 
-echo "<p>✓ Account found.</p>";
+/*
+|--------------------------------------------------------------------------
+| Generate secure random token
+|--------------------------------------------------------------------------
+*/
 
-echo "<pre>";
-print_r($user);
-echo "</pre>";
+try {
+
+    $token = bin2hex(
+        random_bytes(32)
+    );
+} catch (Exception $e) {
+
+    error_log(
+        "Password Reset Token Error: "
+            . $e->getMessage()
+    );
+
+    $_SESSION["reset_message"] =
+        "Unable to process your request. Please try again later.";
+
+    header("Location: forgot_password.php");
+    exit;
+}
 
 
 /*
 |--------------------------------------------------------------------------
-| Generate token
+| Hash token before storing it
 |--------------------------------------------------------------------------
 */
 
-$token = bin2hex(random_bytes(32));
+$tokenHash = hash(
+    "sha256",
+    $token
+);
 
-echo "<p>✓ Secure token generated.</p>";
 
-
-$tokenHash = hash("sha256", $token);
+/*
+|--------------------------------------------------------------------------
+| Token expiration
+| 30 minutes
+|--------------------------------------------------------------------------
+*/
 
 $expiresAt = date(
     "Y-m-d H:i:s",
     time() + (30 * 60)
 );
 
-echo "<p>✓ Token hash generated.</p>";
-echo "<p>Expires at: <strong>"
-    . htmlspecialchars($expiresAt)
-    . "</strong></p>";
-
 
 /*
 |--------------------------------------------------------------------------
-| Check password_resets table
+| Delete previous reset tokens
 |--------------------------------------------------------------------------
 */
 
@@ -193,39 +178,51 @@ $stmt = $mysqli->prepare("
     WHERE user_id = ?
 ");
 
+
 if (!$stmt) {
 
-    echo "<p style='color:red;'>
-        ERROR: password_resets table may not exist.
-    </p>";
+    error_log(
+        "Password Reset Delete Error: "
+            . $mysqli->error
+    );
 
-    echo "<p>MySQL says:</p>";
-    echo "<pre>" . htmlspecialchars($mysqli->error) . "</pre>";
+    $_SESSION["reset_message"] =
+        "Something went wrong. Please try again later.";
 
+    header("Location: forgot_password.php");
     exit;
 }
 
-$stmt->bind_param("i", $user["id"]);
+
+$stmt->bind_param(
+    "i",
+    $user["id"]
+);
+
 
 if (!$stmt->execute()) {
 
-    echo "<p style='color:red;'>
-        ERROR deleting old reset token:
-    </p>";
+    error_log(
+        "Password Reset Delete Execute Error: "
+            . $stmt->error
+    );
 
-    echo "<pre>" . htmlspecialchars($stmt->error) . "</pre>";
+    $stmt->close();
 
+    $_SESSION["reset_message"] =
+        "Something went wrong. Please try again later.";
+
+    header("Location: forgot_password.php");
     exit;
 }
 
-$stmt->close();
 
-echo "<p>✓ Old reset tokens removed.</p>";
+$stmt->close();
 
 
 /*
 |--------------------------------------------------------------------------
-| Insert new token
+| Store new reset token
 |--------------------------------------------------------------------------
 */
 
@@ -239,16 +236,21 @@ $stmt = $mysqli->prepare("
     VALUES (?, ?, ?)
 ");
 
+
 if (!$stmt) {
 
-    echo "<p style='color:red;'>
-        ERROR preparing token INSERT:
-    </p>";
+    error_log(
+        "Password Reset Insert Error: "
+            . $mysqli->error
+    );
 
-    echo "<pre>" . htmlspecialchars($mysqli->error) . "</pre>";
+    $_SESSION["reset_message"] =
+        "Something went wrong. Please try again later.";
 
+    header("Location: forgot_password.php");
     exit;
 }
+
 
 $stmt->bind_param(
     "iss",
@@ -260,23 +262,32 @@ $stmt->bind_param(
 
 if (!$stmt->execute()) {
 
-    echo "<p style='color:red;'>
-        ERROR inserting reset token:
-    </p>";
+    error_log(
+        "Password Reset Insert Execute Error: "
+            . $stmt->error
+    );
 
-    echo "<pre>" . htmlspecialchars($stmt->error) . "</pre>";
+    $stmt->close();
 
+    $_SESSION["reset_message"] =
+        "Something went wrong. Please try again later.";
+
+    header("Location: forgot_password.php");
     exit;
 }
 
-$stmt->close();
 
-echo "<p>✓ Reset token stored in database.</p>";
+$stmt->close();
 
 
 /*
 |--------------------------------------------------------------------------
-| Generate reset URL
+| CREATE RESET URL
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| Replace YOUR-DOMAIN.com with your actual domain.
+|
 |--------------------------------------------------------------------------
 */
 
@@ -285,21 +296,158 @@ $resetURL =
     . urlencode($token);
 
 
-echo "<hr>";
+/*
+|--------------------------------------------------------------------------
+| Email configuration
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| Use an actual email address created in Hostinger.
+|
+|--------------------------------------------------------------------------
+*/
 
-echo "<h3>Reset Link</h3>";
+$fromEmail = "no-reply@YOUR-DOMAIN.com";
 
-echo "<p>";
-echo "<a href='" . htmlspecialchars($resetURL) . "'>";
-echo htmlspecialchars($resetURL);
-echo "</a>";
-echo "</p>";
+$fromName = "ETS-Async";
 
-echo "<p style='color:green;'>
-    ✓ Everything up to token generation is working.
-</p>";
 
-echo "<p>
-    We have intentionally stopped before sending email.
-</p>";
+/*
+|--------------------------------------------------------------------------
+| Email subject
+|--------------------------------------------------------------------------
+*/
 
+$subject =
+    "ETS-Async Password Reset";
+
+
+/*
+|--------------------------------------------------------------------------
+| Email body
+|--------------------------------------------------------------------------
+*/
+
+$emailBody = <<<EMAIL
+Hello,
+
+We received a request to reset the password for your ETS-Async account.
+
+To create a new password, click the link below:
+
+$resetURL
+
+This password reset link will expire in 30 minutes.
+
+If you did not request a password reset, you can safely ignore this email.
+
+Regards,
+
+ETS-Async
+EMAIL;
+
+
+/*
+|--------------------------------------------------------------------------
+| Email headers
+|--------------------------------------------------------------------------
+*/
+
+$headers = [];
+
+$headers[] =
+    "From: " . $fromName . " <" . $fromEmail . ">";
+
+$headers[] =
+    "Reply-To: " . $fromEmail;
+
+$headers[] =
+    "MIME-Version: 1.0";
+
+$headers[] =
+    "Content-Type: text/plain; charset=UTF-8";
+
+
+$headersString =
+    implode("\r\n", $headers);
+
+
+/*
+|--------------------------------------------------------------------------
+| Send email
+|--------------------------------------------------------------------------
+*/
+
+$mailSent = mail(
+    $user["email"],
+    $subject,
+    $emailBody,
+    $headersString
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| Log mail failure
+|--------------------------------------------------------------------------
+*/
+
+if (!$mailSent) {
+
+    error_log(
+        "Password reset email failed for: "
+            . $user["email"]
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Remove the token because the user didn't receive the email.
+    |--------------------------------------------------------------------------
+    */
+
+    $stmt = $mysqli->prepare("
+        DELETE FROM password_resets
+        WHERE user_id = ?
+    ");
+
+    if ($stmt) {
+
+        $stmt->bind_param(
+            "i",
+            $user["id"]
+        );
+
+        $stmt->execute();
+
+        $stmt->close();
+    }
+
+    $_SESSION["reset_message"] =
+        "We could not send the password reset email. "
+        . "Please try again later.";
+
+    header("Location: forgot_password.php");
+    exit;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Success
+|--------------------------------------------------------------------------
+*/
+
+$_SESSION["reset_message"] =
+    $genericMessage;
+
+
+/*
+|--------------------------------------------------------------------------
+| Return to forgot password page
+|--------------------------------------------------------------------------
+*/
+
+header("Location: forgot_password.php");
+
+exit;
+?>
