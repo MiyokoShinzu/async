@@ -5,7 +5,7 @@ session_start();
 
 /*
 |--------------------------------------------------------------------------
-| Get password reset message
+| Get message from send_reset_email.php
 |--------------------------------------------------------------------------
 */
 
@@ -14,8 +14,12 @@ $resetMessageType = $_SESSION["reset_message_type"] ?? "success";
 
 /*
 |--------------------------------------------------------------------------
-| Clear message after reading
+| Remove message from session
 |--------------------------------------------------------------------------
+|
+| This prevents the message from appearing again after refreshing
+| the page.
+|
 */
 
 unset($_SESSION["reset_message"]);
@@ -34,10 +38,17 @@ unset($_SESSION["reset_message_type"]);
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Forgot Password | ETS-Async</title>
+    <title>
+        Forgot Password | ETS-Async
+    </title>
 
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+
         body {
 
             font-family: Arial, sans-serif;
@@ -53,6 +64,8 @@ unset($_SESSION["reset_message_type"]);
             min-height: 100vh;
 
             margin: 0;
+
+            padding: 20px;
 
         }
 
@@ -71,8 +84,6 @@ unset($_SESSION["reset_message_type"]);
 
             box-shadow: 0 5px 25px rgba(0, 0, 0, .08);
 
-            box-sizing: border-box;
-
         }
 
 
@@ -81,6 +92,8 @@ unset($_SESSION["reset_message_type"]);
             margin-top: 0;
 
             margin-bottom: 10px;
+
+            color: #222;
 
         }
 
@@ -93,6 +106,12 @@ unset($_SESSION["reset_message_type"]);
 
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Message
+        |--------------------------------------------------------------------------
+        */
 
         .message {
 
@@ -131,15 +150,21 @@ unset($_SESSION["reset_message_type"]);
         }
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | Form
+        |--------------------------------------------------------------------------
+        */
+
         label {
 
             display: block;
 
-            margin-bottom: 5px;
-
-            font-weight: 600;
+            margin-bottom: 6px;
 
             color: #333;
+
+            font-weight: 600;
 
         }
 
@@ -147,8 +172,6 @@ unset($_SESSION["reset_message_type"]);
         input {
 
             width: 100%;
-
-            box-sizing: border-box;
 
             padding: 12px;
 
@@ -169,7 +192,8 @@ unset($_SESSION["reset_message_type"]);
 
             border-color: #2563eb;
 
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, .10);
 
         }
 
@@ -219,10 +243,8 @@ unset($_SESSION["reset_message_type"]);
 
 
         <p>
-
             Enter your registered email address and we will send you
             a password reset link.
-
         </p>
 
 
@@ -246,9 +268,7 @@ unset($_SESSION["reset_message_type"]);
 
 
             <label for="email">
-
                 Email Address
-
             </label>
 
 
@@ -257,13 +277,12 @@ unset($_SESSION["reset_message_type"]);
                 id="email"
                 name="email"
                 required
-                autocomplete="email">
+                autocomplete="email"
+                placeholder="Enter your registered email">
 
 
             <button type="submit">
-
                 Send Reset Link
-
             </button>
 
 

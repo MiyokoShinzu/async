@@ -1,3 +1,4 @@
+
 <?php
 
 session_start();
@@ -14,6 +15,7 @@ require_once "src/connection.php";
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
     header("Location: forgot_password.php");
+
     exit;
 }
 
@@ -24,16 +26,18 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 |--------------------------------------------------------------------------
 */
 
-$email = trim($_POST["email"] ?? "");
+$email = trim(
+    $_POST["email"] ?? ""
+);
 
 
 /*
 |--------------------------------------------------------------------------
-| Generic response
+| Generic message
 |--------------------------------------------------------------------------
 |
-| We intentionally use the same message whether the account exists
-| or not. This prevents account enumeration.
+| We use the same message whether or not the account exists.
+| This prevents account enumeration.
 |
 */
 
@@ -50,9 +54,14 @@ $genericMessage =
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-    $_SESSION["reset_message"] = $genericMessage;
+    $_SESSION["reset_message"] =
+        "Please enter a valid email address.";
+
+    $_SESSION["reset_message_type"] =
+        "error";
 
     header("Location: forgot_password.php");
+
     exit;
 }
 
@@ -70,17 +79,25 @@ $stmt = $mysqli->prepare("
     LIMIT 1
 ");
 
+
 if (!$stmt) {
 
     $_SESSION["reset_message"] =
         "Unable to process the password reset request.";
 
+    $_SESSION["reset_message_type"] =
+        "error";
+
     header("Location: forgot_password.php");
+
     exit;
 }
 
 
-$stmt->bind_param("s", $email);
+$stmt->bind_param(
+    "s",
+    $email
+);
 
 
 if (!$stmt->execute()) {
@@ -90,7 +107,11 @@ if (!$stmt->execute()) {
     $_SESSION["reset_message"] =
         "Unable to process the password reset request.";
 
+    $_SESSION["reset_message_type"] =
+        "error";
+
     header("Location: forgot_password.php");
+
     exit;
 }
 
@@ -110,28 +131,39 @@ $stmt->close();
 
 if (!$user) {
 
-    $_SESSION["reset_message"] = $genericMessage;
+    $_SESSION["reset_message"] =
+        $genericMessage;
+
+    $_SESSION["reset_message_type"] =
+        "success";
 
     header("Location: forgot_password.php");
+
     exit;
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| Generate secure token
+| Generate secure reset token
 |--------------------------------------------------------------------------
 */
 
 try {
 
-    $token = bin2hex(random_bytes(32));
+    $token = bin2hex(
+        random_bytes(32)
+    );
 } catch (Exception $e) {
 
     $_SESSION["reset_message"] =
         "Unable to process the password reset request.";
 
+    $_SESSION["reset_message_type"] =
+        "error";
+
     header("Location: forgot_password.php");
+
     exit;
 }
 
@@ -153,7 +185,7 @@ $tokenHash = hash(
 | Token expiration
 |--------------------------------------------------------------------------
 |
-| Token is valid for 30 minutes.
+| 30 minutes from now.
 |
 */
 
@@ -174,12 +206,17 @@ $stmt = $mysqli->prepare("
     WHERE user_id = ?
 ");
 
+
 if (!$stmt) {
 
     $_SESSION["reset_message"] =
         "Unable to process the password reset request.";
 
+    $_SESSION["reset_message_type"] =
+        "error";
+
     header("Location: forgot_password.php");
+
     exit;
 }
 
@@ -197,7 +234,11 @@ if (!$stmt->execute()) {
     $_SESSION["reset_message"] =
         "Unable to process the password reset request.";
 
+    $_SESSION["reset_message_type"] =
+        "error";
+
     header("Location: forgot_password.php");
+
     exit;
 }
 
@@ -207,7 +248,7 @@ $stmt->close();
 
 /*
 |--------------------------------------------------------------------------
-| Store new reset token
+| Insert new reset token
 |--------------------------------------------------------------------------
 */
 
@@ -221,12 +262,17 @@ $stmt = $mysqli->prepare("
     VALUES (?, ?, ?)
 ");
 
+
 if (!$stmt) {
 
     $_SESSION["reset_message"] =
         "Unable to process the password reset request.";
 
+    $_SESSION["reset_message_type"] =
+        "error";
+
     header("Location: forgot_password.php");
+
     exit;
 }
 
@@ -246,7 +292,11 @@ if (!$stmt->execute()) {
     $_SESSION["reset_message"] =
         "Unable to process the password reset request.";
 
+    $_SESSION["reset_message_type"] =
+        "error";
+
     header("Location: forgot_password.php");
+
     exit;
 }
 
@@ -256,7 +306,7 @@ $stmt->close();
 
 /*
 |--------------------------------------------------------------------------
-| Generate password reset URL
+| Generate reset URL
 |--------------------------------------------------------------------------
 */
 
@@ -273,6 +323,7 @@ $resetURL =
 
 $fromEmail =
     "service-async@vertigation.com";
+
 
 $subject =
     "ETS-Async Password Reset";
@@ -311,11 +362,14 @@ EMAIL;
 $headers =
     "From: ETS-Async <$fromEmail>\r\n";
 
+
 $headers .=
     "Reply-To: $fromEmail\r\n";
 
+
 $headers .=
     "MIME-Version: 1.0\r\n";
+
 
 $headers .=
     "Content-Type: text/plain; charset=UTF-8\r\n";
@@ -345,7 +399,7 @@ if (!$mailSent) {
 
     /*
     |----------------------------------------------------------------------
-    | Remove the token because the user did not receive the email.
+    | Remove token because the email was not accepted.
     |----------------------------------------------------------------------
     */
 
@@ -353,6 +407,7 @@ if (!$mailSent) {
         DELETE FROM password_resets
         WHERE user_id = ?
     ");
+
 
     if ($stmt) {
 
@@ -371,18 +426,28 @@ if (!$mailSent) {
         "We could not send the password reset email. "
         . "Please try again later.";
 
+    $_SESSION["reset_message_type"] =
+        "error";
+
+
     header("Location: forgot_password.php");
+
     exit;
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| Email successfully accepted by PHP mail()
+| Email successfully sent
 |--------------------------------------------------------------------------
 */
 
-$_SESSION["reset_message"] = $genericMessage;
+$_SESSION["reset_message"] =
+    "Password reset link has been sent to your email address.";
+
+
+$_SESSION["reset_message_type"] =
+    "success";
 
 
 /*
@@ -392,4 +457,7 @@ $_SESSION["reset_message"] = $genericMessage;
 */
 
 header("Location: forgot_password.php");
+
 exit;
+
+?>
