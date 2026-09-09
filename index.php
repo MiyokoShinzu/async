@@ -1,7 +1,7 @@
 <?php
 /* =========================================================
    ETS-Async
-   Minimalist Academic Learning Platform
+   Asynchronous Class Learning Portal
    ========================================================= */
 ?>
 <!DOCTYPE html>
@@ -17,13 +17,15 @@
 
     <meta
         name="description"
-        content="ETS-Async — A simple asynchronous learning platform for students.">
+        content="ETS-Async — Asynchronous Learning Portal for Computer Engineering.">
 
     <meta
         name="theme-color"
-        content="#2563eb">
+        content="#1e3a8a">
 
-    <title>ETS-Async | Learning Platform</title>
+    <title>
+        ETS-Async | Asynchronous Learning Portal
+    </title>
 
 
     <!-- =====================================================
@@ -83,13 +85,14 @@
 
         :root {
 
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --primary-soft: #eff6ff;
 
-            --text: #111827;
-            --text-secondary: #6b7280;
+            --text: #172033;
+            --text-muted: #667085;
 
-            --border: #e5e7eb;
+            --border: #e4e7ec;
 
             --background: #ffffff;
             --surface: #f8fafc;
@@ -103,19 +106,22 @@
         ================================================= */
 
         html {
-            scroll-behavior: smooth;
+
+            scroll-behavior:
+                smooth;
         }
 
 
         body {
 
-            margin: 0;
-
-            background:
-                var(--background);
+            margin:
+                0;
 
             color:
                 var(--text);
+
+            background:
+                var(--background);
 
             font-family:
                 "Inter",
@@ -130,14 +136,13 @@
 
             -webkit-font-smoothing:
                 antialiased;
-
-            text-rendering:
-                optimizeLegibility;
         }
 
 
         a {
-            text-decoration: none;
+
+            text-decoration:
+                none;
         }
 
 
@@ -156,7 +161,7 @@
 
 
         /* =================================================
-           NAVBAR
+           HEADER
         ================================================= */
 
         .site-header {
@@ -164,21 +169,21 @@
             height:
                 72px;
 
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+                #ffffff;
+
             display:
                 flex;
 
             align-items:
                 center;
-
-            border-bottom:
-                1px solid var(--border);
-
-            background:
-                rgba(255, 255, 255, 0.96);
         }
 
 
-        .navbar-inner {
+        .header-inner {
 
             width:
                 min(100% - 40px, var(--max-width));
@@ -200,26 +205,26 @@
         .brand {
 
             display:
-                inline-flex;
+                flex;
 
             align-items:
                 center;
 
             gap:
-                10px;
+                11px;
 
             color:
                 var(--text);
         }
 
 
-        .brand img {
+        .brand-logo {
 
             width:
-                34px;
+                36px;
 
             height:
-                34px;
+                36px;
 
             object-fit:
                 contain;
@@ -233,66 +238,45 @@
                 sans-serif;
 
             font-size:
-                1.05rem;
+                1rem;
 
             font-weight:
                 700;
 
             letter-spacing:
-                -0.02em;
+                -.02em;
         }
 
 
-        .desktop-navigation {
+        .brand-subtitle {
+
+            margin-left:
+                3px;
+
+            padding-left:
+                11px;
+
+            border-left:
+                1px solid var(--border);
+
+            color:
+                var(--text-muted);
+
+            font-size:
+                .78rem;
+        }
+
+
+        .header-login {
 
             display:
-                flex;
+                inline-flex;
 
             align-items:
                 center;
 
             gap:
-                8px;
-        }
-
-
-        .navigation-link {
-
-            padding:
-                8px 12px;
-
-            color:
-                var(--text-secondary);
-
-            font-size:
-                0.9rem;
-
-            font-weight:
-                500;
-
-            border-radius:
-                8px;
-
-            transition:
-                color .2s ease,
-                background .2s ease;
-        }
-
-
-        .navigation-link:hover {
-
-            color:
-                var(--primary);
-
-            background:
-                #f8fafc;
-        }
-
-
-        .navigation-login {
-
-            margin-left:
-                8px;
+                7px;
 
             padding:
                 9px 16px;
@@ -304,17 +288,26 @@
                 var(--primary);
 
             border-radius:
-                8px;
+                7px;
+
+            font-size:
+                .86rem;
+
+            font-weight:
+                600;
+
+            transition:
+                background .2s ease;
         }
 
 
-        .navigation-login:hover {
+        .header-login:hover {
 
             color:
                 #ffffff;
 
             background:
-                var(--primary-hover);
+                #172e6b;
         }
 
 
@@ -324,24 +317,21 @@
 
         .hero {
 
-            min-height:
-                calc(100vh - 72px);
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
             padding:
-                80px 0;
+                115px 0 120px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+                #ffffff;
         }
 
 
         .hero-content {
 
             max-width:
-                760px;
+                820px;
 
             margin:
                 0 auto;
@@ -351,7 +341,7 @@
         }
 
 
-        .hero-mark {
+        .academic-label {
 
             display:
                 inline-flex;
@@ -359,52 +349,62 @@
             align-items:
                 center;
 
-            justify-content:
-                center;
-
-            width:
-                56px;
-
-            height:
-                56px;
+            gap:
+                8px;
 
             margin-bottom:
-                28px;
-
-            border:
-                1px solid #dbeafe;
-
-            border-radius:
-                14px;
-
-            background:
-                #eff6ff;
+                24px;
 
             color:
                 var(--primary);
 
             font-size:
-                1.35rem;
+                .76rem;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                .1em;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        .academic-label::before {
+
+            content:
+                "";
+
+            width:
+                24px;
+
+            height:
+                1px;
+
+            background:
+                var(--primary);
         }
 
 
         .hero h1 {
 
             margin:
-                0 0 20px;
+                0 0 22px;
 
             font-family:
                 "Poppins",
                 sans-serif;
 
             font-size:
-                clamp(2.4rem, 6vw, 4.3rem);
+                clamp(2.3rem, 6vw, 4rem);
 
             line-height:
-                1.08;
+                1.12;
 
             letter-spacing:
-                -0.055em;
+                -.045em;
 
             font-weight:
                 700;
@@ -413,27 +413,30 @@
 
         .hero h1 span {
 
+            display:
+                block;
+
             color:
-                var(--primary);
+                var(--primary-light);
         }
 
 
         .hero-description {
 
             max-width:
-                640px;
+                690px;
 
             margin:
-                0 auto 32px;
+                0 auto 34px;
 
             color:
-                var(--text-secondary);
+                var(--text-muted);
 
             font-size:
-                clamp(0.95rem, 2vw, 1.08rem);
+                1rem;
 
             line-height:
-                1.75;
+                1.8;
         }
 
 
@@ -449,13 +452,13 @@
                 center;
 
             gap:
-                8px;
+                9px;
 
             min-height:
                 46px;
 
             padding:
-                0 20px;
+                0 21px;
 
             color:
                 #ffffff;
@@ -467,18 +470,17 @@
                 1px solid var(--primary);
 
             border-radius:
-                9px;
+                7px;
 
             font-size:
-                0.9rem;
+                .88rem;
 
             font-weight:
                 600;
 
             transition:
                 background .2s ease,
-                transform .2s ease,
-                box-shadow .2s ease;
+                transform .2s ease;
         }
 
 
@@ -488,70 +490,60 @@
                 #ffffff;
 
             background:
-                var(--primary-hover);
+                #172e6b;
 
             transform:
                 translateY(-1px);
-
-            box-shadow:
-                0 8px 20px rgba(37, 99, 235, .15);
         }
 
 
         /* =================================================
-           SIMPLE DIVIDER
+           ACADEMIC INFORMATION
         ================================================= */
 
-        .divider {
-
-            width:
-                100%;
-
-            height:
-                1px;
-
-            background:
-                var(--border);
-        }
-
-
-        /* =================================================
-           ABOUT
-        ================================================= */
-
-        .about {
+        .academic-section {
 
             padding:
-                100px 0;
+                95px 0;
         }
 
 
-        .section-small {
+        .section-header {
+
+            max-width:
+                650px;
 
             margin-bottom:
-                12px;
+                48px;
+        }
+
+
+        .section-label {
+
+            margin-bottom:
+                10px;
 
             color:
                 var(--primary);
 
             font-size:
-                0.75rem;
+                .73rem;
 
             font-weight:
                 700;
 
             letter-spacing:
-                .08em;
+                .1em;
 
             text-transform:
                 uppercase;
         }
 
 
-        .about h2 {
+        .section-header h2 {
 
             margin:
-                0 0 18px;
+                0 0 14px;
 
             font-family:
                 "Poppins",
@@ -568,26 +560,24 @@
         }
 
 
-        .about-intro {
+        .section-header p {
 
-            max-width:
-                650px;
-
-            margin-bottom:
-                48px;
+            margin:
+                0;
 
             color:
-                var(--text-secondary);
+                var(--text-muted);
 
             font-size:
-                1rem;
-
-            line-height:
-                1.75;
+                .95rem;
         }
 
 
-        .about-grid {
+        /* =================================================
+           ACADEMIC CARDS
+        ================================================= */
+
+        .academic-grid {
 
             display:
                 grid;
@@ -600,23 +590,23 @@
         }
 
 
-        .about-item {
+        .academic-card {
 
             padding:
-                28px;
+                30px;
 
             border:
                 1px solid var(--border);
 
             border-radius:
-                12px;
+                10px;
 
             background:
                 #ffffff;
         }
 
 
-        .about-item-icon {
+        .academic-card-icon {
 
             display:
                 flex;
@@ -628,82 +618,334 @@
                 center;
 
             width:
-                40px;
+                42px;
 
             height:
-                40px;
+                42px;
 
             margin-bottom:
-                20px;
+                22px;
 
             border-radius:
-                9px;
+                8px;
 
             background:
-                #eff6ff;
+                var(--primary-soft);
 
             color:
-                var(--primary);
+                var(--primary-light);
+
+            font-size:
+                1rem;
         }
 
 
-        .about-item h3 {
+        .academic-card h3 {
 
             margin:
-                0 0 8px;
+                0 0 9px;
 
             font-size:
-                0.98rem;
+                .98rem;
 
             font-weight:
                 700;
         }
 
 
-        .about-item p {
+        .academic-card p {
 
             margin:
                 0;
 
             color:
-                var(--text-secondary);
+                var(--text-muted);
 
             font-size:
-                0.88rem;
+                .86rem;
 
             line-height:
-                1.65;
+                1.7;
         }
 
 
         /* =================================================
-           REMINDERS
+           CLASS INFORMATION
         ================================================= */
 
-        .reminders {
+        .class-section {
+
+            padding:
+                95px 0;
+
+            background:
+                var(--surface);
+
+            border-top:
+                1px solid var(--border);
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+
+        .class-layout {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                70px;
+
+            align-items:
+                start;
+        }
+
+
+        .class-title {
+
+            font-family:
+                "Poppins",
+                sans-serif;
+
+            font-size:
+                clamp(1.7rem, 4vw, 2.3rem);
+
+            line-height:
+                1.25;
+
+            letter-spacing:
+                -.035em;
+
+            margin:
+                0 0 16px;
+        }
+
+
+        .class-description {
+
+            margin:
+                0;
+
+            color:
+                var(--text-muted);
+
+            font-size:
+                .93rem;
+
+            line-height:
+                1.8;
+        }
+
+
+        .class-points {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                20px;
+        }
+
+
+        .class-point {
+
+            display:
+                flex;
+
+            gap:
+                16px;
+        }
+
+
+        .class-point-number {
+
+            flex:
+                0 0 auto;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            width:
+                32px;
+
+            height:
+                32px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius:
+                50%;
+
+            color:
+                var(--primary);
+
+            background:
+                #ffffff;
+
+            font-size:
+                .73rem;
+
+            font-weight:
+                700;
+        }
+
+
+        .class-point h3 {
+
+            margin:
+                0 0 4px;
+
+            font-size:
+                .9rem;
+
+            font-weight:
+                700;
+        }
+
+
+        .class-point p {
+
+            margin:
+                0;
+
+            color:
+                var(--text-muted);
+
+            font-size:
+                .83rem;
+
+            line-height:
+                1.6;
+        }
+
+
+        /* =================================================
+           GUIDELINES
+        ================================================= */
+
+        .guidelines {
+
+            padding:
+                95px 0;
+        }
+
+
+        .guideline-list {
+
+            max-width:
+                900px;
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                20px;
+        }
+
+
+        .guideline {
+
+            padding:
+                25px 0;
+
+            border-top:
+                1px solid var(--border);
+        }
+
+
+        .guideline-number {
+
+            margin-bottom:
+                15px;
+
+            color:
+                #98a2b3;
+
+            font-size:
+                .72rem;
+
+            font-weight:
+                700;
+        }
+
+
+        .guideline h3 {
+
+            margin:
+                0 0 7px;
+
+            font-size:
+                .93rem;
+
+            font-weight:
+                700;
+        }
+
+
+        .guideline p {
+
+            margin:
+                0;
+
+            color:
+                var(--text-muted);
+
+            font-size:
+                .83rem;
+
+            line-height:
+                1.7;
+        }
+
+
+        /* =================================================
+           LOGIN CTA
+        ================================================= */
+
+        .access-section {
 
             padding:
                 100px 0;
 
-            background:
-                var(--surface);
+            border-top:
+                1px solid var(--border);
+
+            text-align:
+                center;
         }
 
 
-        .reminders-heading {
+        .access-content {
 
             max-width:
                 620px;
 
-            margin-bottom:
-                45px;
+            margin:
+                0 auto;
         }
 
 
-        .reminders h2 {
+        .access-content h2 {
 
             margin:
-                0 0 12px;
+                0 0 13px;
 
             font-family:
                 "Poppins",
@@ -717,141 +959,16 @@
         }
 
 
-        .reminders-heading p {
+        .access-content p {
 
             margin:
-                0;
+                0 auto 27px;
 
             color:
-                var(--text-secondary);
-        }
-
-
-        .reminder-list {
-
-            display:
-                grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap:
-                20px;
-        }
-
-
-        .reminder {
-
-            padding:
-                26px;
-
-            background:
-                #ffffff;
-
-            border:
-                1px solid var(--border);
-
-            border-radius:
-                12px;
-        }
-
-
-        .reminder-number {
-
-            margin-bottom:
-                18px;
-
-            color:
-                #9ca3af;
+                var(--text-muted);
 
             font-size:
-                0.75rem;
-
-            font-weight:
-                700;
-
-            letter-spacing:
-                .05em;
-        }
-
-
-        .reminder h3 {
-
-            margin:
-                0 0 8px;
-
-            font-size:
-                0.98rem;
-
-            font-weight:
-                700;
-        }
-
-
-        .reminder p {
-
-            margin:
-                0;
-
-            color:
-                var(--text-secondary);
-
-            font-size:
-                0.88rem;
-        }
-
-
-        /* =================================================
-           LOGIN
-        ================================================= */
-
-        .login-section {
-
-            padding:
-                110px 0;
-
-            text-align:
-                center;
-        }
-
-
-        .login-content {
-
-            max-width:
-                620px;
-
-            margin:
-                0 auto;
-        }
-
-
-        .login-content h2 {
-
-            margin:
-                0 0 14px;
-
-            font-family:
-                "Poppins",
-                sans-serif;
-
-            font-size:
-                clamp(1.8rem, 4vw, 2.5rem);
-
-            letter-spacing:
-                -.035em;
-        }
-
-
-        .login-content p {
-
-            margin:
-                0 auto 28px;
-
-            color:
-                var(--text-secondary);
-
-            font-size:
-                0.95rem;
+                .92rem;
         }
 
 
@@ -861,11 +978,11 @@
 
         .footer {
 
+            padding:
+                27px 0;
+
             border-top:
                 1px solid var(--border);
-
-            padding:
-                28px 0;
 
             background:
                 #ffffff;
@@ -903,7 +1020,7 @@
                 var(--text);
 
             font-size:
-                0.85rem;
+                .84rem;
 
             font-weight:
                 600;
@@ -913,10 +1030,10 @@
         .footer-brand img {
 
             width:
-                27px;
+                28px;
 
             height:
-                27px;
+                28px;
 
             object-fit:
                 contain;
@@ -929,16 +1046,44 @@
                 0;
 
             color:
-                #9ca3af;
+                #98a2b3;
 
             font-size:
-                0.78rem;
+                .76rem;
         }
 
 
         /* =================================================
            RESPONSIVE
         ================================================= */
+
+        @media (max-width: 900px) {
+
+            .class-layout {
+
+                grid-template-columns:
+                    1fr;
+
+                gap:
+                    45px;
+            }
+
+
+            .academic-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .guideline-list {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
 
         @media (max-width: 767px) {
 
@@ -956,31 +1101,21 @@
             }
 
 
-            .navbar-inner {
+            .header-inner {
 
                 width:
                     min(100% - 32px, var(--max-width));
             }
 
 
-            .desktop-navigation {
-
-                gap:
-                    2px;
-            }
-
-
-            .navigation-link {
+            .brand-subtitle {
 
                 display:
                     none;
             }
 
 
-            .navigation-login {
-
-                margin:
-                    0;
+            .header-login {
 
                 padding:
                     8px 13px;
@@ -989,69 +1124,50 @@
 
             .hero {
 
-                min-height:
-                    calc(100vh - 64px);
-
                 padding:
-                    60px 0;
-            }
-
-
-            .hero-mark {
-
-                width:
-                    50px;
-
-                height:
-                    50px;
-
-                margin-bottom:
-                    22px;
+                    75px 0 80px;
             }
 
 
             .hero h1 {
 
                 font-size:
-                    clamp(2.2rem, 12vw, 3.2rem);
+                    clamp(2.1rem, 11vw, 3rem);
             }
 
 
             .hero-description {
 
                 font-size:
-                    0.92rem;
-
-                line-height:
-                    1.7;
+                    .9rem;
             }
 
 
-            .about,
-            .reminders {
+            .academic-section,
+            .class-section,
+            .guidelines {
 
                 padding:
                     70px 0;
             }
 
 
-            .about-grid,
-            .reminder-list {
+            .academic-grid,
+            .guideline-list {
 
                 grid-template-columns:
                     1fr;
             }
 
 
-            .about-item,
-            .reminder {
+            .academic-card {
 
                 padding:
-                    23px;
+                    24px;
             }
 
 
-            .login-section {
+            .access-section {
 
                 padding:
                     75px 0;
@@ -1063,6 +1179,9 @@
                 flex-direction:
                     column;
 
+                justify-content:
+                    center;
+
                 text-align:
                     center;
             }
@@ -1070,10 +1189,16 @@
         }
 
 
+        /* =================================================
+           REDUCED MOTION
+        ================================================= */
+
         @media (prefers-reduced-motion: reduce) {
 
             html {
-                scroll-behavior: auto;
+
+                scroll-behavior:
+                    auto;
             }
 
             *,
@@ -1102,7 +1227,8 @@
 
     <header class="site-header">
 
-        <div class="navbar-inner">
+        <div class="header-inner">
+
 
             <a
                 href="#home"
@@ -1111,8 +1237,9 @@
                 <img
                     src="./assets/pubmat/head.png"
                     alt="ETS-Async"
-                    width="34"
-                    height="34"
+                    class="brand-logo"
+                    width="36"
+                    height="36"
                     loading="eager"
                     decoding="async">
 
@@ -1120,38 +1247,22 @@
                     ETS-Async
                 </span>
 
+                <span class="brand-subtitle">
+                    Asynchronous Learning Portal
+                </span>
+
             </a>
 
 
-            <nav class="desktop-navigation">
+            <a
+                href="login.php"
+                class="header-login">
 
-                <a
-                    href="#about"
-                    class="navigation-link">
+                <i class="bi bi-box-arrow-in-right"></i>
 
-                    About
+                Login
 
-                </a>
-
-
-                <a
-                    href="#reminders"
-                    class="navigation-link">
-
-                    Guidelines
-
-                </a>
-
-
-                <a
-                    href="login.php"
-                    class="navigation-link navigation-login">
-
-                    Login
-
-                </a>
-
-            </nav>
+            </a>
 
         </div>
 
@@ -1179,26 +1290,27 @@
                 <div class="hero-content">
 
 
-                    <div class="hero-mark">
+                    <div class="academic-label">
 
-                        <i class="bi bi-mortarboard"></i>
+                        Computer Engineering
 
                     </div>
 
 
                     <h1>
 
-                        A simpler way to
-                        <span>learn online.</span>
+                        Asynchronous Learning
+                        <span>for Your Course</span>
 
                     </h1>
 
 
                     <p class="hero-description">
 
-                        ETS-Async is an asynchronous learning platform
-                        designed to give students simple and organized
-                        access to lectures, activities, and course resources.
+                        ETS-Async provides students with structured access
+                        to course lectures, learning materials, academic
+                        activities, and required submissions through a
+                        dedicated asynchronous learning environment.
 
                     </p>
 
@@ -1209,7 +1321,7 @@
 
                         <i class="bi bi-box-arrow-in-right"></i>
 
-                        Login to ETS-Async
+                        Access Your Course
 
                     </a>
 
@@ -1221,47 +1333,46 @@
 
 
 
-        <div class="divider"></div>
-
-
-
         <!-- =====================================================
-     ABOUT
+     ACADEMIC RESOURCES
 ====================================================== -->
 
         <section
             id="about"
-            class="about">
+            class="academic-section">
 
             <div class="container-custom">
 
 
-                <div class="section-small">
-                    About ETS-Async
+                <div class="section-header">
+
+                    <div class="section-label">
+                        Course Environment
+                    </div>
+
+
+                    <h2>
+                        Everything you need for your asynchronous class.
+                    </h2>
+
+
+                    <p>
+
+                        The platform provides a centralized environment
+                        for accessing assigned resources and completing
+                        academic requirements.
+
+                    </p>
+
                 </div>
 
 
-                <h2>
-                    Focused on learning,<br>
-                    not unnecessary complexity.
-                </h2>
+                <div class="academic-grid">
 
 
-                <p class="about-intro">
+                    <article class="academic-card">
 
-                    ETS-Async provides a centralized space for students
-                    to access their academic resources and complete
-                    assigned requirements in an asynchronous environment.
-
-                </p>
-
-
-                <div class="about-grid">
-
-
-                    <article class="about-item">
-
-                        <div class="about-item-icon">
+                        <div class="academic-card-icon">
 
                             <i class="bi bi-journal-text"></i>
 
@@ -1269,14 +1380,15 @@
 
 
                         <h3>
-                            Course Materials
+                            Lectures and Materials
                         </h3>
 
 
                         <p>
 
                             Access assigned lectures, references,
-                            and other learning materials in one place.
+                            and other instructional materials provided
+                            for the course.
 
                         </p>
 
@@ -1284,11 +1396,11 @@
 
 
 
-                    <article class="about-item">
+                    <article class="academic-card">
 
-                        <div class="about-item-icon">
+                        <div class="academic-card-icon">
 
-                            <i class="bi bi-list-check"></i>
+                            <i class="bi bi-clipboard-check"></i>
 
                         </div>
 
@@ -1301,7 +1413,8 @@
                         <p>
 
                             Complete assigned activities and submit
-                            your academic requirements through the platform.
+                            academic requirements according to the
+                            instructions provided.
 
                         </p>
 
@@ -1309,24 +1422,25 @@
 
 
 
-                    <article class="about-item">
+                    <article class="academic-card">
 
-                        <div class="about-item-icon">
+                        <div class="academic-card-icon">
 
-                            <i class="bi bi-graph-up"></i>
+                            <i class="bi bi-bar-chart"></i>
 
                         </div>
 
 
                         <h3>
-                            Progress Tracking
+                            Learning Progress
                         </h3>
 
 
                         <p>
 
-                            Monitor your progress and keep track of
-                            completed learning requirements.
+                            Review your activity status and monitor
+                            your progress throughout the asynchronous
+                            learning period.
 
                         </p>
 
@@ -1342,44 +1456,177 @@
 
 
         <!-- =====================================================
-     GUIDELINES
+     CLASS INFORMATION
 ====================================================== -->
 
-        <section
-            id="reminders"
-            class="reminders">
+        <section class="class-section">
 
             <div class="container-custom">
 
 
-                <div class="reminders-heading">
+                <div class="class-layout">
 
-                    <div class="section-small">
-                        Guidelines
+
+                    <div>
+
+                        <div class="section-label">
+                            Asynchronous Instruction
+                        </div>
+
+
+                        <h2 class="class-title">
+
+                            Learn at your own time,
+                            within the course requirements.
+
+                        </h2>
+
+
+                        <p class="class-description">
+
+                            Asynchronous instruction allows students to
+                            access learning materials and complete assigned
+                            academic work without requiring simultaneous
+                            online attendance.
+
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="class-points">
+
+
+                        <div class="class-point">
+
+                            <div class="class-point-number">
+                                01
+                            </div>
+
+
+                            <div>
+
+                                <h3>
+                                    Access
+                                </h3>
+
+                                <p>
+
+                                    Sign in to your account to access
+                                    the materials and activities assigned
+                                    to your course.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="class-point">
+
+                            <div class="class-point-number">
+                                02
+                            </div>
+
+
+                            <div>
+
+                                <h3>
+                                    Study
+                                </h3>
+
+                                <p>
+
+                                    Review the assigned instructional
+                                    materials and follow the directions
+                                    provided for each activity.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="class-point">
+
+                            <div class="class-point-number">
+                                03
+                            </div>
+
+
+                            <div>
+
+                                <h3>
+                                    Complete
+                                </h3>
+
+                                <p>
+
+                                    Submit the required academic activities
+                                    within the designated period.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+     ACADEMIC GUIDELINES
+====================================================== -->
+
+        <section
+            id="guidelines"
+            class="guidelines">
+
+            <div class="container-custom">
+
+
+                <div class="section-header">
+
+                    <div class="section-label">
+                        Academic Guidelines
                     </div>
 
 
                     <h2>
-                        Before you begin
+                        Please observe the following.
                     </h2>
 
 
                     <p>
 
-                        A few simple practices will help keep your
-                        learning experience organized.
+                        Responsible participation is essential in
+                        maintaining an effective asynchronous learning
+                        environment.
 
                     </p>
 
                 </div>
 
 
-                <div class="reminder-list">
+                <div class="guideline-list">
 
 
-                    <article class="reminder">
+                    <article class="guideline">
 
-                        <div class="reminder-number">
+                        <div class="guideline-number">
                             01
                         </div>
 
@@ -1391,9 +1638,9 @@
 
                         <p>
 
-                            Access the platform using your official
-                            account to ensure your activities and
-                            progress are properly recorded.
+                            Use your official account when accessing the
+                            platform so that your activities and progress
+                            can be properly associated with you.
 
                         </p>
 
@@ -1401,22 +1648,23 @@
 
 
 
-                    <article class="reminder">
+                    <article class="guideline">
 
-                        <div class="reminder-number">
+                        <div class="guideline-number">
                             02
                         </div>
 
 
                         <h3>
-                            Check your activities
+                            Observe activity instructions
                         </h3>
 
 
                         <p>
 
-                            Review your assigned lectures and activities
-                            regularly and observe the specified deadlines.
+                            Read the instructions for each lecture and
+                            activity carefully before completing the
+                            corresponding requirement.
 
                         </p>
 
@@ -1424,22 +1672,93 @@
 
 
 
-                    <article class="reminder">
+                    <article class="guideline">
 
-                        <div class="reminder-number">
+                        <div class="guideline-number">
                             03
                         </div>
 
 
                         <h3>
-                            Keep your account secure
+                            Observe deadlines
                         </h3>
 
 
                         <p>
 
-                            Never share your password and remember to
-                            log out when using a shared device.
+                            Complete and submit assigned requirements
+                            within the specified period.
+
+                        </p>
+
+                    </article>
+
+
+
+                    <article class="guideline">
+
+                        <div class="guideline-number">
+                            04
+                        </div>
+
+
+                        <h3>
+                            Maintain academic integrity
+                        </h3>
+
+
+                        <p>
+
+                            All submitted academic work must represent
+                            your own effort and comply with course
+                            requirements.
+
+                        </p>
+
+                    </article>
+
+
+
+                    <article class="guideline">
+
+                        <div class="guideline-number">
+                            05
+                        </div>
+
+
+                        <h3>
+                            Protect your account
+                        </h3>
+
+
+                        <p>
+
+                            Keep your password confidential and log out
+                            after using a shared computer or device.
+
+                        </p>
+
+                    </article>
+
+
+
+                    <article class="guideline">
+
+                        <div class="guideline-number">
+                            06
+                        </div>
+
+
+                        <h3>
+                            Check the platform regularly
+                        </h3>
+
+
+                        <p>
+
+                            Regularly review the platform for newly
+                            assigned lectures, activities, and
+                            announcements.
 
                         </p>
 
@@ -1455,25 +1774,31 @@
 
 
         <!-- =====================================================
-     LOGIN
+     ACCESS
 ====================================================== -->
 
-        <section class="login-section">
+        <section
+            class="access-section">
 
             <div class="container-custom">
 
-                <div class="login-content">
+                <div class="access-content">
+
+
+                    <div class="section-label">
+                        Student Access
+                    </div>
 
 
                     <h2>
-                        Ready to learn?
+                        Access your asynchronous class.
                     </h2>
 
 
                     <p>
 
-                        Sign in to access your courses and
-                        assigned learning activities.
+                        Sign in to continue to your course materials,
+                        lectures, activities, and learning progress.
 
                     </p>
 
@@ -1484,7 +1809,7 @@
 
                         <i class="bi bi-arrow-right"></i>
 
-                        Go to Login
+                        Go to Student Login
 
                     </a>
 
@@ -1515,8 +1840,8 @@
                     <img
                         src="./assets/pubmat/head.png"
                         alt="ETS-Async"
-                        width="27"
-                        height="27"
+                        width="28"
+                        height="28"
                         loading="lazy"
                         decoding="async">
 
@@ -1530,7 +1855,7 @@
                 <p class="footer-copy">
 
                     © <?= date("Y"); ?> ETS-Async.
-                    Asynchronous Learning Platform.
+                    Asynchronous Learning Portal.
 
                 </p>
 
