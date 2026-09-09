@@ -140,6 +140,17 @@ function sidebarActive($page)
             </span>
 
         </a>
+        <a
+            href="toolbox.php"
+            class="sidebar-link <?= sidebarActive('toolbox.php') ?>">
+
+            <i class="bi bi-tools"></i>
+
+            <span>
+                Toolbox
+            </span>
+
+        </a>
 
 
         <!-- =================================================
