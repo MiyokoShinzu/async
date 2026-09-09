@@ -281,7 +281,7 @@ echo "<p>✓ Reset token stored in database.</p>";
 */
 
 $resetURL =
-    "https://YOUR-DOMAIN.com/reset_password.php?token="
+    "https://async.vertigation.com/reset_password.php?token="
     . urlencode($token);
 
 
