@@ -1,28 +1,21 @@
-
 <?php
 
 session_start();
 
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-
 require_once "src/connection.php";
 
-echo "<h2>ETS-Async Password Reset Debug</h2>";
 
 /*
 |--------------------------------------------------------------------------
-| Check request
+| Only allow POST requests
 |--------------------------------------------------------------------------
 */
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
-    echo "<p style='color:red;'>ERROR: Request is not POST.</p>";
+    header("Location: forgot_password.php");
     exit;
 }
-
-echo "<p style='color:green;'>✓ POST request received.</p>";
 
 
 /*
@@ -33,45 +26,35 @@ echo "<p style='color:green;'>✓ POST request received.</p>";
 
 $email = trim($_POST["email"] ?? "");
 
-echo "<p>Email submitted: <strong>"
-    . htmlspecialchars($email)
-    . "</strong></p>";
 
+/*
+|--------------------------------------------------------------------------
+| Generic response
+|--------------------------------------------------------------------------
+|
+| We intentionally use the same message whether the account exists
+| or not. This prevents account enumeration.
+|
+*/
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
-    echo "<p style='color:red;'>ERROR: Invalid email address.</p>";
-    exit;
-}
-
-echo "<p style='color:green;'>✓ Email is valid.</p>";
+$genericMessage =
+    "If an account is associated with that email address, "
+    . "a password reset link has been sent.";
 
 
 /*
 |--------------------------------------------------------------------------
-| Check database
+| Validate email
 |--------------------------------------------------------------------------
 */
 
-if (!isset($mysqli)) {
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-    echo "<p style='color:red;'>ERROR: \$mysqli is not defined.</p>";
+    $_SESSION["reset_message"] = $genericMessage;
+
+    header("Location: forgot_password.php");
     exit;
 }
-
-
-if ($mysqli->connect_error) {
-
-    echo "<p style='color:red;'>DATABASE ERROR:</p>";
-
-    echo "<pre>";
-    echo htmlspecialchars($mysqli->connect_error);
-    echo "</pre>";
-
-    exit;
-}
-
-echo "<p style='color:green;'>✓ Database connection successful.</p>";
 
 
 /*
@@ -87,15 +70,12 @@ $stmt = $mysqli->prepare("
     LIMIT 1
 ");
 
-
 if (!$stmt) {
 
-    echo "<p style='color:red;'>SQL PREPARE ERROR:</p>";
+    $_SESSION["reset_message"] =
+        "Unable to process the password reset request.";
 
-    echo "<pre>";
-    echo htmlspecialchars($mysqli->error);
-    echo "</pre>";
-
+    header("Location: forgot_password.php");
     exit;
 }
 
@@ -105,12 +85,12 @@ $stmt->bind_param("s", $email);
 
 if (!$stmt->execute()) {
 
-    echo "<p style='color:red;'>SQL EXECUTE ERROR:</p>";
+    $stmt->close();
 
-    echo "<pre>";
-    echo htmlspecialchars($stmt->error);
-    echo "</pre>";
+    $_SESSION["reset_message"] =
+        "Unable to process the password reset request.";
 
+    header("Location: forgot_password.php");
     exit;
 }
 
@@ -122,26 +102,24 @@ $user = $result->fetch_assoc();
 $stmt->close();
 
 
+/*
+|--------------------------------------------------------------------------
+| Account not found
+|--------------------------------------------------------------------------
+*/
+
 if (!$user) {
 
-    echo "<p style='color:red;'>
-        No account found with this email address.
-    </p>";
+    $_SESSION["reset_message"] = $genericMessage;
 
+    header("Location: forgot_password.php");
     exit;
 }
 
 
-echo "<p style='color:green;'>✓ Account found.</p>";
-
-echo "<pre>";
-print_r($user);
-echo "</pre>";
-
-
 /*
 |--------------------------------------------------------------------------
-| Generate token
+| Generate secure token
 |--------------------------------------------------------------------------
 */
 
@@ -150,17 +128,12 @@ try {
     $token = bin2hex(random_bytes(32));
 } catch (Exception $e) {
 
-    echo "<p style='color:red;'>TOKEN ERROR:</p>";
+    $_SESSION["reset_message"] =
+        "Unable to process the password reset request.";
 
-    echo "<pre>";
-    echo htmlspecialchars($e->getMessage());
-    echo "</pre>";
-
+    header("Location: forgot_password.php");
     exit;
 }
-
-
-echo "<p style='color:green;'>✓ Secure token generated.</p>";
 
 
 /*
@@ -175,22 +148,24 @@ $tokenHash = hash(
 );
 
 
+/*
+|--------------------------------------------------------------------------
+| Token expiration
+|--------------------------------------------------------------------------
+|
+| Token is valid for 30 minutes.
+|
+*/
+
 $expiresAt = date(
     "Y-m-d H:i:s",
     time() + (30 * 60)
 );
 
 
-echo "<p style='color:green;'>✓ Token hashed.</p>";
-
-echo "<p>Token expires at: "
-    . htmlspecialchars($expiresAt)
-    . "</p>";
-
-
 /*
 |--------------------------------------------------------------------------
-| Delete old tokens
+| Delete previous reset tokens
 |--------------------------------------------------------------------------
 */
 
@@ -199,17 +174,12 @@ $stmt = $mysqli->prepare("
     WHERE user_id = ?
 ");
 
-
 if (!$stmt) {
 
-    echo "<p style='color:red;'>
-        ERROR: Could not access password_resets table.
-    </p>";
+    $_SESSION["reset_message"] =
+        "Unable to process the password reset request.";
 
-    echo "<pre>";
-    echo htmlspecialchars($mysqli->error);
-    echo "</pre>";
-
+    header("Location: forgot_password.php");
     exit;
 }
 
@@ -222,12 +192,12 @@ $stmt->bind_param(
 
 if (!$stmt->execute()) {
 
-    echo "<p style='color:red;'>DELETE ERROR:</p>";
+    $stmt->close();
 
-    echo "<pre>";
-    echo htmlspecialchars($stmt->error);
-    echo "</pre>";
+    $_SESSION["reset_message"] =
+        "Unable to process the password reset request.";
 
+    header("Location: forgot_password.php");
     exit;
 }
 
@@ -235,12 +205,9 @@ if (!$stmt->execute()) {
 $stmt->close();
 
 
-echo "<p style='color:green;'>✓ Previous tokens deleted.</p>";
-
-
 /*
 |--------------------------------------------------------------------------
-| Insert token
+| Store new reset token
 |--------------------------------------------------------------------------
 */
 
@@ -254,15 +221,12 @@ $stmt = $mysqli->prepare("
     VALUES (?, ?, ?)
 ");
 
-
 if (!$stmt) {
 
-    echo "<p style='color:red;'>INSERT PREPARE ERROR:</p>";
+    $_SESSION["reset_message"] =
+        "Unable to process the password reset request.";
 
-    echo "<pre>";
-    echo htmlspecialchars($mysqli->error);
-    echo "</pre>";
-
+    header("Location: forgot_password.php");
     exit;
 }
 
@@ -277,12 +241,12 @@ $stmt->bind_param(
 
 if (!$stmt->execute()) {
 
-    echo "<p style='color:red;'>INSERT ERROR:</p>";
+    $stmt->close();
 
-    echo "<pre>";
-    echo htmlspecialchars($stmt->error);
-    echo "</pre>";
+    $_SESSION["reset_message"] =
+        "Unable to process the password reset request.";
 
+    header("Location: forgot_password.php");
     exit;
 }
 
@@ -290,18 +254,9 @@ if (!$stmt->execute()) {
 $stmt->close();
 
 
-echo "<p style='color:green;'>
-    ✓ Reset token successfully stored.
-</p>";
-
-
 /*
 |--------------------------------------------------------------------------
-| Reset URL
-|--------------------------------------------------------------------------
-|
-| IMPORTANT:
-| Replace this with your actual domain/path.
+| Generate password reset URL
 |--------------------------------------------------------------------------
 */
 
@@ -310,35 +265,24 @@ $resetURL =
     . urlencode($token);
 
 
-echo "<hr>";
-
-echo "<h3>Generated Reset Link</h3>";
-
-echo "<p>";
-
-echo "<a href='" .
-    htmlspecialchars($resetURL) .
-    "'>";
-
-echo htmlspecialchars($resetURL);
-
-echo "</a>";
-
-echo "</p>";
-
-
 /*
 |--------------------------------------------------------------------------
-| Email
+| Email configuration
 |--------------------------------------------------------------------------
 */
 
 $fromEmail =
-    "no-reply@YOUR-DOMAIN.com";
+    "service-async@vertigation.com";
 
 $subject =
     "ETS-Async Password Reset";
 
+
+/*
+|--------------------------------------------------------------------------
+| Email body
+|--------------------------------------------------------------------------
+*/
 
 $emailBody = <<<EMAIL
 Hello,
@@ -357,6 +301,12 @@ Regards,
 ETS-Async
 EMAIL;
 
+
+/*
+|--------------------------------------------------------------------------
+| Email headers
+|--------------------------------------------------------------------------
+*/
 
 $headers =
     "From: ETS-Async <$fromEmail>\r\n";
@@ -377,9 +327,6 @@ $headers .=
 |--------------------------------------------------------------------------
 */
 
-echo "<p>Attempting to send email...</p>";
-
-
 $mailSent = mail(
     $user["email"],
     $subject,
@@ -388,32 +335,61 @@ $mailSent = mail(
 );
 
 
-if ($mailSent) {
+/*
+|--------------------------------------------------------------------------
+| Email failed
+|--------------------------------------------------------------------------
+*/
 
-    echo "<p style='color:green;font-weight:bold;'>
-        ✓ PHP mail() reported SUCCESS.
-    </p>";
+if (!$mailSent) {
 
-    echo "<p>
-        Check the recipient email inbox and spam folder.
-    </p>";
-} else {
+    /*
+    |----------------------------------------------------------------------
+    | Remove the token because the user did not receive the email.
+    |----------------------------------------------------------------------
+    */
 
-    echo "<p style='color:red;font-weight:bold;'>
-        ✗ PHP mail() FAILED.
-    </p>";
+    $stmt = $mysqli->prepare("
+        DELETE FROM password_resets
+        WHERE user_id = ?
+    ");
 
-    echo "<p>
-        The database portion is working, but the server did not
-        accept the email for sending.
-    </p>";
+    if ($stmt) {
+
+        $stmt->bind_param(
+            "i",
+            $user["id"]
+        );
+
+        $stmt->execute();
+
+        $stmt->close();
+    }
+
+
+    $_SESSION["reset_message"] =
+        "We could not send the password reset email. "
+        . "Please try again later.";
+
+    header("Location: forgot_password.php");
+    exit;
 }
 
 
-echo "<hr>";
+/*
+|--------------------------------------------------------------------------
+| Email successfully accepted by PHP mail()
+|--------------------------------------------------------------------------
+*/
 
-echo "<p>
-    Debugging finished. This page intentionally does not redirect.
-</p>";
+$_SESSION["reset_message"] = $genericMessage;
 
-?>
+
+/*
+|--------------------------------------------------------------------------
+| Return to forgot password page
+|--------------------------------------------------------------------------
+*/
+
+header("Location: forgot_password.php");
+exit;
