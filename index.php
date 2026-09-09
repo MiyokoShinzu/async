@@ -1,3 +1,9 @@
+<?php
+/* =========================================================
+   ETS-Async
+   Minimalist Academic Learning Platform
+   ========================================================= */
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,14 +13,50 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1">
+        content="width=device-width, initial-scale=1.0">
 
-    <title>ETS-Async | Asynchronous Learning Portal</title>
+    <meta
+        name="description"
+        content="ETS-Async — A simple asynchronous learning platform for students.">
+
+    <meta
+        name="theme-color"
+        content="#2563eb">
+
+    <title>ETS-Async | Learning Platform</title>
 
 
     <!-- =====================================================
-         BOOTSTRAP 5
-    ===================================================== -->
+         FAVICON
+    ====================================================== -->
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="./assets/pubmat/head.png">
+
+
+    <!-- =====================================================
+         FONTS
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         BOOTSTRAP
+    ====================================================== -->
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -23,736 +65,126 @@
 
     <!-- =====================================================
          BOOTSTRAP ICONS
-    ===================================================== -->
+    ====================================================== -->
 
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-        rel="stylesheet">
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 
     <!-- =====================================================
-         FAVICON
-    ===================================================== -->
-
-    <link
-        rel="shortcut icon"
-        href="./assets/pubmat/head.png"
-        type="image/x-icon">
-
-
-    <!-- =====================================================
-         PROFESSIONAL ETS-ASYNC STYLE
-    ===================================================== -->
+         CUSTOM CSS
+    ====================================================== -->
 
     <style>
-        /* =====================================================
-           ROOT VARIABLES
-        ===================================================== */
+        /* =================================================
+           VARIABLES
+        ================================================= */
 
         :root {
 
-            --academic-blue: #0B4F8A;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
 
-            --academic-blue-dark: #073B66;
+            --text: #111827;
+            --text-secondary: #6b7280;
 
-            --academic-blue-light: #EAF3FA;
+            --border: #e5e7eb;
 
-            --tech-blue: #1688D8;
+            --background: #ffffff;
+            --surface: #f8fafc;
 
-            --tech-purple: #635BFF;
-
-            --text-dark: #17212B;
-
-            --text-muted: #667085;
-
-            --border-color: #E2E8F0;
-
-            --soft-bg: #F7FAFC;
-
-            --white: #FFFFFF;
-
-            --gradient-primary:
-                linear-gradient(135deg,
-                    #0B4F8A,
-                    #073B66);
-
-            --gradient-tech:
-                linear-gradient(135deg,
-                    #1688D8,
-                    #635BFF);
-
-            --shadow-sm:
-                0 4px 16px rgba(15, 23, 42, .06);
-
-            --shadow-md:
-                0 15px 40px rgba(15, 23, 42, .10);
-
-            --shadow-blue:
-                0 10px 35px rgba(11, 79, 138, .18);
-
+            --max-width: 1120px;
         }
 
 
-        /* =====================================================
-           GENERAL
-        ===================================================== */
-
-        * {
-
-            box-sizing:
-                border-box;
-
-        }
-
+        /* =================================================
+           GLOBAL
+        ================================================= */
 
         html {
-
-            scroll-behavior:
-                smooth;
-
+            scroll-behavior: smooth;
         }
 
 
         body {
 
-            margin:
-                0;
-
-            font-family:
-                "Segoe UI",
-                Tahoma,
-                Geneva,
-                Verdana,
-                sans-serif;
-
-            color:
-                var(--text-dark);
+            margin: 0;
 
             background:
-                #FFFFFF;
+                var(--background);
+
+            color:
+                var(--text);
+
+            font-family:
+                "Inter",
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
 
             line-height:
                 1.6;
 
-            overflow-x:
-                hidden;
+            -webkit-font-smoothing:
+                antialiased;
 
-        }
-
-
-        section {
-
-            scroll-margin-top:
-                80px;
-
-            position:
-                relative;
-
+            text-rendering:
+                optimizeLegibility;
         }
 
 
         a {
-
-            text-decoration:
-                none;
-
+            text-decoration: none;
         }
 
 
-        /* =====================================================
-           TECHNOLOGY BACKGROUND
-        ===================================================== */
+        /* =================================================
+           CONTAINER
+        ================================================= */
 
-        .tech-background {
+        .container-custom {
 
-            position:
-                fixed;
+            width:
+                min(100% - 40px, var(--max-width));
 
-            inset:
-                0;
-
-            pointer-events:
-                none;
-
-            z-index:
-                0;
-
-            overflow:
-                hidden;
-
-            opacity:
-                .55;
-
+            margin:
+                0 auto;
         }
 
 
-        .tech-grid {
+        /* =================================================
+           NAVBAR
+        ================================================= */
 
-            position:
-                absolute;
-
-            inset:
-                0;
-
-            background-image:
-
-                linear-gradient(rgba(11, 79, 138, .025) 1px,
-                    transparent 1px),
-
-                linear-gradient(90deg,
-                    rgba(11, 79, 138, .025) 1px,
-                    transparent 1px);
-
-            background-size:
-                45px 45px;
-
-            mask-image:
-                linear-gradient(to bottom,
-                    transparent,
-                    black 15%,
-                    black 85%,
-                    transparent);
-
-        }
-
-
-        /* =====================================================
-           CIRCUIT TRACES
-        ===================================================== */
-
-        .circuit {
-
-            position:
-                absolute;
+        .site-header {
 
             height:
-                1px;
+                72px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            border-bottom:
+                1px solid var(--border);
 
             background:
-                linear-gradient(90deg,
-                    transparent,
-                    rgba(22, 136, 216, .15),
-                    rgba(99, 91, 255, .20),
-                    transparent);
-
-            transform-origin:
-                left center;
-
-            opacity:
-                .65;
-
+                rgba(255, 255, 255, 0.96);
         }
 
 
-        .c1 {
+        .navbar-inner {
 
             width:
-                360px;
+                min(100% - 40px, var(--max-width));
 
-            left:
-                -40px;
-
-            top:
-                22%;
-
-            transform:
-                rotate(18deg);
-
-        }
-
-
-        .c2 {
-
-            width:
-                260px;
-
-            left:
-                0;
-
-            top:
-                44%;
-
-            transform:
-                rotate(-8deg);
-
-        }
-
-
-        .c3 {
-
-            width:
-                420px;
-
-            left:
-                -100px;
-
-            top:
-                72%;
-
-            transform:
-                rotate(12deg);
-
-        }
-
-
-        .c4 {
-
-            width:
-                400px;
-
-            right:
-                -80px;
-
-            top:
-                18%;
-
-            transform:
-                rotate(-17deg);
-
-        }
-
-
-        .c5 {
-
-            width:
-                300px;
-
-            right:
-                -30px;
-
-            top:
-                43%;
-
-            transform:
-                rotate(8deg);
-
-        }
-
-
-        .c6 {
-
-            width:
-                420px;
-
-            right:
-                -120px;
-
-            top:
-                74%;
-
-            transform:
-                rotate(-13deg);
-
-        }
-
-
-        /* =====================================================
-           CIRCUIT BRANCHES
-        ===================================================== */
-
-        .circuit-branch {
-
-            position:
-                absolute;
-
-            width:
-                100px;
-
-            height:
-                50px;
-
-            border-top:
-                1px solid rgba(22, 136, 216, .12);
-
-            border-right:
-                1px solid rgba(22, 136, 216, .12);
-
-            border-radius:
-                0 30px 0 0;
-
-        }
-
-
-        .branch1 {
-
-            left:
-                12%;
-
-            top:
-                28%;
-
-        }
-
-
-        .branch2 {
-
-            right:
-                13%;
-
-            top:
-                31%;
-
-            transform:
-                scaleX(-1);
-
-        }
-
-
-        .branch3 {
-
-            left:
-                13%;
-
-            top:
-                65%;
-
-            transform:
-                rotate(180deg);
-
-        }
-
-
-        .branch4 {
-
-            right:
-                14%;
-
-            top:
-                67%;
-
-            transform:
-                scaleX(-1) rotate(180deg);
-
-        }
-
-
-        /* =====================================================
-           CIRCUIT NODES
-        ===================================================== */
-
-        .circuit-node {
-
-            position:
-                absolute;
-
-            width:
-                7px;
-
-            height:
-                7px;
-
-            border-radius:
-                50%;
-
-            background:
-                var(--tech-blue);
-
-            box-shadow:
-
-                0 0 0 3px rgba(22, 136, 216, .08),
-
-                0 0 15px rgba(22, 136, 216, .35);
-
-            animation:
-                nodePulse 2.5s ease-in-out infinite;
-
-        }
-
-
-        .node1 {
-
-            left:
-                17%;
-
-            top:
-                21%;
-
-        }
-
-
-        .node2 {
-
-            left:
-                8%;
-
-            top:
-                45%;
-
-            animation-delay:
-                .7s;
-
-        }
-
-
-        .node3 {
-
-            left:
-                22%;
-
-            top:
-                73%;
-
-            animation-delay:
-                1.2s;
-
-        }
-
-
-        .node4 {
-
-            right:
-                16%;
-
-            top:
-                19%;
-
-            animation-delay:
-                .4s;
-
-        }
-
-
-        .node5 {
-
-            right:
-                9%;
-
-            top:
-                44%;
-
-            animation-delay:
-                1s;
-
-        }
-
-
-        .node6 {
-
-            right:
-                20%;
-
-            top:
-                74%;
-
-            animation-delay:
-                1.6s;
-
-        }
-
-
-        @keyframes nodePulse {
-
-            0%,
-            100% {
-
-                transform:
-                    scale(1);
-
-                opacity:
-                    .45;
-
-            }
-
-            50% {
-
-                transform:
-                    scale(1.8);
-
-                opacity:
-                    1;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           MOVING SIGNALS
-        ===================================================== */
-
-        .signal {
-
-            position:
-                absolute;
-
-            width:
-                7px;
-
-            height:
-                7px;
-
-            border-radius:
-                50%;
-
-            background:
-                var(--tech-blue);
-
-            box-shadow:
-
-                0 0 8px var(--tech-blue),
-
-                0 0 20px rgba(22, 136, 216, .55);
-
-            opacity:
-                0;
-
-        }
-
-
-        .s1 {
-
-            top:
-                22%;
-
-            left:
-                5%;
-
-            animation:
-                signalMoveRight 5s linear infinite;
-
-        }
-
-
-        .s2 {
-
-            top:
-                44%;
-
-            left:
-                5%;
-
-            animation:
-                signalMoveRight 6s linear 1.5s infinite;
-
-        }
-
-
-        .s3 {
-
-            top:
-                72%;
-
-            left:
-                5%;
-
-            animation:
-                signalMoveRight 7s linear 3s infinite;
-
-        }
-
-
-        .s4 {
-
-            top:
-                19%;
-
-            right:
-                5%;
-
-            animation:
-                signalMoveLeft 6s linear 2s infinite;
-
-        }
-
-
-        @keyframes signalMoveRight {
-
-            0% {
-
-                transform:
-                    translateX(0);
-
-                opacity:
-                    0;
-
-            }
-
-            15% {
-
-                opacity:
-                    1;
-
-            }
-
-            80% {
-
-                opacity:
-                    .8;
-
-            }
-
-            100% {
-
-                transform:
-                    translateX(420px);
-
-                opacity:
-                    0;
-
-            }
-
-        }
-
-
-        @keyframes signalMoveLeft {
-
-            0% {
-
-                transform:
-                    translateX(0);
-
-                opacity:
-                    0;
-
-            }
-
-            15% {
-
-                opacity:
-                    1;
-
-            }
-
-            80% {
-
-                opacity:
-                    .8;
-
-            }
-
-            100% {
-
-                transform:
-                    translateX(-420px);
-
-                opacity:
-                    0;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           FLOATING MICROPROCESSOR
-        ===================================================== */
-
-        .microchip {
-
-            position:
-                absolute;
-
-            width:
-                82px;
-
-            height:
-                82px;
-
-            border:
-                1px solid rgba(11, 79, 138, .10);
-
-            border-radius:
-                14px;
+            margin:
+                0 auto;
 
             display:
                 flex;
@@ -761,247 +193,57 @@
                 center;
 
             justify-content:
+                space-between;
+        }
+
+
+        .brand {
+
+            display:
+                inline-flex;
+
+            align-items:
                 center;
 
-            background:
-                rgba(255, 255, 255, .60);
-
-            backdrop-filter:
-                blur(4px);
-
-            box-shadow:
-                0 10px 30px rgba(11, 79, 138, .05);
-
-            animation:
-                chipFloat 7s ease-in-out infinite;
-
-        }
-
-
-        .microchip i {
-
-            font-size:
-                34px;
-
-            background:
-                var(--gradient-tech);
-
-            -webkit-background-clip:
-                text;
-
-            background-clip:
-                text;
-
-            -webkit-text-fill-color:
-                transparent;
-
-        }
-
-
-        .chip1 {
-
-            left:
-                8%;
-
-            top:
-                31%;
-
-        }
-
-
-        .chip2 {
-
-            right:
-                8%;
-
-            top:
-                55%;
-
-            animation-delay:
-                2s;
-
-        }
-
-
-        .chip3 {
-
-            left:
-                12%;
-
-            top:
-                82%;
-
-            transform:
-                scale(.75);
-
-            animation-delay:
-                3.5s;
-
-        }
-
-
-        @keyframes chipFloat {
-
-            0%,
-            100% {
-
-                transform:
-                    translateY(0) rotate(0deg);
-
-            }
-
-            50% {
-
-                transform:
-                    translateY(-12px) rotate(2deg);
-
-            }
-
-        }
-
-
-        /* =====================================================
-           CONTENT LAYER
-        ===================================================== */
-
-        body>*:not(.tech-background) {
-
-            position:
-                relative;
-
-            z-index:
-                1;
-
-        }
-
-
-        /* =====================================================
-           SCROLL REVEAL
-        ===================================================== */
-
-        .reveal {
-
-            opacity:
-                0;
-
-            transform:
-                translateY(35px);
-
-            transition:
-                opacity .8s ease,
-                transform .8s ease;
-
-        }
-
-
-        .reveal.active {
-
-            opacity:
-                1;
-
-            transform:
-                translateY(0);
-
-        }
-
-
-        .reveal-left {
-
-            opacity:
-                0;
-
-            transform:
-                translateX(-45px);
-
-            transition:
-                opacity .8s ease,
-                transform .8s ease;
-
-        }
-
-
-        .reveal-left.active {
-
-            opacity:
-                1;
-
-            transform:
-                translateX(0);
-
-        }
-
-
-        .reveal-right {
-
-            opacity:
-                0;
-
-            transform:
-                translateX(45px);
-
-            transition:
-                opacity .8s ease,
-                transform .8s ease;
-
-        }
-
-
-        .reveal-right.active {
-
-            opacity:
-                1;
-
-            transform:
-                translateX(0);
-
-        }
-
-
-        /* =====================================================
-           NAVBAR
-        ===================================================== */
-
-        .navbar {
-
-            background:
-                rgba(255, 255, 255, .94);
-
-            border-bottom:
-                1px solid var(--border-color);
-
-            box-shadow:
-                0 2px 12px rgba(0, 0, 0, .05);
-
-            backdrop-filter:
-                blur(15px);
-
-            transition:
-                all .3s ease;
-
-        }
-
-
-        .navbar.scrolled {
-
-            box-shadow:
-                0 8px 30px rgba(0, 0, 0, .10);
-
-        }
-
-
-        .navbar-brand {
+            gap:
+                10px;
 
             color:
-                var(--academic-blue) !important;
+                var(--text);
+        }
+
+
+        .brand img {
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            object-fit:
+                contain;
+        }
+
+
+        .brand-name {
+
+            font-family:
+                "Poppins",
+                sans-serif;
+
+            font-size:
+                1.05rem;
 
             font-weight:
                 700;
 
-            font-size:
-                1.35rem;
-
             letter-spacing:
-                -.4px;
+                -0.02em;
+        }
+
+
+        .desktop-navigation {
 
             display:
                 flex;
@@ -1009,921 +251,372 @@
             align-items:
                 center;
 
+            gap:
+                8px;
         }
 
 
-        .navbar-brand img {
+        .navigation-link {
 
-            transition:
-                transform .4s ease;
+            padding:
+                8px 12px;
 
-        }
-
-
-        .navbar-brand:hover img {
-
-            transform:
-                rotate(-8deg) scale(1.1);
-
-        }
-
-
-        .navbar-brand small {
-
-            display:
-                block;
+            color:
+                var(--text-secondary);
 
             font-size:
-                9px;
+                0.9rem;
 
             font-weight:
                 500;
 
-            color:
-                var(--text-muted);
-
-        }
-
-
-        .nav-link {
-
-            color:
-                #495057;
-
-            font-weight:
-                500;
-
-            margin:
-                0 8px;
-
-            position:
-                relative;
+            border-radius:
+                8px;
 
             transition:
-                color .25s ease;
-
+                color .2s ease,
+                background .2s ease;
         }
 
 
-        .nav-link::after {
+        .navigation-link:hover {
 
-            content:
-                "";
-
-            position:
-                absolute;
-
-            left:
-                0;
-
-            bottom:
-                -5px;
-
-            width:
-                0;
-
-            height:
-                3px;
+            color:
+                var(--primary);
 
             background:
-                var(--academic-blue);
+                #f8fafc;
+        }
+
+
+        .navigation-login {
+
+            margin-left:
+                8px;
+
+            padding:
+                9px 16px;
+
+            color:
+                #ffffff;
+
+            background:
+                var(--primary);
 
             border-radius:
-                3px;
-
-            transition:
-                width .3s ease;
-
+                8px;
         }
 
 
-        .nav-link:hover::after,
-        .nav-link.active::after {
-
-            width:
-                100%;
-
-        }
-
-
-        .nav-link:hover,
-        .nav-link.active {
+        .navigation-login:hover {
 
             color:
-                var(--academic-blue);
-
-        }
-
-
-        /* =====================================================
-           BUTTONS
-        ===================================================== */
-
-        .btn-academic {
+                #ffffff;
 
             background:
-                var(--gradient-primary);
-
-            border:
-                none;
-
-            color:
-                #FFFFFF;
-
-            font-weight:
-                600;
-
-            border-radius:
-                7px;
-
-            box-shadow:
-                0 5px 15px rgba(11, 79, 138, .25);
-
-            transition:
-                transform .25s ease,
-                box-shadow .25s ease;
-
-            position:
-                relative;
-
-            overflow:
-                hidden;
-
+                var(--primary-hover);
         }
 
 
-        .btn-academic::before {
-
-            content:
-                "";
-
-            position:
-                absolute;
-
-            top:
-                0;
-
-            left:
-                -100%;
-
-            width:
-                70%;
-
-            height:
-                100%;
-
-            background:
-                linear-gradient(90deg,
-                    transparent,
-                    rgba(255, 255, 255, .20),
-                    transparent);
-
-            transform:
-                skewX(-20deg);
-
-            transition:
-                left .6s ease;
-
-        }
-
-
-        .btn-academic:hover::before {
-
-            left:
-                130%;
-
-        }
-
-
-        .btn-academic:hover {
-
-            color:
-                #FFFFFF;
-
-            transform:
-                translateY(-3px);
-
-            box-shadow:
-                0 10px 25px rgba(11, 79, 138, .32);
-
-        }
-
-
-        .btn-academic:active {
-
-            transform:
-                translateY(0);
-
-        }
-
-
-        /* =====================================================
-           PUBMAT
-        ===================================================== */
-
-        .pubmat-section {
-
-            width:
-                100%;
-
-            background:
-                #FFFFFF;
-
-            overflow:
-                hidden;
-
-        }
-
-
-        .pubmat-full {
-
-            display:
-                block;
-
-            width:
-                100%;
-
-            height:
-                auto;
-
-            animation:
-                pubmatReveal 1.2s ease forwards;
-
-        }
-
-
-        @keyframes pubmatReveal {
-
-            from {
-
-                opacity:
-                    0;
-
-                transform:
-                    scale(1.025);
-
-            }
-
-            to {
-
-                opacity:
-                    1;
-
-                transform:
-                    scale(1);
-
-            }
-
-        }
-
-
-        /* =====================================================
+        /* =================================================
            HERO
-        ===================================================== */
+        ================================================= */
 
         .hero {
 
-            background:
-                rgba(255, 255, 255, .88);
+            min-height:
+                calc(100vh - 72px);
+
+            display:
+                flex;
+
+            align-items:
+                center;
 
             padding:
-                95px 0 105px;
-
-            border-bottom:
-                1px solid var(--border-color);
-
-            overflow:
-                hidden;
-
-        }
-
-
-        .hero::before {
-
-            content:
-                "";
-
-            position:
-                absolute;
-
-            width:
-                500px;
-
-            height:
-                500px;
-
-            border-radius:
-                50%;
-
-            background:
-                radial-gradient(circle,
-                    rgba(11, 79, 138, .06),
-                    transparent 70%);
-
-            top:
-                -250px;
-
-            right:
-                -150px;
-
-            animation:
-                heroGlow 8s ease-in-out infinite;
-
-        }
-
-
-        .hero::after {
-
-            content:
-                "";
-
-            position:
-                absolute;
-
-            width:
-                350px;
-
-            height:
-                350px;
-
-            border-radius:
-                50%;
-
-            border:
-                1px solid rgba(11, 79, 138, .07);
-
-            bottom:
-                -180px;
-
-            left:
-                -120px;
-
-        }
-
-
-        @keyframes heroGlow {
-
-            0%,
-            100% {
-
-                transform:
-                    scale(1);
-
-            }
-
-            50% {
-
-                transform:
-                    scale(1.15);
-
-            }
-
+                80px 0;
         }
 
 
         .hero-content {
 
-            position:
-                relative;
+            max-width:
+                760px;
 
-            z-index:
-                2;
+            margin:
+                0 auto;
 
+            text-align:
+                center;
         }
 
 
-        .hero-badge {
+        .hero-mark {
 
             display:
                 inline-flex;
 
-            flex-direction:
-                column;
-
             align-items:
                 center;
 
-            background:
-                rgba(234, 243, 250, .85);
-
-            color:
-                var(--academic-blue);
-
-            padding:
-                12px 22px;
-
-            border-radius:
-                8px;
-
-            font-size:
-                13px;
-
-            font-weight:
-                700;
-
-            letter-spacing:
-                .8px;
-
-            margin-bottom:
-                25px;
-
-            animation:
-                fadeDown .8s ease forwards;
-
-            border:
-                1px solid rgba(11, 79, 138, .08);
-
-        }
-
-
-        .hero-logo {
+            justify-content:
+                center;
 
             width:
-                100px;
+                56px;
 
             height:
-                100px;
-
-            object-fit:
-                contain;
+                56px;
 
             margin-bottom:
-                12px;
-
-            animation:
-                logoFloat 4s ease-in-out infinite;
-
-        }
-
-
-        @keyframes logoFloat {
-
-            0%,
-            100% {
-
-                transform:
-                    translateY(0);
-
-            }
-
-            50% {
-
-                transform:
-                    translateY(-7px);
-
-            }
-
-        }
-
-
-        .hero h1 {
-
-            font-size:
-                48px;
-
-            font-weight:
-                700;
-
-            line-height:
-                1.15;
-
-            color:
-                var(--academic-blue-dark);
-
-            animation:
-                fadeUp .9s ease .15s both;
-
-        }
-
-
-        .text-academic {
-
-            color:
-                var(--academic-blue);
-
-        }
-
-
-        .hero p {
-
-            font-size:
-                18px;
-
-            line-height:
-                1.75;
-
-            color:
-                var(--text-muted);
-
-            max-width:
-                850px;
-
-        }
-
-
-        .hero-buttons {
-
-            animation:
-                fadeUp .9s ease .35s both;
-
-        }
-
-
-        @keyframes fadeUp {
-
-            from {
-
-                opacity:
-                    0;
-
-                transform:
-                    translateY(25px);
-
-            }
-
-            to {
-
-                opacity:
-                    1;
-
-                transform:
-                    translateY(0);
-
-            }
-
-        }
-
-
-        @keyframes fadeDown {
-
-            from {
-
-                opacity:
-                    0;
-
-                transform:
-                    translateY(-20px);
-
-            }
-
-            to {
-
-                opacity:
-                    1;
-
-                transform:
-                    translateY(0);
-
-            }
-
-        }
-
-
-        /* =====================================================
-           SECTIONS
-        ===================================================== */
-
-        .section-padding {
-
-            padding:
-                80px 0;
-
-        }
-
-
-        .section-soft {
-
-            background:
-                rgba(247, 250, 252, .92);
-
-        }
-
-
-        .section-title {
-
-            color:
-                var(--academic-blue-dark);
-
-            font-weight:
-                700;
-
-            position:
-                relative;
-
-            display:
-                inline-block;
-
-        }
-
-
-        .section-title::after {
-
-            content:
-                "";
-
-            display:
-                block;
-
-            width:
-                50px;
-
-            height:
-                3px;
-
-            background:
-                var(--academic-blue);
-
-            margin:
-                12px auto 0;
-
-            border-radius:
-                3px;
-
-            transform:
-                scaleX(.6);
-
-            transition:
-                transform .5s ease;
-
-        }
-
-
-        .reveal.active .section-title::after {
-
-            transform:
-                scaleX(1);
-
-        }
-
-
-        .section-subtitle {
-
-            color:
-                var(--text-muted);
-
-            max-width:
-                700px;
-
-            margin:
-                auto;
-
-        }
-
-
-        /* =====================================================
-           INSTRUCTOR CARD
-        ===================================================== */
-
-        .instructor-card {
+                28px;
 
             border:
-                1px solid var(--border-color);
+                1px solid #dbeafe;
 
             border-radius:
                 14px;
 
             background:
-                rgba(255, 255, 255, .95);
-
-            transition:
-                transform .35s ease,
-                box-shadow .35s ease,
-                border-color .35s ease;
-
-            overflow:
-                hidden;
-
-            position:
-                relative;
-
-        }
-
-
-        .instructor-card::before {
-
-            content:
-                "";
-
-            position:
-                absolute;
-
-            top:
-                0;
-
-            left:
-                0;
-
-            right:
-                0;
-
-            height:
-                4px;
-
-            background:
-                var(--gradient-tech);
-
-        }
-
-
-        .instructor-card:hover {
-
-            transform:
-                translateY(-7px);
-
-            box-shadow:
-                var(--shadow-md);
-
-            border-color:
-                rgba(11, 79, 138, .20);
-
-        }
-
-
-        .instructor-photo {
-
-            height:
-                100px;
-
-            width:
-                100px;
-
-            object-fit:
-                cover;
-
-            border-radius:
-                50%;
-
-            border:
-                4px solid var(--academic-blue-light);
-
-            box-shadow:
-                0 5px 15px rgba(0, 0, 0, .08);
-
-            transition:
-                transform .4s ease,
-                box-shadow .4s ease;
-
-        }
-
-
-        .instructor-card:hover .instructor-photo {
-
-            transform:
-                scale(1.06);
-
-            box-shadow:
-                0 8px 25px rgba(11, 79, 138, .18);
-
-        }
-
-
-        .instructor-line {
-
-            width:
-                60px;
-
-            height:
-                4px;
-
-            background:
-                var(--academic-blue);
-
-            margin:
-                20px auto;
-
-            border-radius:
-                4px;
-
-        }
-
-
-        .instructor-name {
+                #eff6ff;
 
             color:
-                var(--academic-blue-dark);
+                var(--primary);
+
+            font-size:
+                1.35rem;
+        }
+
+
+        .hero h1 {
+
+            margin:
+                0 0 20px;
+
+            font-family:
+                "Poppins",
+                sans-serif;
+
+            font-size:
+                clamp(2.4rem, 6vw, 4.3rem);
+
+            line-height:
+                1.08;
+
+            letter-spacing:
+                -0.055em;
 
             font-weight:
                 700;
-
         }
 
 
-        .department-badge {
-
-            display:
-                inline-block;
-
-            background:
-                var(--academic-blue-light);
+        .hero h1 span {
 
             color:
-                var(--academic-blue);
+                var(--primary);
+        }
 
-            padding:
-                6px 14px;
 
-            border-radius:
-                20px;
+        .hero-description {
+
+            max-width:
+                640px;
+
+            margin:
+                0 auto 32px;
+
+            color:
+                var(--text-secondary);
 
             font-size:
-                13px;
+                clamp(0.95rem, 2vw, 1.08rem);
+
+            line-height:
+                1.75;
+        }
+
+
+        .hero-button {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                8px;
+
+            min-height:
+                46px;
+
+            padding:
+                0 20px;
+
+            color:
+                #ffffff;
+
+            background:
+                var(--primary);
+
+            border:
+                1px solid var(--primary);
+
+            border-radius:
+                9px;
+
+            font-size:
+                0.9rem;
 
             font-weight:
                 600;
 
+            transition:
+                background .2s ease,
+                transform .2s ease,
+                box-shadow .2s ease;
         }
 
 
-        /* =====================================================
-           INFORMATION CARDS
-        ===================================================== */
+        .hero-button:hover {
 
-        .info-card {
-
-            height:
-                100%;
+            color:
+                #ffffff;
 
             background:
-                rgba(255, 255, 255, .96);
+                var(--primary-hover);
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 8px 20px rgba(37, 99, 235, .15);
+        }
+
+
+        /* =================================================
+           SIMPLE DIVIDER
+        ================================================= */
+
+        .divider {
+
+            width:
+                100%;
+
+            height:
+                1px;
+
+            background:
+                var(--border);
+        }
+
+
+        /* =================================================
+           ABOUT
+        ================================================= */
+
+        .about {
+
+            padding:
+                100px 0;
+        }
+
+
+        .section-small {
+
+            margin-bottom:
+                12px;
+
+            color:
+                var(--primary);
+
+            font-size:
+                0.75rem;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                .08em;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        .about h2 {
+
+            margin:
+                0 0 18px;
+
+            font-family:
+                "Poppins",
+                sans-serif;
+
+            font-size:
+                clamp(1.8rem, 4vw, 2.5rem);
+
+            line-height:
+                1.2;
+
+            letter-spacing:
+                -.035em;
+        }
+
+
+        .about-intro {
+
+            max-width:
+                650px;
+
+            margin-bottom:
+                48px;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                1rem;
+
+            line-height:
+                1.75;
+        }
+
+
+        .about-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                20px;
+        }
+
+
+        .about-item {
+
+            padding:
+                28px;
 
             border:
-                1px solid var(--border-color);
+                1px solid var(--border);
 
             border-radius:
                 12px;
 
-            transition:
-                transform .35s ease,
-                box-shadow .35s ease,
-                border-color .35s ease;
-
-            position:
-                relative;
-
-            overflow:
-                hidden;
-
-        }
-
-
-        .info-card::before {
-
-            content:
-                "";
-
-            position:
-                absolute;
-
-            left:
-                0;
-
-            top:
-                0;
-
-            width:
-                3px;
-
-            height:
-                0;
-
             background:
-                var(--gradient-tech);
-
-            transition:
-                height .35s ease;
-
+                #ffffff;
         }
 
 
-        .info-card:hover::before {
-
-            height:
-                100%;
-
-        }
-
-
-        .info-card:hover {
-
-            border-color:
-                rgba(11, 79, 138, .22);
-
-            box-shadow:
-                var(--shadow-md);
-
-            transform:
-                translateY(-8px);
-
-        }
-
-
-        .card-number {
-
-            width:
-                46px;
-
-            height:
-                46px;
+        .about-item-icon {
 
             display:
                 flex;
@@ -1934,721 +627,464 @@
             justify-content:
                 center;
 
-            background:
-                var(--academic-blue-light);
+            width:
+                40px;
 
-            color:
-                var(--academic-blue);
-
-            font-weight:
-                700;
-
-            border-radius:
-                50%;
+            height:
+                40px;
 
             margin-bottom:
                 20px;
 
-            transition:
-                transform .35s ease,
-                background .35s ease;
-
-        }
-
-
-        .info-card:hover .card-number {
-
-            transform:
-                scale(1.10) rotate(5deg);
+            border-radius:
+                9px;
 
             background:
-                var(--academic-blue);
+                #eff6ff;
 
             color:
-                #FFFFFF;
-
+                var(--primary);
         }
 
 
-        .info-card h5 {
+        .about-item h3 {
 
-            color:
-                var(--academic-blue-dark);
+            margin:
+                0 0 8px;
+
+            font-size:
+                0.98rem;
 
             font-weight:
                 700;
-
         }
 
 
-        .info-card p {
+        .about-item p {
+
+            margin:
+                0;
 
             color:
-                var(--text-muted);
+                var(--text-secondary);
+
+            font-size:
+                0.88rem;
 
             line-height:
                 1.65;
-
         }
 
 
-        .info-card h5::before {
+        /* =================================================
+           REMINDERS
+        ================================================= */
 
-            font-family:
-                "bootstrap-icons";
+        .reminders {
 
-            margin-right:
-                8px;
-
-            color:
-                var(--academic-blue);
-
-        }
-
-
-        .info-card:nth-child(1) h5::before {
-
-            content:
-                "\f3a7";
-
-        }
-
-
-        .info-card:nth-child(2) h5::before {
-
-            content:
-                "\f431";
-
-        }
-
-
-        .info-card:nth-child(3) h5::before {
-
-            content:
-                "\f52d";
-
-        }
-
-
-        .info-card:nth-child(4) h5::before {
-
-            content:
-                "\f26b";
-
-        }
-
-
-        /* =====================================================
-           WEEK CARDS
-        ===================================================== */
-
-        .week-card {
+            padding:
+                100px 0;
 
             background:
-                rgba(255, 255, 255, .97);
+                var(--surface);
+        }
+
+
+        .reminders-heading {
+
+            max-width:
+                620px;
+
+            margin-bottom:
+                45px;
+        }
+
+
+        .reminders h2 {
+
+            margin:
+                0 0 12px;
+
+            font-family:
+                "Poppins",
+                sans-serif;
+
+            font-size:
+                clamp(1.8rem, 4vw, 2.4rem);
+
+            letter-spacing:
+                -.035em;
+        }
+
+
+        .reminders-heading p {
+
+            margin:
+                0;
+
+            color:
+                var(--text-secondary);
+        }
+
+
+        .reminder-list {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                20px;
+        }
+
+
+        .reminder {
+
+            padding:
+                26px;
+
+            background:
+                #ffffff;
 
             border:
-                1px solid var(--border-color);
+                1px solid var(--border);
 
             border-radius:
                 12px;
-
-            height:
-                100%;
-
-            overflow:
-                hidden;
-
-            transition:
-                transform .35s ease,
-                box-shadow .35s ease;
-
         }
 
 
-        .week-card:hover {
+        .reminder-number {
 
-            transform:
-                translateY(-7px);
-
-            box-shadow:
-                var(--shadow-md);
-
-        }
-
-
-        .week-header {
-
-            background:
-                linear-gradient(135deg,
-                    #EAF3FA,
-                    #F3F7FB);
-
-            border-bottom:
-                1px solid var(--border-color);
-
-            padding:
-                22px;
-
-            position:
-                relative;
-
-        }
-
-
-        .week-header::before {
-
-            content:
-                "";
-
-            position:
-                absolute;
-
-            left:
-                0;
-
-            top:
-                0;
-
-            width:
-                4px;
-
-            height:
-                100%;
-
-            background:
-                var(--academic-blue);
-
-        }
-
-
-        .week-label {
+            margin-bottom:
+                18px;
 
             color:
-                var(--academic-blue);
+                #9ca3af;
 
             font-size:
-                13px;
+                0.75rem;
 
             font-weight:
                 700;
 
             letter-spacing:
-                1px;
-
+                .05em;
         }
 
 
-        .week-title {
+        .reminder h3 {
 
-            color:
-                var(--academic-blue-dark);
+            margin:
+                0 0 8px;
+
+            font-size:
+                0.98rem;
 
             font-weight:
                 700;
-
-            margin-top:
-                5px;
-
         }
 
 
-        .week-body {
+        .reminder p {
 
-            padding:
-                28px;
-
-        }
-
-
-        .week-body li {
-
-            margin-bottom:
-                12px;
+            margin:
+                0;
 
             color:
-                var(--text-muted);
+                var(--text-secondary);
 
-            position:
-                relative;
-
+            font-size:
+                0.88rem;
         }
 
 
-        .week-body li::marker {
-
-            color:
-                var(--academic-blue);
-
-        }
-
-
-        /* =====================================================
-           REMINDER
-        ===================================================== */
-
-        .reminder-box {
-
-            border-left:
-                5px solid var(--academic-blue);
-
-            background:
-                rgba(234, 243, 250, .90);
-
-            padding:
-                28px;
-
-            border-radius:
-                8px;
-
-            transition:
-                transform .3s ease,
-                box-shadow .3s ease;
-
-        }
-
-
-        .reminder-box:hover {
-
-            transform:
-                translateX(5px);
-
-            box-shadow:
-                var(--shadow-sm);
-
-        }
-
-
-        .reminder-box h4::before {
-
-            content:
-                "\f33b";
-
-            font-family:
-                "bootstrap-icons";
-
-            margin-right:
-                10px;
-
-            color:
-                var(--academic-blue);
-
-        }
-
-
-        .reminder-box h4 {
-
-            color:
-                var(--academic-blue-dark);
-
-            font-weight:
-                700;
-
-        }
-
-
-        /* =====================================================
-           LOGIN CTA
-        ===================================================== */
+        /* =================================================
+           LOGIN
+        ================================================= */
 
         .login-section {
 
-            background:
-                linear-gradient(135deg,
-                    #0B4F8A,
-                    #073B66);
-
             padding:
-                80px 0;
+                110px 0;
 
-            position:
-                relative;
-
-            overflow:
-                hidden;
-
+            text-align:
+                center;
         }
 
 
-        .login-section::before {
+        .login-content {
 
-            content:
-                "";
+            max-width:
+                620px;
 
-            position:
-                absolute;
-
-            width:
-                450px;
-
-            height:
-                450px;
-
-            border:
-                1px solid rgba(255, 255, 255, .10);
-
-            border-radius:
-                50%;
-
-            right:
-                -160px;
-
-            top:
-                -220px;
-
-            animation:
-                ctaRotate 15s linear infinite;
-
+            margin:
+                0 auto;
         }
 
 
-        .login-section::after {
+        .login-content h2 {
 
-            content:
-                "";
+            margin:
+                0 0 14px;
 
-            position:
-                absolute;
+            font-family:
+                "Poppins",
+                sans-serif;
 
-            width:
-                250px;
+            font-size:
+                clamp(1.8rem, 4vw, 2.5rem);
 
-            height:
-                250px;
-
-            border:
-                1px solid rgba(255, 255, 255, .08);
-
-            border-radius:
-                50%;
-
-            left:
-                -120px;
-
-            bottom:
-                -130px;
-
+            letter-spacing:
+                -.035em;
         }
 
 
-        @keyframes ctaRotate {
+        .login-content p {
 
-            from {
-
-                transform:
-                    rotate(0deg);
-
-            }
-
-            to {
-
-                transform:
-                    rotate(360deg);
-
-            }
-
-        }
-
-
-        .login-section h2 {
+            margin:
+                0 auto 28px;
 
             color:
-                #FFFFFF;
+                var(--text-secondary);
 
-            font-weight:
-                700;
-
-            position:
-                relative;
-
+            font-size:
+                0.95rem;
         }
 
 
-        .login-section p {
-
-            color:
-                #EAF3FA;
-
-            position:
-                relative;
-
-        }
-
-
-        .btn-login-white {
-
-            background:
-                #FFFFFF;
-
-            color:
-                var(--academic-blue);
-
-            border:
-                2px solid #FFFFFF;
-
-            font-weight:
-                700;
-
-            padding:
-                12px 35px;
-
-            border-radius:
-                7px;
-
-            transition:
-                transform .25s ease,
-                box-shadow .25s ease;
-
-            position:
-                relative;
-
-            z-index:
-                2;
-
-        }
-
-
-        .btn-login-white:hover {
-
-            background:
-                #F1F1F1;
-
-            color:
-                var(--academic-blue-dark);
-
-            transform:
-                translateY(-3px);
-
-            box-shadow:
-                0 8px 25px rgba(0, 0, 0, .20);
-
-        }
-
-
-        /* =====================================================
+        /* =================================================
            FOOTER
-        ===================================================== */
+        ================================================= */
 
-        footer {
+        .footer {
 
-            background:
-                var(--academic-blue-dark);
+            border-top:
+                1px solid var(--border);
 
-            color:
-                #DCE8F2;
-
-            position:
-                relative;
-
-            overflow:
-                hidden;
-
-        }
-
-
-        footer::before {
-
-            content:
-                "";
-
-            position:
-                absolute;
-
-            top:
-                0;
-
-            left:
-                0;
-
-            width:
-                100%;
-
-            height:
-                1px;
+            padding:
+                28px 0;
 
             background:
-                linear-gradient(90deg,
-                    transparent,
-                    rgba(255, 255, 255, .25),
-                    transparent);
-
+                #ffffff;
         }
 
 
-        footer strong {
+        .footer-inner {
 
-            color:
-                #FFFFFF;
+            display:
+                flex;
 
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                20px;
         }
 
 
-        .footer-department {
+        .footer-brand {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
 
             color:
-                #FFFFFF;
+                var(--text);
+
+            font-size:
+                0.85rem;
 
             font-weight:
                 600;
-
         }
 
 
-        /* =====================================================
-           NAVBAR TOGGLER
-        ===================================================== */
+        .footer-brand img {
 
-        .navbar-toggler {
+            width:
+                27px;
 
-            border:
-                1px solid var(--border-color);
+            height:
+                27px;
 
-            padding:
-                7px 10px;
-
+            object-fit:
+                contain;
         }
 
 
-        .navbar-toggler:focus {
+        .footer-copy {
 
-            box-shadow:
-                0 0 0 .15rem rgba(11, 79, 138, .15);
+            margin:
+                0;
 
+            color:
+                #9ca3af;
+
+            font-size:
+                0.78rem;
         }
 
 
-        /* =====================================================
+        /* =================================================
            RESPONSIVE
-        ===================================================== */
+        ================================================= */
 
-        @media (max-width: 992px) {
+        @media (max-width: 767px) {
 
-            .microchip {
+            .container-custom {
 
-                opacity:
-                    .35;
-
+                width:
+                    min(100% - 32px, var(--max-width));
             }
 
-            .circuit {
 
-                opacity:
-                    .35;
+            .site-header {
 
+                height:
+                    64px;
             }
 
-        }
+
+            .navbar-inner {
+
+                width:
+                    min(100% - 32px, var(--max-width));
+            }
 
 
-        @media (max-width: 768px) {
+            .desktop-navigation {
+
+                gap:
+                    2px;
+            }
+
+
+            .navigation-link {
+
+                display:
+                    none;
+            }
+
+
+            .navigation-login {
+
+                margin:
+                    0;
+
+                padding:
+                    8px 13px;
+            }
+
 
             .hero {
 
-                padding:
-                    65px 0 75px;
+                min-height:
+                    calc(100vh - 64px);
 
+                padding:
+                    60px 0;
+            }
+
+
+            .hero-mark {
+
+                width:
+                    50px;
+
+                height:
+                    50px;
+
+                margin-bottom:
+                    22px;
             }
 
 
             .hero h1 {
 
                 font-size:
-                    36px;
-
+                    clamp(2.2rem, 12vw, 3.2rem);
             }
 
 
-            .hero p {
+            .hero-description {
 
                 font-size:
-                    17px;
+                    0.92rem;
 
+                line-height:
+                    1.7;
             }
 
 
-            .section-padding {
+            .about,
+            .reminders {
 
                 padding:
-                    60px 0;
-
+                    70px 0;
             }
 
 
-            .navbar-brand {
+            .about-grid,
+            .reminder-list {
 
-                font-size:
-                    1.15rem;
-
+                grid-template-columns:
+                    1fr;
             }
 
 
-            .hero-logo {
+            .about-item,
+            .reminder {
 
-                width:
-                    85px;
-
-                height:
-                    85px;
-
+                padding:
+                    23px;
             }
 
 
-            .microchip {
+            .login-section {
 
-                display:
-                    none;
-
+                padding:
+                    75px 0;
             }
 
 
-            .circuit {
+            .footer-inner {
 
-                opacity:
-                    .20;
+                flex-direction:
+                    column;
 
-            }
-
-
-            .tech-grid {
-
-                background-size:
-                    30px 30px;
-
+                text-align:
+                    center;
             }
 
         }
 
 
-        /* =====================================================
-           REDUCED MOTION
-        ===================================================== */
-
         @media (prefers-reduced-motion: reduce) {
 
-            * {
+            html {
+                scroll-behavior: auto;
+            }
 
-                scroll-behavior:
-                    auto !important;
-
-                animation:
-                    none !important;
+            *,
+            *::before,
+            *::after {
 
                 transition:
                     none !important;
 
-            }
-
-
-            .reveal,
-            .reveal-left,
-            .reveal-right {
-
-                opacity:
-                    1;
-
-                transform:
-                    none;
-
+                animation:
+                    none !important;
             }
 
         }
@@ -2661,1434 +1097,449 @@
 
 
     <!-- =====================================================
-         ANIMATED COMPUTER ENGINEERING BACKGROUND
-    ===================================================== -->
+     HEADER
+====================================================== -->
 
-    <div class="tech-background"
-        aria-hidden="true">
+    <header class="site-header">
 
-        <div class="tech-grid"></div>
-
-
-        <!-- CIRCUIT TRACES -->
-
-        <div class="circuit c1"></div>
-
-        <div class="circuit c2"></div>
-
-        <div class="circuit c3"></div>
-
-        <div class="circuit c4"></div>
-
-        <div class="circuit c5"></div>
-
-        <div class="circuit c6"></div>
-
-
-        <!-- CIRCUIT BRANCHES -->
-
-        <div class="circuit-branch branch1"></div>
-
-        <div class="circuit-branch branch2"></div>
-
-        <div class="circuit-branch branch3"></div>
-
-        <div class="circuit-branch branch4"></div>
-
-
-        <!-- CIRCUIT NODES -->
-
-        <div class="circuit-node node1"></div>
-
-        <div class="circuit-node node2"></div>
-
-        <div class="circuit-node node3"></div>
-
-        <div class="circuit-node node4"></div>
-
-        <div class="circuit-node node5"></div>
-
-        <div class="circuit-node node6"></div>
-
-
-        <!-- MOVING ELECTRICAL SIGNALS -->
-
-        <div class="signal s1"></div>
-
-        <div class="signal s2"></div>
-
-        <div class="signal s3"></div>
-
-        <div class="signal s4"></div>
-
-
-        <!-- MICROPROCESSOR ICONS -->
-
-        <div class="microchip chip1">
-
-            <i class="bi bi-cpu"></i>
-
-        </div>
-
-
-        <div class="microchip chip2">
-
-            <i class="bi bi-cpu-fill"></i>
-
-        </div>
-
-
-        <div class="microchip chip3">
-
-            <i class="bi bi-memory"></i>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =====================================================
-         NAVIGATION
-    ===================================================== -->
-
-    <nav
-        class="navbar navbar-expand-lg sticky-top"
-        id="mainNavbar">
-
-        <div class="container">
-
+        <div class="navbar-inner">
 
             <a
-                class="navbar-brand"
-                href="index.php">
-
+                href="#home"
+                class="brand">
 
                 <img
                     src="./assets/pubmat/head.png"
-                    alt="ETS-Async Logo"
-                    style="
-                        width:30px;
-                        height:30px;
-                        object-fit:contain;
-                        margin-right:8px;
-                    ">
+                    alt="ETS-Async"
+                    width="34"
+                    height="34"
+                    loading="eager"
+                    decoding="async">
 
-
-                <div>
-
+                <span class="brand-name">
                     ETS-Async
-
-                    <small>
-                        Asynchronous Learning Portal
-                    </small>
-
-                </div>
+                </span>
 
             </a>
 
 
+            <nav class="desktop-navigation">
 
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation">
+                <a
+                    href="#about"
+                    class="navigation-link">
 
-                <span class="navbar-toggler-icon"></span>
+                    About
 
-            </button>
+                </a>
 
 
+                <a
+                    href="#reminders"
+                    class="navigation-link">
 
-            <div
-                class="collapse navbar-collapse"
-                id="navbarNav">
+                    Guidelines
 
-
-                <ul
-                    class="navbar-nav ms-auto align-items-lg-center">
-
-
-                    <li class="nav-item">
-
-                        <a
-                            class="nav-link active"
-                            href="#home">
-
-                            <i class="bi bi-house-door me-1"></i>
-
-                            Home
-
-                        </a>
-
-                    </li>
+                </a>
 
 
-                    <li class="nav-item">
+                <a
+                    href="login.php"
+                    class="navigation-link navigation-login">
 
-                        <a
-                            class="nav-link"
-                            href="#about">
+                    Login
 
-                            <i class="bi bi-info-circle me-1"></i>
+                </a>
 
-                            About
-
-                        </a>
-
-                    </li>
-
-
-                    <li class="nav-item">
-
-                        <a
-                            class="nav-link"
-                            href="#plan">
-
-                            <i class="bi bi-journal-bookmark me-1"></i>
-
-                            Learning Plan
-
-                        </a>
-
-                    </li>
-
-
-                    <li
-                        class="nav-item ms-lg-3 mt-2 mt-lg-0">
-
-
-                        <a
-                            href="login.php"
-                            class="btn btn-academic px-4">
-
-
-                            <i class="bi bi-box-arrow-in-right me-1"></i>
-
-                            Login
-
-
-                        </a>
-
-
-                    </li>
-
-
-                </ul>
-
-            </div>
+            </nav>
 
         </div>
 
-    </nav>
+    </header>
 
 
 
     <!-- =====================================================
-         PUBMAT
-    ===================================================== -->
+     MAIN
+====================================================== -->
 
-    <section
-        class="pubmat-section">
-
-
-        <img
-            src="assets/pubmat/cpe.png"
-            alt="ETS-Async Asynchronous Learning Portal"
-            class="pubmat-full">
+    <main>
 
 
-    </section>
+        <!-- =====================================================
+     HERO
+====================================================== -->
+
+        <section
+            id="home"
+            class="hero">
+
+            <div class="container-custom">
+
+                <div class="hero-content">
 
 
+                    <div class="hero-mark">
 
-    <!-- =====================================================
-         HERO
-    ===================================================== -->
-
-    <section
-        class="hero"
-        id="home">
-
-
-        <div
-            class="container hero-content">
-
-
-            <div
-                class="row">
-
-
-                <div
-                    class="col-lg-9 mx-auto text-center">
-
-
-                    <div class="hero-badge">
-
-
-                        <img
-                            src="./assets/pubmat/head.png"
-                            alt="ETS-Async"
-                            class="hero-logo d-block mx-auto">
-
-
-                        <span>
-
-                            <i class="bi bi-cpu me-1"></i>
-
-                            ASYNCHRONOUS LEARNING PORTAL
-
-                        </span>
-
+                        <i class="bi bi-mortarboard"></i>
 
                     </div>
 
 
+                    <h1>
 
-                    <h1 class="mb-4">
-
-
-                        Welcome to
-
-
-                        <span class="text-academic">
-
-                            ETS-Async
-
-                        </span>
-
+                        A simpler way to
+                        <span>learn online.</span>
 
                     </h1>
 
 
+                    <p class="hero-description">
 
-                    <p class="mb-4 mx-auto">
-
-
-                        Welcome, College of Engineering and Architecture Students.
-
-                        To support uninterrupted academic delivery during the
-                        upcoming two-week asynchronous period, this portal serves
-                        as the primary repository for your lessons, required
-                        coursework, and formal assessments.
-
+                        ETS-Async is an asynchronous learning platform
+                        designed to give students simple and organized
+                        access to lectures, activities, and course resources.
 
                     </p>
 
 
+                    <a
+                        href="login.php"
+                        class="hero-button">
 
-                    <p class="mb-4 mx-auto">
+                        <i class="bi bi-box-arrow-in-right"></i>
 
+                        Login to ETS-Async
 
-                        All instructional materials have been consolidated here
-                        to ensure clear, structured, and continuous engagement.
-                        You may access the learning materials at your own pace
-                        while completing the assigned activities within the
-                        prescribed schedule.
-
-
-                    </p>
-
-
-
-                    <div class="mt-4 hero-buttons">
-
-
-                        <a
-                            href="login.php"
-                            class="btn btn-academic btn-lg px-4 me-2 mb-3">
-
-
-                            <i class="bi bi-box-arrow-in-right me-2"></i>
-
-                            Login to Class
-
-
-                        </a>
-
-
-
-                        <a
-                            href="#plan"
-                            class="btn btn-outline-secondary btn-lg px-4 mb-3">
-
-
-                            <i class="bi bi-map me-2"></i>
-
-                            View Learning Plan
-
-
-                        </a>
-
-
-                    </div>
-
+                    </a>
 
                 </div>
 
-
             </div>
 
-
-        </div>
-
-
-    </section>
+        </section>
 
 
 
-    <!-- =====================================================
-         ABOUT
-    ===================================================== -->
-
-    <section
-        class="section-padding"
-        id="about">
+        <div class="divider"></div>
 
 
-        <div class="container">
+
+        <!-- =====================================================
+     ABOUT
+====================================================== -->
+
+        <section
+            id="about"
+            class="about">
+
+            <div class="container-custom">
 
 
-            <div
-                class="text-center mb-5 reveal">
-
-
-                <h2 class="section-title">
-
-
-                    <i class="bi bi-cpu me-2"></i>
-
+                <div class="section-small">
                     About ETS-Async
+                </div>
 
 
+                <h2>
+                    Focused on learning,<br>
+                    not unnecessary complexity.
                 </h2>
 
 
-                <p class="section-subtitle mt-3">
+                <p class="about-intro">
 
-
-                    A centralized asynchronous learning platform
-                    designed to support students and instructors
-                    across different academic departments.
-
+                    ETS-Async provides a centralized space for students
+                    to access their academic resources and complete
+                    assigned requirements in an asynchronous environment.
 
                 </p>
 
 
-            </div>
+                <div class="about-grid">
 
 
+                    <article class="about-item">
 
-            <div
-                class="row justify-content-center">
+                        <div class="about-item-icon">
 
-
-                <div
-                    class="col-lg-9 reveal">
-
-
-                    <div
-                        class="instructor-card shadow-sm">
-
-
-                        <div
-                            class="card-body text-center p-4 p-md-5">
-
-
-                            <img
-                                src="assets/pubmat/me_suit.png"
-                                alt="Engr. Karl Stephen Evallo"
-                                class="instructor-photo mb-3">
-
-
-
-                            <h3
-                                class="instructor-name">
-
-
-                                Engr. Karl Stephen Evallo
-
-
-                            </h3>
-
-
-
-                            <p
-                                class="text-academic fw-semibold mb-3">
-
-
-                                <i class="bi bi-mortarboard-fill me-1"></i>
-
-                                Computer Engineering Department
-
-
-                            </p>
-
-
-
-                            <span
-                                class="department-badge">
-
-
-                                <i class="bi bi-person-workspace me-1"></i>
-
-                                Instructor | Web Developer
-
-
-                            </span>
-
-
-
-                            <div
-                                class="instructor-line">
-                            </div>
-
-
-
-                            <p
-                                class="text-muted mt-4 mb-0">
-
-
-                                ETS-Async is an asynchronous learning
-                                platform developed by the
-                                <strong>
-                                    Computer Engineering Department
-                                </strong>
-                                to provide a structured and accessible
-                                online learning environment for students.
-
-                                The platform may be used by different
-                                academic departments to deliver lessons,
-                                activities, assessments, and other
-                                course requirements during asynchronous
-                                learning periods.
-
-
-                            </p>
-
+                            <i class="bi bi-journal-text"></i>
 
                         </div>
 
 
-                    </div>
+                        <h3>
+                            Course Materials
+                        </h3>
+
+
+                        <p>
+
+                            Access assigned lectures, references,
+                            and other learning materials in one place.
+
+                        </p>
+
+                    </article>
+
+
+
+                    <article class="about-item">
+
+                        <div class="about-item-icon">
+
+                            <i class="bi bi-list-check"></i>
+
+                        </div>
+
+
+                        <h3>
+                            Academic Activities
+                        </h3>
+
+
+                        <p>
+
+                            Complete assigned activities and submit
+                            your academic requirements through the platform.
+
+                        </p>
+
+                    </article>
+
+
+
+                    <article class="about-item">
+
+                        <div class="about-item-icon">
+
+                            <i class="bi bi-graph-up"></i>
+
+                        </div>
+
+
+                        <h3>
+                            Progress Tracking
+                        </h3>
+
+
+                        <p>
+
+                            Monitor your progress and keep track of
+                            completed learning requirements.
+
+                        </p>
+
+                    </article>
 
 
                 </div>
 
-
             </div>
 
-
-        </div>
-
-
-    </section>
+        </section>
 
 
 
-    <!-- =====================================================
-         LEARNING JOURNEY
-    ===================================================== -->
+        <!-- =====================================================
+     GUIDELINES
+====================================================== -->
 
-    <section
-        class="section-padding section-soft">
+        <section
+            id="reminders"
+            class="reminders">
 
-
-        <div class="container">
-
-
-            <div
-                class="text-center mb-5 reveal">
+            <div class="container-custom">
 
 
-                <h2 class="section-title">
+                <div class="reminders-heading">
+
+                    <div class="section-small">
+                        Guidelines
+                    </div>
 
 
-                    <i class="bi bi-diagram-3 me-2"></i>
-
-                    Your Learning Journey
-
-
-                </h2>
+                    <h2>
+                        Before you begin
+                    </h2>
 
 
-                <p class="section-subtitle mt-3">
+                    <p>
+
+                        A few simple practices will help keep your
+                        learning experience organized.
+
+                    </p>
+
+                </div>
 
 
-                    Follow these four simple steps throughout
-                    the asynchronous learning period.
+                <div class="reminder-list">
 
 
-                </p>
+                    <article class="reminder">
 
-
-            </div>
-
-
-
-            <div class="row g-4">
-
-
-                <!-- LEARN -->
-
-                <div
-                    class="col-md-6 col-lg-3 reveal">
-
-
-                    <div
-                        class="info-card p-4">
-
-
-                        <div class="card-number">
-
+                        <div class="reminder-number">
                             01
-
                         </div>
 
 
-                        <h5>
-                            Learn
-                        </h5>
+                        <h3>
+                            Use your assigned account
+                        </h3>
 
 
                         <p>
 
-                            Access the lessons, presentations,
-                            videos, readings, and other learning
-                            materials provided by your instructor.
+                            Access the platform using your official
+                            account to ensure your activities and
+                            progress are properly recorded.
 
                         </p>
 
-
-                    </div>
-
-
-                </div>
+                    </article>
 
 
 
-                <!-- UNDERSTAND -->
+                    <article class="reminder">
 
-                <div
-                    class="col-md-6 col-lg-3 reveal">
-
-
-                    <div
-                        class="info-card p-4">
-
-
-                        <div class="card-number">
-
+                        <div class="reminder-number">
                             02
-
                         </div>
 
 
-                        <h5>
-                            Understand
-                        </h5>
+                        <h3>
+                            Check your activities
+                        </h3>
 
 
                         <p>
 
-                            Study the concepts carefully and review
-                            examples and demonstrations to strengthen
-                            your understanding.
+                            Review your assigned lectures and activities
+                            regularly and observe the specified deadlines.
 
                         </p>
 
-
-                    </div>
-
-
-                </div>
+                    </article>
 
 
 
-                <!-- APPLY -->
+                    <article class="reminder">
 
-                <div
-                    class="col-md-6 col-lg-3 reveal">
-
-
-                    <div
-                        class="info-card p-4">
-
-
-                        <div class="card-number">
-
+                        <div class="reminder-number">
                             03
-
                         </div>
 
 
-                        <h5>
-                            Apply
-                        </h5>
+                        <h3>
+                            Keep your account secure
+                        </h3>
 
 
                         <p>
 
-                            Complete the exercises, activities,
-                            laboratory tasks, and other requirements
-                            assigned by your instructor.
+                            Never share your password and remember to
+                            log out when using a shared device.
 
                         </p>
 
-
-                    </div>
-
-
-                </div>
-
-
-
-                <!-- SUBMIT -->
-
-                <div
-                    class="col-md-6 col-lg-3 reveal">
-
-
-                    <div
-                        class="info-card p-4">
-
-
-                        <div class="card-number">
-
-                            04
-
-                        </div>
-
-
-                        <h5>
-                            Submit
-                        </h5>
-
-
-                        <p>
-
-                            Review your work and submit your required
-                            outputs through the designated platform
-                            before the given deadline.
-
-                        </p>
-
-
-                    </div>
+                    </article>
 
 
                 </div>
-
 
             </div>
 
+        </section>
 
-        </div>
 
 
-    </section>
+        <!-- =====================================================
+     LOGIN
+====================================================== -->
+
+        <section class="login-section">
+
+            <div class="container-custom">
+
+                <div class="login-content">
+
+
+                    <h2>
+                        Ready to learn?
+                    </h2>
+
+
+                    <p>
+
+                        Sign in to access your courses and
+                        assigned learning activities.
+
+                    </p>
+
+
+                    <a
+                        href="login.php"
+                        class="hero-button">
+
+                        <i class="bi bi-arrow-right"></i>
+
+                        Go to Login
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
 
 
 
     <!-- =====================================================
-         TWO-WEEK PLAN
-    ===================================================== -->
+     FOOTER
+====================================================== -->
 
-    <section
-        class="section-padding"
-        id="plan">
+    <footer class="footer">
 
+        <div class="container-custom">
 
-        <div class="container">
-
-
-            <div
-                class="text-center mb-5 reveal">
+            <div class="footer-inner">
 
 
-                <h2 class="section-title">
+                <div class="footer-brand">
+
+                    <img
+                        src="./assets/pubmat/head.png"
+                        alt="ETS-Async"
+                        width="27"
+                        height="27"
+                        loading="lazy"
+                        decoding="async">
+
+                    <span>
+                        ETS-Async
+                    </span>
+
+                </div>
 
 
-                    <i class="bi bi-calendar3 me-2"></i>
+                <p class="footer-copy">
 
-                    Two-Week Learning Plan
-
-
-                </h2>
-
-
-                <p class="section-subtitle mt-3">
-
-
-                    Organize your time and complete the assigned
-                    learning tasks throughout the asynchronous period.
-
+                    © <?= date("Y"); ?> ETS-Async.
+                    Asynchronous Learning Platform.
 
                 </p>
 
 
             </div>
 
-
-
-            <div class="row g-4">
-
-
-                <!-- WEEK 1 -->
-
-                <div
-                    class="col-lg-6 reveal-left">
-
-
-                    <div
-                        class="week-card shadow-sm">
-
-
-                        <div class="week-header">
-
-
-                            <div class="week-label">
-
-                                <i class="bi bi-calendar-week me-1"></i>
-
-                                WEEK 01
-
-                            </div>
-
-
-                            <h4 class="week-title mb-0">
-
-                                Learn and Understand
-
-                            </h4>
-
-
-                        </div>
-
-
-
-                        <div class="week-body">
-
-
-                            <p class="text-muted">
-
-
-                                Focus on studying the lessons and
-                                understanding the concepts introduced
-                                by your instructor.
-
-
-                            </p>
-
-
-                            <ul>
-
-
-                                <li>
-                                    Read and study the assigned lessons.
-                                </li>
-
-
-                                <li>
-                                    Watch the provided instructional
-                                    videos and demonstrations.
-                                </li>
-
-
-                                <li>
-                                    Review examples and important
-                                    concepts.
-                                </li>
-
-
-                                <li>
-                                    Take notes while studying.
-                                </li>
-
-
-                                <li>
-                                    Complete the assigned activities.
-                                </li>
-
-
-                            </ul>
-
-
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-
-
-                <!-- WEEK 2 -->
-
-                <div
-                    class="col-lg-6 reveal-right">
-
-
-                    <div
-                        class="week-card shadow-sm">
-
-
-                        <div class="week-header">
-
-
-                            <div class="week-label">
-
-                                <i class="bi bi-calendar-check me-1"></i>
-
-                                WEEK 02
-
-                            </div>
-
-
-                            <h4 class="week-title mb-0">
-
-                                Apply and Assess
-
-                            </h4>
-
-
-                        </div>
-
-
-
-                        <div class="week-body">
-
-
-                            <p class="text-muted">
-
-
-                                Apply your knowledge through exercises,
-                                activities, assessments, and other
-                                course requirements.
-
-
-                            </p>
-
-
-                            <ul>
-
-
-                                <li>
-                                    Review the concepts from Week 1.
-                                </li>
-
-
-                                <li>
-                                    Complete the assigned exercises.
-                                </li>
-
-
-                                <li>
-                                    Apply the concepts to the given
-                                    problems or activities.
-                                </li>
-
-
-                                <li>
-                                    Review and verify your outputs.
-                                </li>
-
-
-                                <li>
-                                    Submit all required requirements
-                                    before the deadline.
-                                </li>
-
-
-                            </ul>
-
-
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-
-            </div>
-
-
         </div>
-
-
-    </section>
-
-
-
-    <!-- =====================================================
-         IMPORTANT REMINDERS
-    ===================================================== -->
-
-    <section
-        class="section-padding section-soft">
-
-
-        <div class="container">
-
-
-            <div
-                class="row justify-content-center">
-
-
-                <div
-                    class="col-lg-9 reveal">
-
-
-                    <div class="reminder-box">
-
-
-                        <h4 class="mb-3">
-
-                            Important Reminders
-
-                        </h4>
-
-
-                        <ul class="mb-0 text-muted">
-
-
-                            <li class="mb-2">
-
-                                Check the learning portal regularly
-                                for lessons, announcements, and
-                                updated instructions.
-
-                            </li>
-
-
-                            <li class="mb-2">
-
-                                Read the instructions for every
-                                activity carefully before submitting
-                                your work.
-
-                            </li>
-
-
-                            <li class="mb-2">
-
-                                Manage your time properly throughout
-                                the two-week asynchronous period.
-
-                            </li>
-
-
-                            <li class="mb-2">
-
-                                Complete all activities within the
-                                prescribed schedule.
-
-                            </li>
-
-
-                            <li>
-
-                                If you encounter difficulties,
-                                contact your instructor through the
-                                designated communication channel.
-
-                            </li>
-
-
-                        </ul>
-
-
-                    </div>
-
-
-                </div>
-
-
-            </div>
-
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- =====================================================
-         LOGIN CTA
-    ===================================================== -->
-
-    <section
-        class="login-section">
-
-
-        <div
-            class="container text-center reveal">
-
-
-            <h2>
-
-                <i class="bi bi-rocket-takeoff me-2"></i>
-
-                Ready to Begin?
-
-            </h2>
-
-
-            <p
-                class="lead mt-3 mb-4">
-
-
-                Log in to access your assigned
-                courses, lessons, activities,
-                and learning materials.
-
-
-            </p>
-
-
-            <a
-                href="login.php"
-                class="btn btn-login-white btn-lg">
-
-
-                <i class="bi bi-box-arrow-in-right me-2"></i>
-
-                Login to Class
-
-
-            </a>
-
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- =====================================================
-         FOOTER
-    ===================================================== -->
-
-    <footer
-        class="py-4">
-
-
-        <div
-            class="container text-center">
-
-
-            <p class="mb-1">
-
-
-                <strong>
-
-                    <i class="bi bi-cpu me-1"></i>
-
-                    ETS-Async
-
-                </strong>
-
-
-            </p>
-
-
-            <p class="mb-2">
-
-                Asynchronous Learning Portal
-
-            </p>
-
-
-            <p class="mb-2">
-
-
-                Developed by the
-
-
-                <span class="footer-department">
-
-                    Computer Engineering Department
-
-                </span>
-
-
-            </p>
-
-
-            <p class="mb-0">
-
-
-                <small>
-
-
-                    Led by
-
-                    <strong>
-
-                        Engr. Karl Stephen Evallo
-
-                    </strong>
-
-
-                </small>
-
-
-            </p>
-
-
-            <small>
-
-
-                &copy; 2026
-
-                All Rights Reserved.
-
-
-            </small>
-
-
-        </div>
-
 
     </footer>
-
-
-
-    <!-- =====================================================
-         BOOTSTRAP JAVASCRIPT
-    ===================================================== -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-    </script>
-
-
-
-    <!-- =====================================================
-         ETS-ASYNC ANIMATION JAVASCRIPT
-    ===================================================== -->
-
-    <script>
-        /* =====================================================
-           SCROLL REVEAL
-        ===================================================== */
-
-        const revealElements =
-            document.querySelectorAll(
-                ".reveal, .reveal-left, .reveal-right"
-            );
-
-
-        const revealObserver =
-            new IntersectionObserver(
-                function(entries) {
-
-                    entries.forEach(
-                        function(entry) {
-
-                            if (
-                                entry.isIntersecting
-                            ) {
-
-                                entry.target.classList.add(
-                                    "active"
-                                );
-
-                                revealObserver.unobserve(
-                                    entry.target
-                                );
-
-                            }
-
-                        }
-                    );
-
-                }, {
-                    threshold: 0.15
-                }
-            );
-
-
-        revealElements.forEach(
-            function(element) {
-
-                revealObserver.observe(
-                    element
-                );
-
-            }
-        );
-
-
-
-        /* =====================================================
-           NAVBAR SCROLL EFFECT
-        ===================================================== */
-
-        const navbar =
-            document.getElementById(
-                "mainNavbar"
-            );
-
-
-        window.addEventListener(
-            "scroll",
-            function() {
-
-                if (
-                    window.scrollY > 30
-                ) {
-
-                    navbar.classList.add(
-                        "scrolled"
-                    );
-
-                } else {
-
-                    navbar.classList.remove(
-                        "scrolled"
-                    );
-
-                }
-
-            }
-        );
-
-
-
-        /* =====================================================
-           ACTIVE NAVIGATION
-        ===================================================== */
-
-        const sections =
-            document.querySelectorAll(
-                "section[id]"
-            );
-
-
-        const navLinks =
-            document.querySelectorAll(
-                ".nav-link"
-            );
-
-
-        window.addEventListener(
-            "scroll",
-            function() {
-
-                let current =
-                    "";
-
-
-                sections.forEach(
-                    function(section) {
-
-                        const sectionTop =
-                            section.offsetTop - 120;
-
-
-                        const sectionHeight =
-                            section.offsetHeight;
-
-
-                        if (
-                            window.scrollY >= sectionTop &&
-                            window.scrollY <
-                            sectionTop + sectionHeight
-                        ) {
-
-                            current =
-                                section.getAttribute(
-                                    "id"
-                                );
-
-                        }
-
-                    }
-                );
-
-
-                navLinks.forEach(
-                    function(link) {
-
-                        link.classList.remove(
-                            "active"
-                        );
-
-
-                        if (
-                            link.getAttribute(
-                                "href"
-                            ) === "#" + current
-                        ) {
-
-                            link.classList.add(
-                                "active"
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
-        );
-
-
-
-        /* =====================================================
-           MOBILE NAVBAR CLOSE
-        ===================================================== */
-
-        const navbarCollapse =
-            document.getElementById(
-                "navbarNav"
-            );
-
-
-        document.querySelectorAll(
-            ".navbar-nav .nav-link"
-        ).forEach(
-            function(link) {
-
-                link.addEventListener(
-                    "click",
-                    function() {
-
-                        if (
-                            window.innerWidth < 992
-                        ) {
-
-                            const collapse =
-                                bootstrap.Collapse
-                                .getInstance(
-                                    navbarCollapse
-                                );
-
-
-                            if (collapse) {
-
-                                collapse.hide();
-
-                            }
-
-                        }
-
-                    }
-                );
-
-            }
-        );
-    </script>
 
 
 </body>
