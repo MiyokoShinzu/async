@@ -144,7 +144,7 @@ $stmt->close();
 */
 
 $resetURL =
-    "http://localhost/reset_password.php?token="
+    "https://async.vertigation.com/reset_password.php?token="
     . urlencode($token);
 
 
