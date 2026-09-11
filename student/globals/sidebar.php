@@ -151,7 +151,19 @@ function sidebarActive($page)
             </span>
 
         </a>
-     
+        <a
+            href="academic_posts_saved.php"
+            class="sidebar-link <?= sidebarActive('academic_posts_saved.php') ?>">
+
+            <i class="bi bi-bookmark"></i>
+
+            <span>
+                Bookmarks
+            </span>
+
+        </a>
+
+
         <a
             href="toolbox.php"
             class="sidebar-link <?= sidebarActive('toolbox.php') ?>">

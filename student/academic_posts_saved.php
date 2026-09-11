@@ -2,19 +2,18 @@
 <?php
 
 /* =========================================================
-   STUDENT ACADEMIC POSTS
+   STUDENT SAVED ACADEMIC POSTS
    ETS-Async Learning Portal
 
    Features:
-   - Database-driven academic posts
-   - Search posts
+   - Displays the logged-in student's saved posts
+   - Database-driven content
+   - Search saved posts
    - Filter by subject
    - Filter by department
-   - Combined subject + department filtering
-   - Database-driven title
-   - Database-driven description
-   - Database-driven URL
-   - Student-specific saved/bookmarked posts
+   - Open post through academic_post_start.php
+   - Remove saved posts without leaving the page
+   - Supports light and dark mode
    ========================================================= */
 
 session_start();
@@ -37,7 +36,12 @@ if (
 }
 
 
-$user = $_SESSION["user"];
+/* =========================================================
+   CURRENT USER
+========================================================== */
+
+$user =
+    $_SESSION["user"];
 
 
 /* =========================================================
@@ -64,7 +68,9 @@ $extensionName =
     $user["extension_name"] ?? "";
 
 $studentId =
-    $user["student_id"] ?? "";
+    trim(
+        $user["student_id"] ?? ""
+    );
 
 $studentDepartment =
     $user["department"] ?? "";
@@ -131,25 +137,59 @@ if ($lastName !== "") {
 
 
 /* =========================================================
-   LOAD CURRENT STUDENT'S SAVED ACADEMIC POSTS
+   LOAD SAVED POSTS
 ========================================================== */
 
-$savedPostIds = [];
+$savedPosts = [];
 
 
 $savedSql = "
 
     SELECT
-        post_id
 
-    FROM academic_post_saved
+        s.id AS saved_id,
 
-    WHERE student_id = ?
+        s.post_id,
+
+        s.saved_at,
+
+        p.title,
+
+        p.description,
+
+        p.url,
+
+        p.subject,
+
+        p.department,
+
+        p.icon,
+
+        p.icon_color
+
+    FROM academic_post_saved AS s
+
+    INNER JOIN academic_posts AS p
+
+        ON p.id = s.post_id
+
+    WHERE s.student_id = ?
+
+      AND p.status = 1
+
+    ORDER BY
+
+        s.saved_at DESC,
+
+        s.id DESC
+
 ";
 
 
 $savedStmt =
-    $mysqli->prepare($savedSql);
+    $mysqli->prepare(
+        $savedSql
+    );
 
 
 if ($savedStmt) {
@@ -168,12 +208,12 @@ if ($savedStmt) {
 
 
     while (
-        $savedRow =
+        $row =
         $savedResult->fetch_assoc()
     ) {
 
-        $savedPostIds[] =
-            (int)$savedRow["post_id"];
+        $savedPosts[] =
+            $row;
     }
 
 
@@ -182,210 +222,126 @@ if ($savedStmt) {
 
 
 /* =========================================================
-   LOAD POST SUBJECTS
+   LOAD SUBJECTS FROM SAVED POSTS
 ========================================================== */
 
 $subjects = [];
 
 
-$subjectSql = "
+foreach (
+    $savedPosts
+    as $savedPost
+) {
 
-    SELECT DISTINCT
-        subject
-
-    FROM academic_posts
-
-    WHERE status = 1
-
-      AND subject IS NOT NULL
-
-      AND subject <> ''
-
-    ORDER BY
-        subject ASC
-";
+    $subject =
+        trim(
+            $savedPost["subject"] ?? ""
+        );
 
 
-$subjectResult =
-    $mysqli->query($subjectSql);
-
-
-if ($subjectResult) {
-
-    while (
-        $row =
-        $subjectResult->fetch_assoc()
+    if (
+        $subject !== "" &&
+        !in_array(
+            $subject,
+            $subjects,
+            true
+        )
     ) {
 
         $subjects[] =
-            $row["subject"];
+            $subject;
     }
-
-    $subjectResult->free();
 }
 
 
 /* =========================================================
-   LOAD POST DEPARTMENTS
+   SORT SUBJECTS
+========================================================== */
+
+natcasesort(
+    $subjects
+);
+
+
+$subjects =
+    array_values(
+        $subjects
+    );
+
+
+/* =========================================================
+   LOAD DEPARTMENTS FROM SAVED POSTS
 ========================================================== */
 
 $departments = [];
 
 
-$departmentSql = "
+foreach (
+    $savedPosts
+    as $savedPost
+) {
 
-    SELECT DISTINCT
-        department
-
-    FROM academic_posts
-
-    WHERE status = 1
-
-      AND department IS NOT NULL
-
-      AND department <> ''
-
-    ORDER BY
-        department ASC
-";
+    $department =
+        trim(
+            $savedPost["department"] ?? ""
+        );
 
 
-$departmentResult =
-    $mysqli->query($departmentSql);
-
-
-if ($departmentResult) {
-
-    while (
-        $row =
-        $departmentResult->fetch_assoc()
+    if (
+        $department !== "" &&
+        !in_array(
+            $department,
+            $departments,
+            true
+        )
     ) {
 
         $departments[] =
-            $row["department"];
+            $department;
     }
-
-    $departmentResult->free();
 }
 
 
 /* =========================================================
-   LOAD ACADEMIC POSTS
+   SORT DEPARTMENTS
 ========================================================== */
 
-$posts = [];
+natcasesort(
+    $departments
+);
 
 
-$postSql = "
-
-    SELECT
-
-        id,
-
-        title,
-
-        description,
-
-        url,
-
-        subject,
-
-        department,
-
-        icon,
-
-        icon_color
-
-    FROM academic_posts
-
-    WHERE status = 1
-
-    ORDER BY
-
-        sort_order ASC,
-
-        department ASC,
-
-        subject ASC,
-
-        title ASC
-";
-
-
-$postResult =
-    $mysqli->query($postSql);
-
-
-if ($postResult) {
-
-    while (
-        $row =
-        $postResult->fetch_assoc()
-    ) {
-
-        $posts[] =
-            $row;
-    }
-
-    $postResult->free();
-}
-
-
-/* =========================================================
-   SUBJECT FILTER VALUE
-========================================================== */
-
-function subjectFilterValue($subject)
-{
-
-    $subject =
-        trim($subject);
-
-
-    $subject =
-        strtolower($subject);
-
-
-    $subject =
-        preg_replace(
-            '/[^a-z0-9]+/',
-            '-',
-            $subject
-        );
-
-
-    return trim(
-        $subject,
-        "-"
+$departments =
+    array_values(
+        $departments
     );
-}
 
 
 /* =========================================================
-   DEPARTMENT FILTER VALUE
+   FILTER VALUE HELPER
 ========================================================== */
 
-function departmentFilterValue($department)
+function savedPostFilterValue($value)
 {
 
-    $department =
-        trim($department);
+    $value =
+        trim($value);
 
 
-    $department =
-        strtolower($department);
+    $value =
+        strtolower($value);
 
 
-    $department =
+    $value =
         preg_replace(
             '/[^a-z0-9]+/',
             '-',
-            $department
+            $value
         );
 
 
     return trim(
-        $department,
+        $value,
         "-"
     );
 }
@@ -453,13 +409,18 @@ $allowedIconColors = [
                 <div>
 
                     <h2>
-                        Academic Posts
+
+                        Saved Posts
+
                     </h2>
 
+
                     <p>
-                        Browse academic references,
-                        learning materials, and technical
-                        resources for your coursework.
+
+                        View and manage your saved
+                        academic references and
+                        learning resources.
+
                     </p>
 
                 </div>
@@ -468,445 +429,90 @@ $allowedIconColors = [
 
 
             <!-- =================================================
-                 SEARCH AND FILTER
+                 SEARCH AND FILTERS
             ================================================== -->
 
-            <div class="posts-controls mb-4">
+            <?php if (
+                count($savedPosts) > 0
+            ): ?>
+
+                <div class="posts-controls mb-4">
 
 
-                <!-- =================================================
-                     SEARCH
-                ================================================== -->
+                    <!-- =============================================
+                         SEARCH
+                    ============================================== -->
 
-                <div class="posts-search">
+                    <div class="posts-search">
 
-                    <i class="bi bi-search"></i>
-
-                    <input
-                        type="text"
-                        id="postSearch"
-                        placeholder="Search posts..."
-                        autocomplete="off">
-
-                </div>
+                        <i class="bi bi-search"></i>
 
 
-                <!-- =================================================
-                     SUBJECT FILTER
-                ================================================== -->
-
-                <div class="filter-group">
-
-                    <span class="filter-label">
-
-                        Subject
-
-                    </span>
-
-
-                    <div
-                        class="posts-filters"
-                        id="subjectFilters">
-
-
-                        <!-- ALL SUBJECTS -->
-
-                        <button
-                            type="button"
-                            class="post-filter active"
-                            data-subject="all">
-
-                            All Subjects
-
-                        </button>
-
-
-                        <?php foreach (
-                            $subjects
-                            as $subject
-                        ): ?>
-
-
-                            <?php
-
-                            $subjectValue =
-                                subjectFilterValue(
-                                    $subject
-                                );
-
-                            ?>
-
-
-                            <button
-                                type="button"
-                                class="post-filter"
-                                data-subject="<?= htmlspecialchars(
-                                                    $subjectValue,
-                                                    ENT_QUOTES,
-                                                    "UTF-8"
-                                                ) ?>">
-
-                                <?= htmlspecialchars(
-                                    $subject,
-                                    ENT_QUOTES,
-                                    "UTF-8"
-                                ) ?>
-
-                            </button>
-
-
-                        <?php endforeach; ?>
-
+                        <input
+                            type="text"
+                            id="savedPostSearch"
+                            placeholder="Search saved posts..."
+                            autocomplete="off">
 
                     </div>
 
-                </div>
 
+                    <!-- =============================================
+                         SUBJECT FILTER
+                    ============================================== -->
 
-                <!-- =================================================
-                     DEPARTMENT FILTER
-                ================================================== -->
-
-                <div class="filter-group">
-
-                    <span class="filter-label">
-
-                        Department
-
-                    </span>
-
-
-                    <div
-                        class="posts-filters"
-                        id="departmentFilters">
-
-
-                        <!-- ALL DEPARTMENTS -->
-
-                        <button
-                            type="button"
-                            class="post-filter active"
-                            data-department="all">
-
-                            All Departments
-
-                        </button>
-
-
-                        <?php foreach (
-                            $departments
-                            as $departmentItem
-                        ): ?>
-
-
-                            <?php
-
-                            $departmentValue =
-                                departmentFilterValue(
-                                    $departmentItem
-                                );
-
-                            ?>
-
-
-                            <button
-                                type="button"
-                                class="post-filter"
-                                data-department="<?= htmlspecialchars(
-                                                        $departmentValue,
-                                                        ENT_QUOTES,
-                                                        "UTF-8"
-                                                    ) ?>">
-
-                                <?= htmlspecialchars(
-                                    $departmentItem,
-                                    ENT_QUOTES,
-                                    "UTF-8"
-                                ) ?>
-
-                            </button>
-
-
-                        <?php endforeach; ?>
-
-
-                    </div>
-
-                </div>
-
-
-            </div>
-
-
-            <!-- =================================================
-                 POST COUNT
-            ================================================== -->
-
-            <div class="posts-results-header">
-
-                <span id="postCount">
-
-                    0 posts found
-
-                </span>
-
-            </div>
-
-
-            <!-- =================================================
-                 POST GRID
-            ================================================== -->
-
-            <div
-                class="posts-grid"
-                id="postsGrid">
-
-
-                <?php if (
-                    count($posts) > 0
-                ): ?>
-
-
-                    <?php foreach (
-                        $posts
-                        as $post
+                    <?php if (
+                        count($subjects) > 0
                     ): ?>
 
+                        <div class="filter-group">
 
-                        <?php
+                            <span class="filter-label">
 
+                                Subject
 
-                        /* -----------------------------------------
-                           DATABASE VALUES
-                        ----------------------------------------- */
+                            </span>
 
-                        $postId =
-                            (int) (
-                                $post["id"]
-                                ?? 0
-                            );
-
-
-                        $title =
-                            trim(
-                                $post["title"]
-                                    ?? ""
-                            );
-
-
-                        $description =
-                            trim(
-                                $post["description"]
-                                    ?? ""
-                            );
-
-
-                        $url =
-                            trim(
-                                $post["url"]
-                                    ?? "#"
-                            );
-
-
-                        $subject =
-                            trim(
-                                $post["subject"]
-                                    ?? "General"
-                            );
-
-
-                        $department =
-                            trim(
-                                $post["department"]
-                                    ?? "General"
-                            );
-
-
-                        $icon =
-                            trim(
-                                $post["icon"]
-                                    ?? "bi-file-earmark-text"
-                            );
-
-
-                        $iconColor =
-                            trim(
-                                $post["icon_color"]
-                                    ?? "blue"
-                            );
-
-
-                        /* -----------------------------------------
-                           ICON COLOR VALIDATION
-                        ----------------------------------------- */
-
-                        if (
-                            !in_array(
-                                $iconColor,
-                                $allowedIconColors,
-                                true
-                            )
-                        ) {
-
-                            $iconColor =
-                                "blue";
-                        }
-
-
-                        /* -----------------------------------------
-                           URL VALIDATION
-                        ----------------------------------------- */
-
-                        if (
-                            $url === ""
-                        ) {
-
-                            $url =
-                                "#";
-                        }
-
-
-                        /* -----------------------------------------
-                           FILTER VALUES
-                        ----------------------------------------- */
-
-                        $subjectValue =
-                            subjectFilterValue(
-                                $subject
-                            );
-
-
-                        $departmentValue =
-                            departmentFilterValue(
-                                $department
-                            );
-
-
-                        /* -----------------------------------------
-                           SEARCH DATA
-                        ----------------------------------------- */
-
-                        $searchData =
-                            strtolower(
-
-                                $title .
-                                    " " .
-
-                                    $description .
-                                    " " .
-
-                                    $subject .
-                                    " " .
-
-                                    $department
-
-                            );
-
-
-                        /* -----------------------------------------
-                           CHECK IF POST IS SAVED
-                        ----------------------------------------- */
-
-                        $isSaved =
-                            in_array(
-                                $postId,
-                                $savedPostIds,
-                                true
-                            );
-
-                        ?>
-
-
-                        <!-- =================================================
-                             POST CARD
-                        ================================================== -->
-
-                        <div
-                            class="academic-post-card"
-
-                            data-id="<?= $postId ?>"
-
-                            data-subject="<?= htmlspecialchars(
-                                                $subjectValue,
-                                                ENT_QUOTES,
-                                                "UTF-8"
-                                            ) ?>"
-
-                            data-department="<?= htmlspecialchars(
-                                                    $departmentValue,
-                                                    ENT_QUOTES,
-                                                    "UTF-8"
-                                                ) ?>"
-
-                            data-search="<?= htmlspecialchars(
-                                                $searchData,
-                                                ENT_QUOTES,
-                                                "UTF-8"
-                                            ) ?>">
-
-
-                            <!-- =================================================
-                                 POST ICON
-                            ================================================== -->
 
                             <div
-                                class="post-icon <?= htmlspecialchars(
-                                                        $iconColor,
-                                                        ENT_QUOTES,
-                                                        "UTF-8"
-                                                    ) ?>">
-
-                                <i
-                                    class="bi <?= htmlspecialchars(
-                                                    $icon,
-                                                    ENT_QUOTES,
-                                                    "UTF-8")?>">
-                                </i>
-
-                            </div>
+                                class="posts-filters"
+                                id="savedSubjectFilters">
 
 
-                            <!-- =================================================
-                                 POST CONTENT
-                            ================================================== -->
+                                <button
+                                    type="button"
+                                    class="post-filter active"
+                                    data-subject="all">
 
-                            <div class="post-content">
+                                    All Subjects
 
-
-                                <!-- POST TITLE -->
-
-                                <h5>
-
-                                    <?= htmlspecialchars(
-                                        $title,
-                                        ENT_QUOTES,
-                                        "UTF-8"
-                                    ) ?>
-
-                                </h5>
+                                </button>
 
 
-                                <!-- POST DESCRIPTION -->
-
-                                <p>
-
-                                    <?= htmlspecialchars(
-                                        $description,
-                                        ENT_QUOTES,
-                                        "UTF-8"
-                                    ) ?>
-
-                                </p>
+                                <?php foreach (
+                                    $subjects
+                                    as $subject
+                                ): ?>
 
 
-                                <!-- POST META -->
+                                    <?php
 
-                                <div class="post-meta">
+                                    $subjectValue =
+                                        savedPostFilterValue(
+                                            $subject
+                                        );
+
+                                    ?>
 
 
-                                    <!-- SUBJECT -->
-
-                                    <span class="post-subject">
+                                    <button
+                                        type="button"
+                                        class="post-filter"
+                                        data-subject="<?= htmlspecialchars(
+                                                            $subjectValue,
+                                                            ENT_QUOTES,
+                                                            "UTF-8"
+                                                        ) ?>">
 
                                         <?= htmlspecialchars(
                                             $subject,
@@ -914,12 +520,75 @@ $allowedIconColors = [
                                             "UTF-8"
                                         ) ?>
 
-                                    </span>
+                                    </button>
 
 
-                                    <!-- DEPARTMENT -->
+                                <?php endforeach; ?>
 
-                                    <span class="post-department">
+
+                            </div>
+
+                        </div>
+
+                    <?php endif; ?>
+
+
+                    <!-- =============================================
+                         DEPARTMENT FILTER
+                    ============================================== -->
+
+                    <?php if (
+                        count($departments) > 0
+                    ): ?>
+
+                        <div class="filter-group">
+
+                            <span class="filter-label">
+
+                                Department
+
+                            </span>
+
+
+                            <div
+                                class="posts-filters"
+                                id="savedDepartmentFilters">
+
+
+                                <button
+                                    type="button"
+                                    class="post-filter active"
+                                    data-department="all">
+
+                                    All Departments
+
+                                </button>
+
+
+                                <?php foreach (
+                                    $departments
+                                    as $department
+                                ): ?>
+
+
+                                    <?php
+
+                                    $departmentValue =
+                                        savedPostFilterValue(
+                                            $department
+                                        );
+
+                                    ?>
+
+
+                                    <button
+                                        type="button"
+                                        class="post-filter"
+                                        data-department="<?= htmlspecialchars(
+                                                                $departmentValue,
+                                                                ENT_QUOTES,
+                                                                "UTF-8"
+                                                            ) ?>">
 
                                         <?= htmlspecialchars(
                                             $department,
@@ -927,72 +596,379 @@ $allowedIconColors = [
                                             "UTF-8"
                                         ) ?>
 
-                                    </span>
-
-
-                                </div>
-
-
-                                <!-- =================================================
-                                     POST ACTIONS
-                                ================================================== -->
-
-                                <div class="post-actions">
-
-
-                                    <!-- =================================================
-                                         OPEN POST
-                                    ================================================== -->
-
-                                    <a
-                                        href="academic_post_start.php?id=<?= (int)$postId ?>"
-                                        class="post-open-btn"
-                                        target="_blank"
-                                        rel="noopener noreferrer">
-
-                                        <i class="bi bi-box-arrow-up-right"></i>
-
-                                        <span>
-                                            Open Post
-                                        </span>
-
-                                    </a>
-
-
-                                    <!-- =================================================
-                                         SAVE / BOOKMARK
-                                    ================================================== -->
-
-                                    <button
-                                        type="button"
-
-                                        class="post-bookmark-btn <?= $isSaved ? 'saved' : '' ?>"
-
-                                        data-post-id="<?= (int)$postId ?>"
-
-                                        data-saved="<?= $isSaved ? '1' : '0' ?>"
-
-                                        aria-label="<?= $isSaved
-                                            ? 'Remove from saved posts'
-                                            : 'Save post'
-                                        ?>"
-
-                                        title="<?= $isSaved
-                                            ? 'Remove from Saved Posts'
-                                            : 'Save Post'
-                                        ?>">
-
-                                        <i
-                                            class="bi <?= $isSaved
-                                                ? 'bi-bookmark-fill'
-                                                : 'bi-bookmark'
-                                            ?>">
-                                        </i>
-
                                     </button>
 
 
+                                <?php endforeach; ?>
+
+
+                            </div>
+
+                        </div>
+
+                    <?php endif; ?>
+
+
+                </div>
+
+            <?php endif; ?>
+
+
+            <!-- =================================================
+                 RESULT COUNT
+            ================================================== -->
+
+            <div
+                class="posts-results-header"
+                id="savedResultsHeader"
+                <?php if (count($savedPosts) === 0): ?>
+                style="display:none;"
+                <?php endif; ?>>
+
+                <span id="savedPostCount">
+
+                    <?= count($savedPosts) ?>
+
+                    <?= count($savedPosts) === 1
+                        ? "saved post"
+                        : "saved posts"
+                    ?>
+
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 SAVED POSTS GRID
+            ================================================== -->
+
+            <div
+                class="posts-grid"
+                id="savedPostsGrid">
+
+
+                <?php foreach (
+                    $savedPosts
+                    as $post
+                ): ?>
+
+
+                    <?php
+
+                    /* -----------------------------------------
+                       POST VALUES
+                    ----------------------------------------- */
+
+                    $savedId =
+                        (int)(
+                            $post["saved_id"]
+                            ?? 0
+                        );
+
+
+                    $postId =
+                        (int)(
+                            $post["post_id"]
+                            ?? 0
+                        );
+
+
+                    $title =
+                        trim(
+                            $post["title"]
+                                ?? ""
+                        );
+
+
+                    $description =
+                        trim(
+                            $post["description"]
+                                ?? ""
+                        );
+
+
+                    $subject =
+                        trim(
+                            $post["subject"]
+                                ?? "General"
+                        );
+
+
+                    $department =
+                        trim(
+                            $post["department"]
+                                ?? "General"
+                        );
+
+
+                    $icon =
+                        trim(
+                            $post["icon"]
+                                ?? "bi-file-earmark-text"
+                        );
+
+
+                    $iconColor =
+                        trim(
+                            $post["icon_color"]
+                                ?? "blue"
+                        );
+
+
+                    /* -----------------------------------------
+                       VALIDATE ICON COLOR
+                    ----------------------------------------- */
+
+                    if (
+                        !in_array(
+                            $iconColor,
+                            $allowedIconColors,
+                            true
+                        )
+                    ) {
+
+                        $iconColor =
+                            "blue";
+                    }
+
+
+                    /* -----------------------------------------
+                       FILTER VALUES
+                    ----------------------------------------- */
+
+                    $subjectValue =
+                        savedPostFilterValue(
+                            $subject
+                        );
+
+
+                    $departmentValue =
+                        savedPostFilterValue(
+                            $department
+                        );
+
+
+                    /* -----------------------------------------
+                       SEARCH DATA
+                    ----------------------------------------- */
+
+                    $searchData =
+                        strtolower(
+
+                            $title .
+                                " " .
+                                $description .
+                                " " .
+                                $subject .
+                                " " .
+                                $department
+
+                        );
+
+
+                    /* -----------------------------------------
+                       SAVED DATE
+                    ----------------------------------------- */
+
+                    $savedAt =
+                        $post["saved_at"]
+                        ?? "";
+
+                    ?>
+
+
+                    <!-- =================================================
+                         SAVED POST CARD
+                    ================================================== -->
+
+                    <div
+                        class="academic-post-card saved-post-card"
+
+                        data-id="<?= $postId ?>"
+
+                        data-saved-id="<?= $savedId ?>"
+
+                        data-subject="<?= htmlspecialchars(
+                                            $subjectValue,
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?>"
+
+                        data-department="<?= htmlspecialchars(
+                                                $departmentValue,
+                                                ENT_QUOTES,
+                                                "UTF-8"
+                                            ) ?>"
+
+                        data-search="<?= htmlspecialchars(
+                                            $searchData,
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?>">
+
+
+                        <!-- =================================================
+                             POST ICON
+                        ================================================== -->
+
+                        <div
+                            class="post-icon <?= htmlspecialchars(
+                                                    $iconColor,
+                                                    ENT_QUOTES,
+                                                    "UTF-8"
+                                                ) ?>">
+
+                            <i
+                                class="bi <?= htmlspecialchars(
+                                                $icon,
+                                                ENT_QUOTES,
+                                                "UTF-8"
+                                            ) ?>">
+                            </i>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             POST CONTENT
+                        ================================================== -->
+
+                        <div class="post-content">
+
+
+                            <!-- POST TITLE -->
+
+                            <h5>
+
+                                <?= htmlspecialchars(
+                                    $title,
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>
+
+                            </h5>
+
+
+                            <!-- POST DESCRIPTION -->
+
+                            <p>
+
+                                <?= htmlspecialchars(
+                                    $description,
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>
+
+                            </p>
+
+
+                            <!-- POST META -->
+
+                            <div class="post-meta">
+
+
+                                <span class="post-subject">
+
+                                    <?= htmlspecialchars(
+                                        $subject,
+                                        ENT_QUOTES,
+                                        "UTF-8"
+                                    ) ?>
+
+                                </span>
+
+
+                                <span class="post-department">
+
+                                    <?= htmlspecialchars(
+                                        $department,
+                                        ENT_QUOTES,
+                                        "UTF-8"
+                                    ) ?>
+
+                                </span>
+
+
+                            </div>
+
+
+                            <!-- =================================================
+                                 SAVED DATE
+                            ================================================== -->
+
+                            <?php if (
+                                $savedAt !== ""
+                            ): ?>
+
+                                <div class="saved-date">
+
+                                    <i class="bi bi-bookmark-fill"></i>
+
+                                    Saved
+
+                                    <?= htmlspecialchars(
+                                        date(
+                                            "M d, Y",
+                                            strtotime($savedAt)
+                                        ),
+                                        ENT_QUOTES,
+                                        "UTF-8"
+                                    ) ?>
+
                                 </div>
+
+                            <?php endif; ?>
+
+
+                            <!-- =================================================
+                                 POST ACTIONS
+                            ================================================== -->
+
+                            <div class="post-actions">
+
+
+                                <!-- =============================================
+                                     OPEN POST
+                                ============================================== -->
+
+                                <a
+                                    href="academic_post_start.php?id=<?= $postId ?>"
+                                    class="post-open-btn"
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+
+                                    <i class="bi bi-box-arrow-up-right"></i>
+
+                                    <span>
+
+                                        Open Post
+
+                                    </span>
+
+                                </a>
+
+
+                                <!-- =============================================
+                                     REMOVE SAVED POST
+                                ============================================== -->
+
+                                <button
+                                    type="button"
+
+                                    class="post-bookmark-btn saved"
+
+                                    data-post-id="<?= $postId ?>"
+
+                                    data-saved="1"
+
+                                    aria-label="Remove from saved posts"
+
+                                    title="Remove from Saved Posts">
+
+                                    <i class="bi bi-bookmark-fill"></i>
+
+                                </button>
 
 
                             </div>
@@ -1001,24 +977,23 @@ $allowedIconColors = [
                         </div>
 
 
-                    <?php endforeach; ?>
+                    </div>
 
 
-                <?php endif; ?>
+                <?php endforeach; ?>
 
 
             </div>
 
 
             <!-- =================================================
-                 EMPTY STATE
+                 EMPTY SEARCH RESULT
             ================================================== -->
 
             <div
-                id="postEmpty"
+                id="savedPostSearchEmpty"
                 class="posts-empty"
                 style="display:none;">
-
 
                 <div class="posts-empty-icon">
 
@@ -1029,7 +1004,7 @@ $allowedIconColors = [
 
                 <h5>
 
-                    No posts found
+                    No saved posts found
 
                 </h5>
 
@@ -1037,12 +1012,62 @@ $allowedIconColors = [
                 <p>
 
                     Try a different search term or
-                    select another subject or department.
+                    select another filter.
 
                 </p>
 
-
             </div>
+
+
+            <!-- =================================================
+                 NO SAVED POSTS
+            ================================================== -->
+
+            <?php if (
+                count($savedPosts) === 0
+            ): ?>
+
+
+                <div
+                    class="posts-empty"
+                    id="noSavedPosts">
+
+                    <div class="posts-empty-icon">
+
+                        <i class="bi bi-bookmark"></i>
+
+                    </div>
+
+
+                    <h5>
+
+                        No Saved Posts
+
+                    </h5>
+
+
+                    <p>
+
+                        You have not saved any
+                        academic posts yet.
+
+                    </p>
+
+
+                    <a
+                        href="academic_posts.php"
+                        class="browse-posts-btn">
+
+                        <i class="bi bi-journal-text"></i>
+
+                        Browse Academic Posts
+
+                    </a>
+
+                </div>
+
+
+            <?php endif; ?>
 
 
         </div>
@@ -1052,13 +1077,12 @@ $allowedIconColors = [
 
 
     <!-- =========================================================
-         ACADEMIC POSTS STYLES
+         STYLES
     ========================================================== -->
 
     <style>
-
         /* =========================================================
-           POSTS THEME VARIABLES
+           THEME VARIABLES
         ========================================================== */
 
         :root {
@@ -1165,10 +1189,6 @@ $allowedIconColors = [
             border-radius:
                 10px;
 
-            transition:
-                background .2s ease,
-                border-color .2s ease;
-
         }
 
 
@@ -1239,23 +1259,6 @@ $allowedIconColors = [
             background:
                 var(--posts-control-bg);
 
-            transition:
-                background .2s ease,
-                border-color .2s ease,
-                color .2s ease,
-                box-shadow .2s ease;
-
-        }
-
-
-        .posts-search input::placeholder {
-
-            color:
-                var(--posts-muted);
-
-            opacity:
-                .8;
-
         }
 
 
@@ -1265,7 +1268,10 @@ $allowedIconColors = [
                 var(--posts-search-focus);
 
             box-shadow:
-                0 0 0 3px rgba(37, 99, 235, .10);
+                0 0 0 3px rgba(37,
+                    99,
+                    235,
+                    .10);
 
         }
 
@@ -1321,7 +1327,7 @@ $allowedIconColors = [
 
 
         /* =========================================================
-           FILTERS
+           FILTER BUTTONS
         ========================================================== */
 
         .posts-filters {
@@ -1337,10 +1343,6 @@ $allowedIconColors = [
 
         }
 
-
-        /* =========================================================
-           FILTER BUTTON
-        ========================================================== */
 
         .post-filter {
 
@@ -1608,7 +1610,7 @@ $allowedIconColors = [
 
 
         /* =========================================================
-           DARK MODE ICONS
+           DARK MODE ICON COLORS
         ========================================================== */
 
         html[data-theme="dark"] .post-icon.blue {
@@ -1617,7 +1619,10 @@ $allowedIconColors = [
                 #60a5fa;
 
             background:
-                rgba(37, 99, 235, .16);
+                rgba(37,
+                    99,
+                    235,
+                    .16);
 
         }
 
@@ -1628,7 +1633,10 @@ $allowedIconColors = [
                 #a78bfa;
 
             background:
-                rgba(124, 58, 237, .16);
+                rgba(124,
+                    58,
+                    237,
+                    .16);
 
         }
 
@@ -1639,7 +1647,10 @@ $allowedIconColors = [
                 #fb923c;
 
             background:
-                rgba(234, 88, 12, .16);
+                rgba(234,
+                    88,
+                    12,
+                    .16);
 
         }
 
@@ -1650,7 +1661,10 @@ $allowedIconColors = [
                 #4ade80;
 
             background:
-                rgba(22, 163, 74, .16);
+                rgba(22,
+                    163,
+                    74,
+                    .16);
 
         }
 
@@ -1661,7 +1675,10 @@ $allowedIconColors = [
                 #f87171;
 
             background:
-                rgba(220, 38, 38, .16);
+                rgba(220,
+                    38,
+                    38,
+                    .16);
 
         }
 
@@ -1672,7 +1689,10 @@ $allowedIconColors = [
                 #facc15;
 
             background:
-                rgba(202, 138, 4, .16);
+                rgba(202,
+                    138,
+                    4,
+                    .16);
 
         }
 
@@ -1747,11 +1767,8 @@ $allowedIconColors = [
         }
 
 
-        /* =========================================================
-           SUBJECT TAG
-        ========================================================== */
-
-        .post-subject {
+        .post-subject,
+        .post-department {
 
             display:
                 inline-block;
@@ -1778,31 +1795,39 @@ $allowedIconColors = [
 
 
         /* =========================================================
-           DEPARTMENT TAG
+           SAVED DATE
         ========================================================== */
 
-        .post-department {
+        .saved-date {
 
             display:
-                inline-block;
+                flex;
 
-            color:
-                var(--posts-secondary);
+            align-items:
+                center;
 
-            background:
-                var(--posts-tag-bg);
-
-            border-radius:
+            gap:
                 5px;
 
-            padding:
-                3px 7px;
+            margin-top:
+                9px;
+
+            color:
+                var(--posts-muted);
 
             font-size:
                 .66rem;
 
             font-weight:
-                600;
+                500;
+
+        }
+
+
+        .saved-date i {
+
+            color:
+                #f59e0b;
 
         }
 
@@ -1907,16 +1932,19 @@ $allowedIconColors = [
                 center;
 
             border:
-                1px solid var(--posts-input-border);
+                1px solid #f59e0b;
 
             border-radius:
                 6px;
 
             background:
-                var(--posts-control-bg);
+                rgba(245,
+                    158,
+                    11,
+                    .10);
 
             color:
-                var(--posts-muted);
+                #f59e0b;
 
             cursor:
                 pointer;
@@ -1936,94 +1964,19 @@ $allowedIconColors = [
         .post-bookmark-btn:hover {
 
             color:
-                #2563eb;
+                #d97706;
 
             border-color:
-                #2563eb;
+                #d97706;
 
             background:
-                rgba(37, 99, 235, .08);
+                rgba(245,
+                    158,
+                    11,
+                    .16);
 
             transform:
                 translateY(-1px);
-
-        }
-
-
-        /* =========================================================
-           SAVED BOOKMARK
-        ========================================================== */
-
-        .post-bookmark-btn.saved {
-
-            color:
-                #f59e0b;
-
-            border-color:
-                #f59e0b;
-
-            background:
-                rgba(245, 158, 11, .10);
-
-        }
-
-
-        .post-bookmark-btn.saved:hover {
-
-            color:
-                #d97706;
-
-            border-color:
-                #d97706;
-
-            background:
-                rgba(245, 158, 11, .16);
-
-        }
-
-
-        /* =========================================================
-           DARK MODE BOOKMARK
-        ========================================================== */
-
-        html[data-theme="dark"] .post-bookmark-btn {
-
-            background:
-                var(--posts-control-bg);
-
-            border-color:
-                var(--posts-input-border);
-
-            color:
-                var(--posts-muted);
-
-        }
-
-
-        html[data-theme="dark"] .post-bookmark-btn:hover {
-
-            color:
-                #60a5fa;
-
-            border-color:
-                #60a5fa;
-
-            background:
-                rgba(37, 99, 235, .15);
-
-        }
-
-
-        html[data-theme="dark"] .post-bookmark-btn.saved {
-
-            color:
-                #fbbf24;
-
-            border-color:
-                #fbbf24;
-
-            background:
-                rgba(245, 158, 11, .15);
 
         }
 
@@ -2058,10 +2011,10 @@ $allowedIconColors = [
         .posts-empty-icon {
 
             width:
-                45px;
+                48px;
 
             height:
-                45px;
+                48px;
 
             margin:
                 0 auto 15px;
@@ -2084,13 +2037,16 @@ $allowedIconColors = [
             color:
                 var(--posts-muted);
 
+            font-size:
+                1.1rem;
+
         }
 
 
         .posts-empty h5 {
 
             margin:
-                0 0 5px;
+                0 0 6px;
 
             font-size:
                 .95rem;
@@ -2104,13 +2060,70 @@ $allowedIconColors = [
         .posts-empty p {
 
             margin:
-                0;
+                0 0 18px;
 
             color:
                 var(--posts-muted);
 
             font-size:
                 .8rem;
+
+        }
+
+
+        /* =========================================================
+           BROWSE POSTS BUTTON
+        ========================================================== */
+
+        .browse-posts-btn {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            padding:
+                8px 13px;
+
+            border-radius:
+                6px;
+
+            background:
+                #1e3a8a;
+
+            color:
+                #ffffff;
+
+            text-decoration:
+                none;
+
+            font-size:
+                .72rem;
+
+            font-weight:
+                600;
+
+            transition:
+                background .2s ease,
+                transform .2s ease;
+
+        }
+
+
+        .browse-posts-btn:hover {
+
+            background:
+                #2563eb;
+
+            color:
+                #ffffff;
+
+            transform:
+                translateY(-1px);
 
         }
 
@@ -2172,16 +2185,14 @@ $allowedIconColors = [
             }
 
         }
-
     </style>
 
 
     <!-- =========================================================
-         SEARCH / FILTER JAVASCRIPT
+         JAVASCRIPT
     ========================================================== -->
 
     <script>
-
         document.addEventListener(
             "DOMContentLoaded",
             function() {
@@ -2193,42 +2204,48 @@ $allowedIconColors = [
 
                 const searchInput =
                     document.getElementById(
-                        "postSearch"
+                        "savedPostSearch"
                     );
 
 
                 const subjectButtons =
                     document.querySelectorAll(
-                        "#subjectFilters .post-filter"
+                        "#savedSubjectFilters .post-filter"
                     );
 
 
                 const departmentButtons =
                     document.querySelectorAll(
-                        "#departmentFilters .post-filter"
+                        "#savedDepartmentFilters .post-filter"
                     );
 
 
                 const postCards =
                     document.querySelectorAll(
-                        ".academic-post-card"
+                        ".saved-post-card"
                     );
 
 
                 const postCount =
                     document.getElementById(
-                        "postCount"
+                        "savedPostCount"
                     );
 
 
-                const emptyState =
+                const resultsHeader =
                     document.getElementById(
-                        "postEmpty"
+                        "savedResultsHeader"
+                    );
+
+
+                const searchEmpty =
+                    document.getElementById(
+                        "savedPostSearchEmpty"
                     );
 
 
                 /* =================================================
-                   CURRENT FILTER VALUES
+                   FILTER VALUES
                 ================================================== */
 
                 let selectedSubject =
@@ -2240,25 +2257,22 @@ $allowedIconColors = [
 
 
                 /* =================================================
-                   FILTER POSTS
+                   FILTER SAVED POSTS
                 ================================================== */
 
-                function filterPosts() {
-
+                function filterSavedPosts() {
 
                     const searchTerm =
+                        searchInput ?
                         searchInput.value
                         .toLowerCase()
-                        .trim();
+                        .trim() :
+                        "";
 
 
                     let visibleCount =
                         0;
 
-
-                    /* =================================================
-                       LOOP THROUGH POSTS
-                    ================================================== */
 
                     postCards.forEach(
                         function(card) {
@@ -2293,29 +2307,34 @@ $allowedIconColors = [
                                 .toLowerCase();
 
 
-                            /* =========================================
+                            /* =====================================
                                SUBJECT MATCH
-                            ========================================== */
+                            ====================================== */
 
                             const subjectMatch =
+
                                 selectedSubject === "all" ||
+
                                 subject === selectedSubject;
 
 
-                            /* =========================================
+                            /* =====================================
                                DEPARTMENT MATCH
-                            ========================================== */
+                            ====================================== */
 
                             const departmentMatch =
+
                                 selectedDepartment === "all" ||
+
                                 department === selectedDepartment;
 
 
-                            /* =========================================
+                            /* =====================================
                                SEARCH MATCH
-                            ========================================== */
+                            ====================================== */
 
                             const searchMatch =
+
                                 searchTerm === "" ||
 
                                 searchData.includes(
@@ -2327,9 +2346,9 @@ $allowedIconColors = [
                                 );
 
 
-                            /* =========================================
+                            /* =====================================
                                FINAL MATCH
-                            ========================================== */
+                            ====================================== */
 
                             if (
 
@@ -2358,35 +2377,44 @@ $allowedIconColors = [
 
 
                     /* =================================================
-                       RESULT COUNT
+                       UPDATE COUNT
                     ================================================== */
 
-                    postCount.textContent =
+                    if (postCount) {
 
-                        visibleCount +
+                        postCount.textContent =
 
-                        (
-                            visibleCount === 1 ?
-                            " post found" :
-                            " posts found"
-                        );
+                            visibleCount +
+
+                            (
+                                visibleCount === 1 ?
+                                " saved post" :
+                                " saved posts"
+                            );
+
+                    }
 
 
                     /* =================================================
-                       EMPTY STATE
+                       EMPTY SEARCH RESULT
                     ================================================== */
 
-                    if (
-                        visibleCount === 0
-                    ) {
+                    if (searchEmpty) {
 
-                        emptyState.style.display =
-                            "block";
+                        if (
+                            visibleCount === 0 &&
+                            postCards.length > 0
+                        ) {
 
-                    } else {
+                            searchEmpty.style.display =
+                                "block";
 
-                        emptyState.style.display =
-                            "none";
+                        } else {
+
+                            searchEmpty.style.display =
+                                "none";
+
+                        }
 
                     }
 
@@ -2399,7 +2427,6 @@ $allowedIconColors = [
 
                 subjectButtons.forEach(
                     function(button) {
-
 
                         button.addEventListener(
                             "click",
@@ -2426,7 +2453,7 @@ $allowedIconColors = [
                                     this.dataset.subject;
 
 
-                                filterPosts();
+                                filterSavedPosts();
 
                             }
                         );
@@ -2441,7 +2468,6 @@ $allowedIconColors = [
 
                 departmentButtons.forEach(
                     function(button) {
-
 
                         button.addEventListener(
                             "click",
@@ -2468,7 +2494,7 @@ $allowedIconColors = [
                                     this.dataset.department;
 
 
-                                filterPosts();
+                                filterSavedPosts();
 
                             }
                         );
@@ -2481,21 +2507,18 @@ $allowedIconColors = [
                    SEARCH
                 ================================================== */
 
-                searchInput.addEventListener(
-                    "input",
-                    filterPosts
-                );
+                if (searchInput) {
+
+                    searchInput.addEventListener(
+                        "input",
+                        filterSavedPosts
+                    );
+
+                }
 
 
                 /* =================================================
-                   INITIALIZE FILTER
-                ================================================== */
-
-                filterPosts();
-
-
-                /* =================================================
-                   BOOKMARK BUTTONS
+                   REMOVE SAVED POST
                 ================================================== */
 
                 const bookmarkButtons =
@@ -2503,10 +2526,6 @@ $allowedIconColors = [
                         ".post-bookmark-btn"
                     );
 
-
-                /* =================================================
-                   BOOKMARK EVENT HANDLERS
-                ================================================== */
 
                 bookmarkButtons.forEach(
                     function(button) {
@@ -2517,18 +2536,10 @@ $allowedIconColors = [
                             async function(event) {
 
 
-                                /* =====================================
-                                   PREVENT OTHER CARD ACTIONS
-                                ====================================== */
-
                                 event.preventDefault();
 
                                 event.stopPropagation();
 
-
-                                /* =====================================
-                                   POST ID
-                                ====================================== */
 
                                 const postId =
                                     this.dataset.postId;
@@ -2542,7 +2553,7 @@ $allowedIconColors = [
 
 
                                 /* =====================================
-                                   SAVE PREVIOUS STATE
+                                   SAVE CURRENT STATE
                                 ====================================== */
 
                                 const previousHTML =
@@ -2559,20 +2570,12 @@ $allowedIconColors = [
                                     );
 
 
-                                const previousSaved =
-                                    this.dataset.saved;
-
-
-                                /* =====================================
-                                   DISABLE BUTTON
-                                ====================================== */
-
                                 this.disabled =
                                     true;
 
 
                                 /* =====================================
-                                   LOADING INDICATOR
+                                   SHOW LOADING
                                 ====================================== */
 
                                 this.innerHTML = `
@@ -2594,7 +2597,7 @@ $allowedIconColors = [
 
 
                                     /* =================================
-                                       CREATE FORM DATA
+                                       FORM DATA
                                     ================================== */
 
                                     const formData =
@@ -2613,19 +2616,16 @@ $allowedIconColors = [
 
                                     const response =
                                         await fetch(
-                                            "academic_post_toggle_save.php",
-                                            {
-                                                method:
-                                                    "POST",
+                                            "academic_post_toggle_save.php", {
+                                                method: "POST",
 
-                                                body:
-                                                    formData
+                                                body: formData
                                             }
                                         );
 
 
                                     /* =================================
-                                       VERIFY HTTP RESPONSE
+                                       VERIFY RESPONSE
                                     ================================== */
 
                                     if (
@@ -2641,7 +2641,7 @@ $allowedIconColors = [
 
 
                                     /* =================================
-                                       READ JSON RESPONSE
+                                       READ JSON
                                     ================================== */
 
                                     const data =
@@ -2649,7 +2649,7 @@ $allowedIconColors = [
 
 
                                     /* =================================
-                                       CHECK SUCCESS
+                                       CHECK RESPONSE
                                     ================================== */
 
                                     if (
@@ -2657,88 +2657,60 @@ $allowedIconColors = [
                                     ) {
 
                                         throw new Error(
-
                                             data.message ||
                                             "Unable to update Saved Posts."
-
                                         );
 
                                     }
 
 
                                     /* =================================
-                                       SAVED
+                                       POST WAS REMOVED
                                     ================================== */
 
                                     if (
-                                        data.saved
+                                        data.saved === false
                                     ) {
 
 
-                                        this.classList.add(
-                                            "saved"
-                                        );
+                                        const card =
+                                            this.closest(
+                                                ".saved-post-card"
+                                            );
 
 
-                                        this.dataset.saved =
-                                            "1";
+                                        if (card) {
+
+                                            card.style.opacity =
+                                                "0";
 
 
-                                        this.innerHTML = `
-
-                                            <i
-                                                class="bi bi-bookmark-fill">
-                                            </i>
-
-                                        `;
+                                            card.style.transform =
+                                                "scale(.97)";
 
 
-                                        this.title =
-                                            "Remove from Saved Posts";
+                                            card.style.transition =
+                                                "opacity .2s ease, transform .2s ease";
 
 
-                                        this.setAttribute(
-                                            "aria-label",
-                                            "Remove from saved posts"
-                                        );
+                                            setTimeout(
+                                                function() {
+
+                                                    card.remove();
 
 
-                                    }
+                                                    /*
+                                                     * Re-read the
+                                                     * remaining cards.
+                                                     */
 
+                                                    updateSavedPage();
 
-                                    /* =================================
-                                       UNSAVED
-                                    ================================== */
+                                                },
+                                                220
+                                            );
 
-                                    else {
-
-
-                                        this.classList.remove(
-                                            "saved"
-                                        );
-
-
-                                        this.dataset.saved =
-                                            "0";
-
-
-                                        this.innerHTML = `
-
-                                            <i
-                                                class="bi bi-bookmark">
-                                            </i>
-
-                                        `;
-
-
-                                        this.title =
-                                            "Save Post";
-
-
-                                        this.setAttribute(
-                                            "aria-label",
-                                            "Save post"
-                                        );
+                                        }
 
                                     }
 
@@ -2746,12 +2718,8 @@ $allowedIconColors = [
                                 } catch (error) {
 
 
-                                    /* =================================
-                                       RESTORE PREVIOUS STATE
-                                    ================================== */
-
                                     console.error(
-                                        "Bookmark error:",
+                                        "Remove saved post error:",
                                         error
                                     );
 
@@ -2770,23 +2738,20 @@ $allowedIconColors = [
                                     );
 
 
-                                    this.dataset.saved =
-                                        previousSaved;
+                                    this.disabled =
+                                        false;
 
 
                                     alert(
-
                                         error.message ||
-                                        "Unable to update Saved Posts."
-
+                                        "Unable to remove saved post."
                                     );
+
+
+                                    return;
 
                                 }
 
-
-                                /* =====================================
-                                   ENABLE BUTTON
-                                ====================================== */
 
                                 this.disabled =
                                     false;
@@ -2798,9 +2763,53 @@ $allowedIconColors = [
                 );
 
 
+                /* =================================================
+                   UPDATE PAGE AFTER REMOVAL
+                ================================================== */
+
+                function updateSavedPage() {
+
+
+                    const remainingCards =
+                        document.querySelectorAll(
+                            ".saved-post-card"
+                        );
+
+
+                    /* =============================================
+                       NO POSTS REMAIN
+                    ============================================== */
+
+                    if (
+                        remainingCards.length === 0
+                    ) {
+
+
+                        window.location.reload();
+
+
+                        return;
+
+                    }
+
+
+                    /* =============================================
+                       UPDATE COUNT
+                    ============================================== */
+
+                    filterSavedPosts();
+
+                }
+
+
+                /* =================================================
+                   INITIALIZE
+                ================================================== */
+
+                filterSavedPosts();
+
             }
         );
-
     </script>
 
 
@@ -2814,4 +2823,3 @@ $allowedIconColors = [
 </body>
 
 </html>
-
