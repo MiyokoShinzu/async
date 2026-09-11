@@ -182,7 +182,7 @@ function sidebarActive($page)
             <i class="bi bi-heart"></i>
 
             <span>
-                Support Creator
+                Support Developer
             </span>
 
         </a>

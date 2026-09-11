@@ -445,7 +445,7 @@ $studentId = htmlspecialchars(
 
                     <i class="bi bi-heart me-2"></i>
 
-                    Support Creator
+                    Support Developer
 
                 </h1>
 
@@ -493,7 +493,7 @@ $studentId = htmlspecialchars(
                             Your support helps maintain the
                             learning portal, develop academic tools,
                             and create additional resources for
-                            Computer Engineering students.
+                            College of Engineering and Architecture students.
 
                         </p>
 
