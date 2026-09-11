@@ -288,6 +288,13 @@ $payload = [
                     "amount" =>
                     $amountCentavos,
 
+"payment_method_types" => [
+
+    "card"
+
+],
+
+
                     "description" =>
                     "ETS-Async Creator Support",
 
