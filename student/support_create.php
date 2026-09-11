@@ -281,10 +281,10 @@ $payload = [
                     $amountCentavos,
 
                     "description" =>
-                    "ETS-Async Creator Support",
+                    "",
 
                     "name" =>
-                    "Support ETS-Async",
+                    "ETS-Async Support",
 
                     "quantity" => 1
 
