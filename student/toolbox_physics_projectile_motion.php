@@ -1,8 +1,7 @@
-
 <?php
 
 /* =========================================================
-   PROJECTILE MOTION INTERACTIVE TOOL
+   PROJECTILE MOTION TOOL
    ETS-Async Learning Portal
    ========================================================= */
 
@@ -19,669 +18,125 @@ if (
     !isset($_SESSION["user"]) ||
     ($_SESSION["user"]["access"] ?? "") !== "student"
 ) {
+
     header("Location: ../login.php");
     exit;
 }
 
-
-/* =========================================================
-   USER DATA
-========================================================== */
 
 $user = $_SESSION["user"];
 
 
 /* =========================================================
    DATABASE CONNECTION
-   Included to maintain the standard ETS-Async structure.
 ========================================================== */
 
 require_once "../src/connection.php";
 
+
+/* =========================================================
+   USER DATA
+========================================================== */
+
+$firstName =
+    $user["first_name"] ?? "";
+
+$lastName =
+    $user["last_name"] ?? "";
+
+$middleInitial =
+    $user["middle_initial"] ?? "";
+
+$extensionName =
+    $user["extension_name"] ?? "";
+
+$studentId =
+    $user["student_id"] ?? "";
+
+$department =
+    $user["department"] ?? "";
+
+$yearSection =
+    $user["year_section"] ?? "";
+
+$email =
+    $user["email"] ?? "";
+
+$username =
+    $user["username"] ?? "";
+
+$access =
+    $user["access"] ?? "student";
+
+
+/* =========================================================
+   FULL NAME
+========================================================== */
+
+$fullName = trim(
+    $firstName . " " .
+        (
+            $middleInitial !== ""
+            ? $middleInitial . ". "
+            : ""
+        ) .
+        $lastName .
+        (
+            $extensionName !== ""
+            ? " " . $extensionName
+            : ""
+        )
+);
+
+
+/* =========================================================
+   INITIALS
+========================================================== */
+
+$initials = "";
+
+if ($firstName !== "") {
+
+    $initials .= strtoupper(
+        substr($firstName, 0, 1)
+    );
+}
+
+if ($lastName !== "") {
+
+    $initials .= strtoupper(
+        substr($lastName, 0, 1)
+    );
+}
+
 ?>
+
 <!DOCTYPE html>
+
 <html lang="en">
 
-<head>
-
-    <!-- =====================================================
-         STANDARD ETS-ASYNC HEAD
-    ====================================================== -->
-
-    <?php include "../globals/head.php"; ?>
-
-
-    <!-- =====================================================
-         MATHJAX
-    ====================================================== -->
-
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [
-                    ['\\(', '\\)']
-                ],
-                displayMath: [
-                    ['\\[', '\\]']
-                ]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-
-    <script
-        async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-    </script>
-
-
-    <!-- =====================================================
-         CHART.JS
-    ====================================================== -->
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-    <style>
-        /* =====================================================
-           ROOT VARIABLES
-        ====================================================== */
-
-        :root {
-
-            --pm-primary: #0B4F8A;
-            --pm-primary-dark: #083B68;
-            --pm-secondary: #6C63FF;
-
-            --pm-success: #198754;
-            --pm-warning: #f59e0b;
-            --pm-danger: #dc3545;
-
-            --pm-bg: #f5f7fb;
-            --pm-card: #ffffff;
-
-            --pm-text: #212529;
-            --pm-muted: #6c757d;
-
-            --pm-border: #dee2e6;
-
-            --pm-grid: rgba(0, 0, 0, 0.08);
-
-            --pm-radius: 14px;
-        }
-
-
-        /* =====================================================
-           DARK MODE
-        ====================================================== */
-
-        html[data-theme="dark"] {
-
-            --pm-bg: #111827;
-            --pm-card: #1f2937;
-
-            --pm-text: #f3f4f6;
-            --pm-muted: #9ca3af;
-
-            --pm-border: #374151;
-
-            --pm-grid: rgba(255, 255, 255, 0.10);
-        }
-
-
-        /* =====================================================
-           PAGE BACKGROUND
-        ====================================================== */
-
-        body {
-            background: var(--pm-bg);
-            color: var(--pm-text);
-        }
-
-
-        /* =====================================================
-           MAIN CONTENT
-        ====================================================== */
-
-        .content-wrapper {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 25px;
-        }
-
-
-        /* =====================================================
-           PAGE HEADER
-        ====================================================== */
-
-        .tool-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 25px;
-        }
-
-        .tool-header-icon {
-
-            width: 60px;
-            height: 60px;
-
-            border-radius: 15px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: linear-gradient(135deg,
-                    var(--pm-primary),
-                    var(--pm-secondary));
-
-            color: white;
-
-            font-size: 30px;
-
-            flex-shrink: 0;
-        }
-
-        .tool-header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .tool-header p {
-            margin: 3px 0 0;
-            color: var(--pm-muted);
-        }
-
-
-        /* =====================================================
-           GENERAL CARD
-        ====================================================== */
-
-        .pm-card {
-
-            background: var(--pm-card);
-
-            border: 1px solid var(--pm-border);
-
-            border-radius: var(--pm-radius);
-
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-
-            margin-bottom: 22px;
-
-            overflow: hidden;
-        }
-
-        .pm-card-header {
-
-            padding: 16px 20px;
-
-            border-bottom: 1px solid var(--pm-border);
-
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            font-weight: 700;
-        }
-
-        .pm-card-header i {
-            color: var(--pm-primary);
-            font-size: 20px;
-        }
-
-        .pm-card-body {
-            padding: 20px;
-        }
-
-
-        /* =====================================================
-           INFORMATION CARD
-        ====================================================== */
-
-        .info-box {
-
-            border-left: 5px solid var(--pm-primary);
-
-            background: rgba(11, 79, 138, 0.06);
-
-            padding: 18px 20px;
-
-            border-radius: 10px;
-
-            margin-bottom: 22px;
-        }
-
-        html[data-theme="dark"] .info-box {
-            background: rgba(59, 130, 246, 0.10);
-        }
-
-        .info-box strong {
-            color: var(--pm-primary);
-        }
-
-
-        /* =====================================================
-           INPUT CONTROLS
-        ====================================================== */
-
-        .form-label {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .form-control {
-
-            background: var(--pm-card);
-
-            color: var(--pm-text);
-
-            border-color: var(--pm-border);
-        }
-
-        .form-control:focus {
-
-            background: var(--pm-card);
-
-            color: var(--pm-text);
-
-            border-color: var(--pm-primary);
-
-            box-shadow: 0 0 0 0.2rem rgba(11, 79, 138, 0.15);
-        }
-
-
-        /* =====================================================
-           BUTTONS
-        ====================================================== */
-
-        .btn-primary {
-            background: var(--pm-primary);
-            border-color: var(--pm-primary);
-        }
-
-        .btn-primary:hover {
-            background: var(--pm-primary-dark);
-            border-color: var(--pm-primary-dark);
-        }
-
-
-        /* =====================================================
-           RESULT CARDS
-        ====================================================== */
-
-        .result-card {
-
-            border: 1px solid var(--pm-border);
-
-            border-radius: 12px;
-
-            padding: 17px;
-
-            height: 100%;
-
-            background: var(--pm-card);
-        }
-
-        .result-label {
-
-            font-size: 13px;
-
-            color: var(--pm-muted);
-
-            margin-bottom: 5px;
-        }
-
-        .result-value {
-
-            font-size: 24px;
-
-            font-weight: 700;
-
-            color: var(--pm-primary);
-        }
-
-        .result-unit {
-
-            font-size: 12px;
-
-            color: var(--pm-muted);
-        }
-
-
-        /* =====================================================
-           GRAPH CONTAINER
-        ====================================================== */
-
-        .graph-container {
-
-            position: relative;
-
-            width: 100%;
-
-            height: 600px;
-
-            padding: 10px;
-        }
-
-        .graph-container canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-
-        /* =====================================================
-           GRAPH INSTRUCTION
-        ====================================================== */
-
-        .graph-instruction {
-
-            padding: 12px 15px;
-
-            background: rgba(11, 79, 138, 0.07);
-
-            border-radius: 9px;
-
-            color: var(--pm-muted);
-
-            font-size: 13px;
-
-            margin-bottom: 15px;
-        }
-
-        .graph-instruction i {
-            color: var(--pm-primary);
-        }
-
-
-        /* =====================================================
-           SELECTED POINT PANEL
-        ====================================================== */
-
-        .selected-point {
-
-            border: 1px solid var(--pm-border);
-
-            border-radius: 12px;
-
-            padding: 18px;
-
-            background: var(--pm-card);
-
-            height: 100%;
-        }
-
-        .selected-point-title {
-
-            font-weight: 700;
-
-            margin-bottom: 15px;
-
-            color: var(--pm-primary);
-        }
-
-        .selected-value-row {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            padding: 7px 0;
-
-            border-bottom: 1px dashed var(--pm-border);
-
-            font-size: 14px;
-        }
-
-        .selected-value-row:last-child {
-            border-bottom: none;
-        }
-
-        .selected-value-label {
-            color: var(--pm-muted);
-        }
-
-        .selected-value-number {
-            font-weight: 600;
-        }
-
-
-        /* =====================================================
-           TIME SLIDER
-        ====================================================== */
-
-        .time-slider {
-
-            width: 100%;
-
-            accent-color: var(--pm-primary);
-
-            cursor: pointer;
-        }
-
-        .time-display {
-
-            text-align: center;
-
-            font-size: 20px;
-
-            font-weight: 700;
-
-            color: var(--pm-primary);
-
-            margin-bottom: 8px;
-        }
-
-
-        /* =====================================================
-           TABLE
-        ====================================================== */
-
-        .table-responsive {
-            border-radius: 10px;
-            overflow-x: auto;
-        }
-
-        .table {
-
-            color: var(--pm-text);
-
-            margin-bottom: 0;
-        }
-
-        .table thead th {
-
-            background: var(--pm-primary);
-
-            color: white;
-
-            border-color: var(--pm-primary);
-
-            white-space: nowrap;
-        }
-
-        .table tbody td {
-
-            border-color: var(--pm-border);
-
-            vertical-align: middle;
-        }
-
-
-        /* =====================================================
-           EQUATION CARDS
-        ====================================================== */
-
-        .equation-box {
-
-            background: rgba(11, 79, 138, 0.05);
-
-            border: 1px solid var(--pm-border);
-
-            border-radius: 10px;
-
-            padding: 18px;
-
-            margin-bottom: 15px;
-
-            overflow-x: auto;
-        }
-
-        html[data-theme="dark"] .equation-box {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .equation-title {
-
-            font-weight: 700;
-
-            color: var(--pm-primary);
-
-            margin-bottom: 10px;
-        }
-
-
-        /* =====================================================
-           CONCEPT CARDS
-        ====================================================== */
-
-        .concept-card {
-
-            border: 1px solid var(--pm-border);
-
-            border-radius: 12px;
-
-            padding: 18px;
-
-            height: 100%;
-        }
-
-        .concept-icon {
-
-            width: 42px;
-            height: 42px;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 10px;
-
-            background: rgba(11, 79, 138, 0.10);
-
-            color: var(--pm-primary);
-
-            font-size: 20px;
-
-            margin-bottom: 12px;
-        }
-
-        .concept-title {
-            font-weight: 700;
-            margin-bottom: 7px;
-        }
-
-        .concept-text {
-            color: var(--pm-muted);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-
-        /* =====================================================
-           ERROR MESSAGE
-        ====================================================== */
-
-        .tool-error {
-
-            background: rgba(220, 53, 69, 0.10);
-
-            border: 1px solid rgba(220, 53, 69, 0.25);
-
-            color: var(--pm-danger);
-
-            padding: 12px 15px;
-
-            border-radius: 9px;
-
-            margin-top: 15px;
-        }
-
-
-        /* =====================================================
-           RESPONSIVE DESIGN
-        ====================================================== */
-
-        @media (max-width: 991px) {
-
-            .content-wrapper {
-                padding: 18px;
-            }
-
-            .graph-container {
-                height: 450px;
-            }
-
-        }
-
-
-        @media (max-width: 576px) {
-
-            .content-wrapper {
-                padding: 12px;
-            }
-
-            .tool-header h1 {
-                font-size: 22px;
-            }
-
-            .tool-header-icon {
-
-                width: 50px;
-                height: 50px;
-
-                font-size: 24px;
-            }
-
-            .graph-container {
-                height: 380px;
-            }
-
-            .result-value {
-                font-size: 20px;
-            }
-
-        }
-    </style>
-
-</head>
-
+<?php include 'globals/head.php'; ?>
 
 <body>
 
-
+    
     <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
+     SIDEBAR
+====================================================== -->
 
-    <?php include "../globals/sidebar.php"; ?>
-
-
-    <!-- =====================================================
-         TOPBAR
-    ====================================================== -->
-
-    <?php include "../globals/topbar.php"; ?>
+    <?php include 'globals/sidebar.php'; ?>
 
 
     <!-- =====================================================
-         MAIN CONTENT
-    ====================================================== -->
+     TOPBAR
+====================================================== -->
+
+    <?php include 'globals/topbar.php'; ?>
+
+
+    <!-- =====================================================
+     MAIN CONTENT
+====================================================== -->
 
     <main class="main-content">
 
@@ -689,23 +144,20 @@ require_once "../src/connection.php";
 
 
             <!-- =================================================
-                 PAGE HEADER
-            ================================================== -->
+             PAGE HEADER
+        ================================================== -->
 
-            <div class="tool-header">
-
-                <div class="tool-header-icon">
-
-                    <i class="bi bi-rocket-takeoff"></i>
-
-                </div>
+            <div class="page-header">
 
                 <div>
 
-                    <h1>Projectile Motion</h1>
+                    <h2>
+                        Projectile Motion
+                    </h2>
 
                     <p>
-                        Interactive two-dimensional kinematics and trajectory analysis
+                        Compute, visualize, and interact with
+                        the trajectory of a projectile.
                     </p>
 
                 </div>
@@ -714,207 +166,267 @@ require_once "../src/connection.php";
 
 
             <!-- =================================================
-                 INFORMATION
+             MAIN PROJECTILE LAYOUT
+        ================================================== -->
+
+            <div class="difference-layout">
+
+
+                <!-- =================================================
+                 LEFT CONTROL PANEL
             ================================================== -->
 
-            <div class="info-box">
-
-                <strong>
-                    <i class="bi bi-info-circle"></i>
-                    Projectile Motion Reference
-                </strong>
-
-                <p class="mb-0 mt-2">
-
-                    Projectile motion describes the motion of an object launched
-                    into the air under the influence of gravity. This tool assumes
-                    negligible air resistance and constant gravitational acceleration.
-
-                    The horizontal and vertical components of motion are treated
-                    independently.
-
-                </p>
-
-            </div>
+                <div class="difference-controls">
 
 
-            <!-- =================================================
-                 PROJECTILE PARAMETERS
-            ================================================== -->
+                    <!-- =================================================
+                     INITIAL CONDITIONS
+                ================================================== -->
 
-            <div class="pm-card">
+                    <div class="control-section">
 
-                <div class="pm-card-header">
+                        <div class="control-section-title">
 
-                    <i class="bi bi-sliders"></i>
+                            <i class="bi bi-rocket-takeoff"></i>
 
-                    Projectile Parameters
+                            <span>
+                                Initial Conditions
+                            </span>
 
-                </div>
-
-                <div class="pm-card-body">
-
-                    <div class="row g-3">
+                        </div>
 
 
                         <!-- INITIAL VELOCITY -->
 
-                        <div class="col-md-3">
+                        <label class="difference-label">
 
-                            <label
-                                for="velocityInput"
-                                class="form-label">
+                            Initial Velocity
 
-                                Initial Velocity \(v_0\)
+                            <span>
+                                v₀
+                            </span>
 
-                            </label>
+                        </label>
 
-                            <div class="input-group">
 
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="velocityInput"
-                                    value="20"
-                                    min="0"
-                                    step="0.1">
-
-                                <span class="input-group-text">
-                                    m/s
-                                </span>
-
-                            </div>
-
-                        </div>
+                        <input
+                            type="number"
+                            id="initialVelocity"
+                            class="difference-input"
+                            value="20"
+                            min="0"
+                            step="any">
 
 
                         <!-- LAUNCH ANGLE -->
 
-                        <div class="col-md-3">
+                        <div class="input-parameter">
 
-                            <label
-                                for="angleInput"
-                                class="form-label">
+                            <label class="difference-label">
 
-                                Launch Angle \(\theta\)
+                                Launch Angle
+
+                                <span id="angleValue">
+                                    45°
+                                </span>
 
                             </label>
 
-                            <div class="input-group">
 
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="angleInput"
-                                    value="45"
-                                    min="0"
-                                    max="90"
-                                    step="0.1">
-
-                                <span class="input-group-text">
-                                    °
-                                </span>
-
-                            </div>
+                            <input
+                                type="range"
+                                id="launchAngle"
+                                min="0"
+                                max="90"
+                                step="0.1"
+                                value="45"
+                                class="difference-range">
 
                         </div>
 
 
-                        <!-- INITIAL ELEVATION -->
+                        <!-- INITIAL HEIGHT -->
 
-                        <div class="col-md-3">
+                        <div class="input-parameter">
 
-                            <label
-                                for="heightInput"
-                                class="form-label">
+                            <label class="difference-label">
 
-                                Initial Elevation \(y_0\)
+                                Initial Height
+
+                                <span>
+                                    y₀
+                                </span>
 
                             </label>
 
-                            <div class="input-group">
 
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="heightInput"
-                                    value="0"
-                                    min="0"
-                                    step="0.1">
-
-                                <span class="input-group-text">
-                                    m
-                                </span>
-
-                            </div>
+                            <input
+                                type="number"
+                                id="initialHeight"
+                                class="difference-input"
+                                value="0"
+                                min="0"
+                                step="any">
 
                         </div>
 
 
                         <!-- GRAVITY -->
 
-                        <div class="col-md-3">
+                        <div class="input-parameter">
 
-                            <label
-                                for="gravityInput"
-                                class="form-label">
+                            <label class="difference-label">
 
-                                Gravity \(g\)
+                                Gravitational Acceleration
+
+                                <span>
+                                    g
+                                </span>
 
                             </label>
 
-                            <div class="input-group">
 
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="gravityInput"
-                                    value="9.81"
-                                    min="0.01"
-                                    step="0.01">
-
-                                <span class="input-group-text">
-                                    m/s²
-                                </span>
-
-                            </div>
+                            <input
+                                type="number"
+                                id="gravity"
+                                class="difference-input"
+                                value="9.81"
+                                min="0.01"
+                                step="any">
 
                         </div>
 
                     </div>
 
 
-                    <!-- ERROR -->
+                    <!-- =================================================
+                     GRAPH OPTIONS
+                ================================================== -->
 
-                    <div
-                        id="errorMessage"
-                        class="tool-error d-none">
+                    <div class="control-section">
 
-                        <i class="bi bi-exclamation-triangle"></i>
+                        <div class="control-section-title">
 
-                        <span id="errorText"></span>
+                            <i class="bi bi-graph-up"></i>
+
+                            <span>
+                                Graph Options
+                            </span>
+
+                        </div>
+
+
+                        <!-- SHOW POINTS -->
+
+                        <div class="graph-option">
+
+                            <label>
+
+                                <span>
+                                    Show Trajectory Points
+                                </span>
+
+                                <input
+                                    type="checkbox"
+                                    id="showPoints"
+                                    checked>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- SHOW GRID -->
+
+                        <div class="graph-option">
+
+                            <label>
+
+                                <span>
+                                    Show Grid
+                                </span>
+
+                                <input
+                                    type="checkbox"
+                                    id="showGrid"
+                                    checked>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- SHOW ELEVATION -->
+
+                        <div class="graph-option">
+
+                            <label>
+
+                                <span>
+                                    Show Elevation Guides
+                                </span>
+
+                                <input
+                                    type="checkbox"
+                                    id="showElevation"
+                                    checked>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- POINT DENSITY -->
+
+                        <div class="input-parameter">
+
+                            <label class="difference-label">
+
+                                Trajectory Points
+
+                                <span id="pointCountValue">
+                                    21
+                                </span>
+
+                            </label>
+
+
+                            <input
+                                type="range"
+                                id="pointCount"
+                                min="11"
+                                max="101"
+                                step="5"
+                                value="21"
+                                class="difference-range">
+
+                        </div>
 
                     </div>
 
 
-                    <div class="mt-4 d-flex flex-wrap gap-2">
+                    <!-- =================================================
+                     ACTION BUTTONS
+                ================================================== -->
+
+                    <div class="difference-actions">
 
                         <button
                             type="button"
-                            class="btn btn-primary"
-                            id="calculateButton">
+                            id="computeButton"
+                            class="difference-button primary">
 
-                            <i class="bi bi-calculator"></i>
+                            <i class="bi bi-play-fill"></i>
 
-                            Calculate
+                            Compute
 
                         </button>
 
 
                         <button
                             type="button"
-                            class="btn btn-outline-secondary"
-                            id="resetButton">
+                            id="resetButton"
+                            class="difference-button">
 
                             <i class="bi bi-arrow-counterclockwise"></i>
 
@@ -924,519 +436,141 @@ require_once "../src/connection.php";
 
                     </div>
 
+
                 </div>
 
-            </div>
 
-
-            <!-- =================================================
-                 PRIMARY RESULTS
+                <!-- =================================================
+                 RIGHT OUTPUT PANEL
             ================================================== -->
 
-            <div class="row g-3 mb-4">
+                <div class="difference-output">
 
 
-                <div class="col-md-3">
+                    <!-- =================================================
+                     EQUATION DISPLAY
+                ================================================== -->
 
-                    <div class="result-card">
+                    <div class="equation-display">
 
-                        <div class="result-label">
-                            Total Flight Time
+                        <div class="equation-display-label">
+
+                            Projectile Equations
+
                         </div>
+
 
                         <div
-                            class="result-value"
-                            id="flightTimeResult">
-                            0.000
-                        </div>
+                            id="equationDisplay"
+                            class="equation">
 
-                        <div class="result-unit">
-                            seconds
-                        </div>
+                            x(t) = v₀ cos(θ)t
+                            &nbsp;&nbsp;&nbsp;
+                            y(t) = y₀ + v₀ sin(θ)t − ½gt²
 
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-3">
-
-                    <div class="result-card">
-
-                        <div class="result-label">
-                            Maximum Elevation
-                        </div>
-
-                        <div
-                            class="result-value"
-                            id="maxHeightResult">
-                            0.000
-                        </div>
-
-                        <div class="result-unit">
-                            meters
                         </div>
 
                     </div>
 
-                </div>
 
+                    <!-- =================================================
+                     GRAPH
+                ================================================== -->
 
-                <div class="col-md-3">
+                    <div class="difference-card">
 
-                    <div class="result-card">
+                        <div class="output-header">
 
-                        <div class="result-label">
-                            Horizontal Range
-                        </div>
+                            <div>
 
-                        <div
-                            class="result-value"
-                            id="rangeResult">
-                            0.000
-                        </div>
+                                <h4>
+                                    Projectile Trajectory
+                                </h4>
 
-                        <div class="result-unit">
-                            meters
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-3">
-
-                    <div class="result-card">
-
-                        <div class="result-label">
-                            Time to Maximum Height
-                        </div>
-
-                        <div
-                            class="result-value"
-                            id="maxTimeResult">
-                            0.000
-                        </div>
-
-                        <div class="result-unit">
-                            seconds
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 VELOCITY COMPONENTS
-            ================================================== -->
-
-            <div class="row g-3 mb-4">
-
-
-                <div class="col-md-3">
-
-                    <div class="result-card">
-
-                        <div class="result-label">
-                            Horizontal Velocity \(v_x\)
-                        </div>
-
-                        <div
-                            class="result-value"
-                            id="vxResult">
-                            0.000
-                        </div>
-
-                        <div class="result-unit">
-                            m/s
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-3">
-
-                    <div class="result-card">
-
-                        <div class="result-label">
-                            Initial Vertical Velocity \(v_y\)
-                        </div>
-
-                        <div
-                            class="result-value"
-                            id="vyResult">
-                            0.000
-                        </div>
-
-                        <div class="result-unit">
-                            m/s
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-3">
-
-                    <div class="result-card">
-
-                        <div class="result-label">
-                            Impact Speed
-                        </div>
-
-                        <div
-                            class="result-value"
-                            id="impactSpeedResult">
-                            0.000
-                        </div>
-
-                        <div class="result-unit">
-                            m/s
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-3">
-
-                    <div class="result-card">
-
-                        <div class="result-label">
-                            Impact Angle
-                        </div>
-
-                        <div
-                            class="result-value"
-                            id="impactAngleResult">
-                            0.000
-                        </div>
-
-                        <div class="result-unit">
-                            degrees
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 INTERACTIVE GRAPH
-            ================================================== -->
-
-            <div class="pm-card">
-
-                <div class="pm-card-header">
-
-                    <i class="bi bi-graph-up-arrow"></i>
-
-                    Interactive Trajectory
-
-                </div>
-
-                <div class="pm-card-body">
-
-
-                    <div class="graph-instruction">
-
-                        <i class="bi bi-hand-index-thumb"></i>
-
-                        <strong>Interaction:</strong>
-
-                        Use the time slider to move the projectile.
-                        Click directly on the trajectory to inspect a point.
-                        The selected point displays its elevation, horizontal
-                        distance, velocity components, and instantaneous speed.
-
-                    </div>
-
-
-                    <!-- GRAPH -->
-
-                    <div class="graph-container">
-
-                        <canvas id="trajectoryChart"></canvas>
-
-                    </div>
-
-
-                    <!-- TIME CONTROL -->
-
-                    <div class="mt-3">
-
-                        <div class="time-display">
-
-                            \(t=\)
-
-                            <span id="currentTimeDisplay">
-                                0.000
-                            </span>
-
-                            s
-
-                        </div>
-
-
-                        <input
-                            type="range"
-                            class="time-slider"
-                            id="timeSlider"
-                            min="0"
-                            max="1"
-                            step="0.001"
-                            value="0">
-
-                    </div>
-
-
-                    <!-- ANIMATION CONTROLS -->
-
-                    <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
-
-                        <button
-                            type="button"
-                            class="btn btn-primary"
-                            id="playButton">
-
-                            <i class="bi bi-play-fill"></i>
-
-                            Play
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="btn btn-outline-secondary"
-                            id="pauseButton">
-
-                            <i class="bi bi-pause-fill"></i>
-
-                            Pause
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="btn btn-outline-secondary"
-                            id="animationResetButton">
-
-                            <i class="bi bi-arrow-counterclockwise"></i>
-
-                            Reset Position
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 SELECTED POINT INFORMATION
-            ================================================== -->
-
-            <div class="pm-card">
-
-                <div class="pm-card-header">
-
-                    <i class="bi bi-crosshair"></i>
-
-                    Selected Point Analysis
-
-                </div>
-
-                <div class="pm-card-body">
-
-                    <div class="row g-4">
-
-
-                        <!-- POINT DATA -->
-
-                        <div class="col-lg-6">
-
-                            <div class="selected-point">
-
-                                <div class="selected-point-title">
-
-                                    <i class="bi bi-geo-alt"></i>
-
-                                    Projectile Position
-
-                                </div>
-
-
-                                <div class="selected-value-row">
-
-                                    <span class="selected-value-label">
-                                        Time \(t\)
-                                    </span>
-
-                                    <span
-                                        class="selected-value-number"
-                                        id="selectedTime">
-                                        0.000 s
-                                    </span>
-
-                                </div>
-
-
-                                <div class="selected-value-row">
-
-                                    <span class="selected-value-label">
-                                        Horizontal Position \(x\)
-                                    </span>
-
-                                    <span
-                                        class="selected-value-number"
-                                        id="selectedX">
-                                        0.000 m
-                                    </span>
-
-                                </div>
-
-
-                                <div class="selected-value-row">
-
-                                    <span class="selected-value-label">
-                                        Elevation \(y\)
-                                    </span>
-
-                                    <span
-                                        class="selected-value-number"
-                                        id="selectedY">
-                                        0.000 m
-                                    </span>
-
-                                </div>
-
-
-                                <div class="selected-value-row">
-
-                                    <span class="selected-value-label">
-                                        Horizontal Velocity \(v_x\)
-                                    </span>
-
-                                    <span
-                                        class="selected-value-number"
-                                        id="selectedVx">
-                                        0.000 m/s
-                                    </span>
-
-                                </div>
-
-
-                                <div class="selected-value-row">
-
-                                    <span class="selected-value-label">
-                                        Vertical Velocity \(v_y\)
-                                    </span>
-
-                                    <span
-                                        class="selected-value-number"
-                                        id="selectedVy">
-                                        0.000 m/s
-                                    </span>
-
-                                </div>
-
-
-                                <div class="selected-value-row">
-
-                                    <span class="selected-value-label">
-                                        Instantaneous Speed
-                                    </span>
-
-                                    <span
-                                        class="selected-value-number"
-                                        id="selectedSpeed">
-                                        0.000 m/s
-                                    </span>
-
-                                </div>
-
-
-                                <div class="selected-value-row">
-
-                                    <span class="selected-value-label">
-                                        Direction of Velocity
-                                    </span>
-
-                                    <span
-                                        class="selected-value-number"
-                                        id="selectedAngle">
-                                        0.000°
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- COMPONENT DESCRIPTION -->
-
-                        <div class="col-lg-6">
-
-                            <div class="selected-point">
-
-                                <div class="selected-point-title">
-
-                                    <i class="bi bi-arrows"></i>
-
-                                    Motion Components
-
-                                </div>
-
-
-                                <p class="mb-3">
-
-                                    At the selected point, the velocity vector
-                                    is divided into independent horizontal and
-                                    vertical components.
-
+                                <p>
+                                    Hover, click, or drag across the
+                                    trajectory to inspect individual points.
                                 </p>
 
+                            </div>
 
-                                <div class="equation-box">
 
-                                    \[
-                                    v_x=v_0\cos(\theta)
-                                    \]
+                            <div class="output-badge">
 
+                                <i class="bi bi-cursor"></i>
+
+                                Interactive
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="difference-graph">
+
+                            <canvas
+                                id="projectileCanvas">
+                            </canvas>
+
+
+                            <!-- =================================================
+                             GRAPH TOOLTIP
+                        ================================================== -->
+
+                            <div
+                                id="graphTooltip"
+                                class="graph-tooltip">
+
+                                <div class="tooltip-title">
+                                    Projectile Point
                                 </div>
 
-
-                                <div class="equation-box">
-
-                                    \[
-                                    v_y=v_0\sin(\theta)-gt
-                                    \]
-
+                                <div>
+                                    t =
+                                    <strong id="tooltipTime">
+                                        0
+                                    </strong>
+                                    s
                                 </div>
 
+                                <div>
+                                    x =
+                                    <strong id="tooltipX">
+                                        0
+                                    </strong>
+                                    m
+                                </div>
 
-                                <div class="equation-box mb-0">
+                                <div>
+                                    y =
+                                    <strong id="tooltipY">
+                                        0
+                                    </strong>
+                                    m
+                                </div>
 
-                                    \[
-                                    v=\sqrt{v_x^2+v_y^2}
-                                    \]
+                                <div>
+                                    vₓ =
+                                    <strong id="tooltipVx">
+                                        0
+                                    </strong>
+                                    m/s
+                                </div>
 
+                                <div>
+                                    vᵧ =
+                                    <strong id="tooltipVy">
+                                        0
+                                    </strong>
+                                    m/s
+                                </div>
+
+                                <div>
+                                    speed =
+                                    <strong id="tooltipSpeed">
+                                        0
+                                    </strong>
+                                    m/s
                                 </div>
 
                             </div>
@@ -1444,6 +578,265 @@ require_once "../src/connection.php";
                         </div>
 
                     </div>
+
+
+                    <!-- =================================================
+                     SELECTED POINT
+                ================================================== -->
+
+                    <div class="difference-card">
+
+                        <div class="output-header">
+
+                            <div>
+
+                                <h4>
+                                    Selected Point
+                                </h4>
+
+                                <p>
+                                    Exact projectile values at the
+                                    selected position.
+                                </p>
+
+                            </div>
+
+
+                            <div class="output-badge">
+
+                                <i class="bi bi-crosshair"></i>
+
+                                Point Analysis
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="selected-point-grid">
+
+
+                            <div class="selected-point-item">
+
+                                <span>
+                                    Time
+                                </span>
+
+                                <strong id="selectedTime">
+                                    0.000 s
+                                </strong>
+
+                            </div>
+
+
+                            <div class="selected-point-item">
+
+                                <span>
+                                    Horizontal Distance
+                                </span>
+
+                                <strong id="selectedX">
+                                    0.000 m
+                                </strong>
+
+                            </div>
+
+
+                            <div class="selected-point-item">
+
+                                <span>
+                                    Elevation
+                                </span>
+
+                                <strong id="selectedY">
+                                    0.000 m
+                                </strong>
+
+                            </div>
+
+
+                            <div class="selected-point-item">
+
+                                <span>
+                                    Vertical Velocity
+                                </span>
+
+                                <strong id="selectedVy">
+                                    0.000 m/s
+                                </strong>
+
+                            </div>
+
+
+                            <div class="selected-point-item">
+
+                                <span>
+                                    Horizontal Velocity
+                                </span>
+
+                                <strong id="selectedVx">
+                                    0.000 m/s
+                                </strong>
+
+                            </div>
+
+
+                            <div class="selected-point-item">
+
+                                <span>
+                                    Speed
+                                </span>
+
+                                <strong id="selectedSpeed">
+                                    0.000 m/s
+                                </strong>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                     RESULTS TABLE
+                ================================================== -->
+
+                    <div class="difference-card">
+
+                        <div class="output-header">
+
+                            <div>
+
+                                <h4>
+                                    Trajectory Points
+                                </h4>
+
+                                <p>
+                                    Numerical values along the projectile path.
+                                    Click a row to highlight its point.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="sequence-table-wrapper">
+
+                            <table class="sequence-table">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Point
+                                        </th>
+
+                                        <th>
+                                            t (s)
+                                        </th>
+
+                                        <th>
+                                            x (m)
+                                        </th>
+
+                                        <th>
+                                            y (m)
+                                        </th>
+
+                                        <th>
+                                            vₓ (m/s)
+                                        </th>
+
+                                        <th>
+                                            vᵧ (m/s)
+                                        </th>
+
+                                        <th>
+                                            Speed (m/s)
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody
+                                    id="trajectoryTable">
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                     RESULTS SUMMARY
+                ================================================== -->
+
+                    <div class="result-summary">
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Time of Flight
+                            </span>
+
+                            <strong id="summaryFlightTime">
+                                0 s
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Maximum Height
+                            </span>
+
+                            <strong id="summaryMaxHeight">
+                                0 m
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Horizontal Range
+                            </span>
+
+                            <strong id="summaryRange">
+                                0 m
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Time to Maximum Height
+                            </span>
+
+                            <strong id="summaryMaxTime">
+                                0 s
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
 
                 </div>
 
@@ -1451,497 +844,75 @@ require_once "../src/connection.php";
 
 
             <!-- =================================================
-                 TRAJECTORY DATA TABLE
-            ================================================== -->
+             THEORY REFERENCE
+        ================================================== -->
 
-            <div class="pm-card">
+            <div class="difference-reference">
 
-                <div class="pm-card-header">
+                <div class="reference-title">
 
-                    <i class="bi bi-table"></i>
+                    <i class="bi bi-info-circle"></i>
 
-                    Trajectory Data
+                    Projectile Motion Reference
 
                 </div>
 
-                <div class="pm-card-body">
 
-                    <div class="table-responsive">
+                <div class="reference-grid">
 
-                        <table class="table table-bordered">
 
-                            <thead>
+                    <div class="reference-item">
 
-                                <tr>
+                        <strong>
+                            Horizontal Motion
+                        </strong>
 
-                                    <th>Point</th>
-
-                                    <th>Time \(t\) (s)</th>
-
-                                    <th>Position \(x\) (m)</th>
-
-                                    <th>Elevation \(y\) (m)</th>
-
-                                    <th>\(v_x\) (m/s)</th>
-
-                                    <th>\(v_y\) (m/s)</th>
-
-                                    <th>Speed (m/s)</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody id="trajectoryTableBody"></tbody>
-
-                        </table>
+                        <span>
+                            x(t) = v₀ cos(θ)t
+                        </span>
 
                     </div>
 
-                </div>
 
-            </div>
+                    <div class="reference-item">
 
+                        <strong>
+                            Vertical Motion
+                        </strong>
 
-            <!-- =================================================
-                 EQUATIONS
-            ================================================== -->
-
-            <div class="pm-card">
-
-                <div class="pm-card-header">
-
-                    <i class="bi bi-function"></i>
-
-                    Equations Used
-
-                </div>
-
-                <div class="pm-card-body">
-
-
-                    <div class="row g-3">
-
-
-                        <!-- COMPONENTS -->
-
-                        <div class="col-lg-6">
-
-                            <div class="equation-box">
-
-                                <div class="equation-title">
-                                    Initial Velocity Components
-                                </div>
-
-                                \[
-                                v_{x0}=v_0\cos(\theta)
-                                \]
-
-                                \[
-                                v_{y0}=v_0\sin(\theta)
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- POSITION -->
-
-                        <div class="col-lg-6">
-
-                            <div class="equation-box">
-
-                                <div class="equation-title">
-                                    Position Equations
-                                </div>
-
-                                \[
-                                x(t)=v_0\cos(\theta)t
-                                \]
-
-                                \[
-                                y(t)=y_0+
-                                v_0\sin(\theta)t-
-                                \frac{1}{2}gt^2
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- VELOCITY -->
-
-                        <div class="col-lg-6">
-
-                            <div class="equation-box">
-
-                                <div class="equation-title">
-                                    Velocity Equations
-                                </div>
-
-                                \[
-                                v_x=v_0\cos(\theta)
-                                \]
-
-                                \[
-                                v_y=v_0\sin(\theta)-gt
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- FLIGHT TIME -->
-
-                        <div class="col-lg-6">
-
-                            <div class="equation-box">
-
-                                <div class="equation-title">
-                                    Flight Time
-                                </div>
-
-                                \[
-                                t_f=
-                                \frac{
-                                v_{y0}+
-                                \sqrt{
-                                v_{y0}^{2}+2gy_0
-                                }
-                                }{g}
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- MAX HEIGHT -->
-
-                        <div class="col-lg-6">
-
-                            <div class="equation-box">
-
-                                <div class="equation-title">
-                                    Maximum Elevation
-                                </div>
-
-                                \[
-                                y_{\max}
-                                =
-                                y_0+
-                                \frac{v_{y0}^{2}}{2g}
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- RANGE -->
-
-                        <div class="col-lg-6">
-
-                            <div class="equation-box">
-
-                                <div class="equation-title">
-                                    Horizontal Range
-                                </div>
-
-                                \[
-                                R=v_x t_f
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- TRAJECTORY -->
-
-                        <div class="col-12">
-
-                            <div class="equation-box">
-
-                                <div class="equation-title">
-                                    Trajectory Equation
-                                </div>
-
-                                \[
-                                y(x)
-                                =
-                                y_0+
-                                x\tan(\theta)
-                                -
-                                \frac{
-                                gx^2
-                                }{
-                                2v_0^2\cos^2(\theta)
-                                }
-                                \]
-
-                            </div>
-
-                        </div>
+                        <span>
+                            y(t) = y₀ + v₀sin(θ)t − ½gt²
+                        </span>
 
                     </div>
 
-                </div>
 
-            </div>
+                    <div class="reference-item">
 
+                        <strong>
+                            Maximum Height
+                        </strong>
 
-            <!-- =================================================
-                 GROUND-LEVEL SPECIAL CASE
-            ================================================== -->
-
-            <div class="pm-card">
-
-                <div class="pm-card-header">
-
-                    <i class="bi bi-book"></i>
-
-                    Ground-Level Launch \((y_0=0)\)
-
-                </div>
-
-                <div class="pm-card-body">
-
-                    <p>
-
-                        When the projectile is launched and lands at the same
-                        elevation, the equations simplify to:
-
-                    </p>
-
-
-                    <div class="row g-3">
-
-
-                        <div class="col-md-6">
-
-                            <div class="equation-box">
-
-                                \[
-                                T=
-                                \frac{
-                                2v_0\sin(\theta)
-                                }{g}
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-6">
-
-                            <div class="equation-box">
-
-                                \[
-                                H_{\max}
-                                =
-                                \frac{
-                                v_0^2\sin^2(\theta)
-                                }{
-                                2g
-                                }
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-6">
-
-                            <div class="equation-box">
-
-                                \[
-                                R=
-                                \frac{
-                                v_0^2\sin(2\theta)
-                                }{g}
-                                \]
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-6">
-
-                            <div class="equation-box">
-
-                                \[
-                                R_{\max}
-                                =
-                                \frac{v_0^2}{g}
-                                \]
-
-                                <br>
-
-                                at
-
-                                \[
-                                \theta=45^\circ
-                                \]
-
-                            </div>
-
-                        </div>
+                        <span>
+                            H = y₀ + v₀²sin²(θ)/(2g)
+                        </span>
 
                     </div>
 
-                </div>
 
-            </div>
+                    <div class="reference-item">
 
+                        <strong>
+                            Trajectory
+                        </strong>
 
-            <!-- =================================================
-                 KEY CONCEPTS
-            ================================================== -->
-
-            <div class="pm-card">
-
-                <div class="pm-card-header">
-
-                    <i class="bi bi-lightbulb"></i>
-
-                    Key Concepts
-
-                </div>
-
-                <div class="pm-card-body">
-
-                    <div class="row g-3">
-
-
-                        <div class="col-md-3">
-
-                            <div class="concept-card">
-
-                                <div class="concept-icon">
-
-                                    <i class="bi bi-arrow-right"></i>
-
-                                </div>
-
-                                <div class="concept-title">
-
-                                    Horizontal Motion
-
-                                </div>
-
-                                <div class="concept-text">
-
-                                    Horizontal acceleration is zero when
-                                    air resistance is neglected.
-
-                                    \[
-                                    a_x=0
-                                    \]
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-3">
-
-                            <div class="concept-card">
-
-                                <div class="concept-icon">
-
-                                    <i class="bi bi-arrow-down"></i>
-
-                                </div>
-
-                                <div class="concept-title">
-
-                                    Vertical Motion
-
-                                </div>
-
-                                <div class="concept-text">
-
-                                    The projectile experiences a constant
-                                    downward acceleration.
-
-                                    \[
-                                    a_y=-g
-                                    \]
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-3">
-
-                            <div class="concept-card">
-
-                                <div class="concept-icon">
-
-                                    <i class="bi bi-diagram-3"></i>
-
-                                </div>
-
-                                <div class="concept-title">
-
-                                    Independent Components
-
-                                </div>
-
-                                <div class="concept-text">
-
-                                    Horizontal and vertical motions can be
-                                    analyzed independently and combined
-                                    vectorially.
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-3">
-
-                            <div class="concept-card">
-
-                                <div class="concept-icon">
-
-                                    <i class="bi bi-symmetry-horizontal"></i>
-
-                                </div>
-
-                                <div class="concept-title">
-
-                                    Symmetry
-
-                                </div>
-
-                                <div class="concept-text">
-
-                                    The trajectory is symmetric about the
-                                    maximum-height point only when launch
-                                    and landing elevations are equal.
-
-                                </div>
-
-                            </div>
-
-                        </div>
+                        <span>
+                            y(x) = y₀ + x tan(θ)
+                            − gx²/(2v₀²cos²(θ))
+                        </span>
 
                     </div>
+
 
                 </div>
 
@@ -1953,1655 +924,3457 @@ require_once "../src/connection.php";
     </main>
 
 
-    <!-- =====================================================
-         PROJECTILE MOTION JAVASCRIPT
-    ====================================================== -->
+    <!-- =========================================================
+     PROJECTILE MOTION STYLES
+========================================================== -->
+
+    <style>
+        /* =====================================================
+       THEME VARIABLES
+    ====================================================== */
+
+        :root {
+
+            --difference-bg: #ffffff;
+
+            --difference-border: #e4e7ec;
+
+            --difference-input-border: #d0d5dd;
+
+            --difference-text: #172033;
+
+            --difference-muted: #667085;
+
+            --difference-secondary: #475467;
+
+            --difference-hover: #f8fafc;
+
+            --difference-panel: #ffffff;
+
+            --difference-grid: #e4e7ec;
+
+            --difference-axis: #475467;
+
+            --difference-blue: #2563eb;
+
+            --difference-header: #f8fafc;
+
+            --difference-point: #ef4444;
+
+            --difference-guide: #94a3b8;
+
+        }
+
+
+        /* =====================================================
+       DARK MODE
+    ====================================================== */
+
+        html[data-theme="dark"] {
+
+            --difference-bg: #151922;
+
+            --difference-border: #2a3140;
+
+            --difference-input-border: #3a4252;
+
+            --difference-text: #f1f5f9;
+
+            --difference-muted: #a8b0bf;
+
+            --difference-secondary: #c2c9d3;
+
+            --difference-hover: #1c2230;
+
+            --difference-panel: #151922;
+
+            --difference-grid: #303847;
+
+            --difference-axis: #aeb7c5;
+
+            --difference-blue: #60a5fa;
+
+            --difference-header: #1c2230;
+
+            --difference-point: #f87171;
+
+            --difference-guide: #64748b;
+
+        }
+
+
+        /* =====================================================
+       MAIN LAYOUT
+    ====================================================== */
+
+        .difference-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                310px minmax(0, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        /* =====================================================
+       CONTROL PANEL
+    ====================================================== */
+
+        .difference-controls {
+
+            background:
+                var(--difference-bg);
+
+            border:
+                1px solid var(--difference-border);
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+        .control-section {
+
+            padding: 17px;
+
+            border-bottom:
+                1px solid var(--difference-border);
+
+        }
+
+
+        .control-section-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 14px;
+
+            color:
+                var(--difference-text);
+
+            font-size: .82rem;
+
+            font-weight: 700;
+
+        }
+
+
+        .control-section-title i {
+
+            color:
+                var(--difference-blue);
+
+        }
+
+
+        /* =====================================================
+       LABELS
+    ====================================================== */
+
+        .difference-label {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 6px;
+
+            color:
+                var(--difference-secondary);
+
+            font-size: .71rem;
+
+            font-weight: 600;
+
+        }
+
+
+        .difference-label span {
+
+            color:
+                var(--difference-blue);
+
+            font-weight: 700;
+
+        }
+
+
+        /* =====================================================
+       INPUTS
+    ====================================================== */
+
+        .difference-input {
+
+            width: 100%;
+
+            height: 38px;
+
+            padding:
+                0 10px;
+
+            border:
+                1px solid var(--difference-input-border);
+
+            border-radius: 6px;
+
+            outline: none;
+
+            background:
+                var(--difference-panel);
+
+            color:
+                var(--difference-text);
+
+            font-family: inherit;
+
+            font-size: .75rem;
+
+        }
+
+
+        .difference-input:focus {
+
+            border-color:
+                var(--difference-blue);
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, .10);
+
+        }
+
+
+        /* =====================================================
+       RANGE
+    ====================================================== */
+
+        .input-parameter {
+
+            margin-top: 15px;
+
+        }
+
+
+        .difference-range {
+
+            width: 100%;
+
+            accent-color:
+                var(--difference-blue);
+
+            cursor: pointer;
+
+        }
+
+
+        /* =====================================================
+       GRAPH OPTIONS
+    ====================================================== */
+
+        .graph-option {
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .graph-option label {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            color:
+                var(--difference-secondary);
+
+            font-size: .71rem;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+        }
+
+
+        .graph-option input {
+
+            width: 16px;
+
+            height: 16px;
+
+            accent-color:
+                var(--difference-blue);
+
+            cursor: pointer;
+
+        }
+
+
+        /* =====================================================
+       ACTIONS
+    ====================================================== */
+
+        .difference-actions {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 8px;
+
+            padding: 14px;
+
+            background:
+                var(--difference-hover);
+
+        }
+
+
+        .difference-button {
+
+            height: 38px;
+
+            border:
+                1px solid var(--difference-input-border);
+
+            border-radius: 6px;
+
+            background:
+                var(--difference-panel);
+
+            color:
+                var(--difference-secondary);
+
+            font-family: inherit;
+
+            font-size: .72rem;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                all .2s ease;
+
+        }
+
+
+        .difference-button:hover {
+
+            background:
+                var(--difference-hover);
+
+            color:
+                var(--difference-text);
+
+        }
+
+
+        .difference-button.primary {
+
+            background:
+                var(--difference-blue);
+
+            border-color:
+                var(--difference-blue);
+
+            color:
+                #ffffff;
+
+        }
+
+
+        /* =====================================================
+       OUTPUT
+    ====================================================== */
+
+        .difference-output {
+
+            min-width: 0;
+
+        }
+
+
+        /* =====================================================
+       EQUATION DISPLAY
+    ====================================================== */
+
+        .equation-display {
+
+            margin-bottom: 14px;
+
+            padding: 17px 20px;
+
+            background:
+                var(--difference-bg);
+
+            border:
+                1px solid var(--difference-border);
+
+            border-radius: 10px;
+
+        }
+
+
+        .equation-display-label {
+
+            margin-bottom: 7px;
+
+            color:
+                var(--difference-muted);
+
+            font-size: .66rem;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: .03em;
+
+        }
+
+
+        .equation {
+
+            color:
+                var(--difference-text);
+
+            font-family:
+                "Times New Roman",
+                serif;
+
+            font-size: 1.1rem;
+
+        }
+
+
+        /* =====================================================
+       OUTPUT CARD
+    ====================================================== */
+
+        .difference-card {
+
+            margin-bottom: 14px;
+
+            background:
+                var(--difference-bg);
+
+            border:
+                1px solid var(--difference-border);
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+        .output-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding:
+                16px 18px;
+
+            border-bottom:
+                1px solid var(--difference-border);
+
+        }
+
+
+        .output-header h4 {
+
+            margin:
+                0 0 3px;
+
+            color:
+                var(--difference-text);
+
+            font-size: .9rem;
+
+            font-weight: 700;
+
+        }
+
+
+        .output-header p {
+
+            margin: 0;
+
+            color:
+                var(--difference-muted);
+
+            font-size: .68rem;
+
+        }
+
+
+        .output-badge {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            padding:
+                5px 8px;
+
+            border-radius: 5px;
+
+            background:
+                var(--difference-hover);
+
+            color:
+                var(--difference-secondary);
+
+            font-size: .63rem;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+
+        /* =====================================================
+       GRAPH
+    ====================================================== */
+
+        .difference-graph {
+
+            position: relative;
+
+            width: 100%;
+
+            height: 500px;
+
+            padding: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+        #projectileCanvas {
+
+            width: 100%;
+
+            height: 100%;
+
+            display: block;
+
+            cursor:
+                crosshair;
+
+        }
+
+
+        /* =====================================================
+       GRAPH TOOLTIP
+    ====================================================== */
+
+        .graph-tooltip {
+
+            position: absolute;
+
+            top: 15px;
+
+            right: 15px;
+
+            min-width: 175px;
+
+            padding: 10px 12px;
+
+            background:
+                var(--difference-panel);
+
+            border:
+                1px solid var(--difference-border);
+
+            border-radius: 7px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, .10);
+
+            color:
+                var(--difference-secondary);
+
+            font-size: .66rem;
+
+            line-height: 1.7;
+
+            pointer-events: none;
+
+            opacity: 0;
+
+            transform:
+                translateY(-4px);
+
+            transition:
+                opacity .12s ease,
+                transform .12s ease;
+
+            z-index: 10;
+
+        }
+
+
+        .graph-tooltip.visible {
+
+            opacity: 1;
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        .tooltip-title {
+
+            margin-bottom: 3px;
+
+            color:
+                var(--difference-text);
+
+            font-size: .7rem;
+
+            font-weight: 700;
+
+        }
+
+
+        .graph-tooltip strong {
+
+            color:
+                var(--difference-blue);
+
+        }
+
+
+        /* =====================================================
+       SELECTED POINT
+    ====================================================== */
+
+        .selected-point-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+        }
+
+
+        .selected-point-item {
+
+            padding:
+                14px 16px;
+
+            border-right:
+                1px solid var(--difference-border);
+
+            border-bottom:
+                1px solid var(--difference-border);
+
+        }
+
+
+        .selected-point-item:nth-child(3n) {
+
+            border-right: none;
+
+        }
+
+
+        .selected-point-item:nth-child(n + 4) {
+
+            border-bottom: none;
+
+        }
+
+
+        .selected-point-item span {
+
+            display: block;
+
+            margin-bottom: 4px;
+
+            color:
+                var(--difference-muted);
+
+            font-size: .63rem;
+
+            font-weight: 600;
+
+        }
+
+
+        .selected-point-item strong {
+
+            color:
+                var(--difference-text);
+
+            font-size: .76rem;
+
+        }
+
+
+        /* =====================================================
+       TABLE
+    ====================================================== */
+
+        .sequence-table-wrapper {
+
+            max-height: 330px;
+
+            overflow-y: auto;
+
+        }
+
+
+        .sequence-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+
+        .sequence-table th {
+
+            position: sticky;
+
+            top: 0;
+
+            padding:
+                10px 10px;
+
+            background:
+                var(--difference-header);
+
+            border-bottom:
+                1px solid var(--difference-border);
+
+            color:
+                var(--difference-secondary);
+
+            font-size: .64rem;
+
+            text-align: right;
+
+            white-space: nowrap;
+
+        }
+
+
+        .sequence-table th:first-child {
+
+            text-align: center;
+
+        }
+
+
+        .sequence-table td {
+
+            padding:
+                8px 10px;
+
+            border-bottom:
+                1px solid var(--difference-border);
+
+            color:
+                var(--difference-text);
+
+            font-family:
+                "Courier New",
+                monospace;
+
+            font-size: .66rem;
+
+            text-align: right;
+
+            white-space: nowrap;
+
+        }
+
+
+        .sequence-table td:first-child {
+
+            text-align: center;
+
+            font-weight: 700;
+
+        }
+
+
+        .sequence-table tr {
+
+            cursor: pointer;
+
+            transition:
+                background .15s ease;
+
+        }
+
+
+        .sequence-table tr:hover td {
+
+            background:
+                var(--difference-hover);
+
+        }
+
+
+        .sequence-table tr.selected td {
+
+            background:
+                rgba(37, 99, 235, .10);
+
+        }
+
+
+        /* =====================================================
+       SUMMARY
+    ====================================================== */
+
+        .result-summary {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            margin-bottom: 14px;
+
+            background:
+                var(--difference-bg);
+
+            border:
+                1px solid var(--difference-border);
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+        .summary-item {
+
+            padding:
+                13px 15px;
+
+            border-right:
+                1px solid var(--difference-border);
+
+        }
+
+
+        .summary-item:last-child {
+
+            border-right: none;
+
+        }
+
+
+        .summary-item span {
+
+            display: block;
+
+            margin-bottom: 4px;
+
+            color:
+                var(--difference-muted);
+
+            font-size: .63rem;
+
+            font-weight: 600;
+
+        }
+
+
+        .summary-item strong {
+
+            color:
+                var(--difference-text);
+
+            font-size: .75rem;
+
+        }
+
+
+        /* =====================================================
+       REFERENCE
+    ====================================================== */
+
+        .difference-reference {
+
+            background:
+                var(--difference-bg);
+
+            border:
+                1px solid var(--difference-border);
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+        .reference-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                14px 17px;
+
+            border-bottom:
+                1px solid var(--difference-border);
+
+            color:
+                var(--difference-text);
+
+            font-size: .8rem;
+
+            font-weight: 700;
+
+        }
+
+
+        .reference-title i {
+
+            color:
+                var(--difference-blue);
+
+        }
+
+
+        .reference-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+        }
+
+
+        .reference-item {
+
+            padding:
+                15px 17px;
+
+            border-right:
+                1px solid var(--difference-border);
+
+        }
+
+
+        .reference-item:last-child {
+
+            border-right: none;
+
+        }
+
+
+        .reference-item strong {
+
+            display: block;
+
+            margin-bottom: 5px;
+
+            color:
+                var(--difference-text);
+
+            font-size: .72rem;
+
+        }
+
+
+        .reference-item span {
+
+            color:
+                var(--difference-muted);
+
+            font-family:
+                "Times New Roman",
+                serif;
+
+            font-size: .76rem;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+       RESPONSIVE
+    ====================================================== */
+
+        @media (max-width: 1100px) {
+
+            .difference-layout {
+
+                grid-template-columns:
+                    280px minmax(0, 1fr);
+
+            }
+
+
+            .reference-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .selected-point-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .selected-point-item:nth-child(3n) {
+
+                border-right:
+                    1px solid var(--difference-border);
+
+            }
+
+
+            .selected-point-item:nth-child(2n) {
+
+                border-right:
+                    none;
+
+            }
+
+
+            .selected-point-item:nth-child(n + 4) {
+
+                border-bottom:
+                    1px solid var(--difference-border);
+
+            }
+
+
+            .selected-point-item:nth-child(n + 5) {
+
+                border-bottom:
+                    none;
+
+            }
+
+        }
+
+
+        @media (max-width: 850px) {
+
+            .difference-layout {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .difference-graph {
+
+                height: 390px;
+
+            }
+
+
+            .result-summary {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .summary-item:nth-child(2) {
+
+                border-right:
+                    none;
+
+            }
+
+
+            .summary-item:nth-child(1),
+            .summary-item:nth-child(2) {
+
+                border-bottom:
+                    1px solid var(--difference-border);
+
+            }
+
+
+            .reference-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .reference-item {
+
+                border-right: none;
+
+                border-bottom:
+                    1px solid var(--difference-border);
+
+            }
+
+
+            .reference-item:last-child {
+
+                border-bottom: none;
+
+            }
+
+
+            .output-header {
+
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+
+            }
+
+
+            .selected-point-grid {
+
+                grid-template-columns:
+                    1fr 1fr;
+
+            }
+
+
+            .graph-tooltip {
+
+                min-width:
+                    155px;
+
+                font-size:
+                    .61rem;
+
+            }
+
+        }
+    </style>
+
+
+    <!-- =========================================================
+     PROJECTILE MOTION JAVASCRIPT
+========================================================== -->
 
     <script>
-        /* =====================================================
-           GLOBAL VARIABLES
-        ====================================================== */
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
 
-        let trajectoryChart = null;
 
-        let animationFrame = null;
+                /* =================================================
+                   ELEMENTS
+                ================================================== */
 
-        let isAnimating = false;
+                const initialVelocity =
+                    document.getElementById(
+                        "initialVelocity"
+                    );
 
-        let projectileData = {
+                const launchAngle =
+                    document.getElementById(
+                        "launchAngle"
+                    );
 
-            v0: 20,
+                const initialHeight =
+                    document.getElementById(
+                        "initialHeight"
+                    );
 
-            angle: 45,
+                const gravity =
+                    document.getElementById(
+                        "gravity"
+                    );
 
-            y0: 0,
+                const showPoints =
+                    document.getElementById(
+                        "showPoints"
+                    );
 
-            g: 9.81,
+                const showGrid =
+                    document.getElementById(
+                        "showGrid"
+                    );
 
-            vx0: 0,
+                const showElevation =
+                    document.getElementById(
+                        "showElevation"
+                    );
 
-            vy0: 0,
+                const pointCount =
+                    document.getElementById(
+                        "pointCount"
+                    );
 
-            flightTime: 0,
+                const canvas =
+                    document.getElementById(
+                        "projectileCanvas"
+                    );
 
-            maxHeight: 0,
+                const ctx =
+                    canvas.getContext(
+                        "2d"
+                    );
 
-            maxTime: 0,
 
-            range: 0
+                const tooltip =
+                    document.getElementById(
+                        "graphTooltip"
+                    );
 
-        };
 
+                /* =================================================
+                   DATA
+                ================================================== */
 
-        /* =====================================================
-           DOM ELEMENTS
-        ====================================================== */
+                let trajectory = [];
 
-        const velocityInput =
-            document.getElementById("velocityInput");
+                let selectedIndex = 0;
 
-        const angleInput =
-            document.getElementById("angleInput");
+                let hoverIndex = -1;
 
-        const heightInput =
-            document.getElementById("heightInput");
+                let isDragging = false;
 
-        const gravityInput =
-            document.getElementById("gravityInput");
 
-        const timeSlider =
-            document.getElementById("timeSlider");
+                /* =================================================
+                   GRAPH SCALE
+                ================================================== */
 
-        const currentTimeDisplay =
-            document.getElementById("currentTimeDisplay");
+                let graphScale = {
 
-        const errorMessage =
-            document.getElementById("errorMessage");
+                    minX: 0,
 
-        const errorText =
-            document.getElementById("errorText");
+                    maxX: 1,
 
-        const trajectoryTableBody =
-            document.getElementById("trajectoryTableBody");
+                    minY: 0,
 
+                    maxY: 1
 
-        /* =====================================================
-           FORMAT NUMBER
-        ====================================================== */
+                };
 
-        function formatNumber(value, decimals = 3) {
 
-            if (!Number.isFinite(value)) {
-                return "0.000";
-            }
+                /* =================================================
+                   FORMAT NUMBER
+                ================================================== */
 
-            return Number(value).toFixed(decimals);
+                function formatNumber(
+                    value,
+                    decimals = 3
+                ) {
 
-        }
+                    if (
+                        Math.abs(value) <
+                        0.0000001
+                    ) {
 
+                        return "0";
 
-        /* =====================================================
-           SHOW ERROR
-        ====================================================== */
+                    }
 
-        function showError(message) {
 
-            errorText.textContent = message;
+                    return Number(
+                        value.toFixed(
+                            decimals
+                        )
+                    ).toString();
 
-            errorMessage.classList.remove("d-none");
+                }
 
-        }
 
+                /* =================================================
+                   GET THEME COLORS
+                ================================================== */
 
-        /* =====================================================
-           HIDE ERROR
-        ====================================================== */
+                function getThemeColors() {
 
-        function hideError() {
+                    const styles =
+                        getComputedStyle(
+                            document.documentElement
+                        );
 
-            errorMessage.classList.add("d-none");
 
-        }
+                    return {
 
+                        text: styles.getPropertyValue(
+                            "--difference-text"
+                        ).trim(),
 
-        /* =====================================================
-           CALCULATE PROJECTILE
-        ====================================================== */
+                        muted: styles.getPropertyValue(
+                            "--difference-muted"
+                        ).trim(),
 
-        function calculateProjectile() {
+                        grid: styles.getPropertyValue(
+                            "--difference-grid"
+                        ).trim(),
 
-            hideError();
+                        axis: styles.getPropertyValue(
+                            "--difference-axis"
+                        ).trim(),
 
-            stopAnimation();
+                        blue: styles.getPropertyValue(
+                            "--difference-blue"
+                        ).trim(),
 
+                        point: styles.getPropertyValue(
+                            "--difference-point"
+                        ).trim(),
 
-            const v0 =
-                parseFloat(velocityInput.value);
+                        guide: styles.getPropertyValue(
+                            "--difference-guide"
+                        ).trim()
 
-            const angle =
-                parseFloat(angleInput.value);
+                    };
 
-            const y0 =
-                parseFloat(heightInput.value);
+                }
 
-            const g =
-                parseFloat(gravityInput.value);
 
+                /* =================================================
+                   COMPUTE PROJECTILE
+                ================================================== */
 
-            /* -----------------------------------------------
-               VALIDATION
-            ------------------------------------------------ */
+                function computeProjectile() {
 
-            if (
-                !Number.isFinite(v0) ||
-                !Number.isFinite(angle) ||
-                !Number.isFinite(y0) ||
-                !Number.isFinite(g)
-            ) {
+                    const v0 =
+                        parseFloat(
+                            initialVelocity.value
+                        ) || 0;
 
-                showError(
-                    "Please enter valid numerical values."
-                );
 
-                return;
+                    const angle =
+                        parseFloat(
+                            launchAngle.value
+                        ) || 0;
 
-            }
 
+                    const y0 =
+                        parseFloat(
+                            initialHeight.value
+                        ) || 0;
 
-            if (v0 < 0) {
 
-                showError(
-                    "Initial velocity cannot be negative."
-                );
+                    const g =
+                        parseFloat(
+                            gravity.value
+                        ) || 9.81;
 
-                return;
 
-            }
+                    const numberOfPoints =
+                        parseInt(
+                            pointCount.value
+                        ) || 21;
 
 
-            if (angle < 0 || angle > 90) {
+                    const theta =
+                        angle *
+                        Math.PI /
+                        180;
 
-                showError(
-                    "Launch angle must be between 0° and 90°."
-                );
 
-                return;
+                    const vx0 =
+                        v0 *
+                        Math.cos(theta);
 
-            }
 
+                    const vy0 =
+                        v0 *
+                        Math.sin(theta);
 
-            if (y0 < 0) {
 
-                showError(
-                    "Initial elevation cannot be negative."
-                );
+                    /* =============================================
+                       TIME OF FLIGHT
+                    ============================================== */
 
-                return;
+                    const discriminant =
+                        (
+                            vy0 * vy0
+                        ) +
+                        (
+                            2 *
+                            g *
+                            y0
+                        );
 
-            }
 
+                    let flightTime = 0;
 
-            if (g <= 0) {
 
-                showError(
-                    "Gravitational acceleration must be greater than zero."
-                );
+                    if (
+                        g > 0 &&
+                        discriminant >= 0
+                    ) {
 
-                return;
+                        flightTime =
+                            (
+                                vy0 +
+                                Math.sqrt(
+                                    discriminant
+                                )
+                            ) /
+                            g;
 
-            }
+                    }
 
 
-            /* -----------------------------------------------
-               CONVERT ANGLE TO RADIANS
-            ------------------------------------------------ */
+                    if (
+                        !isFinite(
+                            flightTime
+                        ) ||
+                        flightTime < 0
+                    ) {
 
-            const theta =
-                angle * Math.PI / 180;
+                        flightTime = 0;
 
+                    }
 
-            /* -----------------------------------------------
-               VELOCITY COMPONENTS
-            ------------------------------------------------ */
 
-            const vx0 =
-                v0 * Math.cos(theta);
+                    /* =============================================
+                       MAXIMUM HEIGHT
+                    ============================================== */
 
-            const vy0 =
-                v0 * Math.sin(theta);
+                    const timeToMaximum =
+                        g > 0 ?
+                        vy0 / g :
+                        0;
 
 
-            /* -----------------------------------------------
-               FLIGHT TIME
-               
-               y = y0 + vy0*t - 1/2*g*t²
-               
-               Positive root:
-               
-               t = [vy0 + sqrt(vy0² + 2gy0)] / g
-            ------------------------------------------------ */
+                    const maximumHeight =
+                        y0 +
+                        (
+                            vy0 * vy0
+                        ) /
+                        (
+                            2 * g
+                        );
 
-            const discriminant =
-                vy0 * vy0 + 2 * g * y0;
 
+                    /* =============================================
+                       HORIZONTAL RANGE
+                    ============================================== */
 
-            if (discriminant < 0) {
+                    const horizontalRange =
+                        vx0 *
+                        flightTime;
 
-                showError(
-                    "The projectile does not intersect the ground."
-                );
 
-                return;
+                    /* =============================================
+                       BUILD TRAJECTORY
+                    ============================================== */
 
-            }
+                    trajectory = [];
 
 
-            let flightTime =
-                (
-                    vy0 +
-                    Math.sqrt(discriminant)
-                ) / g;
+                    for (
+                        let i = 0; i < numberOfPoints; i++
+                    ) {
 
+                        const ratio =
+                            numberOfPoints === 1 ?
+                            0 :
+                            i /
+                            (
+                                numberOfPoints -
+                                1
+                            );
 
-            if (!Number.isFinite(flightTime)) {
-                flightTime = 0;
-            }
 
+                        const t =
+                            flightTime *
+                            ratio;
 
-            /* -----------------------------------------------
-               TIME TO MAXIMUM HEIGHT
-            ------------------------------------------------ */
 
-            let maxTime =
-                vy0 / g;
+                        const x =
+                            vx0 *
+                            t;
 
 
-            if (maxTime < 0) {
-                maxTime = 0;
-            }
+                        let y =
+                            y0 +
+                            vy0 *
+                            t -
+                            (
+                                0.5 *
+                                g *
+                                t *
+                                t
+                            );
 
 
-            /* -----------------------------------------------
-               MAXIMUM HEIGHT
-            ------------------------------------------------ */
+                        /* -----------------------------------------
+                           Remove floating-point negative zero
+                        ------------------------------------------ */
 
-            let maxHeight =
-                y0 +
-                (vy0 * vy0) / (2 * g);
+                        if (
+                            Math.abs(y) <
+                            0.000001
+                        ) {
 
+                            y = 0;
 
-            if (!Number.isFinite(maxHeight)) {
-                maxHeight = y0;
-            }
+                        }
 
 
-            /* -----------------------------------------------
-               HORIZONTAL RANGE
-            ------------------------------------------------ */
+                        const vy =
+                            vy0 -
+                            g *
+                            t;
 
-            const range =
-                vx0 * flightTime;
 
+                        const speed =
+                            Math.sqrt(
+                                (
+                                    vx0 *
+                                    vx0
+                                ) +
+                                (
+                                    vy *
+                                    vy
+                                )
+                            );
 
-            /* -----------------------------------------------
-               SAVE DATA
-            ------------------------------------------------ */
 
-            projectileData = {
+                        trajectory.push({
 
-                v0: v0,
+                            index: i,
 
-                angle: angle,
+                            t: t,
 
-                y0: y0,
+                            x: x,
 
-                g: g,
+                            y: y,
 
-                vx0: vx0,
+                            vx: vx0,
 
-                vy0: vy0,
+                            vy: vy,
 
-                flightTime: flightTime,
+                            speed: speed
 
-                maxHeight: maxHeight,
+                        });
 
-                maxTime: maxTime,
+                    }
 
-                range: range
 
-            };
+                    /* =============================================
+                       GRAPH RANGE
+                    ============================================== */
 
+                    graphScale.minX = 0;
 
-            /* -----------------------------------------------
-               UPDATE RESULTS
-            ------------------------------------------------ */
+                    graphScale.maxX =
+                        Math.max(
+                            horizontalRange * 1.08,
+                            1
+                        );
 
-            document.getElementById(
-                    "flightTimeResult"
-                ).textContent =
-                formatNumber(flightTime);
 
+                    graphScale.minY =
+                        Math.min(
+                            0,
+                            y0
+                        );
 
-            document.getElementById(
-                    "maxHeightResult"
-                ).textContent =
-                formatNumber(maxHeight);
 
+                    graphScale.maxY =
+                        Math.max(
+                            maximumHeight * 1.12,
+                            y0 + 1,
+                            1
+                        );
 
-            document.getElementById(
-                    "rangeResult"
-                ).textContent =
-                formatNumber(range);
 
+                    /* =============================================
+                       SUMMARY
+                    ============================================== */
 
-            document.getElementById(
-                    "maxTimeResult"
-                ).textContent =
-                formatNumber(maxTime);
+                    document
+                        .getElementById(
+                            "summaryFlightTime"
+                        )
+                        .textContent =
+                        formatNumber(
+                            flightTime
+                        ) +
+                        " s";
 
 
-            document.getElementById(
-                    "vxResult"
-                ).textContent =
-                formatNumber(vx0);
+                    document
+                        .getElementById(
+                            "summaryMaxHeight"
+                        )
+                        .textContent =
+                        formatNumber(
+                            maximumHeight
+                        ) +
+                        " m";
 
 
-            document.getElementById(
-                    "vyResult"
-                ).textContent =
-                formatNumber(vy0);
+                    document
+                        .getElementById(
+                            "summaryRange"
+                        )
+                        .textContent =
+                        formatNumber(
+                            horizontalRange
+                        ) +
+                        " m";
 
 
-            /* -----------------------------------------------
-               IMPACT VELOCITY
-            ------------------------------------------------ */
+                    document
+                        .getElementById(
+                            "summaryMaxTime"
+                        )
+                        .textContent =
+                        formatNumber(
+                            Math.max(
+                                0,
+                                timeToMaximum
+                            )
+                        ) +
+                        " s";
 
-            const impactVy =
-                vy0 - g * flightTime;
 
+                    /* =============================================
+                       EQUATION
+                    ============================================== */
 
-            const impactSpeed =
-                Math.sqrt(
-                    vx0 * vx0 +
-                    impactVy * impactVy
-                );
+                    document
+                        .getElementById(
+                            "equationDisplay"
+                        )
+                        .textContent =
+                        "x(t) = " +
+                        formatNumber(
+                            vx0
+                        ) +
+                        "t     |     y(t) = " +
+                        formatNumber(
+                            y0
+                        ) +
+                        " + " +
+                        formatNumber(
+                            vy0
+                        ) +
+                        "t − ½(" +
+                        formatNumber(
+                            g
+                        ) +
+                        ")t²";
 
 
-            const impactAngle =
-                Math.atan2(
-                    impactVy,
-                    vx0
-                ) * 180 / Math.PI;
+                    updateTable();
 
 
-            document.getElementById(
-                    "impactSpeedResult"
-                ).textContent =
-                formatNumber(impactSpeed);
+                    selectedIndex =
+                        Math.min(
+                            selectedIndex,
+                            trajectory.length - 1
+                        );
 
 
-            document.getElementById(
-                    "impactAngleResult"
-                ).textContent =
-                formatNumber(impactAngle);
+                    if (
+                        selectedIndex < 0
+                    ) {
 
+                        selectedIndex = 0;
 
-            /* -----------------------------------------------
-               TIME SLIDER
-            ------------------------------------------------ */
+                    }
 
-            timeSlider.max =
-                flightTime;
 
-            timeSlider.value = 0;
+                    updateSelectedPoint(
+                        selectedIndex
+                    );
 
 
-            /* -----------------------------------------------
-               DRAW GRAPH
-            ------------------------------------------------ */
+                    drawGraph();
 
-            buildTrajectoryChart();
+                }
 
-            buildTrajectoryTable();
 
-            updateSelectedPoint(0);
+                /* =================================================
+                   UPDATE TABLE
+                ================================================== */
 
-        }
+                function updateTable() {
 
+                    const table =
+                        document.getElementById(
+                            "trajectoryTable"
+                        );
 
-        /* =====================================================
-           CALCULATE POSITION
-        ====================================================== */
 
-        function getPositionAtTime(t) {
+                    table.innerHTML =
+                        "";
 
-            const data = projectileData;
 
+                    trajectory.forEach(
+                        function(point) {
 
-            const x =
-                data.vx0 * t;
+                            const row =
+                                document.createElement(
+                                    "tr"
+                                );
 
 
-            let y =
-                data.y0 +
-                data.vy0 * t -
-                0.5 * data.g * t * t;
+                            if (
+                                point.index ===
+                                selectedIndex
+                            ) {
 
-
-            /* Prevent tiny floating-point negative values */
-
-            if (
-                Math.abs(y) < 0.000001
-            ) {
-                y = 0;
-            }
-
-
-            return {
-
-                x: x,
-
-                y: y
-
-            };
-
-        }
-
-
-        /* =====================================================
-           CALCULATE VELOCITY
-        ====================================================== */
-
-        function getVelocityAtTime(t) {
-
-            const data = projectileData;
-
-
-            const vx =
-                data.vx0;
-
-
-            const vy =
-                data.vy0 -
-                data.g * t;
-
-
-            const speed =
-                Math.sqrt(
-                    vx * vx +
-                    vy * vy
-                );
-
-
-            const angle =
-                Math.atan2(
-                    vy,
-                    vx
-                ) * 180 / Math.PI;
-
-
-            return {
-
-                vx: vx,
-
-                vy: vy,
-
-                speed: speed,
-
-                angle: angle
-
-            };
-
-        }
-
-
-        /* =====================================================
-           GENERATE TRAJECTORY POINTS
-        ====================================================== */
-
-        function generateTrajectoryPoints() {
-
-            const points = [];
-
-            const numberOfPoints = 101;
-
-
-            for (
-                let i = 0; i < numberOfPoints; i++
-            ) {
-
-                const t =
-                    projectileData.flightTime *
-                    i /
-                    (numberOfPoints - 1);
-
-
-                const position =
-                    getPositionAtTime(t);
-
-
-                points.push({
-
-                    x: position.x,
-
-                    y: position.y,
-
-                    t: t
-
-                });
-
-            }
-
-
-            return points;
-
-        }
-
-
-        /* =====================================================
-           BUILD CHART
-        ====================================================== */
-
-        function buildTrajectoryChart() {
-
-            const canvas =
-                document.getElementById(
-                    "trajectoryChart"
-                );
-
-
-            if (trajectoryChart) {
-
-                trajectoryChart.destroy();
-
-                trajectoryChart = null;
-
-            }
-
-
-            const points =
-                generateTrajectoryPoints();
-
-
-            const trajectoryCoordinates =
-                points.map(point => ({
-
-                    x: point.x,
-
-                    y: point.y
-
-                }));
-
-
-            const launchPoint = {
-
-                x: 0,
-
-                y: projectileData.y0
-
-            };
-
-
-            const apexPoint = {
-
-                x: projectileData.vx0 *
-                    projectileData.maxTime,
-
-                y: projectileData.maxHeight
-
-            };
-
-
-            const landingPoint = {
-
-                x: projectileData.range,
-
-                y: 0
-
-            };
-
-
-            const selectedPosition =
-                getPositionAtTime(0);
-
-
-            const ctx =
-                canvas.getContext("2d");
-
-
-            trajectoryChart =
-                new Chart(
-                    ctx, {
-
-                        type: "scatter",
-
-                        data: {
-
-                            datasets: [
-
-                                /* --------------------------------
-                                   TRAJECTORY
-                                --------------------------------- */
-
-                                {
-
-                                    label: "Projectile Trajectory",
-
-                                    data: trajectoryCoordinates,
-
-                                    showLine: true,
-
-                                    borderWidth: 3,
-
-                                    pointRadius: 0,
-
-                                    tension: 0.1
-
-                                },
-
-
-                                /* --------------------------------
-                                   LAUNCH POINT
-                                --------------------------------- */
-
-                                {
-
-                                    label: "Launch Point",
-
-                                    data: [launchPoint],
-
-                                    pointRadius: 7,
-
-                                    pointHoverRadius: 10,
-
-                                    showLine: false
-
-                                },
-
-
-                                /* --------------------------------
-                                   APEX
-                                --------------------------------- */
-
-                                {
-
-                                    label: "Maximum Height",
-
-                                    data: [apexPoint],
-
-                                    pointRadius: 7,
-
-                                    pointHoverRadius: 10,
-
-                                    showLine: false
-
-                                },
-
-
-                                /* --------------------------------
-                                   LANDING
-                                --------------------------------- */
-
-                                {
-
-                                    label: "Landing Point",
-
-                                    data: [landingPoint],
-
-                                    pointRadius: 7,
-
-                                    pointHoverRadius: 10,
-
-                                    showLine: false
-
-                                },
-
-
-                                /* --------------------------------
-                                   CURRENT PROJECTILE
-                                --------------------------------- */
-
-                                {
-
-                                    label: "Current Position",
-
-                                    data: [selectedPosition],
-
-                                    pointRadius: 9,
-
-                                    pointHoverRadius: 12,
-
-                                    showLine: false
-
-                                }
-
-                            ]
-
-                        },
-
-                        options: {
-
-                            responsive: true,
-
-                            maintainAspectRatio: false,
-
-                            animation: false,
-
-                            interaction: {
-
-                                mode: "nearest",
-
-                                intersect: false
-
-                            },
-
-                            plugins: {
-
-                                legend: {
-
-                                    position: "bottom"
-
-                                },
-
-                                tooltip: {
-
-                                    callbacks: {
-
-                                        label: function(context) {
-
-                                            const x =
-                                                context.parsed.x;
-
-                                            const y =
-                                                context.parsed.y;
-
-                                            return [
-                                                "x = " +
-                                                formatNumber(x) +
-                                                " m",
-
-                                                "y = " +
-                                                formatNumber(y) +
-                                                " m"
-                                            ];
-
-                                        }
-
-                                    }
-
-                                }
-
-                            },
-
-                            scales: {
-
-                                x: {
-
-                                    type: "linear",
-
-                                    title: {
-
-                                        display: true,
-
-                                        text: "Horizontal Distance x (m)"
-
-                                    },
-
-                                    grid: {
-
-                                        color: getGridColor()
-
-                                    },
-
-                                    beginAtZero: true
-
-                                },
-
-                                y: {
-
-                                    title: {
-
-                                        display: true,
-
-                                        text: "Elevation y (m)"
-
-                                    },
-
-                                    grid: {
-
-                                        color: getGridColor()
-
-                                    },
-
-                                    beginAtZero: true
-
-                                }
+                                row.classList.add(
+                                    "selected"
+                                );
 
                             }
 
-                        },
 
-                        plugins: [
+                            row.innerHTML = `
 
-                            {
+                            <td>
+                                ${point.index + 1}
+                            </td>
 
-                                id: "projectileGuides",
+                            <td>
+                                ${formatNumber(point.t)}
+                            </td>
 
-                                afterDraw: function(chart) {
+                            <td>
+                                ${formatNumber(point.x)}
+                            </td>
 
-                                    drawProjectileGuides(
-                                        chart
+                            <td>
+                                ${formatNumber(point.y)}
+                            </td>
+
+                            <td>
+                                ${formatNumber(point.vx)}
+                            </td>
+
+                            <td>
+                                ${formatNumber(point.vy)}
+                            </td>
+
+                            <td>
+                                ${formatNumber(point.speed)}
+                            </td>
+
+                        `;
+
+
+                            row.addEventListener(
+                                "click",
+                                function() {
+
+                                    selectedIndex =
+                                        point.index;
+
+                                    updateSelectedPoint(
+                                        selectedIndex
+                                    );
+
+                                    updateTable();
+
+                                    drawGraph();
+
+                                }
+                            );
+
+
+                            table.appendChild(
+                                row
+                            );
+
+                        }
+                    );
+
+                }
+
+
+                /* =================================================
+                   UPDATE SELECTED POINT
+                ================================================== */
+
+                function updateSelectedPoint(
+                    index
+                ) {
+
+                    if (
+                        !trajectory[index]
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const point =
+                        trajectory[index];
+
+
+                    document
+                        .getElementById(
+                            "selectedTime"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.t
+                        ) +
+                        " s";
+
+
+                    document
+                        .getElementById(
+                            "selectedX"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.x
+                        ) +
+                        " m";
+
+
+                    document
+                        .getElementById(
+                            "selectedY"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.y
+                        ) +
+                        " m";
+
+
+                    document
+                        .getElementById(
+                            "selectedVy"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.vy
+                        ) +
+                        " m/s";
+
+
+                    document
+                        .getElementById(
+                            "selectedVx"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.vx
+                        ) +
+                        " m/s";
+
+
+                    document
+                        .getElementById(
+                            "selectedSpeed"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.speed
+                        ) +
+                        " m/s";
+
+                }
+
+
+                /* =================================================
+                   CANVAS RESIZE
+                ================================================== */
+
+                function resizeCanvas() {
+
+                    const rect =
+                        canvas.getBoundingClientRect();
+
+
+                    const dpr =
+                        window.devicePixelRatio ||
+                        1;
+
+
+                    canvas.width =
+                        rect.width *
+                        dpr;
+
+
+                    canvas.height =
+                        rect.height *
+                        dpr;
+
+
+                    ctx.setTransform(
+                        dpr,
+                        0,
+                        0,
+                        dpr,
+                        0,
+                        0
+                    );
+
+
+                    drawGraph();
+
+                }
+
+
+                /* =================================================
+                   GRAPH DIMENSIONS
+                ================================================== */
+
+                function getGraphDimensions() {
+
+                    const width =
+                        canvas.clientWidth;
+
+                    const height =
+                        canvas.clientHeight;
+
+
+                    const margin = {
+
+                        left: 65,
+
+                        right: 25,
+
+                        top: 25,
+
+                        bottom: 55
+
+                    };
+
+
+                    return {
+
+                        width: width,
+
+                        height: height,
+
+                        margin: margin,
+
+                        graphWidth: width -
+                            margin.left -
+                            margin.right,
+
+                        graphHeight: height -
+                            margin.top -
+                            margin.bottom
+
+                    };
+
+                }
+
+
+                /* =================================================
+                   CONVERT DATA TO SCREEN POSITION
+                ================================================== */
+
+                function pointToScreen(
+                    point
+                ) {
+
+                    const d =
+                        getGraphDimensions();
+
+
+                    const xRange =
+                        graphScale.maxX -
+                        graphScale.minX;
+
+
+                    const yRange =
+                        graphScale.maxY -
+                        graphScale.minY;
+
+
+                    const x =
+                        d.margin.left +
+                        (
+                            (
+                                point.x -
+                                graphScale.minX
+                            ) /
+                            xRange
+                        ) *
+                        d.graphWidth;
+
+
+                    const y =
+                        d.margin.top +
+                        d.graphHeight -
+                        (
+                            (
+                                point.y -
+                                graphScale.minY
+                            ) /
+                            yRange
+                        ) *
+                        d.graphHeight;
+
+
+                    return {
+
+                        x: x,
+
+                        y: y
+
+                    };
+
+                }
+
+
+                /* =================================================
+                   SCREEN TO DATA
+                ================================================== */
+
+                function screenToData(
+                    screenX,
+                    screenY
+                ) {
+
+                    const d =
+                        getGraphDimensions();
+
+
+                    const x =
+                        graphScale.minX +
+                        (
+                            (
+                                screenX -
+                                d.margin.left
+                            ) /
+                            d.graphWidth
+                        ) *
+                        (
+                            graphScale.maxX -
+                            graphScale.minX
+                        );
+
+
+                    const y =
+                        graphScale.minY +
+                        (
+                            (
+                                d.graphHeight -
+                                (
+                                    screenY -
+                                    d.margin.top
+                                )
+                            ) /
+                            d.graphHeight
+                        ) *
+                        (
+                            graphScale.maxY -
+                            graphScale.minY
+                        );
+
+
+                    return {
+
+                        x: x,
+
+                        y: y
+
+                    };
+
+                }
+
+
+                /* =================================================
+                   FIND NEAREST TRAJECTORY POINT
+                ================================================== */
+
+                function findNearestPoint(
+                    screenX,
+                    screenY
+                ) {
+
+                    if (
+                        trajectory.length === 0
+                    ) {
+
+                        return -1;
+
+                    }
+
+
+                    let nearest = -1;
+
+                    let nearestDistance =
+                        Infinity;
+
+
+                    trajectory.forEach(
+                        function(point) {
+
+                            const screen =
+                                pointToScreen(
+                                    point
+                                );
+
+
+                            const dx =
+                                screen.x -
+                                screenX;
+
+
+                            const dy =
+                                screen.y -
+                                screenY;
+
+
+                            const distance =
+                                Math.sqrt(
+                                    dx * dx +
+                                    dy * dy
+                                );
+
+
+                            if (
+                                distance <
+                                nearestDistance
+                            ) {
+
+                                nearestDistance =
+                                    distance;
+
+                                nearest =
+                                    point.index;
+
+                            }
+
+                        }
+                    );
+
+
+                    return nearest;
+
+                }
+
+
+                /* =================================================
+                   DRAW GRAPH
+                ================================================== */
+
+                function drawGraph() {
+
+                    const width =
+                        canvas.clientWidth;
+
+                    const height =
+                        canvas.clientHeight;
+
+
+                    if (
+                        width <= 0 ||
+                        height <= 0
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const colors =
+                        getThemeColors();
+
+
+                    const d =
+                        getGraphDimensions();
+
+
+                    ctx.clearRect(
+                        0,
+                        0,
+                        width,
+                        height
+                    );
+
+
+                    /* =============================================
+                       GRAPH BACKGROUND
+                    ============================================== */
+
+                    ctx.fillStyle =
+                        colors.grid;
+
+
+                    ctx.fillStyle =
+                        "transparent";
+
+
+                    ctx.fillRect(
+                        0,
+                        0,
+                        width,
+                        height
+                    );
+
+
+                    /* =============================================
+                       GRID
+                    ============================================== */
+
+                    if (
+                        showGrid.checked
+                    ) {
+
+                        ctx.strokeStyle =
+                            colors.grid;
+
+                        ctx.lineWidth =
+                            1;
+
+
+                        /* -----------------------------------------
+                           VERTICAL GRID
+                        ------------------------------------------ */
+
+                        const verticalLines =
+                            10;
+
+
+                        for (
+                            let i = 0; i <= verticalLines; i++
+                        ) {
+
+                            const x =
+                                d.margin.left +
+                                (
+                                    i /
+                                    verticalLines
+                                ) *
+                                d.graphWidth;
+
+
+                            ctx.beginPath();
+
+                            ctx.moveTo(
+                                x,
+                                d.margin.top
+                            );
+
+                            ctx.lineTo(
+                                x,
+                                d.margin.top +
+                                d.graphHeight
+                            );
+
+                            ctx.stroke();
+
+                        }
+
+
+                        /* -----------------------------------------
+                           HORIZONTAL GRID
+                        ------------------------------------------ */
+
+                        const horizontalLines =
+                            8;
+
+
+                        for (
+                            let i = 0; i <= horizontalLines; i++
+                        ) {
+
+                            const y =
+                                d.margin.top +
+                                (
+                                    i /
+                                    horizontalLines
+                                ) *
+                                d.graphHeight;
+
+
+                            ctx.beginPath();
+
+                            ctx.moveTo(
+                                d.margin.left,
+                                y
+                            );
+
+                            ctx.lineTo(
+                                d.margin.left +
+                                d.graphWidth,
+                                y
+                            );
+
+                            ctx.stroke();
+
+                        }
+
+                    }
+
+
+                    /* =============================================
+                       AXES
+                    ============================================== */
+
+                    ctx.strokeStyle =
+                        colors.axis;
+
+                    ctx.lineWidth =
+                        1.5;
+
+
+                    /* X AXIS */
+
+                    const zeroPoint =
+                        pointToScreen({
+
+                            x: 0,
+
+                            y: 0
+
+                        });
+
+
+                    ctx.beginPath();
+
+                    ctx.moveTo(
+                        d.margin.left,
+                        zeroPoint.y
+                    );
+
+                    ctx.lineTo(
+                        d.margin.left +
+                        d.graphWidth,
+                        zeroPoint.y
+                    );
+
+                    ctx.stroke();
+
+
+                    /* Y AXIS */
+
+                    ctx.beginPath();
+
+                    ctx.moveTo(
+                        d.margin.left,
+                        d.margin.top
+                    );
+
+                    ctx.lineTo(
+                        d.margin.left,
+                        d.margin.top +
+                        d.graphHeight
+                    );
+
+                    ctx.stroke();
+
+
+                    /* =============================================
+                       AXIS LABELS
+                    ============================================== */
+
+                    ctx.fillStyle =
+                        colors.muted;
+
+                    ctx.font =
+                        "11px Arial";
+
+                    ctx.textAlign =
+                        "center";
+
+                    ctx.textBaseline =
+                        "top";
+
+
+                    const xTicks =
+                        10;
+
+
+                    for (
+                        let i = 0; i <= xTicks; i++
+                    ) {
+
+                        const value =
+                            graphScale.minX +
+                            (
+                                i /
+                                xTicks
+                            ) *
+                            (
+                                graphScale.maxX -
+                                graphScale.minX
+                            );
+
+
+                        const x =
+                            d.margin.left +
+                            (
+                                i /
+                                xTicks
+                            ) *
+                            d.graphWidth;
+
+
+                        ctx.fillText(
+                            formatNumber(
+                                value,
+                                1
+                            ),
+                            x,
+                            d.margin.top +
+                            d.graphHeight +
+                            9
+                        );
+
+                    }
+
+
+                    ctx.textAlign =
+                        "right";
+
+                    ctx.textBaseline =
+                        "middle";
+
+
+                    const yTicks =
+                        8;
+
+
+                    for (
+                        let i = 0; i <= yTicks; i++
+                    ) {
+
+                        const value =
+                            graphScale.minY +
+                            (
+                                i /
+                                yTicks
+                            ) *
+                            (
+                                graphScale.maxY -
+                                graphScale.minY
+                            );
+
+
+                        const y =
+                            d.margin.top +
+                            d.graphHeight -
+                            (
+                                i /
+                                yTicks
+                            ) *
+                            d.graphHeight;
+
+
+                        ctx.fillText(
+                            formatNumber(
+                                value,
+                                1
+                            ),
+                            d.margin.left -
+                            8,
+                            y
+                        );
+
+                    }
+
+
+                    /* =============================================
+                       AXIS TITLES
+                    ============================================== */
+
+                    ctx.fillStyle =
+                        colors.text;
+
+                    ctx.font =
+                        "bold 12px Arial";
+
+
+                    ctx.textAlign =
+                        "center";
+
+                    ctx.textBaseline =
+                        "bottom";
+
+
+                    ctx.fillText(
+                        "Horizontal Distance x (m)",
+                        d.margin.left +
+                        d.graphWidth / 2,
+                        height - 7
+                    );
+
+
+                    ctx.save();
+
+
+                    ctx.translate(
+                        15,
+                        d.margin.top +
+                        d.graphHeight / 2
+                    );
+
+
+                    ctx.rotate(
+                        -Math.PI / 2
+                    );
+
+
+                    ctx.textAlign =
+                        "center";
+
+
+                    ctx.fillText(
+                        "Elevation y (m)",
+                        0,
+                        0
+                    );
+
+
+                    ctx.restore();
+
+
+                    /* =============================================
+                       TRAJECTORY CURVE
+                    ============================================== */
+
+                    if (
+                        trajectory.length > 0
+                    ) {
+
+                        ctx.strokeStyle =
+                            colors.blue;
+
+                        ctx.lineWidth =
+                            3;
+
+                        ctx.lineJoin =
+                            "round";
+
+                        ctx.lineCap =
+                            "round";
+
+
+                        ctx.beginPath();
+
+
+                        trajectory.forEach(
+                            function(point, index) {
+
+                                const screen =
+                                    pointToScreen(
+                                        point
+                                    );
+
+
+                                if (
+                                    index === 0
+                                ) {
+
+                                    ctx.moveTo(
+                                        screen.x,
+                                        screen.y
+                                    );
+
+                                } else {
+
+                                    ctx.lineTo(
+                                        screen.x,
+                                        screen.y
                                     );
 
                                 }
 
                             }
-
-                        ]
-
-                    }
-
-                );
-
-
-            /* -----------------------------------------------
-               CLICK ON GRAPH
-            ------------------------------------------------ */
-
-            canvas.onclick =
-                function(event) {
-
-                    if (!trajectoryChart) {
-                        return;
-                    }
-
-
-                    const elements =
-                        trajectoryChart.getElementsAtEventForMode(
-                            event,
-                            "nearest", {
-                                intersect: false
-                            },
-                            false
                         );
 
 
-                    if (
-                        elements.length === 0
-                    ) {
-                        return;
+                        ctx.stroke();
+
                     }
 
 
-                    const element =
-                        elements[0];
-
-
-                    /* Only trajectory dataset */
+                    /* =============================================
+                       SELECTED POINT GUIDES
+                    ============================================== */
 
                     if (
-                        element.datasetIndex !== 0
+                        showElevation.checked &&
+                        trajectory[selectedIndex]
                     ) {
-                        return;
-                    }
 
+                        const point =
+                            trajectory[
+                                selectedIndex
+                            ];
 
-                    const index =
-                        element.index;
 
+                        const screen =
+                            pointToScreen(
+                                point
+                            );
 
-                    const point =
-                        points[index];
 
+                        ctx.strokeStyle =
+                            colors.guide;
 
-                    timeSlider.value =
-                        point.t;
+                        ctx.lineWidth =
+                            1;
 
+                        ctx.setLineDash([
+                            5,
+                            5
+                        ]);
 
-                    updateSelectedPoint(
-                        point.t
-                    );
 
-                };
+                        /* -----------------------------------------
+                           VERTICAL ELEVATION GUIDE
+                        ------------------------------------------ */
 
-        }
+                        ctx.beginPath();
 
-
-        /* =====================================================
-           DRAW GRAPH GUIDES
-        ====================================================== */
-
-        function drawProjectileGuides(chart) {
-
-            const ctx =
-                chart.ctx;
-
-
-            const t =
-                parseFloat(
-                    timeSlider.value
-                );
-
-
-            const position =
-                getPositionAtTime(t);
-
-
-            const velocity =
-                getVelocityAtTime(t);
-
-
-            const xScale =
-                chart.scales.x;
-
-
-            const yScale =
-                chart.scales.y;
-
-
-            const px =
-                xScale.getPixelForValue(
-                    position.x
-                );
-
-
-            const py =
-                yScale.getPixelForValue(
-                    position.y
-                );
-
-
-            const groundY =
-                yScale.getPixelForValue(0);
-
-
-            const axisX =
-                xScale.getPixelForValue(0);
-
-
-            ctx.save();
-
-
-            /* -----------------------------------------------
-               ELEVATION GUIDE
-            ------------------------------------------------ */
-
-            ctx.setLineDash([6, 6]);
-
-            ctx.lineWidth = 1.5;
-
-            ctx.strokeStyle =
-                getGuideColor();
-
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                px,
-                py
-            );
-
-            ctx.lineTo(
-                px,
-                groundY
-            );
-
-            ctx.stroke();
-
-
-            /* -----------------------------------------------
-               HORIZONTAL GUIDE
-            ------------------------------------------------ */
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                axisX,
-                py
-            );
-
-            ctx.lineTo(
-                px,
-                py
-            );
-
-            ctx.stroke();
-
-
-            ctx.setLineDash([]);
-
-
-            /* -----------------------------------------------
-               VELOCITY VECTOR
-            ------------------------------------------------ */
-
-            const vectorScale = 10;
-
-
-            const vxEnd =
-                px +
-                velocity.vx *
-                vectorScale;
-
-
-            const vyEnd =
-                py -
-                velocity.vy *
-                vectorScale;
-
-
-            ctx.strokeStyle =
-                getVectorColor();
-
-            ctx.lineWidth =
-                2.5;
-
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                px,
-                py
-            );
-
-            ctx.lineTo(
-                vxEnd,
-                vyEnd
-            );
-
-            ctx.stroke();
-
-
-            /* -----------------------------------------------
-               VECTOR ARROWHEAD
-            ------------------------------------------------ */
-
-            const arrowLength = 8;
-
-            const vectorAngle =
-                Math.atan2(
-                    vyEnd - py,
-                    vxEnd - px
-                );
-
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                vxEnd,
-                vyEnd
-            );
-
-            ctx.lineTo(
-                vxEnd -
-                arrowLength *
-                Math.cos(vectorAngle - Math.PI / 6),
-
-                vyEnd -
-                arrowLength *
-                Math.sin(vectorAngle - Math.PI / 6)
-            );
-
-            ctx.lineTo(
-                vxEnd -
-                arrowLength *
-                Math.cos(vectorAngle + Math.PI / 6),
-
-                vyEnd -
-                arrowLength *
-                Math.sin(vectorAngle + Math.PI / 6)
-            );
-
-            ctx.closePath();
-
-            ctx.fillStyle =
-                getVectorColor();
-
-            ctx.fill();
-
-
-            ctx.restore();
-
-        }
-
-
-        /* =====================================================
-           UPDATE SELECTED POINT
-        ====================================================== */
-
-        function updateSelectedPoint(t) {
-
-            const position =
-                getPositionAtTime(t);
-
-
-            const velocity =
-                getVelocityAtTime(t);
-
-
-            currentTimeDisplay.textContent =
-                formatNumber(t);
-
-
-            document.getElementById(
-                    "selectedTime"
-                ).textContent =
-                formatNumber(t) +
-                " s";
-
-
-            document.getElementById(
-                    "selectedX"
-                ).textContent =
-                formatNumber(position.x) +
-                " m";
-
-
-            document.getElementById(
-                    "selectedY"
-                ).textContent =
-                formatNumber(position.y) +
-                " m";
-
-
-            document.getElementById(
-                    "selectedVx"
-                ).textContent =
-                formatNumber(velocity.vx) +
-                " m/s";
-
-
-            document.getElementById(
-                    "selectedVy"
-                ).textContent =
-                formatNumber(velocity.vy) +
-                " m/s";
-
-
-            document.getElementById(
-                    "selectedSpeed"
-                ).textContent =
-                formatNumber(velocity.speed) +
-                " m/s";
-
-
-            document.getElementById(
-                    "selectedAngle"
-                ).textContent =
-                formatNumber(velocity.angle) +
-                "°";
-
-
-            /* -----------------------------------------------
-               UPDATE CURRENT POINT DATASET
-            ------------------------------------------------ */
-
-            if (trajectoryChart) {
-
-                trajectoryChart.data.datasets[4].data = [{
-                    x: position.x,
-                    y: position.y
-                }];
-
-
-                trajectoryChart.update(
-                    "none"
-                );
-
-            }
-
-        }
-
-
-        /* =====================================================
-           BUILD TRAJECTORY TABLE
-        ====================================================== */
-
-        function buildTrajectoryTable() {
-
-            trajectoryTableBody.innerHTML = "";
-
-
-            const numberOfRows = 21;
-
-
-            for (
-                let i = 0; i < numberOfRows; i++
-            ) {
-
-                const t =
-                    projectileData.flightTime *
-                    i /
-                    (numberOfRows - 1);
-
-
-                const position =
-                    getPositionAtTime(t);
-
-
-                const velocity =
-                    getVelocityAtTime(t);
-
-
-                const row =
-                    document.createElement("tr");
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${i + 1}
-                    </td>
-
-                    <td>
-                        ${formatNumber(t)}
-                    </td>
-
-                    <td>
-                        ${formatNumber(position.x)}
-                    </td>
-
-                    <td>
-                        ${formatNumber(position.y)}
-                    </td>
-
-                    <td>
-                        ${formatNumber(velocity.vx)}
-                    </td>
-
-                    <td>
-                        ${formatNumber(velocity.vy)}
-                    </td>
-
-                    <td>
-                        ${formatNumber(velocity.speed)}
-                    </td>
-
-                `;
-
-
-                trajectoryTableBody.appendChild(row);
-
-            }
-
-        }
-
-
-        /* =====================================================
-           PLAY ANIMATION
-        ====================================================== */
-
-        function playAnimation() {
-
-            if (isAnimating) {
-                return;
-            }
-
-
-            isAnimating = true;
-
-
-            let startTimestamp = null;
-
-
-            const startingTime =
-                parseFloat(
-                    timeSlider.value
-                );
-
-
-            const remainingTime =
-                projectileData.flightTime -
-                startingTime;
-
-
-            const animationDuration =
-                Math.max(
-                    remainingTime * 1000,
-                    1000
-                );
-
-
-            function animate(timestamp) {
-
-                if (!isAnimating) {
-                    return;
-                }
-
-
-                if (!startTimestamp) {
-                    startTimestamp = timestamp;
-                }
-
-
-                const elapsed =
-                    timestamp -
-                    startTimestamp;
-
-
-                const progress =
-                    Math.min(
-                        elapsed /
-                        animationDuration,
-                        1
-                    );
-
-
-                const currentTime =
-                    startingTime +
-                    (
-                        projectileData.flightTime -
-                        startingTime
-                    ) *
-                    progress;
-
-
-                timeSlider.value =
-                    currentTime;
-
-
-                updateSelectedPoint(
-                    currentTime
-                );
-
-
-                if (progress < 1) {
-
-                    animationFrame =
-                        requestAnimationFrame(
-                            animate
+                        ctx.moveTo(
+                            screen.x,
+                            screen.y
                         );
 
-                } else {
+                        ctx.lineTo(
+                            screen.x,
+                            zeroPoint.y
+                        );
 
-                    isAnimating = false;
+                        ctx.stroke();
 
-                    animationFrame = null;
+
+                        /* -----------------------------------------
+                           HORIZONTAL GUIDE
+                        ------------------------------------------ */
+
+                        ctx.beginPath();
+
+                        ctx.moveTo(
+                            d.margin.left,
+                            screen.y
+                        );
+
+                        ctx.lineTo(
+                            screen.x,
+                            screen.y
+                        );
+
+                        ctx.stroke();
+
+
+                        ctx.setLineDash([]);
+
+
+                        /* -----------------------------------------
+                           ELEVATION LABEL
+                        ------------------------------------------ */
+
+                        ctx.fillStyle =
+                            colors.text;
+
+                        ctx.font =
+                            "bold 11px Arial";
+
+                        ctx.textAlign =
+                            "left";
+
+                        ctx.textBaseline =
+                            "bottom";
+
+
+                        ctx.fillText(
+                            "y = " +
+                            formatNumber(
+                                point.y
+                            ) +
+                            " m",
+                            screen.x + 7,
+                            screen.y - 7
+                        );
+
+                    }
+
+
+                    /* =============================================
+                       TRAJECTORY POINTS
+                    ============================================== */
+
+                    if (
+                        showPoints.checked
+                    ) {
+
+                        trajectory.forEach(
+                            function(point) {
+
+                                const screen =
+                                    pointToScreen(
+                                        point
+                                    );
+
+
+                                let radius = 3;
+
+
+                                if (
+                                    point.index ===
+                                    selectedIndex
+                                ) {
+
+                                    radius = 7;
+
+                                }
+
+
+                                if (
+                                    point.index ===
+                                    hoverIndex
+                                ) {
+
+                                    radius = 6;
+
+                                }
+
+
+                                ctx.beginPath();
+
+
+                                ctx.arc(
+                                    screen.x,
+                                    screen.y,
+                                    radius,
+                                    0,
+                                    Math.PI * 2
+                                );
+
+
+                                ctx.fillStyle =
+                                    point.index ===
+                                    selectedIndex ?
+                                    colors.point :
+                                    colors.blue;
+
+
+                                ctx.fill();
+
+                            }
+                        );
+
+                    }
+
+
+                    /* =============================================
+                       SELECTED POINT LABEL
+                    ============================================== */
+
+                    if (
+                        trajectory[selectedIndex]
+                    ) {
+
+                        const point =
+                            trajectory[
+                                selectedIndex
+                            ];
+
+
+                        const screen =
+                            pointToScreen(
+                                point
+                            );
+
+
+                        ctx.fillStyle =
+                            colors.point;
+
+                        ctx.beginPath();
+
+                        ctx.arc(
+                            screen.x,
+                            screen.y,
+                            8,
+                            0,
+                            Math.PI * 2
+                        );
+
+                        ctx.strokeStyle =
+                            colors.point;
+
+                        ctx.lineWidth =
+                            2;
+
+                        ctx.stroke();
+
+                    }
 
                 }
 
-            }
 
+                /* =================================================
+                   UPDATE TOOLTIP
+                ================================================== */
 
-            animationFrame =
-                requestAnimationFrame(
-                    animate
-                );
+                function updateTooltip(
+                    point
+                ) {
 
-        }
+                    if (!point) {
 
+                        tooltip.classList.remove(
+                            "visible"
+                        );
 
-        /* =====================================================
-           STOP ANIMATION
-        ====================================================== */
+                        return;
 
-        function stopAnimation() {
+                    }
 
-            isAnimating = false;
 
+                    document
+                        .getElementById(
+                            "tooltipTime"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.t
+                        );
 
-            if (animationFrame) {
 
-                cancelAnimationFrame(
-                    animationFrame
-                );
+                    document
+                        .getElementById(
+                            "tooltipX"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.x
+                        );
 
-                animationFrame = null;
 
-            }
+                    document
+                        .getElementById(
+                            "tooltipY"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.y
+                        );
 
-        }
 
+                    document
+                        .getElementById(
+                            "tooltipVx"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.vx
+                        );
 
-        /* =====================================================
-           RESET POSITION
-        ====================================================== */
 
-        function resetAnimationPosition() {
+                    document
+                        .getElementById(
+                            "tooltipVy"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.vy
+                        );
 
-            stopAnimation();
 
+                    document
+                        .getElementById(
+                            "tooltipSpeed"
+                        )
+                        .textContent =
+                        formatNumber(
+                            point.speed
+                        );
 
-            timeSlider.value = 0;
 
+                    tooltip.classList.add(
+                        "visible"
+                    );
 
-            updateSelectedPoint(0);
+                }
 
-        }
 
+                /* =================================================
+                   GET MOUSE POSITION
+                ================================================== */
 
-        /* =====================================================
-           THEME-AWARE GRAPH COLORS
-        ====================================================== */
+                function getMousePosition(
+                    event
+                ) {
 
-        function getGridColor() {
+                    const rect =
+                        canvas.getBoundingClientRect();
 
-            const dark =
-                document.documentElement
-                .getAttribute("data-theme") ===
-                "dark";
 
+                    return {
 
-            return dark ?
-                "rgba(255,255,255,0.10)" :
-                "rgba(0,0,0,0.08)";
+                        x: event.clientX -
+                            rect.left,
 
-        }
+                        y: event.clientY -
+                            rect.top
 
+                    };
 
-        function getGuideColor() {
+                }
 
-            const dark =
-                document.documentElement
-                .getAttribute("data-theme") ===
-                "dark";
 
+                /* =================================================
+                   MOUSE MOVE
+                ================================================== */
 
-            return dark ?
-                "rgba(255,255,255,0.55)" :
-                "rgba(11,79,138,0.55)";
-
-        }
-
-
-        function getVectorColor() {
-
-            const dark =
-                document.documentElement
-                .getAttribute("data-theme") ===
-                "dark";
-
-
-            return dark ?
-                "#fbbf24" :
-                "#dc3545";
-
-        }
-
-
-        /* =====================================================
-           TIME SLIDER EVENT
-        ====================================================== */
-
-        timeSlider.addEventListener(
-            "input",
-            function() {
-
-                stopAnimation();
-
-
-                updateSelectedPoint(
-                    parseFloat(
-                        this.value
-                    )
-                );
-
-            }
-        );
-
-
-        /* =====================================================
-           CALCULATE BUTTON
-        ====================================================== */
-
-        document.getElementById(
-            "calculateButton"
-        ).addEventListener(
-            "click",
-            calculateProjectile
-        );
-
-
-        /* =====================================================
-           RESET BUTTON
-        ====================================================== */
-
-        document.getElementById(
-            "resetButton"
-        ).addEventListener(
-            "click",
-            function() {
-
-                velocityInput.value = 20;
-
-                angleInput.value = 45;
-
-                heightInput.value = 0;
-
-                gravityInput.value = 9.81;
-
-                calculateProjectile();
-
-            }
-        );
-
-
-        /* =====================================================
-           PLAY BUTTON
-        ====================================================== */
-
-        document.getElementById(
-            "playButton"
-        ).addEventListener(
-            "click",
-            playAnimation
-        );
-
-
-        /* =====================================================
-           PAUSE BUTTON
-        ====================================================== */
-
-        document.getElementById(
-            "pauseButton"
-        ).addEventListener(
-            "click",
-            stopAnimation
-        );
-
-
-        /* =====================================================
-           RESET POSITION BUTTON
-        ====================================================== */
-
-        document.getElementById(
-            "animationResetButton"
-        ).addEventListener(
-            "click",
-            resetAnimationPosition
-        );
-
-
-        /* =====================================================
-           RECALCULATE WHEN ENTER IS PRESSED
-        ====================================================== */
-
-        [
-            velocityInput,
-            angleInput,
-            heightInput,
-            gravityInput
-
-        ].forEach(
-            function(input) {
-
-                input.addEventListener(
-                    "keydown",
+                canvas.addEventListener(
+                    "mousemove",
                     function(event) {
 
+                        const mouse =
+                            getMousePosition(
+                                event
+                            );
+
+
+                        const nearest =
+                            findNearestPoint(
+                                mouse.x,
+                                mouse.y
+                            );
+
+
+                        hoverIndex =
+                            nearest;
+
+
                         if (
-                            event.key === "Enter"
+                            nearest >= 0
                         ) {
 
-                            calculateProjectile();
+                            updateTooltip(
+                                trajectory[
+                                    nearest
+                                ]
+                            );
+
+                            canvas.style.cursor =
+                                "pointer";
+
+                        } else {
+
+                            tooltip.classList.remove(
+                                "visible"
+                            );
+
+                            canvas.style.cursor =
+                                "crosshair";
+
+                        }
+
+
+                        if (
+                            isDragging &&
+                            nearest >= 0
+                        ) {
+
+                            selectedIndex =
+                                nearest;
+
+
+                            updateSelectedPoint(
+                                selectedIndex
+                            );
+
+                            updateTable();
+
+                        }
+
+
+                        drawGraph();
+
+                    }
+                );
+
+
+                /* =================================================
+                   MOUSE LEAVE
+                ================================================== */
+
+                canvas.addEventListener(
+                    "mouseleave",
+                    function() {
+
+                        hoverIndex = -1;
+
+                        tooltip.classList.remove(
+                            "visible"
+                        );
+
+                        if (
+                            !isDragging
+                        ) {
+
+                            drawGraph();
 
                         }
 
                     }
                 );
 
-            }
-        );
+
+                /* =================================================
+                   MOUSE DOWN
+                ================================================== */
+
+                canvas.addEventListener(
+                    "mousedown",
+                    function(event) {
+
+                        const mouse =
+                            getMousePosition(
+                                event
+                            );
 
 
-        /* =====================================================
-           INITIAL CALCULATION
-        ====================================================== */
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            function() {
-
-                calculateProjectile();
-
-            }
-        );
+                        const nearest =
+                            findNearestPoint(
+                                mouse.x,
+                                mouse.y
+                            );
 
 
-        /* =====================================================
-           UPDATE GRAPH WHEN THEME CHANGES
-        ====================================================== */
+                        if (
+                            nearest >= 0
+                        ) {
 
-        const themeObserver =
-            new MutationObserver(
-                function() {
+                            selectedIndex =
+                                nearest;
 
-                    if (
-                        trajectoryChart
-                    ) {
 
-                        buildTrajectoryChart();
+                            isDragging =
+                                true;
 
-                        updateSelectedPoint(
-                            parseFloat(
-                                timeSlider.value
+
+                            updateSelectedPoint(
+                                selectedIndex
+                            );
+
+
+                            updateTable();
+
+                            drawGraph();
+
+                        }
+
+                    }
+                );
+
+
+                /* =================================================
+                   MOUSE UP
+                ================================================== */
+
+                window.addEventListener(
+                    "mouseup",
+                    function() {
+
+                        isDragging =
+                            false;
+
+                    }
+                );
+
+
+                /* =================================================
+                   TOUCH INTERACTION
+                ================================================== */
+
+                canvas.addEventListener(
+                    "touchstart",
+                    function(event) {
+
+                        if (
+                            event.touches.length === 0
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const rect =
+                            canvas.getBoundingClientRect();
+
+
+                        const touch =
+                            event.touches[0];
+
+
+                        const mouse = {
+
+                            x: touch.clientX -
+                                rect.left,
+
+                            y: touch.clientY -
+                                rect.top
+
+                        };
+
+
+                        const nearest =
+                            findNearestPoint(
+                                mouse.x,
+                                mouse.y
+                            );
+
+
+                        if (
+                            nearest >= 0
+                        ) {
+
+                            selectedIndex =
+                                nearest;
+
+
+                            updateSelectedPoint(
+                                selectedIndex
+                            );
+
+
+                            updateTable();
+
+                            drawGraph();
+
+                        }
+
+                    }, {
+                        passive: true
+                    }
+                );
+
+
+                /* =================================================
+                   ANGLE DISPLAY
+                ================================================== */
+
+                launchAngle.addEventListener(
+                    "input",
+                    function() {
+
+                        document
+                            .getElementById(
+                                "angleValue"
                             )
+                            .textContent =
+                            parseFloat(
+                                launchAngle.value
+                            ).toFixed(1) +
+                            "°";
+
+                    }
+                );
+
+
+                /* =================================================
+                   POINT COUNT DISPLAY
+                ================================================== */
+
+                pointCount.addEventListener(
+                    "input",
+                    function() {
+
+                        document
+                            .getElementById(
+                                "pointCountValue"
+                            )
+                            .textContent =
+                            pointCount.value;
+
+                    }
+                );
+
+
+                /* =================================================
+                   AUTO COMPUTE INPUTS
+                ================================================== */
+
+                [
+                    initialVelocity,
+                    launchAngle,
+                    initialHeight,
+                    gravity,
+                    showPoints,
+                    showGrid,
+                    showElevation,
+                    pointCount
+                ].forEach(
+                    function(element) {
+
+                        element.addEventListener(
+                            "input",
+                            function() {
+
+                                if (
+                                    element ===
+                                    launchAngle
+                                ) {
+
+                                    document
+                                        .getElementById(
+                                            "angleValue"
+                                        )
+                                        .textContent =
+                                        parseFloat(
+                                            launchAngle.value
+                                        ).toFixed(1) +
+                                        "°";
+
+                                }
+
+
+                                if (
+                                    element ===
+                                    pointCount
+                                ) {
+
+                                    document
+                                        .getElementById(
+                                            "pointCountValue"
+                                        )
+                                        .textContent =
+                                        pointCount.value;
+
+                                }
+
+
+                                computeProjectile();
+
+                            }
+                        );
+
+
+                        element.addEventListener(
+                            "change",
+                            function() {
+
+                                computeProjectile();
+
+                            }
                         );
 
                     }
-
-                }
-            );
+                );
 
 
-        themeObserver.observe(
-            document.documentElement, {
-                attributes: true,
-                attributeFilter: [
-                    "data-theme"
-                ]
+                /* =================================================
+                   COMPUTE BUTTON
+                ================================================== */
+
+                document
+                    .getElementById(
+                        "computeButton"
+                    )
+                    .addEventListener(
+                        "click",
+                        function() {
+
+                            computeProjectile();
+
+                        }
+                    );
+
+
+                /* =================================================
+                   RESET
+                ================================================== */
+
+                document
+                    .getElementById(
+                        "resetButton"
+                    )
+                    .addEventListener(
+                        "click",
+                        function() {
+
+                            initialVelocity.value =
+                                "20";
+
+
+                            launchAngle.value =
+                                "45";
+
+
+                            initialHeight.value =
+                                "0";
+
+
+                            gravity.value =
+                                "9.81";
+
+
+                            showPoints.checked =
+                                true;
+
+
+                            showGrid.checked =
+                                true;
+
+
+                            showElevation.checked =
+                                true;
+
+
+                            pointCount.value =
+                                "21";
+
+
+                            selectedIndex =
+                                0;
+
+
+                            document
+                                .getElementById(
+                                    "angleValue"
+                                )
+                                .textContent =
+                                "45.0°";
+
+
+                            document
+                                .getElementById(
+                                    "pointCountValue"
+                                )
+                                .textContent =
+                                "21";
+
+
+                            computeProjectile();
+
+                        }
+                    );
+
+
+                /* =================================================
+                   THEME CHANGE
+                ================================================== */
+
+                const observer =
+                    new MutationObserver(
+                        function() {
+
+                            drawGraph();
+
+                        }
+                    );
+
+
+                observer.observe(
+                    document.documentElement, {
+
+                        attributes: true,
+
+                        attributeFilter: [
+                            "data-theme"
+                        ]
+
+                    }
+                );
+
+
+                /* =================================================
+                   WINDOW RESIZE
+                ================================================== */
+
+                window.addEventListener(
+                    "resize",
+                    function() {
+
+                        resizeCanvas();
+
+                    }
+                );
+
+
+                /* =================================================
+                   INITIALIZE
+                ================================================== */
+
+                document
+                    .getElementById(
+                        "angleValue"
+                    )
+                    .textContent =
+                    "45.0°";
+
+
+                document
+                    .getElementById(
+                        "pointCountValue"
+                    )
+                    .textContent =
+                    "21";
+
+
+                resizeCanvas();
+
+                computeProjectile();
+
             }
+
         );
     </script>
 
 
-    <!-- =====================================================
-         STANDARD ETS-ASYNC SCRIPTS
-    ====================================================== -->
+    <!-- =========================================================
+     GLOBAL SCRIPTS
+========================================================== -->
 
-    <?php include "../globals/scripts.php"; ?>
-
-
+    <?php include 'globals/scripts.php'; ?>
+  
 </body>
 
 </html>
