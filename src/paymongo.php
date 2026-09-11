@@ -20,10 +20,12 @@
 ========================================================== */
 
 $paymongoSecretKey =
-    "sk_live_i4inHTBRwSBTEsUHiUvqVjk8" ;
+    // "sk_live_i4inHTBRwSBTEsUHiUvqVjk8" ;
+    "sk_test_ge3huoytcE7BgpT2EPaDaj1g";
 
 $paymongoPublicKey =
-    "pk_live_AidrFnT47Jdk6FJBVZC11WAY";
+    // "pk_live_AidrFnT47Jdk6FJBVZC11WAY";
+    "pk_test_cd6WVe7HBqyuoYYApNMZJvJ2";
 
 
 /* =========================================================
