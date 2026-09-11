@@ -579,7 +579,7 @@ $studentId = htmlspecialchars(
                                     class="form-control"
                                     name="amount"
                                     id="amount"
-                                    min="20"
+                                    min="1"
                                     max="50000"
                                     step="0.01"
                                     placeholder="100.00"
@@ -590,7 +590,7 @@ $studentId = htmlspecialchars(
 
                             <small class="text-muted">
 
-                                Minimum support amount: ₱20.00
+                                Minimum support amount: ₱1.00
 
                             </small>
 
