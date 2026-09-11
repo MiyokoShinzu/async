@@ -141,6 +141,18 @@ function sidebarActive($page)
 
         </a>
         <a
+            href="academic_posts.php"
+            class="sidebar-link <?= sidebarActive('academic_posts.php') ?>">
+
+            <i class="bi bi-journal"></i>
+
+            <span>
+                Academic Posts
+            </span>
+
+        </a>
+     
+        <a
             href="toolbox.php"
             class="sidebar-link <?= sidebarActive('toolbox.php') ?>">
 

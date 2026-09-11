@@ -277,3 +277,98 @@
 
     });
 </script>
+<?php
+
+$academicAccessToken =
+    $_GET["academic_access"] ?? "";
+
+?>
+
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            const accessToken =
+                <?= json_encode($academicAccessToken) ?>;
+
+
+            /* =================================================
+               NO TRACKING TOKEN
+            ================================================== */
+
+            if (!accessToken) {
+
+                return;
+
+            }
+
+
+            /* =================================================
+               PREVENT MULTIPLE CLOSE REQUESTS
+            ================================================== */
+
+            let closed = false;
+
+
+            /* =================================================
+               CLOSE ACCESS
+               -------------------------------------------------
+               sendBeacon is specifically useful here because
+               the browser may be closing/navigating away from
+               the page.
+            ================================================== */
+
+            function closeAcademicPost() {
+
+                if (closed) {
+
+                    return;
+
+                }
+
+                closed = true;
+
+
+                const formData =
+                    new FormData();
+
+                formData.append(
+                    "access_token",
+                    accessToken
+                );
+
+
+                navigator.sendBeacon(
+                    "academic_post_close.php",
+                    formData
+                );
+
+            }
+
+
+            /* =================================================
+               PAGEHIDE
+               -------------------------------------------------
+               Fires when the page is being left, hidden,
+               navigated away from, or the browser is closing.
+            ================================================== */
+
+            window.addEventListener(
+                "pagehide",
+                closeAcademicPost
+            );
+
+
+            /* =================================================
+               VISIBILITY CHANGE
+               -------------------------------------------------
+               We intentionally do NOT close immediately here.
+
+               A student switching to another browser tab should
+               not necessarily count as closing the Academic Post.
+            ================================================== */
+
+        }
+    );
+</script>
