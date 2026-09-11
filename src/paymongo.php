@@ -1,3 +1,4 @@
+
 <?php
 
 /* =========================================================
@@ -7,22 +8,54 @@
 
 
 /* =========================================================
-   PAYMONGO API KEYS
+   LOAD PAYMONGO API KEYS
+==========================================================
 
    IMPORTANT:
-   - Use TEST keys while developing.
-   - Replace these with LIVE keys only after testing.
-   - NEVER expose the secret key in HTML/JavaScript.
+   - Keys are loaded from environment variables.
+   - NEVER place your actual secret key directly in this file.
+   - Use sk_test_ / pk_test_ during testing.
+   - Use sk_live_ / pk_live_ only in production.
+
+========================================================== */
+
+$paymongoSecretKey =
+    getenv("PAYMONGO_SECRET_KEY");
+
+$paymongoPublicKey =
+    getenv("PAYMONGO_PUBLIC_KEY");
+
+
+/* =========================================================
+   VALIDATE SECRET KEY
+========================================================== */
+
+if (
+    $paymongoSecretKey === false ||
+    trim($paymongoSecretKey) === ""
+) {
+
+    die(
+        "PayMongo configuration error: " .
+        "PAYMONGO_SECRET_KEY is not configured."
+    );
+}
+
+
+/* =========================================================
+   DEFINE PAYMONGO KEYS
 ========================================================== */
 
 define(
     "PAYMONGO_SECRET_KEY",
-    "sk_live_i4inHTBRwSBTEsUHiUvqVjk8"
+    trim($paymongoSecretKey)
 );
 
 define(
     "PAYMONGO_PUBLIC_KEY",
-    "pk_live_AidrFnT47Jdk6FJBVZC11WAY"
+    $paymongoPublicKey !== false
+        ? trim($paymongoPublicKey)
+        : ""
 );
 
 
@@ -37,7 +70,17 @@ define(
 
 
 /* =========================================================
-   CREATE PAYMONGO AUTHORIZATION HEADER
+   CREATE PAYMONGO AUTHORIZATION
+==========================================================
+
+   PayMongo uses HTTP Basic Authentication.
+
+   Format:
+
+   secret_key:
+
+   The colon is intentional.
+
 ========================================================== */
 
 function paymongoAuthorization()
@@ -58,11 +101,49 @@ function paymongoRequest(
     $data = null
 ) {
 
-    $url = PAYMONGO_API_URL . $endpoint;
 
-    $ch = curl_init($url);
+    /* =====================================================
+       BUILD URL
+    ====================================================== */
 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $url =
+        PAYMONGO_API_URL .
+        $endpoint;
+
+
+    /* =====================================================
+       INITIALIZE CURL
+    ====================================================== */
+
+    $ch =
+        curl_init($url);
+
+
+    if ($ch === false) {
+
+        return [
+
+            "success" => false,
+
+            "http_code" => 0,
+
+            "error" =>
+                "Unable to initialize cURL."
+
+        ];
+    }
+
+
+    /* =====================================================
+       CURL OPTIONS
+    ====================================================== */
+
+    curl_setopt(
+        $ch,
+        CURLOPT_RETURNTRANSFER,
+        true
+    );
+
 
     curl_setopt(
         $ch,
@@ -70,33 +151,97 @@ function paymongoRequest(
         strtoupper($method)
     );
 
+
+    /* =====================================================
+       HTTP HEADERS
+    ====================================================== */
+
     curl_setopt(
         $ch,
         CURLOPT_HTTPHEADER,
         [
-            "Authorization: Basic " . paymongoAuthorization(),
+
+            "Authorization: Basic " .
+                paymongoAuthorization(),
+
             "Content-Type: application/json",
+
             "Accept: application/json"
+
         ]
     );
 
+
+    /* =====================================================
+       REQUEST BODY
+    ====================================================== */
+
     if ($data !== null) {
+
+        $jsonData =
+            json_encode(
+                $data
+            );
+
+
+        if ($jsonData === false) {
+
+            curl_close($ch);
+
+            return [
+
+                "success" => false,
+
+                "http_code" => 0,
+
+                "error" =>
+                    "Unable to encode request data.",
+
+                "json_error" =>
+                    json_last_error_msg()
+
+            ];
+        }
+
 
         curl_setopt(
             $ch,
             CURLOPT_POSTFIELDS,
-            json_encode($data)
+            $jsonData
         );
     }
 
-    $response = curl_exec($ch);
 
-    $httpCode = curl_getinfo(
-        $ch,
-        CURLINFO_HTTP_CODE
-    );
+    /* =====================================================
+       EXECUTE REQUEST
+    ====================================================== */
 
-    $curlError = curl_error($ch);
+    $response =
+        curl_exec($ch);
+
+
+    /* =====================================================
+       GET HTTP STATUS
+    ====================================================== */
+
+    $httpCode =
+        curl_getinfo(
+            $ch,
+            CURLINFO_HTTP_CODE
+        );
+
+
+    /* =====================================================
+       GET CURL ERROR
+    ====================================================== */
+
+    $curlError =
+        curl_error($ch);
+
+
+    /* =====================================================
+       CLOSE CURL
+    ====================================================== */
 
     curl_close($ch);
 
@@ -108,21 +253,54 @@ function paymongoRequest(
     if ($response === false) {
 
         return [
+
             "success" => false,
-            "http_code" => $httpCode,
-            "error" => $curlError
+
+            "http_code" =>
+                $httpCode,
+
+            "error" =>
+                $curlError
+
         ];
     }
 
 
     /* =====================================================
-       DECODE RESPONSE
+       DECODE PAYMONGO RESPONSE
     ====================================================== */
 
-    $decoded = json_decode(
-        $response,
-        true
-    );
+    $decoded =
+        json_decode(
+            $response,
+            true
+        );
+
+
+    /* =====================================================
+       JSON DECODE ERROR
+    ====================================================== */
+
+    if (
+        $decoded === null &&
+        json_last_error() !== JSON_ERROR_NONE
+    ) {
+
+        return [
+
+            "success" => false,
+
+            "http_code" =>
+                $httpCode,
+
+            "error" =>
+                "Invalid JSON response from PayMongo.",
+
+            "raw_response" =>
+                $response
+
+        ];
+    }
 
 
     /* =====================================================
@@ -130,8 +308,22 @@ function paymongoRequest(
     ====================================================== */
 
     return [
-        "success" => ($httpCode >= 200 && $httpCode < 300),
-        "http_code" => $httpCode,
-        "data" => $decoded
+
+        "success" =>
+            (
+                $httpCode >= 200 &&
+                $httpCode < 300
+            ),
+
+        "http_code" =>
+            $httpCode,
+
+        "data" =>
+            $decoded,
+
+        "raw_response" =>
+            $response
+
     ];
 }
+
