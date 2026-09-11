@@ -93,9 +93,9 @@ $amount = (float)$amount;
    SERVER-SIDE LIMITS
 ========================================================== */
 
-if ($amount < 20) {
+if ($amount < 1) {
 
-    die("Minimum support amount is ₱20.00.");
+    die("Minimum support amount is ₱1.00.");
 }
 
 
