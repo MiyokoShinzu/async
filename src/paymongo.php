@@ -20,10 +20,10 @@
 ========================================================== */
 
 $paymongoSecretKey =
-    getenv("PAYMONGO_SECRET_KEY");
+    "sk_live_i4inHTBRwSBTEsUHiUvqVjk8" ;
 
 $paymongoPublicKey =
-    getenv("PAYMONGO_PUBLIC_KEY");
+    "pk_live_AidrFnT47Jdk6FJBVZC11WAY";
 
 
 /* =========================================================
