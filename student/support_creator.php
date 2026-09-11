@@ -446,6 +446,7 @@ $studentId = htmlspecialchars(
                     <i class="bi bi-heart me-2"></i>
 
                     Support Developer
+                    <a href="support_rankings.php" class="mx-2-my-2">Rankings</a>
 
                 </h1>
 
