@@ -190,7 +190,7 @@ if ($result) {
 
 <head>
 
-    <?php require_once "../globals/head.php"; ?>
+    <?php require_once "./globals/head.php"; ?>
 
     <title>Support Transactions | ETS-Async</title>
 
@@ -199,9 +199,9 @@ if ($result) {
 
 <body>
 
-    <?php require_once "../globals/sidebar.php"; ?>
+    <?php require_once "./globals/sidebar.php"; ?>
 
-    <?php require_once "../globals/topbar.php"; ?>
+    <?php require_once "./globals/topbar.php"; ?>
 
 
     <main class="main-content">
@@ -534,7 +534,7 @@ if ($result) {
     </main>
 
 
-    <?php require_once "../globals/scripts.php"; ?>
+    <?php require_once "./globals/scripts.php"; ?>
 
 </body>
 
