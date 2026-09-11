@@ -246,7 +246,7 @@ $stmt->close();
 ========================================================== */
 
 $baseUrl =
-    "https://async.vertigation.com/";
+    "https://async.vertigation.com/student";
 
 
 $successUrl =
