@@ -297,7 +297,8 @@ $payload = [
 
                 "gcash",
                 "paymaya",
-                "card"
+                "card",
+                "qrph"
 
             ],
 
