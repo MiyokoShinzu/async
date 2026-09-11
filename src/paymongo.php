@@ -17,12 +17,12 @@
 
 define(
     "PAYMONGO_SECRET_KEY",
-    "sk_test_ge3huoytcE7BgpT2EPaDaj1g"
+    "sk_live_i4inHTBRwSBTEsUHiUvqVjk8"
 );
 
 define(
     "PAYMONGO_PUBLIC_KEY",
-    "pk_test_cd6WVe7HBqyuoYYApNMZJvJ2"
+    "pk_live_AidrFnT47Jdk6FJBVZC11WAY"
 );
 
 
