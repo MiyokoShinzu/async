@@ -175,21 +175,18 @@ function sidebarActive($page)
             </span>
 
         </a>
-        <li class="nav-item">
+        <a
+            href="support_creator.php"
+            class="sidebar-link <?= sidebarActive('support_creator.php') ?>">
 
-            <a
-                href="support_creator.php"
-                class="nav-link">
+            <i class="bi bi-heart"></i>
 
-                <i class="bi bi-heart"></i>
+            <span>
+                Support Creator
+            </span>
 
-                <span>
-                    Support Creator
-                </span>
-
-            </a>
-
-        </li>
+        </a>
+       
 
 
         <!-- =================================================
