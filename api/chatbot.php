@@ -1,53 +1,32 @@
 <?php
 
+/* =========================================================
+   ETSY AI CHATBOT
+   ETS-Async Learning Portal
+   GROQ API VERSION
+   ========================================================= */
+
+
 date_default_timezone_set("Asia/Manila");
 
 
 /* =========================================================
-   ETS-ASYNC ETSY AI CHATBOT API
-   =========================================================
-
-   File:
-       api/chatbot.php
-
-   Purpose:
-       Secure backend for ETSY academic assistant.
-
-   AI:
-       Google Gemini API
-
-   Important:
-       Gemini API key is NEVER exposed to JavaScript.
-
-   Receives:
-       - Student message
-       - Conversation history
-       - Current page context
-
-   Returns:
-       JSON response containing ETSY's answer.
-========================================================= */
-
-
-/* =========================================================
    RESPONSE HEADER
-========================================================= */
+   ========================================================= */
 
-header(
-    "Content-Type: application/json; charset=UTF-8"
-);
+header("Content-Type: application/json; charset=UTF-8");
 
 
 /* =========================================================
-   START SESSION
-========================================================= */
+   SESSION
+   ========================================================= */
 
 session_start();
 
 
 /* =========================================================
-   HELPER: JSON RESPONSE
-========================================================= */
+   RESPONSE FUNCTION
+   ========================================================= */
 
 function responseJSON(
     bool $success,
@@ -55,10 +34,7 @@ function responseJSON(
     array $extra = []
 ) {
 
-    http_response_code(
-        $success ? 200 : 400
-    );
-
+    http_response_code($success ? 200 : 400);
 
     echo json_encode(
         array_merge(
@@ -72,38 +48,19 @@ function responseJSON(
             JSON_UNESCAPED_SLASHES
     );
 
-
     exit;
 }
 
 
 /* =========================================================
-   AUTHENTICATION CHECK
-========================================================= */
+   AUTHENTICATION
+   ========================================================= */
 
 if (
-
-    !isset(
-        $_SESSION["logged_in"]
-    )
-
-    ||
-
-    $_SESSION["logged_in"] !== true
-
-    ||
-
-    !isset(
-        $_SESSION["user"]
-    )
-
-    ||
-
-    (
-        $_SESSION["user"]["access"]
-        ?? ""
-    ) !== "student"
-
+    !isset($_SESSION["logged_in"]) ||
+    $_SESSION["logged_in"] !== true ||
+    !isset($_SESSION["user"]) ||
+    ($_SESSION["user"]["access"] ?? "") !== "student"
 ) {
 
     responseJSON(
@@ -115,728 +72,503 @@ if (
 
 /* =========================================================
    REQUEST METHOD
-========================================================= */
+   ========================================================= */
 
-if (
-    $_SERVER["REQUEST_METHOD"]
-    !== "POST"
-) {
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
     responseJSON(
         false,
-        "Only POST requests are allowed."
+        "Invalid request method."
     );
 }
 
 
 /* =========================================================
-   GEMINI API KEY
-========================================================= */
-
-$apiKey =
-    "AQ.Ab8RN6L0PvGTM4a5sbtigovvLZ9gbHrRWxdRBWVu6TBcioconA";
-
-
-if (
-    !$apiKey
-) {
-
-    error_log(
-        "ETSY: GEMINI_API_KEY is not configured."
-    );
-
-
-    responseJSON(
-        false,
-        "ETSY is currently unavailable."
-    );
-}
-
-
-/* =========================================================
-   GEMINI MODEL
-========================================================= */
-
-$model =
-   "gemini-3.5-flash";
+   GROQ API KEY
+   ========================================================= */
 
 /*
- * Recommended model.
- *
- * If you have configured another model
- * through the environment variable,
- * that model will be used.
- */
+   IMPORTANT:
+   Replace this with your Groq API key.
 
-if (
-    !$model
-) {
+   DO NOT put this key in JavaScript.
+   Keep it inside PHP only.
+*/
 
-    $model =
-        "gemini-3.5-flash";
-}
-
-
-/* =========================================================
-   READ REQUEST BODY
-========================================================= */
-
-$rawInput =
-    file_get_contents(
-        "php://input"
-    );
+$apiKey = "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";
 
 
 if (
-    !$rawInput
+    empty($apiKey) ||
+    $apiKey === "YOUR_GROQ_API_KEY"
 ) {
 
     responseJSON(
         false,
-        "Empty request."
-    );
-}
-
-
-$data =
-    json_decode(
-        $rawInput,
-        true
-    );
-
-
-if (
-    !is_array($data)
-) {
-
-    responseJSON(
-        false,
-        "Invalid request data."
+        "Groq API key is not configured."
     );
 }
 
 
 /* =========================================================
-   STUDENT MESSAGE
-========================================================= */
+   GROQ MODEL
+   ========================================================= */
 
-$message =
-    trim(
-        (string)(
-            $data["message"]
-            ?? ""
-        )
-    );
+$model = "openai/gpt-oss-20b";
 
 
-if (
-    $message === ""
-) {
+/* =========================================================
+   GROQ API URL
+   ========================================================= */
 
-    responseJSON(
-        false,
-        "Please enter a message."
-    );
-}
+$apiUrl = "https://api.groq.com/openai/v1/chat/completions";
 
 
-/*
- * Maximum user message length.
- */
+/* =========================================================
+   READ REQUEST
+   ========================================================= */
 
-if (
-    mb_strlen($message)
-    > 4000
-) {
+$input = json_decode(
+    file_get_contents("php://input"),
+    true
+);
+
+
+if (!is_array($input)) {
 
     responseJSON(
         false,
-        "Your message is too long."
+        "Invalid JSON request."
     );
 }
 
 
 /* =========================================================
-   CONVERSATION HISTORY
-========================================================= */
+   USER MESSAGE
+   ========================================================= */
 
-$history =
-    $data["history"]
-    ?? [];
+$message = trim(
+    (string)($input["message"] ?? "")
+);
 
 
-if (
-    !is_array($history)
-) {
+if ($message === "") {
+
+    responseJSON(
+        false,
+        "Message cannot be empty."
+    );
+}
+
+
+if (mb_strlen($message) > 4000) {
+
+    responseJSON(
+        false,
+        "Message is too long. Maximum length is 4000 characters."
+    );
+}
+
+
+/* =========================================================
+   CHAT HISTORY
+   ========================================================= */
+
+$history = $input["history"] ?? [];
+
+if (!is_array($history)) {
 
     $history = [];
 }
 
 
 /*
- * Only use the latest 20 messages.
- */
+   Keep only the latest 20 messages.
+*/
 
-$history =
-    array_slice(
-        $history,
-        -20
-    );
+$history = array_slice(
+    $history,
+    -20
+);
 
 
 /* =========================================================
-   CURRENT PAGE CONTEXT
-========================================================= */
+   PAGE CONTEXT
+   ========================================================= */
 
-$pageContext =
-    $data["page_context"]
-    ?? [];
+$pageContext = $input["page_context"] ?? [];
 
-
-if (
-    !is_array($pageContext)
-) {
+if (!is_array($pageContext)) {
 
     $pageContext = [];
 }
 
 
 /* =========================================================
-   PAGE INFORMATION
-========================================================= */
+   PAGE CONTEXT VARIABLES
+   ========================================================= */
 
-$pageTitle =
-    trim(
-        (string)(
-            $pageContext["title"]
-            ?? ""
-        )
-    );
+$pageTitle = trim(
+    (string)($pageContext["title"] ?? "")
+);
 
+$pageUrl = trim(
+    (string)($pageContext["url"] ?? "")
+);
 
-$pageURL =
-    trim(
-        (string)(
-            $pageContext["url"]
-            ?? ""
-        )
-    );
+$pageHeading = trim(
+    (string)($pageContext["heading"] ?? "")
+);
 
+$pageDescription = trim(
+    (string)($pageContext["description"] ?? "")
+);
 
-$pageHeading =
-    trim(
-        (string)(
-            $pageContext["heading"]
-            ?? ""
-        )
-    );
-
-
-$pageDescription =
-    trim(
-        (string)(
-            $pageContext["description"]
-            ?? ""
-        )
-    );
-
-
-$pageContent =
-    trim(
-        (string)(
-            $pageContext["content"]
-            ?? ""
-        )
-    );
+$pageContent = trim(
+    (string)($pageContext["content"] ?? "")
+);
 
 
 /*
- * Protect the backend from excessively
- * large page context.
- */
+   Prevent extremely large page context.
+*/
 
-if (
-    mb_strlen($pageContent)
-    > 12000
-) {
+if (mb_strlen($pageContent) > 12000) {
 
-    $pageContent =
-        mb_substr(
-            $pageContent,
-            0,
-            12000
-        )
-        .
-        "\n[Page content truncated]";
+    $pageContent = mb_substr(
+        $pageContent,
+        0,
+        12000
+    );
 }
 
 
 /* =========================================================
    ETSY SYSTEM INSTRUCTION
-========================================================= */
+   ========================================================= */
 
 $systemInstruction = <<<SYSTEM
 
-You are ETSY, the official academic AI assistant
-inside the ETS-Async Learning Portal.
+You are ETSY, the academic AI assistant of the ETS-Async Learning Portal.
 
-Your role is to help students learn and understand
-academic and engineering concepts.
-
-=========================================================
-IDENTITY
-=========================================================
-
-Your name is ETSY.
-
-Never introduce yourself as ChatGPT unless directly
-asked about your underlying AI model.
-
-When appropriate, say:
-
-"Hi, I'm ETSY."
+Your purpose is to help students understand lessons, solve problems,
+learn programming, understand engineering concepts, and study
+effectively.
 
 =========================================================
-ACADEMIC SCOPE
+ACADEMIC AREAS
 =========================================================
 
-ETS-Async serves students in the College of Engineering
-and Architecture.
+You can assist with:
 
-You may assist with:
-
-- Mathematics
-- Engineering mathematics
-- Programming
-- C and C++
-- PHP
-- JavaScript
-- MySQL
-- HTML and CSS
-- Python
-- MATLAB
-- Computer engineering
-- Electrical engineering
-- Electronics
-- Embedded systems
-- Arduino
-- ESP32
-- STM32
-- Internet of Things
-- Digital signal processing
-- Signals and systems
-- Z-transform
-- Fourier analysis
-- Difference equations
-- Digital systems
-- Circuits
-- Control systems
-- Engineering computation
-- Sensors
-- Microcontrollers
-- Communication systems
-- Agricultural technology
-- Engineering design
-- Architecture-related technical concepts
-
-=========================================================
-CURRENT PAGE CONTEXT
-=========================================================
-
-The student is currently viewing a page in ETS-Async.
-
-Use the current page context to understand references
-such as:
-
-"this"
-
-"this page"
-
-"the equation above"
-
-"the example"
-
-"this topic"
-
-"this code"
-
-"the graph"
-
-"the table"
-
-When the student asks a question that refers to the
-current page, prioritize the supplied page context.
-
-Do NOT claim to see information that is not contained
-in the supplied page context.
-
-If the current page context is insufficient, tell the
-student what additional information is needed.
+• Mathematics
+• Engineering Mathematics
+• Calculus
+• Differential Equations
+• Linear Algebra
+• Probability and Statistics
+• Physics
+• Electrical Engineering
+• Computer Engineering
+• Electronics
+• Digital Systems
+• Circuits
+• Control Systems
+• Signals and Systems
+• Digital Signal Processing
+• Z-Transform
+• Fourier Transform
+• Difference Equations
+• Digital Filters
+• Communication Systems
+• Sensors
+• Microcontrollers
+• Arduino
+• ESP32
+• STM32
+• Embedded Systems
+• IoT
+• Agricultural Technology
+• Engineering Design
+• Architecture technical concepts
+• C
+• C++
+• PHP
+• JavaScript
+• HTML
+• CSS
+• jQuery
+• Bootstrap
+• MySQL
+• Python
+• MATLAB
 
 =========================================================
 TEACHING STYLE
 =========================================================
 
-Be:
+Be clear, accurate, patient, and practical.
 
-- Clear
-- Accurate
-- Patient
-- Concise but sufficiently detailed
-- Academically appropriate
-- Step-by-step when solving technical problems
+For difficult concepts, preferably use:
 
-Use equations and examples when useful.
+1. Idea
+2. Formula or principle
+3. Step-by-step explanation
+4. Example
+5. Result
+6. Interpretation
 
-For difficult concepts:
-
-1. Explain the idea.
-2. Explain the relevant formula or principle.
-3. Work through an example.
-4. State the result.
-5. Give a short interpretation.
+Do not make explanations unnecessarily complicated.
 
 =========================================================
-ACADEMIC INTEGRITY
+MATHEMATICS AND ENGINEERING
 =========================================================
 
-Your purpose is learning, not academic dishonesty.
+When solving engineering or mathematics problems:
 
-When students ask about assignments, quizzes, laboratory
-activities, examinations, or graded work, prioritize:
+• State the formula.
+• Identify the given values.
+• Substitute values clearly.
+• Show important calculation steps.
+• Give the final answer.
+• Explain what the result means.
 
-- Explanation
-- Hints
-- Reasoning
-- Step-by-step learning
-- Similar examples
+Do not invent measurements, standards, specifications,
+experimental results, or citations.
 
-Do not encourage cheating.
+=========================================================
+LATEX / MATHEMATICS FORMATTING
+=========================================================
 
-If appropriate, help the student understand how to
-arrive at the answer rather than simply providing an
-unexplained final answer.
+Use LaTeX for mathematical expressions.
+
+For inline mathematics use:
+
+\\( ... \\)
+
+For displayed equations use:
+
+\\[
+...
+\\]
+
+Examples:
+
+\\[
+x[n] = u[n]
+\\]
+
+\\[
+H(z) = \\frac{1}{1 - 0.5z^{-1}}
+\\]
+
+Use LaTeX instead of poorly formatted plain-text equations
+when mathematical notation is important.
 
 =========================================================
 PROGRAMMING
 =========================================================
 
-When explaining code:
+When helping with programming:
 
-- Explain what the code does.
-- Identify important variables.
-- Explain the algorithm.
-- Point out errors when present.
-- Provide corrected code when appropriate.
-- Explain why the correction works.
+• Explain the code.
+• Explain variables.
+• Explain the algorithm.
+• Identify errors.
+• Show corrected code when necessary.
+• Explain why the correction works.
 
 Do not unnecessarily rewrite working code.
 
 =========================================================
-ENGINEERING
+ACADEMIC INTEGRITY
 =========================================================
 
-Use technically correct engineering terminology.
+Your purpose is learning.
 
-Distinguish clearly between:
+For assignments, quizzes, laboratories, and examinations:
 
-- Formula
-- Assumption
-- Calculation
-- Result
-- Interpretation
+• Explain concepts.
+• Give hints.
+• Show reasoning.
+• Provide similar examples.
+• Help the student understand the solution.
 
-Do not invent experimental results, measurements,
-standards, citations, or specifications.
+Do not encourage cheating.
 
 =========================================================
-CURRENT PAGE DATA
+CURRENT PAGE CONTEXT
 =========================================================
 
-Page title:
+The student may ask questions such as:
+
+"Explain this page."
+"What is the equation above?"
+"Explain this code."
+"What does this graph mean?"
+"Explain the table."
+
+Use the page context supplied below when relevant.
+
+Never claim to see information that was not supplied.
+
+=========================================================
+CURRENT PAGE
+=========================================================
+
+Title:
 $pageTitle
 
-Page heading:
+URL:
+$pageUrl
+
+Heading:
 $pageHeading
 
-Page description:
+Description:
 $pageDescription
 
-Current URL:
-$pageURL
-
-Visible page content:
+Content:
 $pageContent
 
 =========================================================
-FINAL INSTRUCTION
+RESPONSE STYLE
 =========================================================
 
-Answer the student's latest question using the current
-page context when relevant.
+Answer the student's actual question directly.
 
-If the student says "explain this", identify the most
-relevant concept from the current page and explain it.
+Do not repeatedly introduce yourself as ETSY.
 
-If there is an equation, code block, table, signal,
-graph description, or academic content in the page
-context, use it when answering.
+Be conversational but educational.
+
+Use headings, bullets, numbered steps, tables, and equations
+when they improve readability.
 
 SYSTEM;
 
 
 /* =========================================================
-   BUILD GEMINI CONTENTS
-========================================================= */
+   BUILD GROQ MESSAGES
+   ========================================================= */
 
-$contents = [];
+$messages = [];
+
+
+/*
+   System instruction.
+*/
+
+$messages[] = [
+    "role" => "system",
+    "content" => $systemInstruction
+];
 
 
 /* =========================================================
-   CONVERT CHAT HISTORY
-========================================================= */
+   ADD CHAT HISTORY
+   ========================================================= */
 
-foreach (
-    $history as $item
-) {
+foreach ($history as $item) {
 
-    if (
-        !is_array($item)
-    ) {
-
+    if (!is_array($item)) {
         continue;
     }
 
-
-    $role =
-        $item["role"]
-        ?? "";
-
-
-    $text =
-        trim(
-            (string)(
-                $item["text"]
-                ?? ""
-            )
-        );
-
+    $role = $item["role"] ?? "";
+    $content = $item["content"] ?? "";
 
     if (
-        $text === ""
+        !in_array(
+            $role,
+            ["user", "assistant"],
+            true
+        )
     ) {
-
         continue;
     }
 
-
-    /*
-     * Only allow valid frontend roles.
-     */
-
-    if (
-        $role !== "user" &&
-        $role !== "assistant"
-    ) {
-
+    if (!is_string($content)) {
         continue;
     }
 
+    if (trim($content) === "") {
+        continue;
+    }
 
-    /*
-     * Gemini uses:
-     *
-     * user
-     * model
-     */
-
-    $geminiRole =
-        $role === "assistant"
-        ? "model"
-        : "user";
-
-
-    $contents[] = [
-
-        "role" =>
-        $geminiRole,
-
-        "parts" => [
-
-            [
-                "text" =>
-                $text
-            ]
-
-        ]
-
+    $messages[] = [
+        "role" => $role,
+        "content" => $content
     ];
 }
 
 
 /* =========================================================
-   ENSURE CURRENT MESSAGE EXISTS
-========================================================= */
+   CURRENT USER MESSAGE
+   ========================================================= */
 
-$lastUserMessageExists =
-    false;
-
-
-for (
-    $i = count($contents) - 1;
-    $i >= 0;
-    $i--
-) {
-
-    if (
-        ($contents[$i]["role"] ?? "")
-        === "user"
-    ) {
-
-        $lastText =
-            $contents[$i]["parts"][0]["text"]
-            ?? "";
-
-
-        if (
-            trim($lastText)
-            === $message
-        ) {
-
-            $lastUserMessageExists =
-                true;
-        }
-
-        break;
-    }
-}
-
-
-if (
-    !$lastUserMessageExists
-) {
-
-    $contents[] = [
-
-        "role" => "user",
-
-        "parts" => [
-
-            [
-                "text" =>
-                $message
-            ]
-
-        ]
-
-    ];
-}
+$messages[] = [
+    "role" => "user",
+    "content" => $message
+];
 
 
 /* =========================================================
-   GEMINI API URL
-========================================================= */
+   GROQ REQUEST DATA
+   ========================================================= */
 
-$encodedModel =
-    rawurlencode(
-        $model
-    );
+$requestData = [
 
+    "model" => $model,
 
-$apiURL =
-    "https://generativelanguage.googleapis.com/"
-    .
-    "v1beta/models/"
-    .
-    $encodedModel
-    .
-    ":generateContent";
+    "messages" => $messages,
 
+    "temperature" => 0.4,
 
-/* =========================================================
-   REQUEST BODY
-========================================================= */
-
-$requestBody = [
-
-    "systemInstruction" => [
-
-        "parts" => [
-
-            [
-                "text" =>
-                $systemInstruction
-            ]
-
-        ]
-
-    ],
-
-    "contents" =>
-    $contents,
-
-    "generationConfig" => [
-
-        "temperature" =>
-        0.7,
-
-        "maxOutputTokens" =>
-        2048
-
-    ]
+    "max_tokens" => 2048
 
 ];
 
 
-$jsonBody =
-    json_encode(
-        $requestBody,
-        JSON_UNESCAPED_UNICODE |
-            JSON_UNESCAPED_SLASHES
-    );
-
-
 /* =========================================================
    INITIALIZE CURL
-========================================================= */
+   ========================================================= */
 
-$ch =
-    curl_init(
-        $apiURL
-    );
+$ch = curl_init(
+    $apiUrl
+);
 
 
 /* =========================================================
    CURL OPTIONS
-========================================================= */
+   ========================================================= */
 
 curl_setopt_array(
     $ch,
     [
 
-        CURLOPT_POST =>
-        true,
+        CURLOPT_RETURNTRANSFER => true,
 
-        CURLOPT_RETURNTRANSFER =>
-        true,
+        CURLOPT_POST => true,
 
-        CURLOPT_POSTFIELDS =>
-        $jsonBody,
+        CURLOPT_POSTFIELDS => json_encode(
+            $requestData,
+            JSON_UNESCAPED_UNICODE |
+                JSON_UNESCAPED_SLASHES
+        ),
 
         CURLOPT_HTTPHEADER => [
 
+            "Authorization: Bearer " . $apiKey,
+
             "Content-Type: application/json",
 
-            "x-goog-api-key: "
-                . $apiKey
+            "Accept: application/json"
 
         ],
 
-        CURLOPT_CONNECTTIMEOUT =>
-        15,
+        CURLOPT_CONNECTTIMEOUT => 15,
 
-        CURLOPT_TIMEOUT =>
-        60
+        CURLOPT_TIMEOUT => 60
 
     ]
 );
@@ -844,25 +576,44 @@ curl_setopt_array(
 
 /* =========================================================
    EXECUTE REQUEST
-========================================================= */
+   ========================================================= */
 
-$response =
-    curl_exec(
-        $ch
+$response = curl_exec(
+    $ch
+);
+
+
+/* =========================================================
+   CURL ERROR
+   ========================================================= */
+
+if ($response === false) {
+
+    $curlError = curl_error($ch);
+
+    $curlErrorNumber = curl_errno($ch);
+
+    curl_close($ch);
+
+    responseJSON(
+        false,
+        "Unable to connect to Groq API.",
+        [
+            "error" => $curlError,
+            "curl_error_number" => $curlErrorNumber
+        ]
     );
+}
 
 
-$curlError =
-    curl_error(
-        $ch
-    );
+/* =========================================================
+   HTTP STATUS
+   ========================================================= */
 
-
-$httpCode =
-    curl_getinfo(
-        $ch,
-        CURLINFO_HTTP_CODE
-    );
+$httpCode = curl_getinfo(
+    $ch,
+    CURLINFO_HTTP_CODE
+);
 
 
 curl_close(
@@ -871,161 +622,89 @@ curl_close(
 
 
 /* =========================================================
-   CURL ERROR
-========================================================= */
+   DECODE GROQ RESPONSE
+   ========================================================= */
 
-if (
-    $response === false
-) {
+$result = json_decode(
+    $response,
+    true
+);
 
-    error_log(
-        "ETSY Gemini cURL error: "
-            . $curlError
-    );
 
+if (!is_array($result)) {
 
     responseJSON(
         false,
-        "ETSY could not connect to the AI service."
+        "Invalid response received from Groq.",
+        [
+            "http_code" => $httpCode
+        ]
     );
 }
 
 
 /* =========================================================
-   HTTP ERROR
-========================================================= */
+   GROQ API ERROR
+   ========================================================= */
 
-if (
-    $httpCode < 200 ||
-    $httpCode >= 300
-) {
+if ($httpCode < 200 || $httpCode >= 300) {
 
-    error_log(
-        "ETSY Gemini HTTP "
-            . $httpCode
-            . ": "
-            . $response
-    );
-
+    $errorMessage =
+        $result["error"]["message"]
+        ?? "Groq API request failed.";
 
     responseJSON(
         false,
-        "ETSY could not process your request right now."
+        $errorMessage,
+        [
+            "http_code" => $httpCode
+        ]
     );
 }
 
 
 /* =========================================================
-   DECODE GEMINI RESPONSE
-========================================================= */
-
-$result =
-    json_decode(
-        $response,
-        true
-    );
-
-
-if (
-    !is_array($result)
-) {
-
-    error_log(
-        "ETSY: Invalid Gemini JSON response."
-    );
-
-
-    responseJSON(
-        false,
-        "ETSY received an invalid response."
-    );
-}
-
-
-/* =========================================================
-   EXTRACT RESPONSE TEXT
-========================================================= */
-
-$reply = "";
-
-
-$candidates =
-    $result["candidates"]
-    ?? [];
-
-
-if (
-    isset(
-        $candidates[0]["content"]["parts"]
-    )
-    &&
-    is_array(
-        $candidates[0]["content"]["parts"]
-    )
-) {
-
-    foreach (
-        $candidates[0]["content"]["parts"]
-        as $part
-    ) {
-
-        if (
-            isset(
-                $part["text"]
-            )
-        ) {
-
-            $reply .=
-                $part["text"];
-        }
-    }
-}
-
+   EXTRACT RESPONSE
+   ========================================================= */
 
 $reply =
-    trim(
-        $reply
-    );
+    $result["choices"][0]["message"]["content"]
+    ?? "";
+
+
+$reply = trim(
+    (string)$reply
+);
 
 
 /* =========================================================
-   EMPTY RESPONSE
-========================================================= */
+   EMPTY RESPONSE CHECK
+   ========================================================= */
 
-if (
-    $reply === ""
-) {
-
-    error_log(
-        "ETSY: Gemini returned no text."
-    );
-
+if ($reply === "") {
 
     responseJSON(
         false,
-        "ETSY could not generate a response."
+        "Groq returned an empty response.",
+        [
+            "model" => $model
+        ]
     );
 }
 
 
 /* =========================================================
    SUCCESS
-========================================================= */
+   ========================================================= */
 
 responseJSON(
-
     true,
-
     "Success.",
-
     [
 
-        "reply" =>
-        $reply,
+        "reply" => $reply,
 
-        "model" =>
-        $model
+        "model" => $model
 
     ]
-
 );
