@@ -198,17 +198,7 @@ function sidebarActive($page)
              PROFILE PHOTO
         ================================================== -->
 
-        <a
-            href="profile_photo.php"
-            class="sidebar-link <?= sidebarActive('profile_photo.php') ?>">
-
-            <i class="bi bi-person-bounding-box"></i>
-
-            <span>
-                Profile Photo
-            </span>
-
-        </a>
+       
         <a
             href="student_profile.php"
             class="sidebar-link <?= sidebarActive('student_profile.php') ?>">
