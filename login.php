@@ -1,780 +1,784 @@
+<?php
+/* =========================================================
+   ETS-ASYNC LEARNING PORTAL
+   GITHUB + ANIME.JS INSPIRED LOGIN PAGE
+   COLLEGE OF ENGINEERING AND ARCHITECTURE
+   ========================================================= */
 
+date_default_timezone_set('Asia/Manila');
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
+    <!-- =====================================================
+         META
+    ====================================================== -->
+
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1">
+        content="width=device-width, initial-scale=1.0">
 
     <meta
         name="description"
-        content="ETS-Async Learning Portal Login">
+        content="ETS-Async Learning Portal Login for College of Engineering and Architecture students.">
 
-    <title>Login | ETS-Async</title>
+    <meta
+        name="theme-color"
+        content="#0d1117">
+
+    <meta
+        name="color-scheme"
+        content="dark">
 
 
-    <!-- =========================================================
+    <!-- =====================================================
+         TITLE
+    ====================================================== -->
+
+    <title>
+        Login | ETS-Async
+    </title>
+
+
+    <!-- =====================================================
+         FAVICON
+    ====================================================== -->
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="./assets/pubmat/head.png">
+
+
+    <!-- =====================================================
+         GOOGLE FONTS
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
          BOOTSTRAP 5.3.3
-    ========================================================== -->
+    ====================================================== -->
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
 
 
+    <!-- =====================================================
+         BOOTSTRAP ICONS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <!-- =====================================================
+         ANIME.JS
+    ====================================================== -->
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js">
+    </script>
+
+
+    <!-- =====================================================
+         CUSTOM CSS
+    ====================================================== -->
+
     <style>
-        /* =========================================================
-           ETS-ASYNC PROFESSIONAL LOGIN
-           Academic / University Learning Portal
-        ========================================================== */
-
-
-        /* =========================================================
+        /* =====================================================
            ROOT VARIABLES
-        ========================================================== */
+        ====================================================== */
 
         :root {
 
-            --academic-blue: #0B4F8A;
-            --academic-blue-dark: #073A66;
-            --academic-blue-light: #EAF3FA;
-            --academic-blue-soft: #F4F8FC;
+            --bg:
+                #0d1117;
 
-            --text-dark: #1F2937;
-            --text-muted: #6B7280;
-            --text-light: #9CA3AF;
+            --bg-soft:
+                #161b22;
 
-            --border-color: #D9E2EC;
-            --border-soft: #EEF2F6;
+            --bg-card:
+                #1c2128;
 
-            --white: #FFFFFF;
+            --bg-card-soft:
+                #21262d;
 
-            --success: #198754;
-            --danger: #DC3545;
-            --warning: #D99A00;
+            --border:
+                #30363d;
 
-            --shadow-sm:
-                0 4px 12px rgba(0, 0, 0, 0.05);
+            --border-soft:
+                rgba(255, 255, 255, 0.08);
 
-            --shadow-md:
-                0 15px 40px rgba(11, 79, 138, 0.12);
+            --white:
+                #ffffff;
 
-            --shadow-lg:
-                0 25px 70px rgba(11, 79, 138, 0.18);
+            --text:
+                #f0f6fc;
 
-            --gradient-primary:
-                linear-gradient(135deg,
-                    #0B4F8A 0%,
-                    #073A66 100%);
+            --text-secondary:
+                #c9d1d9;
+
+            --muted:
+                #8b949e;
+
+            --muted-dark:
+                #6e7681;
+
+            --blue:
+                #2f81f7;
+
+            --blue-light:
+                #58a6ff;
+
+            --cyan:
+                #56d4dd;
+
+            --purple:
+                #a371f7;
+
+            --pink:
+                #f778ba;
+
+            --green:
+                #3fb950;
+
+            --danger:
+                #f85149;
+
+            --warning:
+                #d29922;
+
+            --radius-sm:
+                8px;
+
+            --radius-md:
+                12px;
+
+            --radius-lg:
+                18px;
+
+            --radius-xl:
+                26px;
 
         }
 
 
-        /* =========================================================
+        /* =====================================================
            RESET
-        ========================================================== */
+        ====================================================== */
 
         * {
 
-            box-sizing: border-box;
+            box-sizing:
+                border-box;
 
         }
 
-
-        /* =========================================================
-           HTML
-        ========================================================== */
 
         html {
 
-            scroll-behavior: smooth;
+            scroll-behavior:
+                smooth;
 
         }
 
-
-        /* =========================================================
-           BODY
-        ========================================================== */
 
         body {
 
-            margin: 0;
+            margin:
+                0;
 
-            min-height: 100vh;
+            min-height:
+                100vh;
 
             font-family:
+                "Inter",
+                -apple-system,
+                BlinkMacSystemFont,
                 "Segoe UI",
-                Tahoma,
-                Geneva,
-                Verdana,
                 sans-serif;
 
             color:
-                var(--text-dark);
+                var(--text);
 
             background:
-                linear-gradient(135deg,
-                    #F7FAFD 0%,
-                    #EAF3FA 45%,
-                    #F8FAFC 100%);
+                var(--bg);
 
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            padding: 30px;
-
-            overflow-x: hidden;
-
-            position: relative;
+            overflow-x:
+                hidden;
 
         }
 
 
-        /* =========================================================
-           ANIMATED BACKGROUND
-        ========================================================== */
-
-        body::before {
-
-            content: "";
-
-            position: fixed;
-
-            width: 500px;
-
-            height: 500px;
-
-            border-radius: 50%;
-
-            background:
-                rgba(11, 79, 138, 0.06);
-
-            top: -180px;
-
-            left: -180px;
-
-            filter: blur(5px);
-
-            animation:
-                backgroundFloat 12s ease-in-out infinite;
-
-            pointer-events: none;
-
-        }
-
-
-        body::after {
-
-            content: "";
-
-            position: fixed;
-
-            width: 450px;
-
-            height: 450px;
-
-            border-radius: 50%;
-
-            background:
-                rgba(8, 59, 102, 0.05);
-
-            bottom: -180px;
-
-            right: -150px;
-
-            filter: blur(5px);
-
-            animation:
-                backgroundFloatReverse 15s ease-in-out infinite;
-
-            pointer-events: none;
-
-        }
-
-
-        /* =========================================================
-           BACKGROUND ANIMATIONS
-        ========================================================== */
-
-        @keyframes backgroundFloat {
-
-            0%,
-            100% {
-
-                transform:
-                    translate(0, 0) scale(1);
-
-            }
-
-            50% {
-
-                transform:
-                    translate(60px, 40px) scale(1.08);
-
-            }
-
-        }
-
-
-        @keyframes backgroundFloatReverse {
-
-            0%,
-            100% {
-
-                transform:
-                    translate(0, 0) scale(1);
-
-            }
-
-            50% {
-
-                transform:
-                    translate(-50px, -35px) scale(1.06);
-
-            }
-
-        }
-
-
-        /* =========================================================
-           LOGIN CARD
-        ========================================================== */
-
-        .login-card {
-
-            width: 100%;
-
-            max-width: 430px;
-
-            background:
-                rgba(255, 255, 255, 0.97);
-
-            border:
-                1px solid rgba(217, 226, 236, 0.9);
-
-            border-radius: 18px;
-
-            padding:
-                42px 40px;
-
-            box-shadow:
-                var(--shadow-lg);
-
-            position: relative;
-
-            z-index: 2;
-
-            animation:
-                loginCardEntrance 0.8s cubic-bezier(0.16,
-                    1,
-                    0.3,
-                    1);
-
-        }
-
-
-        /* =========================================================
-           CARD TOP ACCENT
-        ========================================================== */
-
-        .login-card::before {
-
-            content: "";
-
-            position: absolute;
-
-            top: 0;
-
-            left: 0;
-
-            right: 0;
-
-            height: 5px;
-
-            background:
-                var(--gradient-primary);
-
-            border-radius:
-                18px 18px 0 0;
-
-        }
-
-
-        /* =========================================================
-           CARD ENTRANCE
-        ========================================================== */
-
-        @keyframes loginCardEntrance {
-
-            from {
-
-                opacity: 0;
-
-                transform:
-                    translateY(35px) scale(0.97);
-
-            }
-
-            to {
-
-                opacity: 1;
-
-                transform:
-                    translateY(0) scale(1);
-
-            }
-
-        }
-
-
-        /* =========================================================
-           LOGO
-        ========================================================== */
-
-        .logo {
-
-            width: 78px;
-
-            height: 78px;
-
-            margin:
-                0 auto 22px;
-
-            border-radius: 50%;
-
-            background:
-                linear-gradient(135deg,
-                    #EAF3FA,
-                    #DDECF8);
-
-            border:
-                1px solid #D2E3F0;
-
-            color:
-                var(--academic-blue);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 30px;
-
-            box-shadow:
-                0 8px 25px rgba(11, 79, 138, 0.12);
-
-            animation:
-                logoEntrance 1s ease-out 0.2s both;
-
-            transition:
-                transform 0.25s ease,
-                box-shadow 0.25s ease;
-
-        }
-
-
-        /* =========================================================
-           LOGO HOVER
-        ========================================================== */
-
-        .logo:hover {
-
-            transform:
-                translateY(-3px) rotate(-3deg);
-
-            box-shadow:
-                0 12px 30px rgba(11, 79, 138, 0.18);
-
-        }
-
-
-        /* =========================================================
-           LOGO ANIMATION
-        ========================================================== */
-
-        @keyframes logoEntrance {
-
-            from {
-
-                opacity: 0;
-
-                transform:
-                    translateY(-15px) scale(0.8);
-
-            }
-
-            to {
-
-                opacity: 1;
-
-                transform:
-                    translateY(0) scale(1);
-
-            }
-
-        }
-
-
-        /* =========================================================
-           LOGIN TITLE
-        ========================================================== */
-
-        h1 {
-
-            color:
-                var(--academic-blue-dark);
-
-            font-size:
-                30px;
-
-            font-weight:
-                700;
-
-            letter-spacing:
-                -0.5px;
-
-            text-align:
-                center;
-
-            margin:
-                0 0 6px;
-
-        }
-
-
-        /* =========================================================
-           SUBTITLE
-        ========================================================== */
-
-        .subtitle {
-
-            color:
-                var(--text-muted);
-
-            text-align:
-                center;
-
-            font-size:
-                14px;
-
-            margin:
-                0 0 32px;
-
-        }
-
-
-        /* =========================================================
-           FORM LABEL
-        ========================================================== */
-
-        .form-label {
-
-            color:
-                var(--academic-blue-dark);
-
-            font-size:
-                14px;
-
-            font-weight:
-                600;
-
-            margin-bottom:
-                8px;
-
-        }
-
-
-        /* =========================================================
-           PASSWORD HEADER
-        ========================================================== */
-
-        .password-header {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            margin-bottom:
-                8px;
-
-        }
-
-
-        .password-header .form-label {
-
-            margin-bottom: 0;
-
-        }
-
-
-        /* =========================================================
-           FORGOT PASSWORD
-        ========================================================== */
-
-        .forgot-password {
-
-            color:
-                var(--academic-blue);
-
-            font-size:
-                13px;
-
-            font-weight:
-                600;
+        a {
 
             text-decoration:
                 none;
+
+        }
+
+
+        button,
+        input {
+
+            font-family:
+                inherit;
+
+        }
+
+
+        /* =====================================================
+           ANIMATED BACKGROUND GRID
+        ====================================================== */
+
+        .background-grid {
+
+            position:
+                fixed;
+
+            inset:
+                0;
+
+            z-index:
+                0;
+
+            pointer-events:
+                none;
+
+            opacity:
+                0.42;
+
+            background-image:
+
+                linear-gradient(rgba(88, 166, 255, 0.035) 1px,
+                    transparent 1px),
+
+                linear-gradient(90deg,
+                    rgba(88, 166, 255, 0.035) 1px,
+                    transparent 1px);
+
+            background-size:
+                55px 55px;
+
+            mask-image:
+                linear-gradient(to bottom,
+                    black 0%,
+                    rgba(0, 0, 0, 0.7) 50%,
+                    transparent 100%);
+
+        }
+
+
+        /* =====================================================
+           GLOW ORBS
+        ====================================================== */
+
+        .glow {
+
+            position:
+                fixed;
+
+            z-index:
+                0;
+
+            pointer-events:
+                none;
+
+            border-radius:
+                50%;
+
+            filter:
+                blur(110px);
+
+            opacity:
+                0.12;
+
+        }
+
+
+        .glow-blue {
+
+            width:
+                420px;
+
+            height:
+                420px;
+
+            top:
+                -180px;
+
+            left:
+                -120px;
+
+            background:
+                var(--blue);
+
+        }
+
+
+        .glow-purple {
+
+            width:
+                380px;
+
+            height:
+                380px;
+
+            right:
+                -170px;
+
+            bottom:
+                -120px;
+
+            background:
+                var(--purple);
+
+        }
+
+
+        .glow-cyan {
+
+            width:
+                250px;
+
+            height:
+                250px;
+
+            top:
+                40%;
+
+            left:
+                45%;
+
+            background:
+                var(--cyan);
+
+            opacity:
+                0.06;
+
+        }
+
+
+        /* =====================================================
+           FLOATING PARTICLES
+        ====================================================== */
+
+        .particle {
+
+            position:
+                fixed;
+
+            width:
+                4px;
+
+            height:
+                4px;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--blue-light);
+
+            box-shadow:
+                0 0 12px var(--blue-light);
+
+            pointer-events:
+                none;
+
+            z-index:
+                1;
+
+        }
+
+
+        .particle-1 {
+
+            top:
+                18%;
+
+            left:
+                12%;
+
+        }
+
+
+        .particle-2 {
+
+            top:
+                30%;
+
+            right:
+                15%;
+
+            background:
+                var(--purple);
+
+            box-shadow:
+                0 0 12px var(--purple);
+
+        }
+
+
+        .particle-3 {
+
+            bottom:
+                25%;
+
+            left:
+                18%;
+
+            background:
+                var(--cyan);
+
+            box-shadow:
+                0 0 12px var(--cyan);
+
+        }
+
+
+        .particle-4 {
+
+            bottom:
+                17%;
+
+            right:
+                25%;
+
+        }
+
+
+        /* =====================================================
+           TOP NAVIGATION
+        ====================================================== */
+
+        .topbar {
+
+            position:
+                fixed;
+
+            top:
+                0;
+
+            left:
+                0;
+
+            right:
+                0;
+
+            height:
+                70px;
+
+            z-index:
+                100;
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            background:
+                rgba(13, 17, 23, 0.82);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+        }
+
+
+        .topbar-inner {
+
+            width:
+                min(calc(100% - 36px),
+                    1180px);
+
+            height:
+                100%;
+
+            margin:
+                auto;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+        }
+
+
+        /* =====================================================
+           BRAND
+        ====================================================== */
+
+        .brand {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                11px;
+
+            color:
+                var(--white);
+
+        }
+
+
+        .brand:hover {
+
+            color:
+                var(--white);
+
+        }
+
+
+        .brand-logo {
+
+            width:
+                39px;
+
+            height:
+                39px;
+
+            object-fit:
+                contain;
+
+            border-radius:
+                9px;
+
+            filter:
+                drop-shadow(0 0 15px rgba(88, 166, 255, 0.25));
+
+        }
+
+
+        .brand-text {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+        }
+
+
+        .brand-name {
+
+            font-family:
+                "Poppins",
+                sans-serif;
+
+            font-size:
+                16px;
+
+            font-weight:
+                800;
+
+            line-height:
+                1;
+
+        }
+
+
+        .brand-subtitle {
+
+            margin-top:
+                4px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                9px;
+
+            letter-spacing:
+                0.4px;
+
+        }
+
+
+        /* =====================================================
+           TOP RIGHT
+        ====================================================== */
+
+        .topbar-right {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                16px;
+
+        }
+
+
+        .college-label {
+
+            color:
+                var(--muted);
+
+            font-size:
+                11px;
+
+        }
+
+
+        .back-link {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
 
             transition:
                 color 0.2s ease,
-                opacity 0.2s ease;
+                transform 0.2s ease;
 
         }
 
 
-        .forgot-password:hover {
+        .back-link:hover {
 
             color:
-                var(--academic-blue-dark);
-
-            text-decoration:
-                underline;
-
-        }
-
-
-        .forgot-password:focus-visible {
-
-            outline:
-                2px solid rgba(11, 79, 138, 0.35);
-
-            outline-offset:
-                3px;
-
-            border-radius:
-                3px;
-
-        }
-
-
-        /* =========================================================
-           FORM CONTROL
-        ========================================================== */
-
-        .form-control {
-
-            height:
-                50px;
-
-            border:
-                1px solid var(--border-color);
-
-            border-radius:
-                8px;
-
-            background:
-                #FFFFFF;
-
-            color:
-                var(--text-dark);
-
-            font-size:
-                15px;
-
-            padding:
-                12px 15px;
-
-            transition:
-                border-color 0.25s ease,
-                box-shadow 0.25s ease,
-                transform 0.25s ease;
-
-        }
-
-
-        .form-control::placeholder {
-
-            color:
-                #9CA3AF;
-
-        }
-
-
-        /* =========================================================
-           INPUT HOVER
-        ========================================================== */
-
-        .form-control:hover {
-
-            border-color:
-                #B8CBDC;
-
-        }
-
-
-        /* =========================================================
-           INPUT FOCUS
-        ========================================================== */
-
-        .form-control:focus {
-
-            border-color:
-                var(--academic-blue);
-
-            background:
-                #FFFFFF;
-
-            box-shadow:
-                0 0 0 4px rgba(11, 79, 138, 0.10);
-
-            outline:
-                none;
+                var(--white);
 
             transform:
-                translateY(-1px);
+                translateX(-2px);
 
         }
 
 
-        /* =========================================================
-           PASSWORD WRAPPER
-        ========================================================== */
+        /* =====================================================
+           MAIN PAGE
+        ====================================================== */
 
-        .password-wrapper {
+        .login-page {
 
             position:
                 relative;
 
-        }
+            z-index:
+                2;
 
+            min-height:
+                100vh;
 
-        .password-wrapper .form-control {
+            display:
+                flex;
 
-            padding-right:
-                65px;
+            align-items:
+                center;
 
-        }
-
-
-        /* =========================================================
-           SHOW PASSWORD
-        ========================================================== */
-
-        .show-password {
-
-            position:
-                absolute;
-
-            right:
-                12px;
-
-            top:
-                50%;
-
-            transform:
-                translateY(-50%);
-
-            border:
-                none;
-
-            background:
-                transparent;
-
-            color:
-                var(--text-muted);
-
-            font-size:
-                13px;
-
-            font-weight:
-                600;
+            justify-content:
+                center;
 
             padding:
-                5px 7px;
-
-            border-radius:
-                5px;
-
-            cursor:
-                pointer;
-
-            transition:
-                color 0.2s ease,
-                background 0.2s ease;
+                110px 20px 60px;
 
         }
 
 
-        .show-password:hover {
+        /* =====================================================
+           MAIN LOGIN CARD
+        ====================================================== */
 
-            color:
-                var(--academic-blue);
-
-            background:
-                var(--academic-blue-soft);
-
-        }
-
-
-        .show-password:focus-visible {
-
-            outline:
-                2px solid rgba(11, 79, 138, 0.25);
-
-            outline-offset:
-                2px;
-
-        }
-
-
-        /* =========================================================
-           LOGIN BUTTON
-        ========================================================== */
-
-        .login-button {
+        .login-container {
 
             width:
                 100%;
 
-            height:
-                50px;
+            max-width:
+                1080px;
 
-            border:
-                none;
+            min-height:
+                640px;
 
-            border-radius:
-                8px;
+            display:
+                grid;
+
+            grid-template-columns:
+                0.95fr 1fr;
 
             background:
-                var(--gradient-primary);
+                rgba(22, 27, 34, 0.92);
 
-            color:
-                #FFFFFF;
+            border:
+                1px solid var(--border);
 
-            font-size:
-                15px;
+            border-radius:
+                var(--radius-xl);
 
-            font-weight:
-                600;
-
-            letter-spacing:
-                0.1px;
-
-            cursor:
-                pointer;
+            overflow:
+                hidden;
 
             box-shadow:
-                0 6px 18px rgba(11, 79, 138, 0.22);
+
+                0 40px 100px rgba(0, 0, 0, 0.42),
+
+                0 0 0 1px rgba(255, 255, 255, 0.015);
+
+            backdrop-filter:
+                blur(20px);
+
+            -webkit-backdrop-filter:
+                blur(20px);
+
+            opacity:
+                0;
+
+            transform:
+                translateY(30px) scale(0.985);
+
+        }
+
+
+        /* =====================================================
+           LEFT PANEL
+        ====================================================== */
+
+        .branding-panel {
 
             position:
                 relative;
@@ -782,163 +786,745 @@
             overflow:
                 hidden;
 
-            transition:
-                transform 0.25s ease,
-                box-shadow 0.25s ease,
-                background 0.25s ease;
+            padding:
+                55px;
+
+            background:
+
+                radial-gradient(circle at 20% 20%,
+                    rgba(47, 129, 247, 0.20),
+                    transparent 32%),
+
+                radial-gradient(circle at 80% 80%,
+                    rgba(163, 113, 247, 0.13),
+                    transparent 35%),
+
+                linear-gradient(145deg,
+                    #111827,
+                    #0d1117);
+
+            border-right:
+                1px solid var(--border);
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                space-between;
 
         }
 
 
-        /* =========================================================
-           BUTTON SHINE
-        ========================================================== */
+        /* =====================================================
+           ENGINEERING GRID
+        ====================================================== */
 
-        .login-button::before {
-
-            content: "";
+        .branding-grid {
 
             position:
                 absolute;
 
-            top:
+            inset:
                 0;
 
-            left:
-                -100%;
+            opacity:
+                0.5;
+
+            pointer-events:
+                none;
+
+            background-image:
+
+                linear-gradient(rgba(88, 166, 255, 0.045) 1px,
+                    transparent 1px),
+
+                linear-gradient(90deg,
+                    rgba(88, 166, 255, 0.045) 1px,
+                    transparent 1px);
+
+            background-size:
+                40px 40px;
+
+            mask-image:
+                linear-gradient(135deg,
+                    black,
+                    transparent 70%);
+
+        }
+
+
+        /* =====================================================
+           DECORATIVE CIRCLE
+        ====================================================== */
+
+        .branding-circle {
+
+            position:
+                absolute;
 
             width:
-                70%;
+                430px;
 
             height:
-                100%;
+                430px;
 
-            background:
-                linear-gradient(90deg,
-                    transparent,
-                    rgba(255, 255, 255, 0.18),
-                    transparent);
+            border:
+                1px solid rgba(88, 166, 255, 0.10);
 
-            transform:
-                skewX(-20deg);
+            border-radius:
+                50%;
+
+            right:
+                -240px;
+
+            top:
+                -170px;
+
+            pointer-events:
+                none;
 
         }
 
 
-        /* =========================================================
-           BUTTON HOVER
-        ========================================================== */
+        .branding-circle::before {
 
-        .login-button:hover {
+            content:
+                "";
 
-            transform:
-                translateY(-2px);
+            position:
+                absolute;
+
+            inset:
+                55px;
+
+            border:
+                1px solid rgba(163, 113, 247, 0.10);
+
+            border-radius:
+                50%;
+
+        }
+
+
+        /* =====================================================
+           BRANDING CONTENT
+        ====================================================== */
+
+        .brand-content {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+        }
+
+
+        /* =====================================================
+           BRAND ICON
+        ====================================================== */
+
+        .brand-icon {
+
+            width:
+                62px;
+
+            height:
+                62px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            margin-bottom:
+                27px;
+
+            border:
+                1px solid rgba(88, 166, 255, 0.25);
+
+            border-radius:
+                15px;
+
+            background:
+                rgba(47, 129, 247, 0.10);
+
+            color:
+                var(--blue-light);
+
+            font-size:
+                27px;
 
             box-shadow:
-                0 10px 25px rgba(11, 79, 138, 0.28);
-
-            background:
-                linear-gradient(135deg,
-                    #0D5A9D,
-                    #073A66);
+                0 0 35px rgba(47, 129, 247, 0.12);
 
         }
 
 
-        .login-button:hover::before {
+        /* =====================================================
+           BRAND TITLE
+        ====================================================== */
+
+        .brand-heading {
+
+            margin:
+                0 0 9px;
+
+            font-family:
+                "Poppins",
+                sans-serif;
+
+            font-size:
+                43px;
+
+            line-height:
+                1;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                -2px;
+
+            color:
+                var(--white);
+
+        }
+
+
+        .brand-heading span {
+
+            background:
+
+                linear-gradient(90deg,
+                    var(--blue-light),
+                    var(--purple),
+                    var(--cyan));
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+
+            background-size:
+                200% 200%;
 
             animation:
-                buttonShine 0.8s ease;
+                gradientMove 5s ease infinite;
 
         }
 
 
-        /* =========================================================
-           BUTTON ACTIVE
-        ========================================================== */
+        @keyframes gradientMove {
 
-        .login-button:active {
+            0% {
+                background-position:
+                    0% 50%;
+            }
 
-            transform:
-                translateY(0);
+            50% {
+                background-position:
+                    100% 50%;
+            }
+
+            100% {
+                background-position:
+                    0% 50%;
+            }
+
+        }
+
+
+        .brand-title {
+
+            margin:
+                0;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                16px;
+
+            font-weight:
+                600;
+
+        }
+
+
+        .brand-description {
+
+            max-width:
+                410px;
+
+            margin:
+                22px 0 0;
+
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+
+            line-height:
+                1.8;
+
+        }
+
+
+        /* =====================================================
+           FEATURE LIST
+        ====================================================== */
+
+        .feature-list {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            margin-top:
+                38px;
+
+        }
+
+
+        .feature-item {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+
+            margin-bottom:
+                14px;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                12px;
+
+        }
+
+
+        .feature-icon {
+
+            width:
+                31px;
+
+            height:
+                31px;
+
+            flex-shrink:
+                0;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius:
+                8px;
+
+            background:
+                rgba(255, 255, 255, 0.035);
+
+            color:
+                var(--blue-light);
+
+        }
+
+
+        /* =====================================================
+           TERMINAL-STYLE DECORATION
+        ====================================================== */
+
+        .terminal-card {
+
+            position:
+                absolute;
+
+            right:
+                35px;
+
+            bottom:
+                45px;
+
+            width:
+                180px;
+
+            padding:
+                13px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.09);
+
+            border-radius:
+                10px;
+
+            background:
+                rgba(13, 17, 23, 0.72);
 
             box-shadow:
-                0 4px 12px rgba(11, 79, 138, 0.20);
+                0 20px 40px rgba(0, 0, 0, 0.25);
 
-        }
-
-
-        /* =========================================================
-           BUTTON DISABLED
-        ========================================================== */
-
-        .login-button:disabled {
+            transform:
+                rotate(-4deg);
 
             opacity:
-                0.7;
+                0.85;
 
-            cursor:
-                not-allowed;
+        }
 
-            transform:
+
+        .terminal-top {
+
+            display:
+                flex;
+
+            gap:
+                5px;
+
+            margin-bottom:
+                10px;
+
+        }
+
+
+        .terminal-dot {
+
+            width:
+                6px;
+
+            height:
+                6px;
+
+            border-radius:
+                50%;
+
+            background:
+                #484f58;
+
+        }
+
+
+        .terminal-line {
+
+            font-family:
+                monospace;
+
+            color:
+                var(--muted);
+
+            font-size:
+                7px;
+
+            line-height:
+                1.8;
+
+        }
+
+
+        .terminal-line span {
+
+            color:
+                var(--green);
+
+        }
+
+
+        /* =====================================================
+           BRAND FOOTER
+        ====================================================== */
+
+        .brand-footer {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            color:
+                var(--muted-dark);
+
+            font-size:
+                10px;
+
+            line-height:
+                1.7;
+
+        }
+
+
+        /* =====================================================
+           RIGHT LOGIN PANEL
+        ====================================================== */
+
+        .login-panel {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            padding:
+                55px;
+
+            background:
+                rgba(22, 27, 34, 0.72);
+
+        }
+
+
+        .login-content {
+
+            width:
+                100%;
+
+            max-width:
+                390px;
+
+        }
+
+
+        /* =====================================================
+           MOBILE BRAND
+        ====================================================== */
+
+        .mobile-brand {
+
+            display:
                 none;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            margin-bottom:
+                30px;
+
+        }
+
+
+        .mobile-brand-icon {
+
+            width:
+                40px;
+
+            height:
+                40px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border:
+                1px solid rgba(88, 166, 255, 0.2);
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(47, 129, 247, 0.08);
+
+            color:
+                var(--blue-light);
+
+        }
+
+
+        .mobile-brand-name {
+
+            font-family:
+                "Poppins",
+                sans-serif;
+
+            font-weight:
+                800;
+
+            font-size:
+                17px;
+
+        }
+
+
+        /* =====================================================
+           LOGIN HEADER
+        ====================================================== */
+
+        .login-header {
+
+            margin-bottom:
+                30px;
+
+        }
+
+
+        .login-kicker {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            margin-bottom:
+                15px;
+
+            color:
+                var(--blue-light);
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                0.8px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .login-kicker-dot {
+
+            width:
+                6px;
+
+            height:
+                6px;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--green);
 
             box-shadow:
-                none;
+                0 0 10px rgba(63, 185, 80, 0.8);
 
         }
 
 
-        /* =========================================================
-           BUTTON SHINE ANIMATION
-        ========================================================== */
+        .login-title {
 
-        @keyframes buttonShine {
+            margin:
+                0 0 9px;
 
-            from {
+            font-family:
+                "Poppins",
+                sans-serif;
 
-                left:
-                    -100%;
+            color:
+                var(--white);
 
-            }
+            font-size:
+                31px;
 
-            to {
+            line-height:
+                1.2;
 
-                left:
-                    130%;
+            font-weight:
+                800;
 
-            }
+            letter-spacing:
+                -1px;
 
         }
 
 
-        /* =========================================================
+        .login-subtitle {
+
+            margin:
+                0;
+
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+
+            line-height:
+                1.7;
+
+        }
+
+
+        /* =====================================================
            LOGIN MESSAGE
-        ========================================================== */
+        ====================================================== */
 
         #loginMessage {
 
             display:
                 none;
 
-            font-size:
-                14px;
+            margin-bottom:
+                20px;
+
+            padding:
+                12px 14px;
 
             border-radius:
-                8px;
+                9px;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.5;
 
             border:
-                none;
+                1px solid transparent;
 
             animation:
-                messageEntrance 0.35s ease;
+                messageEntrance 0.3s ease;
 
         }
 
-
-        /* =========================================================
-           MESSAGE ANIMATION
-        ========================================================== */
 
         @keyframes messageEntrance {
 
@@ -948,7 +1534,7 @@
                     0;
 
                 transform:
-                    translateY(-5px);
+                    translateY(-6px);
 
             }
 
@@ -965,46 +1551,127 @@
         }
 
 
-        /* =========================================================
-           REGISTER SECTION
-        ========================================================== */
-
-        .register {
-
-            text-align:
-                center;
-
-            margin-top:
-                26px;
-
-            padding-top:
-                20px;
-
-            border-top:
-                1px solid var(--border-soft);
+        #loginMessage.alert-success {
 
             color:
-                var(--text-muted);
+                #aff5b4;
 
-            font-size:
-                14px;
+            background:
+                rgba(46, 160, 67, 0.10);
+
+            border-color:
+                rgba(63, 185, 80, 0.25);
 
         }
 
 
-        .register a {
+        #loginMessage.alert-danger {
 
             color:
-                var(--academic-blue);
+                #ffb4ae;
+
+            background:
+                rgba(248, 81, 73, 0.10);
+
+            border-color:
+                rgba(248, 81, 73, 0.25);
+
+        }
+
+
+        #loginMessage.alert-warning {
+
+            color:
+                #e3b341;
+
+            background:
+                rgba(210, 153, 34, 0.10);
+
+            border-color:
+                rgba(210, 153, 34, 0.25);
+
+        }
+
+
+        /* =====================================================
+           FORM GROUP
+        ====================================================== */
+
+        .form-group {
+
+            margin-bottom:
+                20px;
+
+        }
+
+
+        /* =====================================================
+           FORM LABEL
+        ====================================================== */
+
+        .form-label {
+
+            display:
+                block;
+
+            margin-bottom:
+                8px;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                12px;
 
             font-weight:
                 600;
 
-            text-decoration:
-                none;
+        }
 
-            margin-left:
-                3px;
+
+        /* =====================================================
+           PASSWORD HEADER
+        ====================================================== */
+
+        .password-header {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            margin-bottom:
+                8px;
+
+        }
+
+
+        .password-header .form-label {
+
+            margin-bottom:
+                0;
+
+        }
+
+
+        /* =====================================================
+           FORGOT PASSWORD
+        ====================================================== */
+
+        .forgot-password {
+
+            color:
+                var(--blue-light);
+
+            font-size:
+                11px;
+
+            font-weight:
+                600;
 
             transition:
                 color 0.2s ease;
@@ -1012,10 +1679,10 @@
         }
 
 
-        .register a:hover {
+        .forgot-password:hover {
 
             color:
-                var(--academic-blue-dark);
+                var(--white);
 
             text-decoration:
                 underline;
@@ -1023,29 +1690,394 @@
         }
 
 
-        /* =========================================================
-           FORM SPACING
-        ========================================================== */
+        /* =====================================================
+           INPUT WRAPPER
+        ====================================================== */
 
-        .mb-3 {
+        .input-wrapper {
 
-            margin-bottom:
-                20px !important;
-
-        }
-
-
-        .mb-4 {
-
-            margin-bottom:
-                24px !important;
+            position:
+                relative;
 
         }
 
 
-        /* =========================================================
-           SECURITY NOTE
-        ========================================================== */
+        /* =====================================================
+           INPUT ICON
+        ====================================================== */
+
+        .input-icon {
+
+            position:
+                absolute;
+
+            left:
+                15px;
+
+            top:
+                50%;
+
+            transform:
+                translateY(-50%);
+
+            z-index:
+                3;
+
+            color:
+                var(--muted);
+
+            font-size:
+                15px;
+
+            pointer-events:
+                none;
+
+            transition:
+                color 0.2s ease;
+
+        }
+
+
+        .input-wrapper:focus-within .input-icon {
+
+            color:
+                var(--blue-light);
+
+        }
+
+
+        /* =====================================================
+           FORM CONTROL
+        ====================================================== */
+
+        .form-control {
+
+            width:
+                100%;
+
+            height:
+                51px;
+
+            padding:
+                12px 15px 12px 44px;
+
+            color:
+                var(--text);
+
+            background:
+                #0d1117;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                8px;
+
+            outline:
+                none;
+
+            font-size:
+                13px;
+
+            box-shadow:
+                none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+
+        }
+
+
+        .form-control:hover {
+
+            border-color:
+                #484f58;
+
+        }
+
+
+        .form-control:focus {
+
+            color:
+                var(--text);
+
+            background:
+                #0d1117;
+
+            border-color:
+                var(--blue);
+
+            box-shadow:
+                0 0 0 3px rgba(47, 129, 247, 0.14);
+
+        }
+
+
+        .form-control::placeholder {
+
+            color:
+                #6e7681;
+
+        }
+
+
+        /* =====================================================
+           AUTOFILL FIX
+        ====================================================== */
+
+        .form-control:-webkit-autofill,
+        .form-control:-webkit-autofill:hover,
+        .form-control:-webkit-autofill:focus {
+
+            -webkit-text-fill-color:
+                var(--text);
+
+            -webkit-box-shadow:
+                0 0 0 1000px #0d1117 inset;
+
+            transition:
+                background-color 5000s ease-in-out 0s;
+
+        }
+
+
+        /* =====================================================
+           PASSWORD INPUT
+        ====================================================== */
+
+        .password-wrapper .form-control {
+
+            padding-right:
+                68px;
+
+        }
+
+
+        /* =====================================================
+           SHOW PASSWORD
+        ====================================================== */
+
+        .show-password {
+
+            position:
+                absolute;
+
+            right:
+                9px;
+
+            top:
+                50%;
+
+            transform:
+                translateY(-50%);
+
+            border:
+                none;
+
+            background:
+                transparent;
+
+            color:
+                var(--muted);
+
+            padding:
+                6px 8px;
+
+            border-radius:
+                6px;
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+
+            transition:
+                color 0.2s ease,
+                background 0.2s ease;
+
+        }
+
+
+        .show-password:hover {
+
+            color:
+                var(--blue-light);
+
+            background:
+                rgba(88, 166, 255, 0.07);
+
+        }
+
+
+        .show-password:focus-visible {
+
+            outline:
+                2px solid rgba(88, 166, 255, 0.35);
+
+            outline-offset:
+                2px;
+
+        }
+
+
+        /* =====================================================
+           LOGIN BUTTON
+        ====================================================== */
+
+        .login-button {
+
+            position:
+                relative;
+
+            width:
+                100%;
+
+            min-height:
+                51px;
+
+            margin-top:
+                3px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                9px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius:
+                8px;
+
+            color:
+                white;
+
+            background:
+                linear-gradient(135deg,
+                    #238636,
+                    #2ea043);
+
+            font-size:
+                13px;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+
+            box-shadow:
+                0 10px 30px rgba(46, 160, 67, 0.16);
+
+            overflow:
+                hidden;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                opacity 0.2s ease;
+
+        }
+
+
+        .login-button::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            top:
+                0;
+
+            left:
+                -120%;
+
+            width:
+                80%;
+
+            height:
+                100%;
+
+            background:
+                linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.18),
+                    transparent);
+
+            transform:
+                skewX(-20deg);
+
+            transition:
+                left 0.6s ease;
+
+        }
+
+
+        .login-button:hover::before {
+
+            left:
+                140%;
+
+        }
+
+
+        .login-button:hover {
+
+            color:
+                white;
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 15px 35px rgba(46, 160, 67, 0.24);
+
+        }
+
+
+        .login-button:active {
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        .login-button:disabled {
+
+            opacity:
+                0.65;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
+
+            box-shadow:
+                none;
+
+        }
+
+
+        /* =====================================================
+           SECURITY
+        ====================================================== */
 
         .security-note {
 
@@ -1059,16 +2091,16 @@
                 center;
 
             gap:
-                6px;
+                7px;
 
             margin-top:
-                18px;
+                19px;
 
             color:
-                var(--text-light);
+                var(--muted-dark);
 
             font-size:
-                12px;
+                10px;
 
             text-align:
                 center;
@@ -1076,112 +2108,338 @@
         }
 
 
-        .security-icon {
+        .security-note i {
+
+            color:
+                var(--green);
 
             font-size:
-                13px;
+                11px;
 
         }
 
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
+        /* =====================================================
+           REGISTER
+        ====================================================== */
 
-        @media (max-width: 576px) {
+        .register {
 
-            body {
+            margin-top:
+                27px;
 
-                padding:
-                    20px;
+            padding-top:
+                21px;
 
-                align-items:
-                    center;
+            border-top:
+                1px solid var(--border);
 
-            }
+            text-align:
+                center;
+
+            color:
+                var(--muted);
+
+            font-size:
+                11px;
+
+        }
 
 
-            .login-card {
+        .register a {
+
+            color:
+                var(--blue-light);
+
+            font-weight:
+                600;
+
+            margin-left:
+                3px;
+
+        }
+
+
+        .register a:hover {
+
+            color:
+                var(--white);
+
+            text-decoration:
+                underline;
+
+        }
+
+
+        /* =====================================================
+           MOBILE FOOTER
+        ====================================================== */
+
+        .mobile-footer {
+
+            display:
+                none;
+
+            margin-top:
+                25px;
+
+            color:
+                var(--muted-dark);
+
+            font-size:
+                9px;
+
+            line-height:
+                1.6;
+
+            text-align:
+                center;
+
+        }
+
+
+        /* =====================================================
+           TABLET
+        ====================================================== */
+
+        @media (max-width: 950px) {
+
+            .login-container {
 
                 max-width:
-                    100%;
+                    850px;
+
+                grid-template-columns:
+                    0.9fr 1fr;
+
+            }
+
+
+            .branding-panel {
 
                 padding:
-                    35px 25px;
-
-                border-radius:
-                    15px;
+                    45px 40px;
 
             }
 
 
-            .login-card::before {
+            .login-panel {
 
-                border-radius:
-                    15px 15px 0 0;
+                padding:
+                    45px 40px;
 
             }
 
 
-            .logo {
-
-                width:
-                    70px;
-
-                height:
-                    70px;
+            .brand-heading {
 
                 font-size:
-                    27px;
+                    37px;
 
             }
 
 
-            h1 {
+            .terminal-card {
 
-                font-size:
-                    27px;
+                right:
+                    25px;
+
+                bottom:
+                    30px;
 
             }
 
         }
 
 
-        /* =========================================================
-           SMALL MOBILE DEVICES
-        ========================================================== */
+        /* =====================================================
+           MOBILE
+        ====================================================== */
 
-        @media (max-width: 380px) {
+        @media (max-width: 720px) {
 
-            body {
+            .topbar {
 
-                padding:
+                height:
+                    62px;
+
+            }
+
+
+            .topbar-inner {
+
+                width:
+                    calc(100% - 28px);
+
+            }
+
+
+            .brand-logo {
+
+                width:
+                    35px;
+
+                height:
+                    35px;
+
+            }
+
+
+            .brand-name {
+
+                font-size:
                     15px;
 
             }
 
 
-            .login-card {
+            .brand-subtitle {
+
+                display:
+                    none;
+
+            }
+
+
+            .college-label {
+
+                display:
+                    none;
+
+            }
+
+
+            .login-page {
+
+                min-height:
+                    100vh;
 
                 padding:
-                    30px 20px;
+                    85px 14px 30px;
 
             }
 
 
-            h1 {
+            .login-container {
+
+                display:
+                    block;
+
+                max-width:
+                    480px;
+
+                min-height:
+                    auto;
+
+                border-radius:
+                    18px;
+
+            }
+
+
+            .branding-panel {
+
+                display:
+                    none;
+
+            }
+
+
+            .login-panel {
+
+                display:
+                    block;
+
+                padding:
+                    34px 27px 28px;
+
+            }
+
+
+            .mobile-brand {
+
+                display:
+                    flex;
+
+            }
+
+
+            .login-header {
+
+                margin-bottom:
+                    27px;
+
+            }
+
+
+            .login-title {
 
                 font-size:
-                    25px;
+                    27px;
 
             }
 
 
-            .form-control,
-            .login-button {
+            .mobile-footer {
 
-                height:
-                    48px;
+                display:
+                    block;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SMALL MOBILE
+        ====================================================== */
+
+        @media (max-width: 390px) {
+
+            .login-page {
+
+                padding:
+                    76px 10px 20px;
+
+            }
+
+
+            .login-container {
+
+                border-radius:
+                    15px;
+
+            }
+
+
+            .login-panel {
+
+                padding:
+                    27px 20px 24px;
+
+            }
+
+
+            .login-title {
+
+                font-size:
+                    24px;
+
+            }
+
+
+            .login-subtitle {
+
+                font-size:
+                    12px;
+
+            }
+
+
+            .password-header {
+
+                gap:
+                    8px;
 
             }
 
@@ -1189,16 +2447,78 @@
             .forgot-password {
 
                 font-size:
-                    12px;
+                    10px;
 
             }
 
         }
 
 
-        /* =========================================================
+        /* =====================================================
+           LANDSCAPE MOBILE
+        ====================================================== */
+
+        @media (max-height: 650px) and (max-width: 720px) {
+
+            .login-page {
+
+                align-items:
+                    flex-start;
+
+                padding-top:
+                    80px;
+
+            }
+
+
+            .login-panel {
+
+                padding:
+                    25px 27px;
+
+            }
+
+
+            .login-header {
+
+                margin-bottom:
+                    20px;
+
+            }
+
+
+            .form-group {
+
+                margin-bottom:
+                    14px;
+
+            }
+
+
+            .security-note {
+
+                margin-top:
+                    13px;
+
+            }
+
+
+            .register {
+
+                margin-top:
+                    18px;
+
+                padding-top:
+                    15px;
+
+            }
+
+        }
+
+
+        /* =====================================================
            REDUCED MOTION
-        ========================================================== */
+        ====================================================== */
 
         @media (prefers-reduced-motion: reduce) {
 
@@ -1229,236 +2549,669 @@
 <body>
 
 
-    <!-- =========================================================
-         LOGIN CARD
-    ========================================================== -->
+    <!-- =====================================================
+         BACKGROUND
+    ====================================================== -->
 
-    <main
-        class="login-card"
-        aria-labelledby="loginTitle">
+    <div class="background-grid"></div>
 
+    <div class="glow glow-blue"></div>
 
-        <!-- =====================================================
-             LOGO
-        ====================================================== -->
+    <div class="glow glow-purple"></div>
 
-        <div
-            class="logo"
-            aria-hidden="true">
+    <div class="glow glow-cyan"></div>
 
-            🔐
 
-        </div>
+    <!-- =====================================================
+         PARTICLES
+    ====================================================== -->
 
+    <div class="particle particle-1"></div>
 
-        <!-- =====================================================
-             TITLE
-        ====================================================== -->
+    <div class="particle particle-2"></div>
 
-        <h1 id="loginTitle">
+    <div class="particle particle-3"></div>
 
-            Login
+    <div class="particle particle-4"></div>
 
-        </h1>
 
+    <!-- =====================================================
+         TOP NAVIGATION
+    ====================================================== -->
 
-        <p class="subtitle">
+    <header class="topbar">
 
-            ETS-Async Learning Portal
+        <div class="topbar-inner">
 
-        </p>
 
-
-        <!-- =====================================================
-             LOGIN MESSAGE
-        ====================================================== -->
-
-        <div
-            id="loginMessage"
-            class="alert"
-            role="alert"
-            aria-live="polite">
-
-        </div>
-
-
-        <!-- =====================================================
-             LOGIN FORM
-        ====================================================== -->
-
-        <form
-            id="loginForm"
-            novalidate>
-
-
-            <!-- =================================================
-                 USERNAME OR EMAIL
-            ================================================== -->
-
-            <div class="mb-3">
-
-                <label
-                    for="login"
-                    class="form-label">
-
-                    Username or Email
-
-                </label>
-
-
-                <input
-                    type="text"
-                    class="form-control"
-                    id="login"
-                    name="login"
-                    placeholder="Enter username or email"
-                    autocomplete="username"
-                    autocapitalize="none"
-                    spellcheck="false"
-                    required>
-
-            </div>
-
-
-            <!-- =================================================
-                 PASSWORD
-            ================================================== -->
-
-            <div class="mb-4">
-
-
-                <!-- PASSWORD LABEL + FORGOT LINK -->
-
-                <div class="password-header">
-
-                    <label
-                        for="password"
-                        class="form-label">
-
-                        Password
-
-                    </label>
-
-
-                    <a
-                        href="forgot_password.php"
-                        class="forgot-password">
-
-                        Forgot password?
-
-                    </a>
-
-                </div>
-
-
-                <!-- PASSWORD INPUT -->
-
-                <div class="password-wrapper">
-
-                    <input
-                        type="password"
-                        class="form-control"
-                        id="password"
-                        name="password"
-                        placeholder="Enter password"
-                        autocomplete="current-password"
-                        required
-                        aria-describedby="passwordHelp">
-
-
-                    <button
-                        type="button"
-                        class="show-password"
-                        id="togglePassword"
-                        aria-label="Show password">
-
-                        Show
-
-                    </button>
-
-                </div>
-
-
-            </div>
-
-
-            <!-- =================================================
-                 LOGIN BUTTON
-            ================================================== -->
-
-            <button
-                type="submit"
-                class="login-button"
-                id="loginButton">
-
-                Login
-
-            </button>
-
-
-        </form>
-
-
-        <!-- =====================================================
-             SECURITY NOTE
-        ====================================================== -->
-
-        <div class="security-note">
-
-            <span
-                class="security-icon"
-                aria-hidden="true">
-
-                🔒
-
-            </span>
-
-            <span>
-
-                Secure access to the ETS-Async Learning Portal
-
-            </span>
-
-        </div>
-
-
-        <!-- =====================================================
-             REGISTER SECTION
-        ====================================================== -->
-
-        <div class="register">
-
-            Don't have an account?
+            <!-- BRAND -->
 
             <a
-                href="register.php">
+                href="index.php"
+                class="brand">
 
-                Register
+                <img
+                    src="./assets/pubmat/head.png"
+                    alt="ETS-Async"
+                    class="brand-logo">
+
+
+                <div class="brand-text">
+
+                    <span class="brand-name">
+                        ETS-Async
+                    </span>
+
+                    <span class="brand-subtitle">
+                        Asynchronous Learning Portal
+                    </span>
+
+                </div>
 
             </a>
 
+
+            <!-- RIGHT SIDE -->
+
+            <div class="topbar-right">
+
+                <span class="college-label">
+
+                    College of Engineering and Architecture
+
+                </span>
+
+
+                <a
+                    href="index.php"
+                    class="back-link">
+
+                    <i class="bi bi-arrow-left"></i>
+
+                    Back
+
+                </a>
+
+            </div>
+
+
         </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN LOGIN PAGE
+    ====================================================== -->
+
+    <main class="login-page">
+
+
+        <!-- =================================================
+             LOGIN CONTAINER
+        ================================================== -->
+
+        <section
+            class="login-container"
+            id="loginContainer">
+
+
+            <!-- =================================================
+                 LEFT BRANDING PANEL
+            ================================================== -->
+
+            <aside
+                class="branding-panel"
+                aria-label="ETS-Async information">
+
+
+                <!-- BACKGROUND GRID -->
+
+                <div class="branding-grid"></div>
+
+
+                <!-- DECORATIVE CIRCLE -->
+
+                <div class="branding-circle"></div>
+
+
+                <!-- =================================================
+                     BRAND CONTENT
+                ================================================== -->
+
+                <div class="brand-content">
+
+
+                    <!-- BRAND ICON -->
+
+                    <div
+                        class="brand-icon"
+                        id="brandIcon">
+
+                        <i
+                            class="bi bi-mortarboard-fill">
+                        </i>
+
+                    </div>
+
+
+                    <!-- BRAND HEADING -->
+
+                    <h2 class="brand-heading">
+
+                        ETS-<span>Async</span>
+
+                    </h2>
+
+
+                    <p class="brand-title">
+
+                        Asynchronous Learning Portal
+
+                    </p>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <p class="brand-description">
+
+                        A focused digital learning environment
+                        designed for students of the College of
+                        Engineering and Architecture.
+
+                    </p>
+
+
+                    <!-- =================================================
+                         FEATURES
+                    ================================================== -->
+
+                    <div class="feature-list">
+
+
+                        <!-- FEATURE 1 -->
+
+                        <div class="feature-item">
+
+                            <span class="feature-icon">
+
+                                <i
+                                    class="bi bi-journal-text">
+                                </i>
+
+                            </span>
+
+                            <span>
+                                Access lectures and learning materials
+                            </span>
+
+                        </div>
+
+
+                        <!-- FEATURE 2 -->
+
+                        <div class="feature-item">
+
+                            <span class="feature-icon">
+
+                                <i
+                                    class="bi bi-clipboard-check">
+                                </i>
+
+                            </span>
+
+                            <span>
+                                Complete academic activities
+                            </span>
+
+                        </div>
+
+
+                        <!-- FEATURE 3 -->
+
+                        <div class="feature-item">
+
+                            <span class="feature-icon">
+
+                                <i
+                                    class="bi bi-graph-up-arrow">
+                                </i>
+
+                            </span>
+
+                            <span>
+                                Monitor your learning progress
+                            </span>
+
+                        </div>
+
+
+                        <!-- FEATURE 4 -->
+
+                        <div class="feature-item">
+
+                            <span class="feature-icon">
+
+                                <i
+                                    class="bi bi-tools">
+                                </i>
+
+                            </span>
+
+                            <span>
+                                Explore engineering learning tools
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     TERMINAL DECORATION
+                ================================================== -->
+
+                <div
+                    class="terminal-card"
+                    aria-hidden="true">
+
+
+                    <div class="terminal-top">
+
+                        <span class="terminal-dot"></span>
+
+                        <span class="terminal-dot"></span>
+
+                        <span class="terminal-dot"></span>
+
+                    </div>
+
+
+                    <div class="terminal-line">
+
+                        <span>$</span>
+                        ets-async --portal
+
+                    </div>
+
+
+                    <div class="terminal-line">
+
+                        <span>></span>
+                        learning.system.ready
+
+                    </div>
+
+
+                    <div class="terminal-line">
+
+                        <span>></span>
+                        student.access: secure
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     BRAND FOOTER
+                ================================================== -->
+
+                <div class="brand-footer">
+
+                    Engineering and Technological
+                    Solutions Development
+
+                    <br>
+
+                    ETS-Async Learning Portal
+
+                </div>
+
+
+            </aside>
+
+
+            <!-- =================================================
+                 RIGHT LOGIN PANEL
+            ================================================== -->
+
+            <section class="login-panel">
+
+
+                <div class="login-content">
+
+
+                    <!-- =================================================
+                         MOBILE BRAND
+                    ================================================== -->
+
+                    <div class="mobile-brand">
+
+
+                        <div
+                            class="mobile-brand-icon">
+
+                            <i
+                                class="bi bi-mortarboard-fill">
+                            </i>
+
+                        </div>
+
+
+                        <div class="mobile-brand-name">
+
+                            ETS-Async
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================================
+                         LOGIN HEADER
+                    ================================================== -->
+
+                    <header class="login-header">
+
+
+                        <div class="login-kicker">
+
+                            <span
+                                class="login-kicker-dot">
+                            </span>
+
+                            Secure Student Access
+
+                        </div>
+
+
+                        <h1 class="login-title">
+
+                            Welcome back
+
+                        </h1>
+
+
+                        <p class="login-subtitle">
+
+                            Sign in to continue to your
+                            ETS-Async learning portal.
+
+                        </p>
+
+
+                    </header>
+
+
+                    <!-- =================================================
+                         LOGIN MESSAGE
+                    ================================================== -->
+
+                    <div
+                        id="loginMessage"
+                        class="alert"
+                        role="alert"
+                        aria-live="polite">
+                    </div>
+
+
+                    <!-- =================================================
+                         LOGIN FORM
+                    ================================================== -->
+
+                    <form
+                        id="loginForm"
+                        novalidate>
+
+
+                        <!-- =================================================
+                             USERNAME / EMAIL
+                        ================================================== -->
+
+                        <div class="form-group">
+
+
+                            <label
+                                for="login"
+                                class="form-label">
+
+                                Username or Email
+
+                            </label>
+
+
+                            <div class="input-wrapper">
+
+
+                                <!-- FIXED:
+                                     BOTH CLASSES ARE NOW
+                                     IN THE SAME CLASS ATTRIBUTE
+                                -->
+
+                                <i
+                                    class="bi bi-person input-icon"
+                                    aria-hidden="true">
+                                </i>
+
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="login"
+                                    name="login"
+                                    placeholder="Enter username or email"
+                                    autocomplete="username"
+                                    autocapitalize="none"
+                                    spellcheck="false"
+                                    maxlength="100"
+                                    required>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             PASSWORD
+                        ================================================== -->
+
+                        <div class="form-group">
+
+
+                            <div class="password-header">
+
+
+                                <label
+                                    for="password"
+                                    class="form-label">
+
+                                    Password
+
+                                </label>
+
+
+                                <a
+                                    href="forgot_password.php"
+                                    class="forgot-password">
+
+                                    Forgot password?
+
+                                </a>
+
+
+                            </div>
+
+
+                            <!-- PASSWORD INPUT -->
+
+                            <div
+                                class="input-wrapper password-wrapper">
+
+
+                                <i
+                                    class="bi bi-lock input-icon"
+                                    aria-hidden="true">
+                                </i>
+
+
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="password"
+                                    name="password"
+                                    placeholder="Enter your password"
+                                    autocomplete="current-password"
+                                    maxlength="255"
+                                    required>
+
+
+                                <!-- SHOW / HIDE -->
+
+                                <button
+                                    type="button"
+                                    class="show-password"
+                                    id="togglePassword"
+                                    aria-label="Show password">
+
+                                    Show
+
+                                </button>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             LOGIN BUTTON
+                        ================================================== -->
+
+                        <button
+                            type="submit"
+                            class="login-button"
+                            id="loginButton">
+
+
+                            <span
+                                id="loginButtonContent">
+
+                                <i
+                                    class="bi bi-box-arrow-in-right">
+                                </i>
+
+                                Sign in
+
+                            </span>
+
+
+                        </button>
+
+
+                    </form>
+
+
+                    <!-- =================================================
+                         SECURITY NOTE
+                    ================================================== -->
+
+                    <div class="security-note">
+
+                        <i
+                            class="bi bi-shield-lock-fill"
+                            aria-hidden="true">
+                        </i>
+
+                        <span>
+
+                            Secure access to ETS-Async
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         REGISTER
+                    ================================================== -->
+
+                    <div class="register">
+
+                        Don't have an account?
+
+                        <a href="register.php">
+
+                            Create an account
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         MOBILE FOOTER
+                    ================================================== -->
+
+                    <div class="mobile-footer">
+
+                        Engineering and Technological
+                        Solutions Development
+
+                        <br>
+
+                        ETS-Async Learning Portal
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </section>
 
 
     </main>
 
 
-    <!-- =========================================================
+    <!-- =====================================================
          JAVASCRIPT
-    ========================================================== -->
+    ====================================================== -->
 
     <script>
-        /* =========================================================
-           API
-        ========================================================== */
+        /* =====================================================
+           LOGIN API
+        ====================================================== */
 
         const LOGIN_API =
             "./api/login.php";
 
 
-        /* =========================================================
-           PASSWORD SHOW / HIDE
-        ========================================================== */
+        /* =====================================================
+           ELEMENTS
+        ====================================================== */
+
+        const loginForm =
+            document.getElementById(
+                "loginForm"
+            );
+
+
+        const loginInput =
+            document.getElementById(
+                "login"
+            );
+
 
         const passwordInput =
             document.getElementById(
@@ -1471,6 +3224,229 @@
                 "togglePassword"
             );
 
+
+        const loginButton =
+            document.getElementById(
+                "loginButton"
+            );
+
+
+        const loginButtonContent =
+            document.getElementById(
+                "loginButtonContent"
+            );
+
+
+        const messageBox =
+            document.getElementById(
+                "loginMessage"
+            );
+
+
+        /* =====================================================
+           INITIAL PAGE ANIMATION
+        ====================================================== */
+
+        anime({
+
+            targets: "#loginContainer",
+
+            opacity: [0, 1],
+
+            translateY: [30, 0],
+
+            scale: [0.985, 1],
+
+            duration: 900,
+
+            easing: "easeOutExpo"
+
+        });
+
+
+        /* =====================================================
+           BRAND ICON ANIMATION
+        ====================================================== */
+
+        anime({
+
+            targets: "#brandIcon",
+
+            scale: [0.7, 1],
+
+            rotate: ["-8deg", "0deg"],
+
+            opacity: [0, 1],
+
+            duration: 900,
+
+            delay: 350,
+
+            easing: "easeOutElastic(1, .65)"
+
+        });
+
+
+        /* =====================================================
+           FEATURE ANIMATION
+        ====================================================== */
+
+        anime({
+
+            targets: ".feature-item",
+
+            translateX: [-25, 0],
+
+            opacity: [0, 1],
+
+            delay: anime.stagger(
+                100, {
+                    start: 500
+                }
+            ),
+
+            duration: 700,
+
+            easing: "easeOutExpo"
+
+        });
+
+
+        /* =====================================================
+           LOGIN FORM ENTRANCE
+        ====================================================== */
+
+        anime({
+
+            targets: ".login-header, .form-group, .login-button, .security-note, .register",
+
+            translateY: [18, 0],
+
+            opacity: [0, 1],
+
+            delay: anime.stagger(
+                80, {
+                    start: 300
+                }
+            ),
+
+            duration: 700,
+
+            easing: "easeOutExpo"
+
+        });
+
+
+        /* =====================================================
+           PARTICLE ANIMATION
+        ====================================================== */
+
+        anime({
+
+            targets: ".particle",
+
+            translateY: function() {
+
+                return anime.random(
+                    -35,
+                    35
+                );
+
+            },
+
+            translateX: function() {
+
+                return anime.random(
+                    -25,
+                    25
+                );
+
+            },
+
+            scale: [{
+                    value: 0.6
+                },
+
+                {
+                    value: 1.4
+                },
+
+                {
+                    value: 0.6
+                }
+            ],
+
+            opacity: [{
+                    value: 0.25
+                },
+
+                {
+                    value: 1
+                },
+
+                {
+                    value: 0.25
+                }
+            ],
+
+            duration: function() {
+
+                return anime.random(
+                    2500,
+                    4500
+                );
+
+            },
+
+            delay: function() {
+
+                return anime.random(
+                    0,
+                    1500
+                );
+
+            },
+
+            direction: "alternate",
+
+            loop: true,
+
+            easing: "easeInOutSine"
+
+        });
+
+
+        /* =====================================================
+           TERMINAL FLOATING ANIMATION
+        ====================================================== */
+
+        anime({
+
+            targets: ".terminal-card",
+
+            translateY: [{
+                    value: -7,
+                    duration: 1800
+                },
+
+                {
+                    value: 0,
+                    duration: 1800
+                }
+            ],
+
+            direction: "alternate",
+
+            loop: true,
+
+            easing: "easeInOutSine"
+
+        });
+
+
+        /* =====================================================
+           PASSWORD SHOW / HIDE
+        ====================================================== */
 
         togglePassword.addEventListener(
             "click",
@@ -1497,6 +3473,18 @@
                     );
 
 
+                    anime({
+
+                        targets: togglePassword,
+
+                        scale: [0.9, 1],
+
+                        duration: 250,
+
+                        easing: "easeOutBack"
+
+                    });
+
                 } else {
 
 
@@ -1519,20 +3507,14 @@
         );
 
 
-        /* =========================================================
+        /* =====================================================
            SHOW MESSAGE
-        ========================================================== */
+        ====================================================== */
 
         function showMessage(
             message,
             type
         ) {
-
-
-            const messageBox =
-                document.getElementById(
-                    "loginMessage"
-                );
 
 
             messageBox.className =
@@ -1547,25 +3529,32 @@
             messageBox.style.display =
                 "block";
 
+
+            anime({
+
+                targets: messageBox,
+
+                translateY: [-6, 0],
+
+                opacity: [0, 1],
+
+                duration: 350,
+
+                easing: "easeOutExpo"
+
+            });
+
         }
 
 
-        /* =========================================================
+        /* =====================================================
            HIDE MESSAGE
-        ========================================================== */
+        ====================================================== */
 
         function hideMessage() {
 
-
-            const messageBox =
-                document.getElementById(
-                    "loginMessage"
-                );
-
-
             messageBox.style.display =
                 "none";
-
 
             messageBox.textContent =
                 "";
@@ -1573,271 +3562,466 @@
         }
 
 
-        /* =========================================================
-           LOGIN FORM
-        ========================================================== */
+        /* =====================================================
+           SET BUTTON LOADING
+        ====================================================== */
 
-        document
-            .getElementById("loginForm")
-            .addEventListener(
-                "submit",
-                async function(event) {
+        function setButtonLoading(
+            loading
+        ) {
+
+
+            if (loading) {
+
+
+                loginButton.disabled =
+                    true;
+
+
+                loginButtonContent.innerHTML = `
+
+                    <span
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true">
+                    </span>
+
+                    Signing in...
+
+                `;
+
+            } else {
+
+
+                loginButton.disabled =
+                    false;
+
+
+                loginButtonContent.innerHTML = `
+
+                    <i class="bi bi-box-arrow-in-right"></i>
+
+                    Sign in
+
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SHAKE LOGIN FORM
+        ====================================================== */
+
+        function shakeLogin() {
+
+            anime({
+
+                targets: "#loginContainer",
+
+                translateX: [{
+                        value: -7,
+                        duration: 60
+                    },
+
+                    {
+                        value: 7,
+                        duration: 60
+                    },
+
+                    {
+                        value: -5,
+                        duration: 60
+                    },
+
+                    {
+                        value: 5,
+                        duration: 60
+                    },
+
+                    {
+                        value: 0,
+                        duration: 60
+                    }
+                ],
+
+                easing: "easeInOutSine"
+
+            });
+
+        }
+
+
+        /* =====================================================
+           LOGIN FORM SUBMISSION
+        ====================================================== */
+
+        loginForm.addEventListener(
+            "submit",
+            async function(event) {
+
+
+                event.preventDefault();
+
+
+                /* =============================================
+                   GET VALUES
+                ============================================== */
+
+                const login =
+                    loginInput.value.trim();
+
+
+                const passwordValue =
+                    passwordInput.value;
+
+
+                /* =============================================
+                   CLEAR MESSAGE
+                ============================================== */
+
+                hideMessage();
+
+
+                /* =============================================
+                   REQUIRED VALIDATION
+                ============================================== */
+
+                if (
+                    login === "" ||
+                    passwordValue === ""
+                ) {
+
+
+                    showMessage(
+                        "Please enter your username or email and password.",
+                        "warning"
+                    );
+
+
+                    shakeLogin();
+
+
+                    if (
+                        login === ""
+                    ) {
+
+                        loginInput.focus();
+
+                    } else {
+
+                        passwordInput.focus();
+
+                    }
+
+
+                    return;
+
+                }
+
+
+                /* =============================================
+                   LOGIN LENGTH
+                ============================================== */
+
+                if (
+                    login.length < 4 ||
+                    login.length > 100
+                ) {
+
+
+                    showMessage(
+                        "Please enter a valid username or email.",
+                        "warning"
+                    );
+
+
+                    loginInput.focus();
+
+
+                    shakeLogin();
+
+
+                    return;
+
+                }
+
+
+                /* =============================================
+                   PASSWORD LENGTH
+                ============================================== */
+
+                if (
+                    passwordValue.length < 8
+                ) {
+
+
+                    showMessage(
+                        "Incorrect password.",
+                        "danger"
+                    );
+
+
+                    passwordInput.focus();
+
+
+                    shakeLogin();
+
+
+                    return;
+
+                }
+
+
+                /* =============================================
+                   LOADING
+                ============================================== */
+
+                setButtonLoading(
+                    true
+                );
+
+
+                /* =============================================
+                   API REQUEST
+                ============================================== */
+
+                try {
+
+
+                    const response =
+                        await fetch(
+                            LOGIN_API, {
+
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type": "application/json",
+
+                                    "Accept": "application/json"
+                                },
+
+                                credentials: "same-origin",
+
+                                body: JSON.stringify({
+
+                                    login: login,
+
+                                    password: passwordValue
+
+                                })
+
+                            }
+                        );
+
+
+                    /* =========================================
+                       READ RESPONSE
+                    ========================================== */
+
+                    let data;
+
+
+                    try {
+
+                        data =
+                            await response.json();
+
+                    } catch (
+                        jsonError
+                    ) {
+
+                        throw new Error(
+                            "Invalid server response."
+                        );
+
+                    }
+
+
+                    console.log(
+                        "Login response:",
+                        data
+                    );
+
+
+                    /* =========================================
+                       SUCCESS
+                    ========================================== */
+
+                    if (
+                        response.ok &&
+                        data.success === true
+                    ) {
+
+
+                        showMessage(
+                            data.message ||
+                            "Login successful.",
+                            "success"
+                        );
+
+
+                        /* =====================================
+                           SUCCESS ANIMATION
+                        ====================================== */
+
+                        anime({
+
+                            targets: "#loginButton",
+
+                            scale: [1, 1.02, 1],
+
+                            duration: 350,
+
+                            easing: "easeOutQuad"
+
+                        });
+
+
+                        /* =====================================
+                           REDIRECT
+                        ====================================== */
+
+                        setTimeout(
+                            function() {
+
+
+                                if (
+                                    data.redirect
+                                ) {
+
+                                    window.location.href =
+                                        data.redirect;
+
+                                } else {
+
+                                    window.location.href =
+                                        "index.php";
+
+                                }
+
+
+                            },
+                            650
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    /* =========================================
+                       LOGIN FAILED
+                    ========================================== */
+
+                    showMessage(
+                        data.message ||
+                        "Unable to login. Please check your credentials.",
+                        "danger"
+                    );
+
+
+                    shakeLogin();
+
+
+                    setButtonLoading(
+                        false
+                    );
+
+
+                }
+
+
+                /* =============================================
+                   NETWORK ERROR
+                ============================================== */
+                catch (
+                    error
+                ) {
+
+
+                    console.error(
+                        "Login error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        "Unable to connect to the server. Please try again.",
+                        "danger"
+                    );
+
+
+                    shakeLogin();
+
+
+                    setButtonLoading(
+                        false
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           ENTER KEY UX
+        ====================================================== */
+
+        loginInput.addEventListener(
+            "keydown",
+            function(event) {
+
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
 
 
                     event.preventDefault();
 
 
-                    /* =============================================
-                       GET ELEMENTS
-                    ============================================== */
+                    passwordInput.focus();
 
-                    const login =
-                        document
-                        .getElementById(
-                            "login"
-                        )
-                        .value
-                        .trim();
+                }
 
+            }
+        );
 
-                    const passwordValue =
-                        document
-                        .getElementById(
-                            "password"
-                        )
-                        .value;
 
+        /* =====================================================
+           INPUT FOCUS ANIMATION
+        ====================================================== */
 
-                    const button =
-                        document
-                        .getElementById(
-                            "loginButton"
-                        );
+        document
+            .querySelectorAll(".form-control")
+            .forEach(
+                function(input) {
 
 
-                    /* =============================================
-                       CLEAR OLD MESSAGE
-                    ============================================== */
+                    input.addEventListener(
+                        "focus",
+                        function() {
 
-                    hideMessage();
 
+                            anime({
 
-                    /* =============================================
-                       VALIDATION
-                    ============================================== */
+                                targets: this,
 
-                    if (
-                        login === "" ||
-                        passwordValue === ""
-                    ) {
+                                scale: [0.995, 1],
 
-                        showMessage(
-                            "Please enter your username or email and password.",
-                            "warning"
-                        );
+                                duration: 250,
 
-                        return;
+                                easing: "easeOutQuad"
 
-                    }
-
-
-                    /* =============================================
-                       LOGIN LENGTH VALIDATION
-                    ============================================== */
-
-                    if (
-                        login.length < 4 ||
-                        login.length > 100
-                    ) {
-
-                        showMessage(
-                            "Please enter a valid username or email.",
-                            "warning"
-                        );
-
-                        return;
-
-                    }
-
-
-                    /* =============================================
-                       PASSWORD LENGTH VALIDATION
-                    ============================================== */
-
-                    if (
-                        passwordValue.length < 8
-                    ) {
-
-                        showMessage(
-                            "Incorrect password.",
-                            "danger"
-                        );
-
-                        return;
-
-                    }
-
-
-                    /* =============================================
-                       DISABLE BUTTON
-                    ============================================== */
-
-                    button.disabled =
-                        true;
-
-                    button.textContent =
-                        "Logging in...";
-
-
-                    /* =============================================
-                       SEND LOGIN REQUEST
-                    ============================================== */
-
-                    try {
-
-
-                        const response =
-                            await fetch(
-                                LOGIN_API, {
-
-                                    method: "POST",
-
-                                    headers: {
-
-                                        "Content-Type": "application/json"
-
-                                    },
-
-                                    body: JSON.stringify({
-
-                                        /*
-                                         * The API accepts
-                                         * either username
-                                         * or email through
-                                         * the "login" field.
-                                         */
-
-                                        login: login,
-
-                                        password: passwordValue
-
-                                    })
-
-                                }
-                            );
-
-
-                        /* =========================================
-                           READ RESPONSE
-                        ========================================== */
-
-                        const data =
-                            await response.json();
-
-
-                        console.log(
-                            "Login response:",
-                            data
-                        );
-
-
-                        /* =========================================
-                           LOGIN SUCCESS
-                        ========================================== */
-
-                        if (
-                            response.ok &&
-                            data.success === true
-                        ) {
-
-
-                            showMessage(
-                                data.message ||
-                                "Login successful.",
-                                "success"
-                            );
-
-
-                            /* =====================================
-                               REDIRECT
-                            ====================================== */
-
-                            setTimeout(
-                                function() {
-
-
-                                    if (
-                                        data.redirect
-                                    ) {
-
-                                        window.location.href =
-                                            data.redirect;
-
-                                    } else {
-
-                                        window.location.href =
-                                            "index.php";
-
-                                    }
-
-                                },
-                                700
-                            );
-
-
-                            return;
+                            });
 
                         }
-
-
-                        /* =========================================
-                           LOGIN FAILED
-                        ========================================== */
-
-                        showMessage(
-                            data.message ||
-                            "Unable to login.",
-                            "danger"
-                        );
-
-
-                        /* =========================================
-                           RE-ENABLE BUTTON
-                        ========================================== */
-
-                        button.disabled =
-                            false;
-
-                        button.textContent =
-                            "Login";
-
-
-                    } catch (error) {
-
-
-                        /* =========================================
-                           NETWORK / SERVER ERROR
-                        ========================================== */
-
-                        console.error(
-                            "Login error:",
-                            error
-                        );
-
-
-                        showMessage(
-                            "Unable to connect to the server. Please try again.",
-                            "danger"
-                        );
-
-
-                        button.disabled =
-                            false;
-
-                        button.textContent =
-                            "Login";
-
-                    }
+                    );
 
                 }
             );
