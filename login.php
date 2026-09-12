@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -84,12 +85,20 @@
         }
 
 
+        /* =========================================================
+           HTML
+        ========================================================== */
+
         html {
 
             scroll-behavior: smooth;
 
         }
 
+
+        /* =========================================================
+           BODY
+        ========================================================== */
 
         body {
 
@@ -104,7 +113,8 @@
                 Verdana,
                 sans-serif;
 
-            color: var(--text-dark);
+            color:
+                var(--text-dark);
 
             background:
                 linear-gradient(135deg,
@@ -494,7 +504,8 @@
 
             justify-content: space-between;
 
-            margin-bottom: 8px;
+            margin-bottom:
+                8px;
 
         }
 
@@ -1281,16 +1292,16 @@
 
 
             <!-- =================================================
-                 USERNAME
+                 USERNAME OR EMAIL
             ================================================== -->
 
             <div class="mb-3">
 
                 <label
-                    for="username"
+                    for="login"
                     class="form-label">
 
-                    Username
+                    Username or Email
 
                 </label>
 
@@ -1298,12 +1309,13 @@
                 <input
                     type="text"
                     class="form-control"
-                    id="username"
-                    name="username"
-                    placeholder="Enter username"
+                    id="login"
+                    name="login"
+                    placeholder="Enter username or email"
                     autocomplete="username"
+                    autocapitalize="none"
+                    spellcheck="false"
                     required>
-
 
             </div>
 
@@ -1558,7 +1570,6 @@
             messageBox.textContent =
                 "";
 
-
         }
 
 
@@ -1580,10 +1591,10 @@
                        GET ELEMENTS
                     ============================================== */
 
-                    const username =
+                    const login =
                         document
                         .getElementById(
-                            "username"
+                            "login"
                         )
                         .value
                         .trim();
@@ -1616,16 +1627,51 @@
                     ============================================== */
 
                     if (
-                        username === "" ||
+                        login === "" ||
                         passwordValue === ""
                     ) {
 
-
                         showMessage(
-                            "Please enter your username and password.",
+                            "Please enter your username or email and password.",
                             "warning"
                         );
 
+                        return;
+
+                    }
+
+
+                    /* =============================================
+                       LOGIN LENGTH VALIDATION
+                    ============================================== */
+
+                    if (
+                        login.length < 4 ||
+                        login.length > 100
+                    ) {
+
+                        showMessage(
+                            "Please enter a valid username or email.",
+                            "warning"
+                        );
+
+                        return;
+
+                    }
+
+
+                    /* =============================================
+                       PASSWORD LENGTH VALIDATION
+                    ============================================== */
+
+                    if (
+                        passwordValue.length < 8
+                    ) {
+
+                        showMessage(
+                            "Incorrect password.",
+                            "danger"
+                        );
 
                         return;
 
@@ -1638,7 +1684,6 @@
 
                     button.disabled =
                         true;
-
 
                     button.textContent =
                         "Logging in...";
@@ -1665,7 +1710,14 @@
 
                                     body: JSON.stringify({
 
-                                        username: username,
+                                        /*
+                                         * The API accepts
+                                         * either username
+                                         * or email through
+                                         * the "login" field.
+                                         */
+
+                                        login: login,
 
                                         password: passwordValue
 
@@ -1728,7 +1780,6 @@
 
                                     }
 
-
                                 },
                                 700
                             );
@@ -1745,7 +1796,7 @@
 
                         showMessage(
                             data.message ||
-                            "Invalid username or password.",
+                            "Unable to login.",
                             "danger"
                         );
 
@@ -1756,7 +1807,6 @@
 
                         button.disabled =
                             false;
-
 
                         button.textContent =
                             "Login";
@@ -1784,10 +1834,8 @@
                         button.disabled =
                             false;
 
-
                         button.textContent =
                             "Login";
-
 
                     }
 

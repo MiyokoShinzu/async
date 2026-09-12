@@ -1,11 +1,14 @@
-<?php date_default_timezone_set('Asia/Manila');?>
+
 <?php
+
 
 /* =========================================================
    LOGIN API
+   Allows login using USERNAME or EMAIL
    ========================================================= */
 
 header("Content-Type: application/json; charset=UTF-8");
+
 
 /* =========================================================
    START SESSION
@@ -62,29 +65,36 @@ if (!is_array($input)) {
 
 /* =========================================================
    GET LOGIN DATA
+   =========================================================
+   
+   The "login" field can contain either:
+   
+   Username:
+       karl123
+   
+   OR
+   
+   Email:
+       karl@example.com
+   
    ========================================================= */
 
-$username =
-    trim($input["username"] ?? "");
+$login = trim($input["login"] ?? "");
 
-$password =
-    $input["password"] ?? "";
+$password = $input["password"] ?? "";
 
 
 /* =========================================================
    REQUIRED FIELD CHECK
    ========================================================= */
 
-if (
-    $username === "" ||
-    $password === ""
-) {
+if ($login === "" || $password === "") {
 
     http_response_code(400);
 
     echo json_encode([
         "success" => false,
-        "message" => "Please enter your username and password."
+        "message" => "Please enter your username or email and password."
     ]);
 
     exit;
@@ -92,29 +102,16 @@ if (
 
 
 /* =========================================================
-   USERNAME VALIDATION
+   LOGIN LENGTH VALIDATION
    ========================================================= */
 
-if (strlen($username) < 4) {
+if (strlen($login) < 4 || strlen($login) > 100) {
 
     http_response_code(400);
 
     echo json_encode([
         "success" => false,
-        "message" => "Invalid username or password."
-    ]);
-
-    exit;
-}
-
-
-if (strlen($username) > 50) {
-
-    http_response_code(400);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid username or password."
+        "message" => "Invalid username or email."
     ]);
 
     exit;
@@ -122,7 +119,7 @@ if (strlen($username) > 50) {
 
 
 /* =========================================================
-   PASSWORD VALIDATION
+   PASSWORD LENGTH VALIDATION
    ========================================================= */
 
 if (strlen($password) < 8) {
@@ -131,7 +128,7 @@ if (strlen($password) < 8) {
 
     echo json_encode([
         "success" => false,
-        "message" => "Invalid username or password."
+        "message" => "Incorrect password."
     ]);
 
     exit;
@@ -139,29 +136,86 @@ if (strlen($password) < 8) {
 
 
 /* =========================================================
+   DETERMINE LOGIN TYPE
+   =========================================================
+   
+   If the input is a valid email format:
+   
+       user@example.com
+   
+   search the email column.
+   
+   Otherwise:
+   
+       username123
+   
+   search the username column.
+   
+   ========================================================= */
+
+$isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
+
+
+/* =========================================================
    FIND ACCOUNT
    ========================================================= */
 
-$stmt = $mysqli->prepare("
-    SELECT
-        id,
-        last_name,
-        first_name,
-        middle_initial,
-        extension_name,
-        department,
-        year_section,
-        student_id,
-        email,
-        username,
-        password,
-        access,
-        created_at
-    FROM accounts
-    WHERE username = ?
-    LIMIT 1
-");
+if ($isEmail) {
 
+    /*
+     * LOGIN USING EMAIL
+     */
+
+    $stmt = $mysqli->prepare("
+        SELECT
+            id,
+            last_name,
+            first_name,
+            middle_initial,
+            extension_name,
+            department,
+            year_section,
+            student_id,
+            email,
+            username,
+            password,
+            access,
+            created_at
+        FROM accounts
+        WHERE email = ?
+        LIMIT 1
+    ");
+} else {
+
+    /*
+     * LOGIN USING USERNAME
+     */
+
+    $stmt = $mysqli->prepare("
+        SELECT
+            id,
+            last_name,
+            first_name,
+            middle_initial,
+            extension_name,
+            department,
+            year_section,
+            student_id,
+            email,
+            username,
+            password,
+            access,
+            created_at
+        FROM accounts
+        WHERE username = ?
+        LIMIT 1
+    ");
+}
+
+
+/* =========================================================
+   CHECK PREPARED STATEMENT
+   ========================================================= */
 
 if (!$stmt) {
 
@@ -177,12 +231,12 @@ if (!$stmt) {
 
 
 /* =========================================================
-   BIND USERNAME
+   BIND LOGIN VALUE
    ========================================================= */
 
 $stmt->bind_param(
     "s",
-    $username
+    $login
 );
 
 
@@ -209,8 +263,7 @@ if (!$stmt->execute()) {
    GET RESULT
    ========================================================= */
 
-$result =
-    $stmt->get_result();
+$result = $stmt->get_result();
 
 
 /* =========================================================
@@ -225,7 +278,9 @@ if ($result->num_rows !== 1) {
 
     echo json_encode([
         "success" => false,
-        "message" => "Invalid username or password."
+        "message" => $isEmail
+            ? "Email does not exist."
+            : "Username does not exist."
     ]);
 
     exit;
@@ -236,9 +291,7 @@ if ($result->num_rows !== 1) {
    GET ACCOUNT
    ========================================================= */
 
-$account =
-    $result->fetch_assoc();
-
+$account = $result->fetch_assoc();
 
 $stmt->close();
 
@@ -258,7 +311,7 @@ if (
 
     echo json_encode([
         "success" => false,
-        "message" => "Invalid username or password."
+        "message" => "Incorrect password."
     ]);
 
     $mysqli->close();
@@ -298,7 +351,6 @@ if (
 }
 
 
-
 /* =========================================================
    REGENERATE SESSION ID
    ========================================================= */
@@ -315,7 +367,7 @@ $_SESSION["logged_in"] = true;
 
 /* =========================================================
    STORE USER DATA
-   PASSWORD IS NOT STORED
+   PASSWORD IS NOT STORED IN SESSION
    ========================================================= */
 
 $_SESSION["user"] = [
@@ -381,12 +433,10 @@ if ($account["access"] === "admin") {
 
     $redirect =
         "./admin/index.php";
-
 } else {
 
     $redirect =
         "./student/index.php";
-
 }
 
 
@@ -447,7 +497,6 @@ echo json_encode([
     $redirect
 
 ]);
-
 
 
 /* =========================================================
