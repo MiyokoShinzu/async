@@ -144,20 +144,21 @@ if ($status === "paid") {
    PENDING STATUS
 ========================================================== */ elseif ($status === "pending") {
 
+
     $statusClass =
-        "status-pending";
+        "status-paid";
 
     $statusIcon =
-        "bi-hourglass-split";
+        "bi-check-lg";
 
     $statusTitle =
-        "Thank You for Supporting ETS-Async!";
+        "Thank You So Much!";
 
     $statusMessage =
-        "We appreciate your generosity. Your payment
-         is currently being processed and will be
-         confirmed once PayMongo sends the payment
-         confirmation.";
+        "Your support has been successfully received.
+         Your generosity helps us continue developing
+         learning resources, academic tools, and
+         meaningful experiences for our students.";
 }
 
 
