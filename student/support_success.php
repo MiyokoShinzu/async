@@ -1100,7 +1100,7 @@ $displayStatus =
                                             ? "bi-check-circle-fill"
                                             : (
                                                 $status === "pending"
-                                                ? "bi-clock-fill"
+                                                ? "bi-check-circle-fill"
                                                 : (
                                                     $status === "cancelled"
                                                     ? "bi-arrow-counterclockwise"
@@ -1200,20 +1200,20 @@ $displayStatus =
 
 
                         <a
-                            href="academic_posts.php"
+                            href="support_creator.php"
                             class="btn btn-outline-primary">
 
                             <i class="
                             bi bi-arrow-left me-2
                         "></i>
 
-                            Return to Academic Posts
+                            Return
 
                         </a>
 
 
                         <a
-                            href="dashboard.php"
+                            href="index.php"
                             class="btn btn-outline-secondary">
 
                             <i class="
