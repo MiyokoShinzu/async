@@ -232,6 +232,61 @@ function sidebarActive($page)
             </span>
 
         </a>
+        <a
+            href="freedom_walls.php"
+            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
+
+            <i class="bi bi-chat-square-heart-fill"></i>
+
+            <span>
+                Freedom Walls
+            </span>
+
+        </a>
+        <a
+            href="freedom_walls.php"
+            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
+
+            <i class="bi bi-chat-square-heart-fill"></i>
+
+            <span>
+                Freedom Walls
+            </span>
+
+        </a>
+        <a
+            href="freedom_walls.php"
+            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
+
+            <i class="bi bi-chat-square-heart-fill"></i>
+
+            <span>
+                Freedom Walls
+            </span>
+
+        </a>
+        <a
+            href="freedom_walls.php"
+            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
+
+            <i class="bi bi-chat-square-heart-fill"></i>
+
+            <span>
+                Freedom Walls
+            </span>
+
+        </a>
+        <a
+            href="freedom_walls.php"
+            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
+
+            <i class="bi bi-chat-square-heart-fill"></i>
+
+            <span>
+                Freedom Walls
+            </span>
+
+        </a>
 
         <!-- =================================================
              LOGOUT
@@ -276,7 +331,7 @@ function sidebarActive($page)
         height: 100vh;
 
         z-index: 1050;
-        overflow: hidden;
+        
         transition:
             transform 0.3s ease,
             width 0.3s ease,
