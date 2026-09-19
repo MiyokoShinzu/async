@@ -280,6 +280,7 @@ function sidebarActive($page)
             transform 0.3s ease,
             width 0.3s ease,
             opacity 0.3s ease;
+        overflow-y: auto;       
 
     }
 
