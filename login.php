@@ -1859,6 +1859,7 @@ date_default_timezone_set('Asia/Manila');
            SHOW PASSWORD
         ====================================================== */
 
+
         .show-password {
 
             position:
@@ -1869,6 +1870,27 @@ date_default_timezone_set('Asia/Manila');
 
             top:
                 50%;
+
+            width:
+                42px;
+
+            height:
+                32px;
+
+            margin:
+                0;
+
+            padding:
+                0;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
 
             transform:
                 translateY(-50%);
@@ -1882,9 +1904,6 @@ date_default_timezone_set('Asia/Manila');
             color:
                 var(--muted);
 
-            padding:
-                6px 8px;
-
             border-radius:
                 6px;
 
@@ -1894,6 +1913,9 @@ date_default_timezone_set('Asia/Manila');
             font-weight:
                 700;
 
+            line-height:
+                1;
+
             cursor:
                 pointer;
 
@@ -1901,8 +1923,13 @@ date_default_timezone_set('Asia/Manila');
                 color 0.2s ease,
                 background 0.2s ease;
 
-        }
+            z-index:
+                5;
 
+            flex-shrink:
+                0;
+
+        }
 
         .show-password:hover {
 
@@ -1913,7 +1940,6 @@ date_default_timezone_set('Asia/Manila');
                 rgba(88, 166, 255, 0.07);
 
         }
-
 
         .show-password:focus-visible {
 
@@ -3477,11 +3503,11 @@ date_default_timezone_set('Asia/Manila');
 
                         targets: togglePassword,
 
-                        scale: [0.9, 1],
+                        opacity: [0.65, 1],
 
-                        duration: 250,
+                        duration: 200,
 
-                        easing: "easeOutBack"
+                        easing: "easeOutQuad"
 
                     });
 
