@@ -5,6 +5,7 @@
 
 $currentPage = basename($_SERVER["PHP_SELF"]);
 
+
 /* =========================================================
    FUNCTION TO SET ACTIVE LINK
 ========================================================= */
@@ -15,6 +16,7 @@ function sidebarActive($page)
 
     return $currentPage === $page ? "active" : "";
 }
+
 ?>
 
 
@@ -81,6 +83,7 @@ function sidebarActive($page)
     </div>
 
 
+
     <!-- =====================================================
          MENU
     ====================================================== -->
@@ -88,7 +91,9 @@ function sidebarActive($page)
     <nav class="sidebar-menu">
 
 
-        <!-- MAIN MENU -->
+        <!-- =================================================
+             MAIN MENU
+        ================================================== -->
 
         <div class="menu-title">
 
@@ -115,7 +120,7 @@ function sidebarActive($page)
 
 
         <!-- =================================================
-             ACTIVITIES
+             VIDEOS
         ================================================== -->
 
         <a
@@ -129,6 +134,12 @@ function sidebarActive($page)
             </span>
 
         </a>
+
+
+        <!-- =================================================
+             READING ACTIVITIES
+        ================================================== -->
+
         <a
             href="reading_activities.php"
             class="sidebar-link <?= sidebarActive('reading_activities.php') ?>">
@@ -140,6 +151,12 @@ function sidebarActive($page)
             </span>
 
         </a>
+
+
+        <!-- =================================================
+             ACADEMIC POSTS
+        ================================================== -->
+
         <a
             href="academic_posts.php"
             class="sidebar-link <?= sidebarActive('academic_posts.php') ?>">
@@ -151,6 +168,12 @@ function sidebarActive($page)
             </span>
 
         </a>
+
+
+        <!-- =================================================
+             BOOKMARKS
+        ================================================== -->
+
         <a
             href="academic_posts_saved.php"
             class="sidebar-link <?= sidebarActive('academic_posts_saved.php') ?>">
@@ -164,6 +187,10 @@ function sidebarActive($page)
         </a>
 
 
+        <!-- =================================================
+             TOOLBOX
+        ================================================== -->
+
         <a
             href="toolbox.php"
             class="sidebar-link <?= sidebarActive('toolbox.php') ?>">
@@ -175,6 +202,12 @@ function sidebarActive($page)
             </span>
 
         </a>
+
+
+        <!-- =================================================
+             SUPPORT DEVELOPER
+        ================================================== -->
+
         <a
             href="support_creator.php"
             class="sidebar-link <?= sidebarActive('support_creator.php') ?>">
@@ -188,16 +221,9 @@ function sidebarActive($page)
         </a>
 
 
-
         <!-- =================================================
-             PROFILE PHOTO
+             EDIT ACCOUNT
         ================================================== -->
-
-
-        <!-- =================================================
-             PROFILE PHOTO
-        ================================================== -->
-
 
         <a
             href="student_profile.php"
@@ -210,6 +236,12 @@ function sidebarActive($page)
             </span>
 
         </a>
+
+
+        <!-- =================================================
+             CLASSMATES
+        ================================================== -->
+
         <a
             href="classmates.php"
             class="sidebar-link <?= sidebarActive('classmates.php') ?>">
@@ -221,6 +253,12 @@ function sidebarActive($page)
             </span>
 
         </a>
+
+
+        <!-- =================================================
+             FREEDOM WALLS
+        ================================================== -->
+
         <a
             href="freedom_walls.php"
             class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
@@ -232,16 +270,7 @@ function sidebarActive($page)
             </span>
 
         </a>
-        <a
-            href="logout.php"
-            class="sidebar-link">
-            <i class="bi bi-box-arrow-right"></i>
 
-            <span>
-                Logout
-            </span>
-
-        </a>
 
         <!-- =================================================
              LOGOUT
@@ -260,10 +289,10 @@ function sidebarActive($page)
         </a>
 
 
-
     </nav>
 
 </aside>
+
 
 
 <!-- =========================================================
@@ -287,11 +316,73 @@ function sidebarActive($page)
 
         z-index: 1050;
 
+        /*
+       IMPORTANT:
+       Allow the entire sidebar to scroll vertically
+       when the menu is taller than the viewport.
+    */
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        /*
+       Smooth scrolling
+    */
+
+        scroll-behavior: smooth;
+
         transition:
             transform 0.3s ease,
             width 0.3s ease,
             opacity 0.3s ease;
 
+    }
+
+
+    /* =========================================================
+   SIDEBAR SCROLLBAR - CHROME / EDGE / SAFARI
+========================================================= */
+
+    .sidebar::-webkit-scrollbar {
+
+        width: 6px;
+
+    }
+
+
+    .sidebar::-webkit-scrollbar-track {
+
+        background: transparent;
+
+    }
+
+
+    .sidebar::-webkit-scrollbar-thumb {
+
+        background: rgba(108, 117, 125, 0.35);
+
+        border-radius: 10px;
+
+    }
+
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+
+        background: rgba(108, 117, 125, 0.6);
+
+    }
+
+
+    /* =========================================================
+   SIDEBAR SCROLLBAR - FIREFOX
+========================================================= */
+
+    .sidebar {
+
+        scrollbar-width: thin;
+
+        scrollbar-color:
+            rgba(108, 117, 125, 0.35) transparent;
 
     }
 
@@ -335,7 +426,6 @@ function sidebarActive($page)
         color: #6c757d;
 
         align-items: center;
-
         justify-content: center;
 
         cursor: pointer;
@@ -422,7 +512,7 @@ function sidebarActive($page)
 
         /* ---------------------------------------------
        CLOSED SIDEBAR
-    --------------------------------------------- */
+    ---------------------------------------------- */
 
         .sidebar.collapsed {
 
@@ -439,7 +529,7 @@ function sidebarActive($page)
 
         /* ---------------------------------------------
        CONTENT WHEN SIDEBAR CLOSED
-    --------------------------------------------- */
+    ---------------------------------------------- */
 
         body.sidebar-collapsed .main-content,
         body.sidebar-collapsed .content,
@@ -464,7 +554,7 @@ function sidebarActive($page)
 
         /* ---------------------------------------------
        SIDEBAR
-    --------------------------------------------- */
+    ---------------------------------------------- */
 
         .sidebar {
 
@@ -482,7 +572,7 @@ function sidebarActive($page)
 
         /* ---------------------------------------------
        OPEN
-    --------------------------------------------- */
+    ---------------------------------------------- */
 
         .sidebar.show {
 
@@ -493,7 +583,7 @@ function sidebarActive($page)
 
         /* ---------------------------------------------
        CLOSED
-    --------------------------------------------- */
+    ---------------------------------------------- */
 
         .sidebar.collapsed {
 
@@ -508,7 +598,7 @@ function sidebarActive($page)
 
         /* ---------------------------------------------
        OVERLAY
-    --------------------------------------------- */
+    ---------------------------------------------- */
 
         .sidebar-overlay {
 
@@ -564,7 +654,6 @@ function sidebarActive($page)
         .sidebar-close {
 
             width: 34px;
-
             height: 34px;
 
             font-size: 15px;
@@ -573,6 +662,7 @@ function sidebarActive($page)
 
     }
 </style>
+
 
 
 <!-- =========================================================
@@ -590,8 +680,10 @@ function sidebarActive($page)
         const sidebar =
             document.getElementById("sidebar");
 
+
         const sidebarClose =
             document.getElementById("sidebarClose");
+
 
         const sidebarOverlay =
             document.getElementById("sidebarOverlay");
@@ -622,7 +714,9 @@ function sidebarActive($page)
             if (isMobile) {
 
 
-                /* MOBILE / TABLET */
+                /* -----------------------------------------
+                   MOBILE / TABLET
+                ------------------------------------------ */
 
                 sidebar.classList.add("show");
 
@@ -633,6 +727,7 @@ function sidebarActive($page)
                     "sidebar-open"
                 );
 
+
                 document.body.classList.remove(
                     "sidebar-collapsed"
                 );
@@ -641,11 +736,14 @@ function sidebarActive($page)
             } else {
 
 
-                /* DESKTOP */
+                /* -----------------------------------------
+                   DESKTOP
+                ------------------------------------------ */
 
                 sidebar.classList.remove(
                     "collapsed"
                 );
+
 
                 sidebar.classList.remove(
                     "show"
@@ -655,6 +753,7 @@ function sidebarActive($page)
                 document.body.classList.remove(
                     "sidebar-collapsed"
                 );
+
 
                 document.body.classList.remove(
                     "sidebar-open"
@@ -679,7 +778,9 @@ function sidebarActive($page)
             if (isMobile) {
 
 
-                /* MOBILE / TABLET */
+                /* -----------------------------------------
+                   MOBILE / TABLET
+                ------------------------------------------ */
 
                 sidebar.classList.remove(
                     "show"
@@ -699,7 +800,9 @@ function sidebarActive($page)
             } else {
 
 
-                /* DESKTOP */
+                /* -----------------------------------------
+                   DESKTOP
+                ------------------------------------------ */
 
                 sidebar.classList.add(
                     "collapsed"
@@ -714,6 +817,7 @@ function sidebarActive($page)
                 document.body.classList.add(
                     "sidebar-collapsed"
                 );
+
 
                 document.body.classList.remove(
                     "sidebar-open"
@@ -814,6 +918,7 @@ function sidebarActive($page)
                         "show"
                     );
 
+
                     document.body.classList.remove(
                         "sidebar-open"
                     );
@@ -829,6 +934,7 @@ function sidebarActive($page)
                     sidebar.classList.remove(
                         "collapsed"
                     );
+
 
                     document.body.classList.remove(
                         "sidebar-collapsed"
