@@ -1307,7 +1307,7 @@ include "globals/head.php";
 
                 <div>
 
-                    <h2 class="dashboard-heading-title">
+                    <h2 class="">
 
                         Welcome,
                         <?= e($displayName) ?>
