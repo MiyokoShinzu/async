@@ -1066,7 +1066,7 @@ include "globals/topbar.php";
         object-fit: cover;
 
         display: block;
-
+                z-index: 1;
         transition:
             transform 0.45s cubic-bezier(.2, .8, .2, 1),
             filter 0.3s ease;
