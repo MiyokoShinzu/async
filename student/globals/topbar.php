@@ -593,8 +593,9 @@ if (
 
 
                 </a>
+
                 <!-- =================================================
-                     EDIT ACCOUNT
+                    Classmates
                 ================================================== -->
 
                 <a
@@ -626,7 +627,37 @@ if (
                 </a>
 
 
+                <!-- =================================================
+                     Freedom Walls
+                ================================================== -->
 
+                <a
+                    href="freedom_walls.php"
+                    class="topbar-profile-menu-link"
+                    role="menuitem">
+
+
+                    <span class="topbar-profile-menu-icon">
+
+                        <i class="bi bi-flag"></i>
+
+                    </span>
+
+
+                    <span class="topbar-profile-menu-text">
+
+                        <strong>
+                            Freedom Walls
+                        </strong>
+
+                        <small>
+                            View your freedom walls
+                        </small>
+
+                    </span>
+
+
+                </a>
                 <!-- =================================================
                      DIVIDER
                 ================================================== -->

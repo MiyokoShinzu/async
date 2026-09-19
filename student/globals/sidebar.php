@@ -226,21 +226,7 @@ function sidebarActive($page)
       
 
 
-        <!-- =================================================
-             FREEDOM WALLS
-        ================================================== -->
-
-        <a
-            href="freedom_walls.php"
-            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
-
-            <i class="bi bi-chat-square-heart-fill"></i>
-
-            <span>
-                Freedom Walls
-            </span>
-
-        </a>
+       
 
 
         <!-- =================================================
