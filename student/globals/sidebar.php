@@ -186,7 +186,12 @@ function sidebarActive($page)
             </span>
 
         </a>
-       
+
+
+
+        <!-- =================================================
+             PROFILE PHOTO
+        ================================================== -->
 
 
         <!-- =================================================
@@ -194,11 +199,6 @@ function sidebarActive($page)
         ================================================== -->
 
 
-        <!-- =================================================
-             PROFILE PHOTO
-        ================================================== -->
-
-       
         <a
             href="student_profile.php"
             class="sidebar-link <?= sidebarActive('student_profile.php') ?>">
@@ -233,57 +233,12 @@ function sidebarActive($page)
 
         </a>
         <a
-            href="freedom_walls.php"
-            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
-
-            <i class="bi bi-chat-square-heart-fill"></i>
-
-            <span>
-                Freedom Walls
-            </span>
-
-        </a>
-        <a
-            href="freedom_walls.php"
-            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
-
-            <i class="bi bi-chat-square-heart-fill"></i>
+            href="logout.php"
+            class="sidebar-link">
+            <i class="bi bi-box-arrow-right"></i>
 
             <span>
-                Freedom Walls
-            </span>
-
-        </a>
-        <a
-            href="freedom_walls.php"
-            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
-
-            <i class="bi bi-chat-square-heart-fill"></i>
-
-            <span>
-                Freedom Walls
-            </span>
-
-        </a>
-        <a
-            href="freedom_walls.php"
-            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
-
-            <i class="bi bi-chat-square-heart-fill"></i>
-
-            <span>
-                Freedom Walls
-            </span>
-
-        </a>
-        <a
-            href="freedom_walls.php"
-            class="sidebar-link <?= sidebarActive('freedom_walls.php') ?>">
-
-            <i class="bi bi-chat-square-heart-fill"></i>
-
-            <span>
-                Freedom Walls
+                Logout
             </span>
 
         </a>
@@ -303,7 +258,7 @@ function sidebarActive($page)
             </span>
 
         </a>
-        
+
 
 
     </nav>
@@ -331,12 +286,12 @@ function sidebarActive($page)
         height: 100vh;
 
         z-index: 1050;
-        
+
         transition:
             transform 0.3s ease,
             width 0.3s ease,
             opacity 0.3s ease;
-  
+
 
     }
 
