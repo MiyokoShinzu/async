@@ -272,7 +272,7 @@ function sidebarActive($page)
         left: 0;
 
         width: 260px;
-        height: 150vh;
+        height: 250vh;
 
         z-index: 1050;
 
