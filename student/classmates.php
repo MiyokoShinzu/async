@@ -117,8 +117,10 @@ function formatStudentName($student)
     $name = "";
 
     if (!empty($student["first_name"])) {
+
         $name .= $student["first_name"];
     }
+
 
     if (!empty($student["middle_initial"])) {
 
@@ -126,11 +128,13 @@ function formatStudentName($student)
             $name .= " ";
         }
 
-        $name .= rtrim(
-            $student["middle_initial"],
-            "."
-        ) . ".";
+        $name .=
+            rtrim(
+                $student["middle_initial"],
+                "."
+            ) . ".";
     }
+
 
     if (!empty($student["last_name"])) {
 
@@ -141,6 +145,7 @@ function formatStudentName($student)
         $name .= $student["last_name"];
     }
 
+
     if (!empty($student["extension_name"])) {
 
         if ($name !== "") {
@@ -149,6 +154,7 @@ function formatStudentName($student)
 
         $name .= $student["extension_name"];
     }
+
 
     return $name;
 }
@@ -181,6 +187,7 @@ function getStudentInitials($student)
             '/\s+/u',
             $firstName
         );
+
 
         if (!empty($firstCharacters[0])) {
 
@@ -218,6 +225,7 @@ function getStudentInitials($student)
     ----------------------------------------------------- */
 
     if ($initials === "") {
+
         $initials = "?";
     }
 
@@ -250,22 +258,15 @@ function getProfilePhoto($photo)
 
     /*
      * Extract filename only.
-     *
-     * This allows database values such as:
-     *
-     * uploads/profile_photos/example.png
-     *
-     * or
-     *
-     * shared/uploads/profile_photos/example.png
-     *
-     * to work using the main domain.
      */
 
     $photoName = basename($photo);
 
 
-    if ($photoName === "" || $photoName === ".") {
+    if (
+        $photoName === "" ||
+        $photoName === "."
+    ) {
         return null;
     }
 
@@ -275,7 +276,8 @@ function getProfilePhoto($photo)
      * main vertigation.com domain.
      */
 
-    return "https://vertigation.com/shared/uploads/profile_photos/" .
+    return
+        "https://vertigation.com/shared/uploads/profile_photos/" .
         rawurlencode($photoName);
 }
 
@@ -309,14 +311,19 @@ include "globals/topbar.php";
             <div>
 
                 <h1 class="page-title">
-                    <i class="bi bi-people-fill"></i>
-                    Classmates
-                </h1>
 
-              
+                    <i class="bi bi-people-fill"></i>
+
+                    Classmates
+
+                </h1>
 
             </div>
 
+
+            <!-- =================================================
+                 CLASS INFORMATION
+            ================================================== -->
 
             <div class="class-info">
 
@@ -325,7 +332,11 @@ include "globals/topbar.php";
                     <i class="bi bi-mortarboard-fill"></i>
 
                     <span>
-                        <?= htmlspecialchars($department) ?>
+                        <?= htmlspecialchars(
+                            $department,
+                            ENT_QUOTES,
+                            "UTF-8"
+                        ) ?>
                     </span>
 
                 </div>
@@ -339,7 +350,11 @@ include "globals/topbar.php";
                     <i class="bi bi-people-fill"></i>
 
                     <span>
-                        <?= htmlspecialchars($yearSection) ?>
+                        <?= htmlspecialchars(
+                            $yearSection,
+                            ENT_QUOTES,
+                            "UTF-8"
+                        ) ?>
                     </span>
 
                 </div>
@@ -365,8 +380,11 @@ include "globals/topbar.php";
                 <div class="classroom-title">
 
                     <div class="classroom-title-icon">
+
                         <i class="bi bi-building"></i>
+
                     </div>
+
 
                     <div>
 
@@ -375,11 +393,14 @@ include "globals/topbar.php";
                         </h2>
 
                         <p>
+
                             <?= $classmateCount ?>
+
                             <?= $classmateCount === 1
                                 ? "classmate"
                                 : "classmates"
                             ?>
+
                         </p>
 
                     </div>
@@ -400,16 +421,9 @@ include "globals/topbar.php";
             </div>
 
 
-            <!-- =============================================
-                 TEACHER AREA
-            ============================================== -->
-
-           
-
-
-            <!-- =============================================
+            <!-- =================================================
                  CLASSMATE SEATING AREA
-            ============================================== -->
+            ================================================== -->
 
             <?php if (!empty($classmates)): ?>
 
@@ -427,10 +441,12 @@ include "globals/topbar.php";
                                 $classmate
                             );
 
+
                         $initials =
                             getStudentInitials(
                                 $classmate
                             );
+
 
                         $photo =
                             getProfilePhoto(
@@ -439,13 +455,16 @@ include "globals/topbar.php";
 
                         ?>
 
+
                         <!-- =================================
-                             STUDENT SEAT
+                             STUDENT SEAT WRAPPER
                         ================================== -->
 
                         <div
                             class="student-seat"
-                            style="--seat-delay: <?= ($index * 0.04) ?>s;">
+                            style="
+                                --seat-delay: <?= ($index * 0.04) ?>s;
+                            ">
 
 
                             <!-- =================================
@@ -456,17 +475,24 @@ include "globals/topbar.php";
 
 
                                 <!-- =============================
-                                     PROFILE PHOTO / INITIALS
+                                     PROFILE PHOTO
                                 ============================== -->
 
                                 <div class="seat-photo-container">
 
-
                                     <?php if (!empty($photo)): ?>
 
                                         <img
-                                            src="<?= htmlspecialchars($photo) ?>"
-                                            alt="<?= htmlspecialchars($fullName) ?>"
+                                            src="<?= htmlspecialchars(
+                                                        $photo,
+                                                        ENT_QUOTES,
+                                                        "UTF-8"
+                                                    ) ?>"
+                                            alt="<?= htmlspecialchars(
+                                                        $fullName,
+                                                        ENT_QUOTES,
+                                                        "UTF-8"
+                                                    ) ?>"
                                             class="seat-photo"
                                             loading="lazy"
                                             onerror="
@@ -482,7 +508,13 @@ include "globals/topbar.php";
                                         <div
                                             class="seat-photo-placeholder"
                                             style="display:none;">
-                                            <?= htmlspecialchars($initials) ?>
+
+                                            <?= htmlspecialchars(
+                                                $initials,
+                                                ENT_QUOTES,
+                                                "UTF-8"
+                                            ) ?>
+
                                         </div>
 
 
@@ -495,13 +527,15 @@ include "globals/topbar.php";
 
                                         <div class="seat-photo-placeholder">
 
-                                            <?= htmlspecialchars($initials) ?>
+                                            <?= htmlspecialchars(
+                                                $initials,
+                                                ENT_QUOTES,
+                                                "UTF-8"
+                                            ) ?>
 
                                         </div>
 
-
                                     <?php endif; ?>
-
 
                                 </div>
 
@@ -514,7 +548,11 @@ include "globals/topbar.php";
 
                                     <div class="seat-details-name">
 
-                                        <?= htmlspecialchars($fullName) ?>
+                                        <?= htmlspecialchars(
+                                            $fullName,
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?>
 
                                     </div>
 
@@ -524,7 +562,9 @@ include "globals/topbar.php";
                                         <i class="bi bi-person-badge"></i>
 
                                         <?= htmlspecialchars(
-                                            $classmate["student_id"]
+                                            $classmate["student_id"],
+                                            ENT_QUOTES,
+                                            "UTF-8"
                                         ) ?>
 
                                     </div>
@@ -568,9 +608,11 @@ include "globals/topbar.php";
 
                     </div>
 
+
                     <h3>
                         No Classmates Found
                     </h3>
+
 
                     <p>
                         There are currently no other students
@@ -579,12 +621,10 @@ include "globals/topbar.php";
 
                 </div>
 
-
             <?php endif; ?>
 
 
         </div>
-
 
     </div>
 
@@ -619,17 +659,17 @@ include "globals/topbar.php";
 
         margin: 0;
 
-        font-size: 28px;
-
-        font-weight: 700;
-
-        color: var(--text-color);
-
         display: flex;
 
         align-items: center;
 
         gap: 10px;
+
+        color: var(--text-color);
+
+        font-size: 28px;
+
+        font-weight: 700;
 
     }
 
@@ -637,17 +677,6 @@ include "globals/topbar.php";
     .page-title i {
 
         color: var(--academic-blue);
-
-    }
-
-
-    .page-subtitle {
-
-        margin: 5px 0 0;
-
-        color: var(--text-secondary);
-
-        font-size: 14px;
 
     }
 
@@ -666,11 +695,13 @@ include "globals/topbar.php";
 
         padding: 10px 16px;
 
+        border:
+            1px solid var(--border-color);
+
         border-radius: 10px;
 
-        background: var(--surface-color);
-
-        border: 1px solid var(--border-color);
+        background:
+            var(--surface-color);
 
         box-shadow:
             0 2px 8px var(--shadow-color);
@@ -723,11 +754,19 @@ include "globals/topbar.php";
 
         position: relative;
 
+        /*
+     * IMPORTANT:
+     * Details extend outside individual seats.
+     * Therefore the classroom must remain visible.
+     */
+
         overflow: visible;
 
-        background: var(--surface-color);
+        background:
+            var(--surface-color);
 
-        border: 1px solid var(--border-color);
+        border:
+            1px solid var(--border-color);
 
         border-radius: 16px;
 
@@ -755,7 +794,8 @@ include "globals/topbar.php";
 
         padding: 20px 24px;
 
-        border-bottom: 1px solid var(--border-color);
+        border-bottom:
+            1px solid var(--border-color);
 
     }
 
@@ -785,9 +825,11 @@ include "globals/topbar.php";
 
         border-radius: 10px;
 
-        background: var(--academic-blue-light);
+        background:
+            var(--academic-blue-light);
 
-        color: var(--academic-blue);
+        color:
+            var(--academic-blue);
 
         font-size: 19px;
 
@@ -798,11 +840,11 @@ include "globals/topbar.php";
 
         margin: 0;
 
+        color: var(--text-color);
+
         font-size: 17px;
 
         font-weight: 700;
-
-        color: var(--text-color);
 
     }
 
@@ -811,9 +853,9 @@ include "globals/topbar.php";
 
         margin: 2px 0 0;
 
-        font-size: 12px;
-
         color: var(--text-secondary);
+
+        font-size: 12px;
 
     }
 
@@ -826,9 +868,9 @@ include "globals/topbar.php";
 
         gap: 7px;
 
-        font-size: 12px;
-
         color: var(--text-secondary);
+
+        font-size: 12px;
 
     }
 
@@ -836,81 +878,6 @@ include "globals/topbar.php";
     .classroom-hint i {
 
         color: var(--academic-blue);
-
-    }
-
-
-    /* =========================================================
-   TEACHER AREA
-========================================================= */
-
-    .teacher-area {
-
-        display: flex;
-
-        justify-content: center;
-
-        padding-top: 35px;
-
-        padding-bottom: 30px;
-
-    }
-
-
-    .teacher-desk {
-
-        position: relative;
-
-        min-width: 150px;
-
-        padding: 12px 25px;
-
-        border-radius: 10px;
-
-        background: var(--surface-secondary);
-
-        border: 1px solid var(--border-color);
-
-        text-align: center;
-
-        box-shadow:
-            0 3px 10px var(--shadow-color);
-
-        transition:
-            transform 0.3s ease,
-            box-shadow 0.3s ease;
-
-    }
-
-
-    .teacher-desk:hover {
-
-        transform: translateY(-3px);
-
-        box-shadow:
-            0 7px 18px var(--shadow-color);
-
-    }
-
-
-    .teacher-icon {
-
-        color: var(--academic-blue);
-
-        font-size: 25px;
-
-        margin-bottom: 3px;
-
-    }
-
-
-    .teacher-label {
-
-        color: var(--text-secondary);
-
-        font-size: 12px;
-
-        font-weight: 600;
 
     }
 
@@ -931,9 +898,10 @@ include "globals/topbar.php";
 
         column-gap: 32px;
 
-        row-gap: 55px;
+        row-gap: 70px;
 
-        padding: 20px 45px 30px;
+        padding:
+            35px 45px 45px;
 
     }
 
@@ -944,11 +912,18 @@ include "globals/topbar.php";
 
     .student-seat {
 
+        /*
+     * The wrapper owns the stacking level.
+     *
+     * This is important because transforming the child
+     * .seat creates a new stacking context.
+     */
+
         position: relative;
 
         width: 125px;
 
-        height: 145px;
+        height: 155px;
 
         display: flex;
 
@@ -961,7 +936,25 @@ include "globals/topbar.php";
         animation:
             seatAppear 0.5s ease both;
 
-        animation-delay: var(--seat-delay);
+        animation-delay:
+            var(--seat-delay);
+
+        /*
+     * Allow details to escape the wrapper.
+     */
+
+        overflow: visible;
+
+    }
+
+
+    /* =========================================================
+   HOVERED STUDENT GETS HIGHEST LAYER
+========================================================= */
+
+    .student-seat:hover {
+
+        z-index: 1000;
 
     }
 
@@ -980,17 +973,19 @@ include "globals/topbar.php";
 
         flex-shrink: 0;
 
-        border-radius: 50%;
-
-        border: 5px solid var(--activity-border);
-
-        background: var(--surface-secondary);
-
         display: flex;
 
         align-items: center;
 
         justify-content: center;
+
+        border:
+            5px solid var(--activity-border);
+
+        border-radius: 50%;
+
+        background:
+            var(--surface-secondary);
 
         box-shadow:
             0 4px 12px var(--shadow-color);
@@ -999,11 +994,15 @@ include "globals/topbar.php";
 
         z-index: 1;
 
+        /*
+     * Only animate the visual seat.
+     */
+
         transition:
-            transform 0.35s cubic-bezier(.2, .8, .2, 1),
-            border-color 0.3s ease,
-            box-shadow 0.35s ease,
-            background-color 0.3s ease;
+            transform 0.30s cubic-bezier(.2, .8, .2, 1),
+            border-color 0.25s ease,
+            box-shadow 0.30s ease,
+            background-color 0.25s ease;
 
     }
 
@@ -1012,16 +1011,26 @@ include "globals/topbar.php";
    SEAT HOVER
 ========================================================= */
 
-    .seat:hover {
+    .student-seat:hover .seat {
 
-        transform: scale(1.55);
+        /*
+     * Reduced from 1.55.
+     *
+     * 1.55 was causing excessive overlap with nearby
+     * classmates.
+     */
 
-        border-color: var(--academic-blue);
+        transform:
+            scale(1.38);
 
-        background: var(--surface-color);
+        border-color:
+            var(--academic-blue);
+
+        background:
+            var(--surface-color);
 
         box-shadow:
-            0 12px 30px var(--shadow-color);
+            0 14px 32px var(--shadow-color);
 
         z-index: 100;
 
@@ -1038,9 +1047,7 @@ include "globals/topbar.php";
 
         height: 90px;
 
-        border-radius: 50%;
-
-        overflow: hidden;
+        flex-shrink: 0;
 
         display: flex;
 
@@ -1048,7 +1055,12 @@ include "globals/topbar.php";
 
         justify-content: center;
 
-        background: var(--activity-number-bg);
+        overflow: hidden;
+
+        border-radius: 50%;
+
+        background:
+            var(--activity-number-bg);
 
     }
 
@@ -1063,24 +1075,20 @@ include "globals/topbar.php";
 
         height: 100%;
 
+        display: block;
+
         object-fit: cover;
 
-        display: block;
-                z-index: 1;
         transition:
-            transform 0.45s cubic-bezier(.2, .8, .2, 1),
-            filter 0.3s ease;
+            transform 0.35s cubic-bezier(.2, .8, .2, 1);
 
     }
 
 
-    /* =========================================================
-   PHOTO HOVER
-========================================================= */
+    .student-seat:hover .seat-photo {
 
-    .seat:hover .seat-photo {
-
-        transform: scale(1.04);
+        transform:
+            scale(1.04);
 
     }
 
@@ -1095,17 +1103,19 @@ include "globals/topbar.php";
 
         height: 100%;
 
-        border-radius: 50%;
-
         display: flex;
 
         align-items: center;
 
         justify-content: center;
 
-        background: var(--academic-blue-light);
+        border-radius: 50%;
 
-        color: var(--academic-blue);
+        background:
+            var(--academic-blue-light);
+
+        color:
+            var(--academic-blue);
 
         font-size: 28px;
 
@@ -1116,20 +1126,17 @@ include "globals/topbar.php";
         user-select: none;
 
         transition:
-            transform 0.4s cubic-bezier(.2, .8, .2, 1),
-            background-color 0.3s ease,
-            color 0.3s ease;
+            transform 0.35s cubic-bezier(.2, .8, .2, 1),
+            background-color 0.25s ease,
+            color 0.25s ease;
 
     }
 
 
-    /* =========================================================
-   INITIALS HOVER
-========================================================= */
+    .student-seat:hover .seat-photo-placeholder {
 
-    .seat:hover .seat-photo-placeholder {
-
-        transform: scale(1.04);
+        transform:
+            scale(1.04);
 
     }
 
@@ -1140,20 +1147,50 @@ include "globals/topbar.php";
 
     .seat-details {
 
+        /*
+     * Position relative to the complete student seat.
+     * This avoids the detail panel being affected by
+     * the enlarged .seat.
+     */
+
         position: absolute;
 
-        top: 108px;
+        top: 112px;
 
         left: 50%;
 
+        width: max-content;
+
         min-width: 155px;
 
-        max-width: 220px;
+        max-width: 230px;
 
-        padding: 8px 11px;
+        padding:
+            8px 12px;
+
+        border:
+            1px solid var(--academic-blue);
+
+        border-radius: 9px;
+
+        background:
+            var(--surface-color);
+
+        box-shadow:
+            0 10px 26px var(--shadow-color);
+
+        text-align: center;
+
+        /*
+     * Keep it centered.
+     */
 
         transform:
-            translateX(-50%) translateY(-5px) scale(0.96);
+            translateX(-50%) translateY(-6px);
+
+        /*
+     * Hidden until hover.
+     */
 
         opacity: 0;
 
@@ -1161,39 +1198,68 @@ include "globals/topbar.php";
 
         pointer-events: none;
 
-        border-radius: 8px;
-
-        background: var(--surface-color);
-
-        border: 1px solid var(--academic-blue);
-
-        box-shadow:
-            0 8px 24px var(--shadow-color);
-
-        text-align: center;
-
         z-index: 2000;
 
+        /*
+     * IMPORTANT:
+     * Do not use scale here.
+     * Scaling the details while the seat itself scales
+     * makes the overlap appear exaggerated.
+     */
+
         transition:
-            opacity 0.25s ease,
-            visibility 0.25s ease,
-            transform 0.3s cubic-bezier(.2, .8, .2, 1);
+            opacity 0.20s ease,
+            visibility 0.20s ease,
+            transform 0.20s ease;
 
     }
 
 
     /* =========================================================
-   SHOW DETAILS ON HOVER
+   DETAILS SHOW
 ========================================================= */
 
-    .seat:hover .seat-details {
+    .student-seat:hover .seat-details {
 
         opacity: 1;
 
         visibility: visible;
 
         transform:
-            translateX(-50%) translateY(0) scale(1);
+            translateX(-50%) translateY(0);
+
+    }
+
+
+    /* =========================================================
+   SMALL POINTER / ARROW
+========================================================= */
+
+    .seat-details::before {
+
+        content: "";
+
+        position: absolute;
+
+        left: 50%;
+
+        top: -6px;
+
+        width: 10px;
+
+        height: 10px;
+
+        background:
+            var(--surface-color);
+
+        border-left:
+            1px solid var(--academic-blue);
+
+        border-top:
+            1px solid var(--academic-blue);
+
+        transform:
+            translateX(-50%) rotate(45deg);
 
     }
 
@@ -1204,15 +1270,20 @@ include "globals/topbar.php";
 
     .seat-details-name {
 
-        color: var(--text-color);
+        max-width: 205px;
+
+        overflow: hidden;
+
+        color:
+            var(--text-color);
 
         font-size: 12px;
 
         font-weight: 700;
 
-        white-space: nowrap;
+        line-height: 1.35;
 
-        overflow: hidden;
+        white-space: nowrap;
 
         text-overflow: ellipsis;
 
@@ -1235,16 +1306,20 @@ include "globals/topbar.php";
 
         margin-top: 3px;
 
-        color: var(--text-secondary);
+        color:
+            var(--text-secondary);
 
         font-size: 10px;
+
+        line-height: 1.3;
 
     }
 
 
     .seat-details-id i {
 
-        color: var(--academic-blue);
+        color:
+            var(--academic-blue);
 
     }
 
@@ -1261,22 +1336,24 @@ include "globals/topbar.php";
 
         margin-top: 8px;
 
-        border-radius: 6px;
-
-        background: var(--surface-secondary);
-
-        border: 1px solid var(--border-color);
-
         display: flex;
 
         align-items: center;
 
         justify-content: center;
 
+        border:
+            1px solid var(--border-color);
+
+        border-radius: 6px;
+
+        background:
+            var(--surface-secondary);
+
         transition:
-            transform 0.35s ease,
-            box-shadow 0.35s ease,
-            background-color 0.3s ease;
+            transform 0.30s ease,
+            box-shadow 0.30s ease,
+            background-color 0.25s ease;
 
     }
 
@@ -1289,21 +1366,19 @@ include "globals/topbar.php";
 
         border-radius: 10px;
 
-        background: var(--border-color);
+        background:
+            var(--border-color);
 
         transition:
-            background-color 0.3s ease;
+            background-color 0.25s ease;
 
     }
 
 
-    /* =========================================================
-   BASE HOVER
-========================================================= */
-
     .student-seat:hover .seat-base {
 
-        transform: translateY(3px);
+        transform:
+            translateY(3px);
 
         box-shadow:
             0 4px 10px var(--shadow-color);
@@ -1313,7 +1388,8 @@ include "globals/topbar.php";
 
     .student-seat:hover .seat-base span {
 
-        background: var(--academic-blue);
+        background:
+            var(--academic-blue);
 
     }
 
@@ -1332,7 +1408,8 @@ include "globals/topbar.php";
 
         justify-content: center;
 
-        padding: 80px 20px;
+        padding:
+            80px 20px;
 
         text-align: center;
 
@@ -1351,24 +1428,28 @@ include "globals/topbar.php";
 
         justify-content: center;
 
+        margin-bottom: 15px;
+
         border-radius: 50%;
 
-        background: var(--academic-blue-light);
+        background:
+            var(--academic-blue-light);
 
-        color: var(--academic-blue);
+        color:
+            var(--academic-blue);
 
         font-size: 30px;
-
-        margin-bottom: 15px;
 
     }
 
 
     .empty-classroom h3 {
 
-        margin: 0 0 5px;
+        margin:
+            0 0 5px;
 
-        color: var(--text-color);
+        color:
+            var(--text-color);
 
         font-size: 18px;
 
@@ -1377,11 +1458,12 @@ include "globals/topbar.php";
 
     .empty-classroom p {
 
-        margin: 0;
-
         max-width: 400px;
 
-        color: var(--text-secondary);
+        margin: 0;
+
+        color:
+            var(--text-secondary);
 
         font-size: 13px;
 
@@ -1419,15 +1501,15 @@ include "globals/topbar.php";
    DARK MODE
 ========================================================= */
 
-    [data-theme="dark"] .seat {
+    [data-theme="dark"] .classroom-container {
 
         box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.30);
+            0 4px 18px rgba(0, 0, 0, 0.30);
 
     }
 
 
-    [data-theme="dark"] .seat:hover {
+    [data-theme="dark"] .student-seat:hover .seat {
 
         box-shadow:
             0 14px 35px rgba(0, 0, 0, 0.45);
@@ -1438,7 +1520,7 @@ include "globals/topbar.php";
     [data-theme="dark"] .seat-details {
 
         box-shadow:
-            0 10px 30px rgba(0, 0, 0, 0.40);
+            0 10px 30px rgba(0, 0, 0, 0.45);
 
     }
 
@@ -1471,11 +1553,10 @@ include "globals/topbar.php";
 
             column-gap: 25px;
 
-            row-gap: 50px;
+            row-gap: 70px;
 
-            padding-left: 25px;
-
-            padding-right: 25px;
+            padding:
+                30px 25px 40px;
 
         }
 
@@ -1499,7 +1580,8 @@ include "globals/topbar.php";
 
             gap: 10px;
 
-            padding: 9px 12px;
+            padding:
+                9px 12px;
 
         }
 
@@ -1513,7 +1595,8 @@ include "globals/topbar.php";
 
         .classroom-header {
 
-            padding: 16px;
+            padding:
+                16px;
 
         }
 
@@ -1529,9 +1612,10 @@ include "globals/topbar.php";
 
             column-gap: 12px;
 
-            row-gap: 40px;
+            row-gap: 60px;
 
-            padding: 15px 10px 25px;
+            padding:
+                25px 10px 35px;
 
         }
 
@@ -1540,7 +1624,7 @@ include "globals/topbar.php";
 
             width: 95px;
 
-            height: 125px;
+            height: 130px;
 
         }
 
@@ -1572,27 +1656,31 @@ include "globals/topbar.php";
         }
 
 
-        .seat:hover {
+        .student-seat:hover .seat {
 
-            transform: scale(1.30);
+            transform:
+                scale(1.25);
 
         }
 
 
         .seat-details {
 
-            top: 90px;
+            top: 92px;
 
             min-width: 135px;
 
-            max-width: 175px;
+            max-width: 180px;
 
-            padding: 7px 9px;
+            padding:
+                7px 9px;
 
         }
 
 
         .seat-details-name {
+
+            max-width: 158px;
 
             font-size: 10px;
 
@@ -1620,6 +1708,59 @@ include "globals/topbar.php";
 
 
     /* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+    @media (max-width: 400px) {
+
+        .class-info {
+
+            width: 100%;
+
+            justify-content: space-between;
+
+        }
+
+
+        .class-info-divider {
+
+            display: none;
+
+        }
+
+
+        .seating-area {
+
+            column-gap: 5px;
+
+        }
+
+
+        .student-seat {
+
+            width: 88px;
+
+        }
+
+
+        .student-seat:hover .seat {
+
+            transform:
+                scale(1.18);
+
+        }
+
+
+        .seat-details {
+
+            min-width: 125px;
+
+        }
+
+    }
+
+
+    /* =========================================================
    REDUCED MOTION ACCESSIBILITY
 ========================================================= */
 
@@ -1633,11 +1774,14 @@ include "globals/topbar.php";
 
 
         .seat,
+
         .seat-photo,
+
         .seat-photo-placeholder,
+
         .seat-details,
-        .seat-base,
-        .teacher-desk {
+
+        .seat-base {
 
             transition: none !important;
 
