@@ -221,38 +221,9 @@ function sidebarActive($page)
         </a>
 
 
-        <!-- =================================================
-             EDIT ACCOUNT
-        ================================================== -->
+      
 
-        <a
-            href="student_profile.php"
-            class="sidebar-link <?= sidebarActive('student_profile.php') ?>">
-
-            <i class="bi bi-person-fill-gear"></i>
-
-            <span>
-                Edit Account
-            </span>
-
-        </a>
-
-
-        <!-- =================================================
-             CLASSMATES
-        ================================================== -->
-
-        <a
-            href="classmates.php"
-            class="sidebar-link <?= sidebarActive('classmates.php') ?>">
-
-            <i class="bi bi-people-fill"></i>
-
-            <span>
-                Classmates
-            </span>
-
-        </a>
+      
 
 
         <!-- =================================================
