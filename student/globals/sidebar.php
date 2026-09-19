@@ -248,6 +248,7 @@ function sidebarActive($page)
             </span>
 
         </a>
+        
 
 
     </nav>
@@ -272,10 +273,10 @@ function sidebarActive($page)
         left: 0;
 
         width: 260px;
-        height: 250vh;
+        height: 80vh;
 
         z-index: 1050;
-
+        overflow: hidden;
         transition:
             transform 0.3s ease,
             width 0.3s ease,

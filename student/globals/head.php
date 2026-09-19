@@ -478,7 +478,7 @@
 
             width: var(--sidebar-width);
 
-            height: 150vh;
+            height: 100vh;
 
             background:
                 var(--sidebar-bg);
