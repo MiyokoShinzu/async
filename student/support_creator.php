@@ -585,7 +585,7 @@ $studentId = htmlspecialchars(
                                     min="1"
                                     max="50000"
                                     step="0.01"
-                                    placeholder="100.00"
+                                    placeholder="1.00"
                                     required>
 
                             </div>
