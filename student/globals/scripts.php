@@ -372,4 +372,3 @@ $academicAccessToken =
         }
     );
 </script>
-<?php include "globals/chatbot.php"; ?>
