@@ -1,2175 +1,1639 @@
 <?php
+
 /* =========================================================
-   ETS-ASYNC LANDING PAGE
-   College of Engineering and Architecture
-   GitHub + Anime.js Inspired Design
+   STUDENT DASHBOARD
+   ETS-Async Learning Portal
+
+   FEATURES:
+   ---------------------------------------------------------
+   1. Lecture activity monitoring
+   2. Reading activity monitoring
+   3. Academic Post activity monitoring
+   4. Overall learning progress
+   5. Recent learning activities
+   6. Academic Post access history
+   7. Academic Post access statistics
+
+   IMPORTANT:
+   ---------------------------------------------------------
+   This file DOES NOT modify the database structure,
+   collations, tables, or columns.
+
+   Academic Post monitoring reads from:
+
+       academic_post_access_logs
+
+   and joins:
+
+       academic_posts
+
+   using the integer post_id field.
+
+   The student_id comparison is performed only against
+   academic_post_access_logs.student_id, avoiding the
+   collation conflict that can occur when joining student
+   account fields with different collations.
    ========================================================= */
 
-date_default_timezone_set('Asia/Manila');
 
-$currentYear = date('Y');
+/* =========================================================
+   SESSION
+========================================================= */
+
+session_start();
+
+
+/* =========================================================
+   AUTHENTICATION CHECK
+========================================================= */
+
+if (
+    !isset($_SESSION["logged_in"]) ||
+    $_SESSION["logged_in"] !== true ||
+    !isset($_SESSION["user_id"]) ||
+    !isset($_SESSION["user"]) ||
+    !isset($_SESSION["user"]["access"]) ||
+    $_SESSION["user"]["access"] !== "student"
+) {
+    header("Location: ../login.php");
+    exit;
+}
+
+
+/* =========================================================
+   DATABASE
+========================================================= */
+
+require_once "../src/connection.php";
+
+
+/* =========================================================
+   USER DATA
+========================================================= */
+
+$user = $_SESSION["user"];
+
+
+$firstName =
+    trim($user["first_name"] ?? "");
+
+
+$studentId =
+    trim($user["student_id"] ?? "");
+
+
+$department =
+    trim($user["department"] ?? "");
+
+
+$yearSection =
+    trim($user["year_section"] ?? "");
+
+
+/*
+   Use first name instead of undefined $username.
+*/
+
+$displayName =
+    $firstName !== ""
+    ? $firstName
+    : "Student";
+
+
+/* =========================================================
+   PARSE YEAR AND SECTION
+========================================================= */
+
+$yearLevel = "";
+$section = "";
+
+
+$parts =
+    preg_split(
+        '/[-\s]+/',
+        trim($yearSection),
+        2
+    );
+
+
+if (!empty($parts[0])) {
+
+    $yearLevel =
+        trim($parts[0]);
+}
+
+
+if (!empty($parts[1])) {
+
+    $section =
+        trim($parts[1]);
+}
+
+
+/* =========================================================
+   INITIALIZE STATISTICS
+========================================================= */
+
+$totalLectures = 0;
+$completedLectures = 0;
+$inProgressLectures = 0;
+$notStartedLectures = 0;
+$lectureProgressTotalPercent = 0.0;
+
+
+$totalReadingActivities = 0;
+$completedReadingActivities = 0;
+$inProgressReadingActivities = 0;
+$notStartedReadingActivities = 0;
+
+
+/* =========================================================
+   ACADEMIC POST MONITORING STATISTICS
+========================================================= */
+
+$totalAcademicPostAccesses = 0;
+
+$totalAcademicPostsAccessed = 0;
+
+$totalAcademicPostReadingSeconds = 0;
+
+$openAcademicPostSessions = 0;
+
+
+/* =========================================================
+   LECTURE PROGRESS
+========================================================= */
+
+$lectureProgressQuery = "
+
+    SELECT
+        l.id,
+        lp.started_at,
+        lp.watched_seconds,
+        lp.video_duration,
+        lp.status AS progress_status
+
+    FROM lectures l
+
+    LEFT JOIN lecture_progress lp
+        ON lp.lecture_id = l.id
+        AND lp.student_id = ?
+
+    WHERE
+
+        (
+            l.department = ?
+            OR l.department = ''
+            OR l.department IS NULL
+        )
+
+        AND
+
+        (
+            CAST(l.year_level AS CHAR) = ?
+            OR l.year_level = ''
+            OR l.year_level IS NULL
+        )
+
+        AND
+
+        (
+            l.section = ?
+            OR l.section = ''
+            OR l.section IS NULL
+        )
+
+        AND
+
+        (
+            l.status = 'active'
+            OR l.status IS NULL
+        )
+
+        AND
+
+        (
+            l.start_date IS NULL
+            OR l.start_date <= NOW()
+        )
+
+        AND
+
+        (
+            l.due_date IS NULL
+            OR l.due_date >= NOW()
+        )
+
+";
+
+
+$stmt =
+    $mysqli->prepare(
+        $lectureProgressQuery
+    );
+
+
+if ($stmt) {
+
+    $stmt->bind_param(
+        "ssss",
+        $studentId,
+        $department,
+        $yearLevel,
+        $section
+    );
+
+    $stmt->execute();
+
+    $result =
+        $stmt->get_result();
+
+
+    while (
+        $lecture =
+        $result->fetch_assoc()
+    ) {
+
+        $totalLectures++;
+
+
+        $status = strtolower(trim(
+            (string)($lecture["progress_status"] ?? "")
+        ));
+
+        $watchedSeconds = max(0, (float)(
+            $lecture["watched_seconds"] ?? 0
+        ));
+
+        $videoDuration = max(0, (float)(
+            $lecture["video_duration"] ?? 0
+        ));
+
+        if ($status === "completed") {
+            $completedLectures++;
+            $lectureProgressTotalPercent += 100;
+        } elseif (
+            !empty($lecture["started_at"]) ||
+            $watchedSeconds > 0
+        ) {
+            $inProgressLectures++;
+
+            // Count partial lecture viewing in overall progress.
+            if ($videoDuration > 0) {
+                $lecturePercent = min(
+                    100,
+                    ($watchedSeconds / $videoDuration) * 100
+                );
+                $lectureProgressTotalPercent += $lecturePercent;
+            }
+        } else {
+            $notStartedLectures++;
+        }
+    }
+
+
+    $stmt->close();
+}
+
+
+/* =========================================================
+   READING ACTIVITY PROGRESS
+========================================================= */
+
+$readingProgressQuery = "
+
+    SELECT
+        r.id,
+        rp.started_at,
+        rp.reading_seconds,
+        rp.status AS progress_status
+
+    FROM reading_activity_table r
+
+    LEFT JOIN reading_activity_progress rp
+        ON rp.reading_activity_id = r.id
+        AND rp.student_id = ?
+
+    WHERE
+
+        (
+            r.department = ?
+            OR r.department = ''
+            OR r.department IS NULL
+        )
+
+        AND
+
+        (
+            CAST(r.year_level AS CHAR) = ?
+            OR r.year_level = ''
+            OR r.year_level IS NULL
+        )
+
+        AND
+
+        (
+            r.section = ?
+            OR r.section = ''
+            OR r.section IS NULL
+        )
+
+        AND
+
+        (
+            r.status = 'active'
+            OR r.status IS NULL
+        )
+
+        AND
+
+        (
+            r.start_date IS NULL
+            OR r.start_date <= NOW()
+        )
+
+        AND
+
+        (
+            r.due_date IS NULL
+            OR r.due_date >= NOW()
+        )
+
+";
+
+
+$stmt =
+    $mysqli->prepare(
+        $readingProgressQuery
+    );
+
+
+if ($stmt) {
+
+    $stmt->bind_param(
+        "ssss",
+        $studentId,
+        $department,
+        $yearLevel,
+        $section
+    );
+
+    $stmt->execute();
+
+    $result =
+        $stmt->get_result();
+
+
+    while (
+        $reading =
+        $result->fetch_assoc()
+    ) {
+
+        $totalReadingActivities++;
+
+
+        $status = strtolower(trim(
+            (string)($reading["progress_status"] ?? "")
+        ));
+
+
+        $readingSeconds =
+            (float)(
+                $reading["reading_seconds"] ?? 0
+            );
+
+
+        if ($status === "completed") {
+
+            $completedReadingActivities++;
+        } elseif (
+            !empty($reading["started_at"]) ||
+            $readingSeconds > 0
+        ) {
+
+            $inProgressReadingActivities++;
+        } else {
+
+            $notStartedReadingActivities++;
+        }
+    }
+
+
+    $stmt->close();
+}
+
+
+/* =========================================================
+   ACADEMIC POST STATISTICS
+
+   IMPORTANT:
+   ---------------------------------------------------------
+   We intentionally DO NOT join the accounts/users table
+   here.
+
+   This avoids the collation problem:
+
+       utf8mb4_general_ci
+       vs
+       utf8mb4_unicode_ci
+
+   We only compare:
+
+       academic_post_access_logs.student_id
+
+   against the logged-in student's student ID.
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   TOTAL ACCESS SESSIONS
+--------------------------------------------------------- */
+
+$academicPostStatsQuery = "
+
+    SELECT
+
+        COUNT(*) AS total_accesses,
+
+        COUNT(
+            DISTINCT post_id
+        ) AS total_posts,
+
+        COALESCE(
+            SUM(
+                duration_seconds
+            ),
+            0
+        ) AS total_seconds,
+
+        SUM(
+            CASE
+                WHEN status = 'open'
+                THEN 1
+                ELSE 0
+            END
+        ) AS open_sessions
+
+    FROM academic_post_access_logs
+
+    WHERE student_id = ?
+
+";
+
+
+$stmt =
+    $mysqli->prepare(
+        $academicPostStatsQuery
+    );
+
+
+if ($stmt) {
+
+    $stmt->bind_param(
+        "s",
+        $studentId
+    );
+
+    $stmt->execute();
+
+    $result =
+        $stmt->get_result();
+
+
+    $stats =
+        $result->fetch_assoc();
+
+
+    if ($stats) {
+
+        $totalAcademicPostAccesses =
+            (int)(
+                $stats["total_accesses"] ?? 0
+            );
+
+
+        $totalAcademicPostsAccessed =
+            (int)(
+                $stats["total_posts"] ?? 0
+            );
+
+
+        $totalAcademicPostReadingSeconds =
+            (int)(
+                $stats["total_seconds"] ?? 0
+            );
+
+
+        $openAcademicPostSessions =
+            (int)(
+                $stats["open_sessions"] ?? 0
+            );
+    }
+
+
+    $stmt->close();
+}
+
+
+/* =========================================================
+   ACADEMIC POST RECENT ACCESS HISTORY
+========================================================= */
+
+$academicPostActivities = [];
+
+
+$academicPostActivityQuery = "
+
+    SELECT
+
+        l.id,
+
+        l.post_id,
+
+        l.opened_at,
+
+        l.closed_at,
+
+        l.duration_seconds,
+
+        l.status,
+
+        p.title AS post_title,
+
+        p.description AS post_description,
+
+        p.subject
+
+    FROM academic_post_access_logs l
+
+    LEFT JOIN academic_posts p
+        ON p.id = l.post_id
+
+    WHERE
+
+        l.student_id = ?
+
+    ORDER BY
+
+        l.opened_at DESC,
+
+        l.id DESC
+
+    LIMIT 10
+
+";
+
+
+$stmt =
+    $mysqli->prepare(
+        $academicPostActivityQuery
+    );
+
+
+if ($stmt) {
+
+    $stmt->bind_param(
+        "s",
+        $studentId
+    );
+
+    $stmt->execute();
+
+    $result =
+        $stmt->get_result();
+
+
+    while (
+        $row =
+        $result->fetch_assoc()
+    ) {
+
+        $academicPostActivities[] =
+            $row;
+    }
+
+
+    $stmt->close();
+}
+
+
+/* =========================================================
+   ACADEMIC POST ACCESS COUNT PER POST
+
+   This allows the student to see how many times they have
+   opened each Academic Post.
+========================================================= */
+
+$academicPostAccessCounts = [];
+
+
+$academicPostCountQuery = "
+
+    SELECT
+
+        post_id,
+
+        COUNT(*) AS access_count,
+
+        MAX(opened_at) AS last_accessed
+
+    FROM academic_post_access_logs
+
+    WHERE student_id = ?
+
+    GROUP BY post_id
+
+";
+
+
+$stmt =
+    $mysqli->prepare(
+        $academicPostCountQuery
+    );
+
+
+if ($stmt) {
+
+    $stmt->bind_param(
+        "s",
+        $studentId
+    );
+
+    $stmt->execute();
+
+    $result =
+        $stmt->get_result();
+
+
+    while (
+        $row =
+        $result->fetch_assoc()
+    ) {
+
+        $academicPostAccessCounts[(int)$row["post_id"]] = [
+
+            "access_count" =>
+            (int)$row["access_count"],
+
+            "last_accessed" =>
+            $row["last_accessed"]
+
+        ];
+    }
+
+
+    $stmt->close();
+}
+
+
+/* =========================================================
+   OVERALL STATISTICS
+========================================================= */
+
+$totalActivities =
+    $totalLectures +
+    $totalReadingActivities;
+
+
+$completedActivities =
+    $completedLectures +
+    $completedReadingActivities;
+
+
+$inProgressActivities =
+    $inProgressLectures +
+    $inProgressReadingActivities;
+
+
+$notStartedActivities =
+    $notStartedLectures +
+    $notStartedReadingActivities;
+
+
+if ($totalActivities > 0) {
+    // Lectures contribute their watched percentage; readings contribute
+    // 100% when completed. Keep the denominator as all assigned activities.
+    $overallProgressPoints =
+        $lectureProgressTotalPercent +
+        ($completedReadingActivities * 100);
+
+    $overallProgress =
+        ($overallProgressPoints / $totalActivities);
+} else {
+    $overallProgressPoints = 0;
+    $overallProgress = 0;
+}
+
+
+$overallProgress =
+    round(
+        min(
+            100,
+            $overallProgress
+        ),
+        1
+    );
+
+
+/* =========================================================
+   LECTURE PROGRESS PERCENTAGE
+========================================================= */
+
+$lectureCompletion =
+    $totalLectures > 0
+    ? round(
+        (
+            $completedLectures /
+            $totalLectures
+        ) * 100,
+        1
+    )
+    : 0;
+
+
+/* =========================================================
+   READING PROGRESS PERCENTAGE
+========================================================= */
+
+$readingCompletion =
+    $totalReadingActivities > 0
+    ? round(
+        (
+            $completedReadingActivities /
+            $totalReadingActivities
+        ) * 100,
+        1
+    )
+    : 0;
+
+
+/* =========================================================
+   RECENT / NEW ACTIVITIES
+========================================================= */
+
+$recentActivities = [];
+
+
+/* =========================================================
+   RECENT LECTURES
+========================================================= */
+
+$recentLectureQuery = "
+
+    SELECT
+        l.id,
+        l.title,
+        l.description,
+        l.created_at,
+        lp.status AS progress_status
+
+    FROM lectures l
+
+    LEFT JOIN lecture_progress lp
+        ON lp.lecture_id = l.id
+        AND lp.student_id = ?
+
+    WHERE
+
+        (
+            l.department = ?
+            OR l.department = ''
+            OR l.department IS NULL
+        )
+
+        AND
+
+        (
+            CAST(l.year_level AS CHAR) = ?
+            OR l.year_level = ''
+            OR l.year_level IS NULL
+        )
+
+        AND
+
+        (
+            l.section = ?
+            OR l.section = ''
+            OR l.section IS NULL
+        )
+
+        AND
+
+        (
+            l.status = 'active'
+            OR l.status IS NULL
+        )
+
+        AND
+
+        (
+            l.start_date IS NULL
+            OR l.start_date <= NOW()
+        )
+
+    ORDER BY
+        l.created_at DESC,
+        l.id DESC
+
+    LIMIT 5
+
+";
+
+
+$stmt =
+    $mysqli->prepare(
+        $recentLectureQuery
+    );
+
+
+if ($stmt) {
+
+    $stmt->bind_param(
+        "ssss",
+        $studentId,
+        $department,
+        $yearLevel,
+        $section
+    );
+
+    $stmt->execute();
+
+    $result =
+        $stmt->get_result();
+
+
+    while (
+        $row =
+        $result->fetch_assoc()
+    ) {
+
+        $recentActivities[] = [
+
+            "id" =>
+            (int)$row["id"],
+
+            "title" =>
+            $row["title"],
+
+            "description" =>
+            $row["description"],
+
+            "created_at" =>
+            $row["created_at"],
+
+            "type" =>
+            "lecture",
+
+            "type_label" =>
+            "Lecture",
+
+            "icon" =>
+            "bi-play-circle-fill",
+
+            "progress_status" =>
+            $row["progress_status"] ?? ""
+
+        ];
+    }
+
+
+    $stmt->close();
+}
+
+
+/* =========================================================
+   RECENT READING ACTIVITIES
+========================================================= */
+
+$recentReadingQuery = "
+
+    SELECT
+        r.id,
+        r.title,
+        r.description,
+        r.created_at,
+        rp.status AS progress_status
+
+    FROM reading_activity_table r
+
+    LEFT JOIN reading_activity_progress rp
+        ON rp.reading_activity_id = r.id
+        AND rp.student_id = ?
+
+    WHERE
+
+        (
+            r.department = ?
+            OR r.department = ''
+            OR r.department IS NULL
+        )
+
+        AND
+
+        (
+            CAST(r.year_level AS CHAR) = ?
+            OR r.year_level = ''
+            OR r.year_level IS NULL
+        )
+
+        AND
+
+        (
+            r.section = ?
+            OR r.section = ''
+            OR r.section IS NULL
+        )
+
+        AND
+
+        (
+            r.status = 'active'
+            OR r.status IS NULL
+        )
+
+        AND
+
+        (
+            r.start_date IS NULL
+            OR r.start_date <= NOW()
+        )
+
+    ORDER BY
+        r.created_at DESC,
+        r.id DESC
+
+    LIMIT 5
+
+";
+
+
+$stmt =
+    $mysqli->prepare(
+        $recentReadingQuery
+    );
+
+
+if ($stmt) {
+
+    $stmt->bind_param(
+        "ssss",
+        $studentId,
+        $department,
+        $yearLevel,
+        $section
+    );
+
+    $stmt->execute();
+
+    $result =
+        $stmt->get_result();
+
+
+    while (
+        $row =
+        $result->fetch_assoc()
+    ) {
+
+        $recentActivities[] = [
+
+            "id" =>
+            (int)$row["id"],
+
+            "title" =>
+            $row["title"],
+
+            "description" =>
+            $row["description"],
+
+            "created_at" =>
+            $row["created_at"],
+
+            "type" =>
+            "reading",
+
+            "type_label" =>
+            "Reading Activity",
+
+            "icon" =>
+            "bi-book-fill",
+
+            "progress_status" =>
+            $row["progress_status"] ?? ""
+
+        ];
+    }
+
+
+    $stmt->close();
+}
+
+
+/* =========================================================
+   SORT RECENT ACTIVITIES
+========================================================= */
+
+usort(
+    $recentActivities,
+    function ($a, $b) {
+
+        return
+            strtotime($b["created_at"])
+            <=>
+            strtotime($a["created_at"]);
+    }
+);
+
+
+$recentActivities =
+    array_slice(
+        $recentActivities,
+        0,
+        6
+    );
+
+
+/* =========================================================
+   DATE FORMATTER
+========================================================= */
+
+function formatActivityDate($date)
+{
+    if (empty($date)) {
+
+        return "";
+    }
+
+
+    $timestamp =
+        strtotime($date);
+
+
+    if (!$timestamp) {
+
+        return "";
+    }
+
+
+    $difference =
+        time() - $timestamp;
+
+
+    if ($difference < 60) {
+
+        return "Just now";
+    }
+
+
+    if ($difference < 3600) {
+
+        return
+            floor($difference / 60)
+            . " min ago";
+    }
+
+
+    if ($difference < 86400) {
+
+        return
+            floor($difference / 3600)
+            . " hr ago";
+    }
+
+
+    if ($difference < 604800) {
+
+        $days =
+            floor(
+                $difference / 86400
+            );
+
+
+        return
+            $days .
+            " day" .
+            ($days == 1 ? "" : "s") .
+            " ago";
+    }
+
+
+    return date(
+        "M d, Y",
+        $timestamp
+    );
+}
+
+
+/* =========================================================
+   FORMAT DURATION
+========================================================= */
+
+function formatDuration($seconds)
+{
+    $seconds =
+        max(
+            0,
+            (int)$seconds
+        );
+
+
+    if ($seconds < 60) {
+
+        return
+            $seconds . " sec";
+    }
+
+
+    $minutes =
+        floor(
+            $seconds / 60
+        );
+
+
+    $remainingSeconds =
+        $seconds % 60;
+
+
+    if ($minutes < 60) {
+
+        if ($remainingSeconds > 0) {
+
+            return
+                $minutes .
+                " min " .
+                $remainingSeconds .
+                " sec";
+        }
+
+
+        return
+            $minutes .
+            " min";
+    }
+
+
+    $hours =
+        floor(
+            $minutes / 60
+        );
+
+
+    $remainingMinutes =
+        $minutes % 60;
+
+
+    if ($remainingMinutes > 0) {
+
+        return
+            $hours .
+            " hr " .
+            $remainingMinutes .
+            " min";
+    }
+
+
+    return
+        $hours .
+        " hr";
+}
+
+
+/* =========================================================
+   FORMAT DATE AND TIME
+========================================================= */
+
+function formatDateTime($date)
+{
+    if (empty($date)) {
+
+        return "—";
+    }
+
+
+    $timestamp =
+        strtotime($date);
+
+
+    if (!$timestamp) {
+
+        return "—";
+    }
+
+
+    return date(
+        "M d, Y h:i A",
+        $timestamp
+    );
+}
+
+
+/* =========================================================
+   NEW ACTIVITY CHECK
+========================================================= */
+
+function isNewActivity($date)
+{
+    if (empty($date)) {
+
+        return false;
+    }
+
+
+    $timestamp =
+        strtotime($date);
+
+
+    if (!$timestamp) {
+
+        return false;
+    }
+
+
+    return (time() - $timestamp)
+        <= 604800;
+}
+
+
+/* =========================================================
+   HTML ESCAPE HELPER
+========================================================= */
+
+function e($value)
+{
+    return htmlspecialchars(
+        (string)$value,
+        ENT_QUOTES,
+        "UTF-8"
+    );
+}
+
+
+/* =========================================================
+   GLOBAL HEAD
+========================================================= */
+
+include "globals/head.php";
+
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <!-- =====================================================
-         BASIC META
-    ====================================================== -->
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <meta name="description"
-        content="ETS-Async — Asynchronous Learning Portal for students of the College of Engineering and Architecture.">
-
-    <meta name="theme-color"
-        content="#0d1117">
-
-    <meta name="author"
-        content="ETS-DEV">
-
-    <!-- =====================================================
-         PAGE TITLE
-    ====================================================== -->
-    <title>ETS-Async | College of Engineering and Architecture</title>
-
-    <!-- =====================================================
-         FAVICON
-    ====================================================== -->
-    <link rel="icon"
-        type="image/png"
-        href="./assets/pubmat/head.png">
-
-    <!-- =====================================================
-         GOOGLE FONTS
-    ====================================================== -->
-    <link rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
-        rel="stylesheet">
-
-    <!-- =====================================================
-         BOOTSTRAP 5
-    ====================================================== -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
-
-    <!-- =====================================================
-         BOOTSTRAP ICONS
-    ====================================================== -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- =====================================================
-         ANIME.JS
-    ====================================================== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-
-
-    <style>
-        /* =====================================================
-           ROOT VARIABLES
-        ====================================================== */
-
-        :root {
-
-            --github-bg: #0d1117;
-            --github-bg-soft: #161b22;
-            --github-card: #1c2128;
-            --github-border: #30363d;
-
-            --white: #ffffff;
-            --text: #f0f6fc;
-            --muted: #8b949e;
-
-            --blue: #2f81f7;
-            --blue-light: #58a6ff;
-
-            --cyan: #56d4dd;
-            --purple: #a371f7;
-            --pink: #f778ba;
-
-            --green: #3fb950;
-
-            --surface: #f6f8fa;
-            --surface-border: #d0d7de;
-
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            --radius-xl: 28px;
-
-            --container: 1180px;
-
-            --shadow:
-                0 20px 60px rgba(0, 0, 0, 0.35);
-        }
-
-
-        /* =====================================================
-           GLOBAL
-        ====================================================== */
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-
-            margin: 0;
-
-            font-family:
-                "Inter",
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-
-            color: var(--text);
-
-            background:
-                var(--github-bg);
-
-            overflow-x: hidden;
-        }
-
-
-        a {
-            text-decoration: none;
-        }
-
-
-        .container-main {
-
-            width: min(calc(100% - 40px),
-                    var(--container));
-
-            margin: auto;
-        }
-
-
-        /* =====================================================
-           ANIMATED BACKGROUND
-        ====================================================== */
-
-        .background-grid {
-
-            position: fixed;
-
-            inset: 0;
-
-            pointer-events: none;
-
-            z-index: 0;
-
-            opacity: 0.35;
-
-            background-image:
-                linear-gradient(rgba(88, 166, 255, 0.035) 1px,
-                    transparent 1px),
-                linear-gradient(90deg,
-                    rgba(88, 166, 255, 0.035) 1px,
-                    transparent 1px);
-
-            background-size:
-                60px 60px;
-
-            mask-image:
-                linear-gradient(to bottom,
-                    black,
-                    transparent 90%);
-        }
-
-
-        /* =====================================================
-           GLOW ORBS
-        ====================================================== */
-
-        .orb {
-
-            position: fixed;
-
-            border-radius: 50%;
-
-            filter: blur(100px);
-
-            pointer-events: none;
-
-            z-index: 0;
-
-            opacity: 0.12;
-        }
-
-
-        .orb-one {
-
-            width: 420px;
-            height: 420px;
-
-            background: var(--blue);
-
-            top: -180px;
-            left: -120px;
-        }
-
-
-        .orb-two {
-
-            width: 380px;
-            height: 380px;
-
-            background: var(--purple);
-
-            top: 45%;
-            right: -160px;
-        }
-
-
-        .orb-three {
-
-            width: 300px;
-            height: 300px;
-
-            background: var(--cyan);
-
-            bottom: -100px;
-            left: 35%;
-        }
-
-
-        /* =====================================================
-           NAVIGATION
-        ====================================================== */
-
-        .navbar-custom {
-
-            position: fixed;
-
-            top: 0;
-            left: 0;
-            right: 0;
-
-            z-index: 1000;
-
-            background:
-                rgba(13, 17, 23, 0.82);
-
-            border-bottom:
-                1px solid rgba(255, 255, 255, 0.08);
-
-            backdrop-filter:
-                blur(18px);
-        }
-
-
-        .navbar-inner {
-
-            min-height: 72px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-        }
-
-
-        /* =====================================================
-           BRAND
-        ====================================================== */
-
-        .brand {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            color: var(--white);
-        }
-
-
-        .brand-logo {
-
-            width: 42px;
-            height: 42px;
-
-            object-fit: contain;
-
-            border-radius: 10px;
-
-            filter:
-                drop-shadow(0 0 15px rgba(88, 166, 255, 0.3));
-        }
-
-
-        .brand-text {
-
-            display: flex;
-
-            flex-direction: column;
-        }
-
-
-        .brand-name {
-
-            font-family: "Poppins", sans-serif;
-
-            font-size: 17px;
-
-            font-weight: 800;
-
-            line-height: 1;
-        }
-
-
-        .brand-subtitle {
-
-            color: var(--muted);
-
-            font-size: 10px;
-
-            margin-top: 5px;
-
-            letter-spacing: 0.5px;
-        }
-
-
-        /* =====================================================
-           NAV LINKS
-        ====================================================== */
-
-        .nav-links {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 28px;
-        }
-
-
-        .nav-links a {
-
-            color: var(--muted);
-
-            font-size: 14px;
-
-            font-weight: 500;
-
-            transition:
-                color 0.2s ease;
-        }
-
-
-        .nav-links a:hover {
-
-            color: var(--white);
-        }
-
-
-        .nav-login {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            padding: 8px 15px;
-
-            color: white !important;
-
-            border:
-                1px solid rgba(255, 255, 255, 0.15);
-
-            border-radius: 8px;
-
-            background:
-                rgba(255, 255, 255, 0.04);
-
-            transition:
-                all 0.25s ease;
-        }
-
-
-        .nav-login:hover {
-
-            background:
-                rgba(255, 255, 255, 0.09);
-
-            border-color:
-                rgba(255, 255, 255, 0.3);
-
-            transform:
-                translateY(-1px);
-        }
-
-
-        /* =====================================================
-           HERO
-        ====================================================== */
-
-        .hero {
-
-            position: relative;
-
-            min-height: 850px;
-
-            display: flex;
-
-            align-items: center;
-
-            padding:
-                130px 0 100px;
-
-            overflow: hidden;
-        }
-
-
-        .hero-content {
-
-            position: relative;
-
-            z-index: 2;
-        }
-
-
-        .hero-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 0.95fr;
-
-            align-items: center;
-
-            gap: 80px;
-        }
-
-
-        /* =====================================================
-           HERO EYEBROW
-        ====================================================== */
-
-        .eyebrow {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 9px;
-
-            padding: 7px 12px;
-
-            border:
-                1px solid rgba(88, 166, 255, 0.22);
-
-            border-radius: 100px;
-
-            background:
-                rgba(88, 166, 255, 0.06);
-
-            color: var(--blue-light);
-
-            font-size: 12px;
-
-            font-weight: 600;
-
-            margin-bottom: 25px;
-        }
-
-
-        .eyebrow-dot {
-
-            width: 7px;
-            height: 7px;
-
-            border-radius: 50%;
-
-            background: var(--green);
-
-            box-shadow:
-                0 0 12px rgba(63, 185, 80, 0.8);
-        }
-
-
-        /* =====================================================
-           HERO TITLE
-        ====================================================== */
-
-        .hero-title {
-
-            font-family:
-                "Poppins",
-                sans-serif;
-
-            font-size:
-                clamp(48px, 6vw, 82px);
-
-            line-height: 1.02;
-
-            letter-spacing: -3.5px;
-
-            font-weight: 800;
-
-            margin: 0 0 28px;
-
-            max-width: 760px;
-        }
-
-
-        .gradient-text {
-
-            background:
-                linear-gradient(90deg,
-                    var(--blue-light),
-                    var(--purple),
-                    var(--cyan));
-
-            -webkit-background-clip: text;
-
-            background-clip: text;
-
-            color: transparent;
-
-            background-size: 200% 200%;
-
-            animation:
-                gradientMove 5s ease infinite;
-        }
-
-
-        @keyframes gradientMove {
-
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-
-        /* =====================================================
-           HERO DESCRIPTION
-        ====================================================== */
-
-        .hero-description {
-
-            max-width: 650px;
-
-            color: var(--muted);
-
-            font-size: 17px;
-
-            line-height: 1.8;
-
-            margin-bottom: 34px;
-        }
-
-
-        /* =====================================================
-           BUTTON
-        ====================================================== */
-
-        .hero-buttons {
-
-            display: flex;
-
-            flex-wrap: wrap;
-
-            gap: 12px;
-        }
-
-
-        .btn-login {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 9px;
-
-            min-width: 125px;
-
-            padding:
-                13px 22px;
-
-            color: white;
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-            border-radius: 8px;
-
-            border: 1px solid rgba(255, 255, 255, 0.1);
-
-            background:
-                linear-gradient(135deg,
-                    #238636,
-                    #2ea043);
-
-            box-shadow:
-                0 10px 30px rgba(46, 160, 67, 0.18);
-
-            transition:
-                all 0.25s ease;
-        }
-
-
-        .btn-login:hover {
-
-            color: white;
-
-            transform:
-                translateY(-2px);
-
-            box-shadow:
-                0 15px 35px rgba(46, 160, 67, 0.28);
-        }
-
-
-        /* =====================================================
-           HERO STATS
-        ====================================================== */
-
-        .hero-stats {
-
-            display: flex;
-
-            flex-wrap: wrap;
-
-            gap: 28px;
-
-            margin-top: 40px;
-
-            padding-top: 28px;
-
-            border-top:
-                1px solid rgba(255, 255, 255, 0.08);
-        }
-
-
-        .stat {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 9px;
-
-            color: var(--muted);
-
-            font-size: 12px;
-        }
-
-
-        .stat i {
-
-            color: var(--blue-light);
-
-            font-size: 16px;
-        }
-
-
-        /* =====================================================
-           3D SCENE
-        ====================================================== */
-
-        .scene {
-
-            position: relative;
-
-            height: 550px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            perspective: 1500px;
-        }
-
-
-        /* =====================================================
-           3D ORBIT
-        ====================================================== */
-
-        .orbit {
-
-            position: absolute;
-
-            width: 460px;
-            height: 460px;
-
-            border:
-                1px solid rgba(88, 166, 255, 0.14);
-
-            border-radius: 50%;
-
-            transform:
-                rotateX(67deg) rotateZ(-18deg);
-
-            box-shadow:
-                0 0 60px rgba(47, 129, 247, 0.06);
-        }
-
-
-        .orbit-two {
-
-            width: 380px;
-            height: 380px;
-
-            transform:
-                rotateX(67deg) rotateZ(32deg);
-
-            border-color:
-                rgba(163, 113, 247, 0.12);
-        }
-
-
-        /* =====================================================
-           ORBIT DOTS
-        ====================================================== */
-
-        .orbit-dot {
-
-            position: absolute;
-
-            width: 10px;
-            height: 10px;
-
-            border-radius: 50%;
-
-            background:
-                var(--blue-light);
-
-            box-shadow:
-                0 0 20px var(--blue-light);
-        }
-
-
-        .dot-one {
-
-            top: 45px;
-            left: 65px;
-        }
-
-
-        .dot-two {
-
-            right: 35px;
-            bottom: 85px;
-
-            background:
-                var(--purple);
-
-            box-shadow:
-                0 0 20px var(--purple);
-        }
-
-
-        .dot-three {
-
-            top: 100px;
-            right: 50px;
-
-            background:
-                var(--cyan);
-
-            box-shadow:
-                0 0 20px var(--cyan);
-        }
-
-
-        /* =====================================================
-           3D DASHBOARD
-        ====================================================== */
-
-        .dashboard-3d {
-
-            position: relative;
-
-            width: 430px;
-
-            border:
-                1px solid rgba(255, 255, 255, 0.13);
-
-            border-radius: 18px;
-
-            background:
-                linear-gradient(145deg,
-                    rgba(35, 40, 48, 0.96),
-                    rgba(18, 22, 28, 0.96));
-
-            box-shadow:
-                0 50px 100px rgba(0, 0, 0, 0.5),
-                0 0 70px rgba(47, 129, 247, 0.08);
-
-            overflow: hidden;
-
-            transform:
-                rotateY(-14deg) rotateX(7deg) rotateZ(2deg);
-
-            transform-style: preserve-3d;
-
-            z-index: 5;
-        }
-
-
-        /* =====================================================
-           DASHBOARD TOP BAR
-        ====================================================== */
-
-        .dashboard-top {
-
-            height: 42px;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 7px;
-
-            padding: 0 15px;
-
-            border-bottom:
-                1px solid rgba(255, 255, 255, 0.08);
-
-            background:
-                rgba(255, 255, 255, 0.025);
-        }
-
-
-        .window-dot {
-
-            width: 8px;
-            height: 8px;
-
-            border-radius: 50%;
-
-            background:
-                rgba(255, 255, 255, 0.2);
-        }
-
-
-        .window-title {
-
-            margin-left: 8px;
-
-            color: var(--muted);
-
-            font-size: 10px;
-        }
-
-
-        /* =====================================================
-           DASHBOARD BODY
-        ====================================================== */
-
-        .dashboard-body {
-
-            display: grid;
-
-            grid-template-columns:
-                105px 1fr;
-
-            min-height: 330px;
-        }
-
-
-        /* =====================================================
-           DASHBOARD SIDEBAR
-        ====================================================== */
-
-        .dashboard-sidebar {
-
-            padding: 18px 10px;
-
-            border-right:
-                1px solid rgba(255, 255, 255, 0.07);
-
-            background:
-                rgba(0, 0, 0, 0.12);
-        }
-
-
-        .side-logo {
-
-            width: 31px;
-            height: 31px;
-
-            margin: 0 auto 25px;
-
-            object-fit: contain;
-        }
-
-
-        .side-item {
-
-            height: 32px;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            padding: 0 9px;
-
-            margin-bottom: 5px;
-
-            border-radius: 6px;
-
-            color: #7d8590;
-
-            font-size: 9px;
-        }
-
-
-        .side-item.active {
-
-            color: white;
-
-            background:
-                rgba(47, 129, 247, 0.15);
-        }
-
-
-        .side-item i {
-
-            font-size: 11px;
-        }
-
-
-        /* =====================================================
-           DASHBOARD CONTENT
-        ====================================================== */
-
-        .dashboard-content {
-
-            padding: 22px;
-        }
-
-
-        .mini-heading {
-
-            color: var(--muted);
-
-            font-size: 9px;
-
-            margin-bottom: 5px;
-        }
-
-
-        .mini-title {
-
-            color: white;
-
-            font-family: "Poppins", sans-serif;
-
-            font-size: 18px;
-
-            font-weight: 700;
-
-            margin-bottom: 18px;
-        }
-
-
-        /* =====================================================
-           PROGRESS CARD
-        ====================================================== */
-
-        .progress-card {
-
-            padding: 15px;
-
-            border:
-                1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 10px;
-
-            background:
-                rgba(255, 255, 255, 0.035);
-
-            margin-bottom: 14px;
-        }
-
-
-        .progress-header {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            color: var(--muted);
-
-            font-size: 9px;
-
-            margin-bottom: 9px;
-        }
-
-
-        .progress-value {
-
-            color: var(--blue-light);
-
-            font-weight: 700;
-        }
-
-
-        .progress-bar-custom {
-
-            height: 5px;
-
-            background:
-                rgba(255, 255, 255, 0.08);
-
-            border-radius: 20px;
-
-            overflow: hidden;
-        }
-
-
-        .progress-fill {
-
-            width: 72%;
-
-            height: 100%;
-
-            background:
-                linear-gradient(90deg,
-                    var(--blue),
-                    var(--purple));
-
-            border-radius: inherit;
-        }
-
-
-        /* =====================================================
-           ACTIVITY CARDS
-        ====================================================== */
-
-        .activity {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-            padding: 10px 11px;
-
-            border:
-                1px solid rgba(255, 255, 255, 0.06);
-
-            border-radius: 8px;
-
-            margin-bottom: 7px;
-
-            background:
-                rgba(255, 255, 255, 0.02);
-        }
-
-
-        .activity-icon {
-
-            width: 27px;
-            height: 27px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border-radius: 7px;
-
-            background:
-                rgba(47, 129, 247, 0.13);
-
-            color:
-                var(--blue-light);
-
-            font-size: 11px;
-        }
-
-
-        .activity-text {
-
-            flex: 1;
-        }
-
-
-        .activity-title {
-
-            color: #e6edf3;
-
-            font-size: 9px;
-
-            font-weight: 600;
-        }
-
-
-        .activity-subtitle {
-
-            color: var(--muted);
-
-            font-size: 7px;
-
-            margin-top: 2px;
-        }
-
-
-        .activity-status {
-
-            width: 7px;
-            height: 7px;
-
-            border-radius: 50%;
-
-            background:
-                var(--green);
-
-            box-shadow:
-                0 0 8px rgba(63, 185, 80, 0.7);
-        }
-
-
-        /* =====================================================
-           FLOATING CARDS
-        ====================================================== */
-
-        .floating-card {
-
-            position: absolute;
-
-            z-index: 10;
-
-            padding: 12px 14px;
-
-            border:
-                1px solid rgba(255, 255, 255, 0.12);
-
-            border-radius: 12px;
-
-            background:
-                rgba(22, 27, 34, 0.9);
-
-            backdrop-filter:
-                blur(15px);
-
-            box-shadow:
-                0 20px 40px rgba(0, 0, 0, 0.35);
-        }
-
-
-        .floating-card-left {
-
-            left: 0;
-
-            bottom: 75px;
-
-            transform:
-                rotateY(10deg) rotateZ(-3deg);
-        }
-
-
-        .floating-card-right {
-
-            right: -10px;
-
-            top: 75px;
-
-            transform:
-                rotateY(-8deg) rotateZ(3deg);
-        }
-
-
-        .floating-label {
-
-            color: var(--muted);
-
-            font-size: 8px;
-
-            margin-bottom: 4px;
-        }
-
-
-        .floating-value {
-
-            color: white;
-
-            font-family: "Poppins", sans-serif;
-
-            font-size: 18px;
-
-            font-weight: 800;
-        }
-
-
-        .floating-icon {
-
-            display: inline-flex;
-
-            width: 28px;
-            height: 28px;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border-radius: 8px;
-
-            margin-right: 8px;
-
-            background:
-                rgba(163, 113, 247, 0.15);
-
-            color:
-                var(--purple);
-        }
-
-
-        /* =====================================================
-           SECTION
-        ====================================================== */
-
-        .section {
-
-            position: relative;
-
-            z-index: 2;
-
-            padding:
-                110px 0;
-        }
-
-
-        .section-light {
-
-            color: #24292f;
-
-            background:
-                var(--surface);
-        }
-
-
-        .section-heading {
-
-            max-width: 700px;
-
-            margin-bottom: 55px;
-        }
-
-
-        .section-kicker {
-
-            color:
-                var(--blue);
-
-            font-size: 12px;
-
-            font-weight: 700;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1.2px;
-
-            margin-bottom: 12px;
-        }
-
-
-        .section-title {
-
-            font-family:
-                "Poppins",
-                sans-serif;
-
-            font-size:
-                clamp(32px, 4vw, 48px);
-
-            line-height: 1.15;
-
-            font-weight: 800;
-
-            letter-spacing: -1.5px;
-
-            margin-bottom: 16px;
-        }
-
-
-        .section-description {
-
-            color:
-                var(--muted);
-
-            line-height: 1.75;
-
-            font-size: 15px;
-        }
-
-
-        .section-light .section-description {
-
-            color:
-                #57606a;
-        }
-
-
-        /* =====================================================
-           RESOURCE CARDS
-        ====================================================== */
-
-        .resource-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 18px;
-        }
-
-
-        .resource-card {
-
-            padding: 28px;
-
-            border:
-                1px solid var(--surface-border);
-
-            border-radius:
-                var(--radius-lg);
-
-            background:
-                white;
-
-            transition:
-                transform 0.3s ease,
-                box-shadow 0.3s ease,
-                border-color 0.3s ease;
-        }
-
-
-        .resource-card:hover {
-
-            transform:
-                translateY(-7px);
-
-            border-color:
-                #afb8c1;
-
-            box-shadow:
-                0 20px 50px rgba(31, 35, 40, 0.1);
-        }
-
-
-        .resource-icon {
-
-            width: 48px;
-            height: 48px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            margin-bottom: 20px;
-
-            border-radius: 12px;
-
-            color:
-                var(--blue);
-
-            background:
-                rgba(47, 129, 247, 0.08);
-
-            font-size: 21px;
-        }
-
-
-        .resource-card h3 {
-
-            font-family:
-                "Poppins",
-                sans-serif;
-
-            font-size: 18px;
-
-            font-weight: 700;
-
-            margin-bottom: 10px;
-        }
-
-
-        .resource-card p {
-
-            color:
-                #57606a;
-
-            font-size: 13px;
-
-            line-height: 1.7;
-
-            margin: 0;
-        }
-
-
-        /* =====================================================
-           HOW IT WORKS
-        ====================================================== */
-
-        .workflow {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 18px;
-        }
-
-
-        .workflow-card {
-
-            position: relative;
-
-            padding: 28px;
-
-            border:
-                1px solid var(--github-border);
-
-            border-radius:
-                var(--radius-lg);
-
-            background:
-                var(--github-card);
-        }
-
-
-        .workflow-number {
-
-            font-family:
-                "Poppins",
-                sans-serif;
-
-            font-size: 48px;
-
-            line-height: 1;
-
-            font-weight: 800;
-
-            color:
-                rgba(88, 166, 255, 0.15);
-
-            margin-bottom: 20px;
-        }
-
-
-        .workflow-card h3 {
-
-            color: white;
-
-            font-family:
-                "Poppins",
-                sans-serif;
-
-            font-size: 18px;
-
-            margin-bottom: 10px;
-        }
-
-
-        .workflow-card p {
-
-            color:
-                var(--muted);
-
-            font-size: 13px;
-
-            line-height: 1.7;
-
-            margin: 0;
-        }
-
-
-        /* =====================================================
-           GUIDELINES
-        ====================================================== */
-
-        .guidelines {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 18px;
-        }
-
-
-        .guideline {
-
-            display: flex;
-
-            gap: 16px;
-
-            padding: 23px;
-
-            border:
-                1px solid var(--surface-border);
-
-            border-radius:
-                var(--radius-md);
-
-            background:
-                white;
-        }
-
-
-        .guideline-icon {
-
-            flex: 0 0 40px;
-
-            width: 40px;
-            height: 40px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border-radius: 10px;
-
-            color:
-                var(--blue);
-
-            background:
-                rgba(47, 129, 247, 0.08);
-        }
-
-
-        .guideline h4 {
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-            margin-bottom: 5px;
-        }
-
-
-        .guideline p {
-
-            color:
-                #57606a;
-
-            font-size: 12px;
-
-            line-height: 1.6;
-
-            margin: 0;
-        }
-
-
-        /* =====================================================
-           FINAL CTA
-        ====================================================== */
-
-        .final-cta {
-
-            position: relative;
-
-            overflow: hidden;
-
-            padding:
-                90px 30px;
-
-            text-align: center;
-
-            border-top:
-                1px solid var(--github-border);
-
-            border-bottom:
-                1px solid var(--github-border);
-
-            background:
-                linear-gradient(135deg,
-                    #111827,
-                    #0d1117);
-        }
-
-
-        .final-cta::before {
-
-            content: "";
-
-            position: absolute;
-
-            width: 500px;
-            height: 500px;
-
-            left: 50%;
-            top: 50%;
-
-            transform:
-                translate(-50%, -50%);
-
-            border-radius: 50%;
-
-            background:
-                radial-gradient(circle,
-                    rgba(47, 129, 247, 0.12),
-                    transparent 65%);
-        }
-
-
-        .final-cta-content {
-
-            position: relative;
-
-            z-index: 2;
-        }
-
-
-        .final-cta h2 {
-
-            font-family:
-                "Poppins",
-                sans-serif;
-
-            font-size:
-                clamp(32px, 5vw, 54px);
-
-            font-weight: 800;
-
-            letter-spacing: -2px;
-
-            margin-bottom: 15px;
-        }
-
-
-        .final-cta p {
-
-            max-width: 600px;
-
-            margin:
-                0 auto 28px;
-
-            color:
-                var(--muted);
-
-            font-size: 15px;
-
-            line-height: 1.7;
-        }
-
-
-        /* =====================================================
-           FOOTER
-        ====================================================== */
-
-        footer {
-
-            padding:
-                35px 0;
-
-            background:
-                #080b0f;
-
-            border-top:
-                1px solid rgba(255, 255, 255, 0.06);
-        }
-
-
-        .footer-inner {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 20px;
-        }
-
-
-        .footer-brand {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-        }
-
-
-        .footer-brand img {
-
-            width: 30px;
-            height: 30px;
-
-            object-fit: contain;
-        }
-
-
-        .footer-brand span {
-
-            color:
-                #c9d1d9;
-
-            font-size: 12px;
-
-            font-weight: 600;
-        }
-
-
-        .footer-copy {
-
-            color:
-                #6e7681;
-
-            font-size: 11px;
-        }
-
-
-        /* =====================================================
-           RESPONSIVE
-        ====================================================== */
-
-        @media (max-width: 1050px) {
-
-            .hero-grid {
-
-                grid-template-columns:
-                    1fr;
-
-                gap: 50px;
-            }
-
-
-            .hero {
-
-                padding-top: 120px;
-            }
-
-
-            .scene {
-
-                height: 500px;
-            }
-
-
-            .resource-grid,
-            .workflow {
-
-                grid-template-columns:
-                    1fr 1fr;
-            }
-        }
-
-
-        @media (max-width: 768px) {
-
-            .container-main {
-
-                width:
-                    min(calc(100% - 28px),
-                        var(--container));
-            }
-
-
-            .nav-links a:not(.nav-login) {
-
-                display: none;
-            }
-
-
-            .navbar-inner {
-
-                min-height: 65px;
-            }
-
-
-            .hero {
-
-                min-height: auto;
-
-                padding:
-                    110px 0 60px;
-            }
-
-
-            .hero-title {
-
-                font-size:
-                    clamp(43px, 12vw, 65px);
-
-                letter-spacing: -2.5px;
-            }
-
-
-            .hero-description {
-
-                font-size: 15px;
-            }
-
-
-            .scene {
-
-                height: 430px;
-
-                transform:
-                    scale(0.82);
-            }
-
-
-            .dashboard-3d {
-
-                width: 390px;
-            }
-
-
-            .floating-card-left {
-
-                left: -10px;
-            }
-
-
-            .floating-card-right {
-
-                right: -20px;
-            }
-
-
-            .resource-grid,
-            .workflow,
-            .guidelines {
-
-                grid-template-columns:
-                    1fr;
-            }
-
-
-            .section {
-
-                padding:
-                    75px 0;
-            }
-
-
-            .footer-inner {
-
-                flex-direction:
-                    column;
-
-                text-align:
-                    center;
-            }
-        }
-
-
-        @media (max-width: 480px) {
-
-            .brand-subtitle {
-
-                display: none;
-            }
-
-
-            .brand-logo {
-
-                width: 37px;
-                height: 37px;
-            }
-
-
-            .brand-name {
-
-                font-size: 15px;
-            }
-
-
-            .nav-login {
-
-                padding:
-                    7px 11px;
-            }
-
-
-            .hero-buttons {
-
-                width: 100%;
-            }
-
-
-            .btn-login {
-
-                width: 100%;
-            }
-
-
-            .hero-stats {
-
-                gap: 15px;
-
-                flex-direction:
-                    column;
-            }
-
-
-            .scene {
-
-                height: 350px;
-
-                transform:
-                    scale(0.66);
-
-                margin:
-                    -30px -80px;
-            }
-        }
-
-
-        /* =====================================================
-           ACCESSIBILITY
-        ====================================================== */
-
-        @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-
-                animation-duration:
-                    0.01ms !important;
-
-                animation-iteration-count:
-                    1 !important;
-
-                transition-duration:
-                    0.01ms !important;
-
-                scroll-behavior:
-                    auto !important;
-            }
-        }
-    </style>
-
-</head>
 
 
 <body>
 
-    <!-- =====================================================
-         BACKGROUND EFFECTS
-    ====================================================== -->
 
-    <div class="background-grid"></div>
+    <!-- =========================================================
+     SIDEBAR
+========================================================== -->
 
-    <div class="orb orb-one"></div>
-
-    <div class="orb orb-two"></div>
-
-    <div class="orb orb-three"></div>
+    <?php include "globals/sidebar.php"; ?>
 
 
-    <!-- =====================================================
-         NAVIGATION
-    ====================================================== -->
+    <!-- =========================================================
+     SIDEBAR OVERLAY
+========================================================== -->
 
-    <header class="navbar-custom">
-
-        <div class="container-main">
-
-            <div class="navbar-inner">
-
-                <!-- BRAND -->
-                <a href="#" class="brand">
-
-                    <img
-                        src="./assets/pubmat/head.png"
-                        alt="ETS-Async"
-                        class="brand-logo">
-
-                    <div class="brand-text">
-
-                        <span class="brand-name">
-                            ETS-Async
-                        </span>
-
-                        <span class="brand-subtitle">
-                            Asynchronous Learning Portal
-                        </span>
-
-                    </div>
-
-                </a>
+    <div
+        class="sidebar-overlay"
+        id="sidebarOverlay">
+    </div>
 
 
-                <!-- NAVIGATION -->
-                <nav class="nav-links">
+    <!-- =========================================================
+     TOPBAR
+========================================================== -->
 
-                    <a href="#platform">
-                        Platform
-                    </a>
+    <?php include "globals/topbar.php"; ?>
 
-                    <a href="#how-it-works">
-                        How It Works
-                    </a>
 
-                    <a href="#guidelines">
-                        Guidelines
-                    </a>
+    <!-- =========================================================
+     MAIN CONTENT
+========================================================== -->
 
-                    <a href="login.php"
-                        class="nav-login">
+    <main class="main-content">
 
-                        <i class="bi bi-box-arrow-in-right"></i>
+        <div class="content-wrapper">
 
-                        Login
 
-                    </a>
+            <!-- =================================================
+             DASHBOARD HEADER
+        ================================================== -->
 
-                </nav>
+            <div class="dashboard-heading">
+
+                <div>
+
+                    <h2 class="">
+
+                        Welcome,
+                        <?= e($displayName) ?>
+
+                    </h2>
+
+                    <p class="dashboard-heading-subtitle">
+
+                        Monitor your learning activities,
+                        progress, and academic materials.
+
+                    </p>
+
+                </div>
 
             </div>
 
-        </div>
 
-    </header>
+            <!-- =================================================
+             SUMMARY STATISTICS
+        ================================================== -->
 
-
-    <!-- =====================================================
-         HERO SECTION
-    ====================================================== -->
-
-    <main>
-
-        <section class="hero">
-
-            <div class="container-main hero-content">
-
-                <div class="hero-grid">
+            <div class="row g-3 mb-4">
 
 
-                    <!-- =================================================
-                         HERO TEXT
-                    ================================================== -->
+                <!-- TOTAL ACTIVITIES -->
 
-                    <div class="hero-copy">
+                <div class="col-xl-3 col-md-6">
 
-                        <div class="eyebrow hero-animate">
+                    <div class="student-stat-card">
 
-                            <span class="eyebrow-dot"></span>
+                        <div class="student-stat-icon blue">
 
-                            College of Engineering and Architecture
-                            • Asynchronous Learning
+                            <i class="bi bi-journal-text"></i>
 
                         </div>
 
+                        <div>
 
-                        <h1 class="hero-title hero-animate">
-
-                            Learn.
-                            <span class="gradient-text">
-                                Build.
+                            <span>
+                                Total Activities
                             </span>
-                            Complete.
 
-                        </h1>
+                            <strong>
+                                <?= $totalActivities ?>
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
 
-                        <p class="hero-description hero-animate">
+                <!-- COMPLETED -->
 
-                            A modern asynchronous learning environment
-                            for students of the College of Engineering
-                            and Architecture. Access learning materials,
-                            academic activities, and progress resources
-                            in one focused platform.
+                <div class="col-xl-3 col-md-6">
+
+                    <div class="student-stat-card">
+
+                        <div class="student-stat-icon green">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Completed
+                            </span>
+
+                            <strong>
+                                <?= $completedActivities ?>
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- IN PROGRESS -->
+
+                <div class="col-xl-3 col-md-6">
+
+                    <div class="student-stat-card">
+
+                        <div class="student-stat-icon orange">
+
+                            <i class="bi bi-arrow-repeat"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                In Progress
+                            </span>
+
+                            <strong>
+                                <?= $inProgressActivities ?>
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOT STARTED -->
+
+                <div class="col-xl-3 col-md-6">
+
+                    <div class="student-stat-card">
+
+                        <div class="student-stat-icon gray">
+
+                            <i class="bi bi-hourglass-split"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Not Started
+                            </span>
+
+                            <strong>
+                                <?= $notStartedActivities ?>
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+             OVERALL PROGRESS
+        ================================================== -->
+
+            <div class="learning-progress-card mb-4">
+
+
+                <div class="learning-progress-header">
+
+                    <div>
+
+                        <h5>
+
+                            <i class="bi bi-bar-chart-fill me-2"></i>
+
+                            Overall Learning Progress
+
+                        </h5>
+
+                        <p>
+
+                            Your completion progress across
+                            lectures and reading activities.
 
                         </p>
 
-
-                        <!-- =================================================
-                             LOGIN BUTTON
-                        ================================================== -->
-
-                        <div class="hero-buttons hero-animate">
-
-                            <a href="login.php"
-                                class="btn-login">
-
-                                <i class="bi bi-box-arrow-in-right"></i>
-
-                                Login
-
-                            </a>
-
-                        </div>
+                    </div>
 
 
-                        <!-- =================================================
-                             HERO STATS
-                        ================================================== -->
+                    <strong>
 
-                        <div class="hero-stats hero-animate">
+                        <?= number_format(
+                            $overallProgress,
+                            1
+                        ) ?>%
 
-                            <div class="stat">
+                    </strong>
 
-                                <i class="bi bi-mortarboard-fill"></i>
+                </div>
 
-                                <span>
-                                    Engineering & Architecture
-                                </span>
+
+                <div class="learning-progress">
+
+                    <div
+                        class="progress-bar"
+                        role="progressbar"
+                        style="
+                        width:
+                        <?= $overallProgress ?>%;
+                    "
+                        aria-valuenow="<?= $overallProgress ?>"
+                        aria-valuemin="0"
+                        aria-valuemax="100">
+
+                    </div>
+
+                </div>
+
+
+                <div class="learning-progress-footer">
+
+                    <span>
+
+                        <i class="bi bi-check-circle-fill me-1"></i>
+
+                        <?= $completedActivities ?>
+
+                        of
+
+                        <?= $totalActivities ?>
+
+                        activities completed
+
+                    </span>
+
+
+                    <span>
+
+                        <i class="bi bi-arrow-up-right-circle me-1"></i>
+
+                        Keep progressing
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            <?php if (isset($_GET['debug_progress']) && $_GET['debug_progress'] === '1'): ?>
+                <div class="alert alert-warning mt-3" role="status">
+                    <strong>Temporary progress diagnostics</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Total lectures: <?= (int)$totalLectures ?></li>
+                        <li>Total reading activities: <?= (int)$totalReadingActivities ?></li>
+                        <li>Total activities: <?= (int)$totalActivities ?></li>
+                        <li>Completed lectures: <?= (int)$completedLectures ?></li>
+                        <li>Completed reading activities: <?= (int)$completedReadingActivities ?></li>
+                        <li>Lecture progress points: <?= number_format((float)$lectureProgressTotalPercent, 2) ?></li>
+                        <li>Overall progress points: <?= number_format((float)$overallProgressPoints, 2) ?></li>
+                        <li>Calculated overall progress: <?= number_format((float)$overallProgress, 1) ?>%</li>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <!-- =================================================
+             ACADEMIC POST MONITORING
+        ================================================== -->
+
+            <div class="academic-monitor-card mb-4">
+
+
+                <!-- HEADER -->
+
+                <div class="academic-monitor-header">
+
+                    <div>
+
+                        <h5>
+
+                            <i class="bi bi-file-earmark-text-fill me-2"></i>
+
+                            My Academic Post Activity
+
+                        </h5>
+
+                        <p>
+
+                            Monitor the academic posts you have opened,
+                            including access time and reading duration.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="academic-monitor-icon">
+
+                        <i class="bi bi-activity"></i>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATISTICS -->
+
+                <div class="row g-3 p-3">
+
+
+                    <!-- TOTAL ACCESSES -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="academic-mini-stat">
+
+                            <div class="academic-mini-icon blue">
+
+                                <i class="bi bi-box-arrow-up-right"></i>
 
                             </div>
 
-
-                            <div class="stat">
-
-                                <i class="bi bi-cloud-check-fill"></i>
+                            <div>
 
                                 <span>
-                                    Online Learning
+                                    Total Accesses
                                 </span>
 
-                            </div>
-
-
-                            <div class="stat">
-
-                                <i class="bi bi-phone-fill"></i>
-
-                                <span>
-                                    Responsive Platform
-                                </span>
+                                <strong>
+                                    <?= $totalAcademicPostAccesses ?>
+                                </strong>
 
                             </div>
 
@@ -2178,1236 +1642,3127 @@ $currentYear = date('Y');
                     </div>
 
 
-                    <!-- =================================================
-                         3D PLATFORM VISUAL
-                    ================================================== -->
+                    <!-- UNIQUE POSTS -->
 
-                    <div class="scene scene-animate">
+                    <div class="col-xl-3 col-md-6">
 
-                        <!-- ORBITS -->
+                        <div class="academic-mini-stat">
 
-                        <div class="orbit">
+                            <div class="academic-mini-icon purple">
 
-                            <span class="orbit-dot dot-one"></span>
-
-                            <span class="orbit-dot dot-two"></span>
-
-                        </div>
-
-
-                        <div class="orbit orbit-two">
-
-                            <span class="orbit-dot dot-three"></span>
-
-                        </div>
-
-
-                        <!-- FLOATING CARD -->
-
-                        <div class="floating-card floating-card-left">
-
-                            <div class="floating-label">
-                                Learning Progress
-                            </div>
-
-                            <div class="floating-value">
-
-                                <i class="bi bi-graph-up-arrow floating-icon"></i>
-
-                                72%
+                                <i class="bi bi-file-earmark-text"></i>
 
                             </div>
 
-                        </div>
+                            <div>
 
-
-                        <!-- FLOATING CARD -->
-
-                        <div class="floating-card floating-card-right">
-
-                            <div class="floating-label">
-                                Activities
-                            </div>
-
-                            <div class="floating-value">
-
-                                08
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- =================================================
-                             3D DASHBOARD
-                        ================================================== -->
-
-                        <div class="dashboard-3d"
-                            id="dashboard3d">
-
-
-                            <!-- WINDOW BAR -->
-
-                            <div class="dashboard-top">
-
-                                <span class="window-dot"></span>
-
-                                <span class="window-dot"></span>
-
-                                <span class="window-dot"></span>
-
-                                <span class="window-title">
-                                    ETS-Async / Dashboard
+                                <span>
+                                    Posts Accessed
                                 </span>
 
+                                <strong>
+                                    <?= $totalAcademicPostsAccessed ?>
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- READING TIME -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="academic-mini-stat">
+
+                            <div class="academic-mini-icon green">
+
+                                <i class="bi bi-clock-history"></i>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Reading Time
+                                </span>
+
+                                <strong>
+                                    <?= e(
+                                        formatDuration(
+                                            $totalAcademicPostReadingSeconds
+                                        )
+                                    ) ?>
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CURRENTLY OPEN -->
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <div class="academic-mini-stat">
+
+                            <div class="academic-mini-icon orange">
+
+                                <i class="bi bi-eye-fill"></i>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Currently Open
+                                </span>
+
+                                <strong>
+                                    <?= $openAcademicPostSessions ?>
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                 ACCESS HISTORY
+            ================================================== -->
+
+                <div class="academic-history">
+
+
+                    <div class="academic-history-header">
+
+                        <div>
+
+                            <h6>
+
+                                <i class="bi bi-clock-history me-2"></i>
+
+                                Recent Academic Post Activity
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+
+                    <?php if (
+                        !empty($academicPostActivities)
+                    ): ?>
+
+
+                        <div class="table-responsive">
+
+                            <table
+                                class="
+                                table
+                                academic-history-table
+                                mb-0
+                            ">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Academic Post
+                                        </th>
+
+                                        <th>
+                                            Subject
+                                        </th>
+
+                                        <th>
+                                            Opened
+                                        </th>
+
+                                        <th>
+                                            Closed
+                                        </th>
+
+                                        <th>
+                                            Duration
+                                        </th>
+
+                                        <th>
+                                            Accesses
+                                        </th>
+
+                                        <th>
+                                            Status
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+
+                                    <?php foreach (
+                                        $academicPostActivities
+                                        as $activity
+                                    ): ?>
+
+
+                                        <?php
+
+                                        $postId =
+                                            (int)(
+                                                $activity["post_id"]
+                                            );
+
+
+                                        $accessCount =
+                                            $academicPostAccessCounts[$postId]["access_count"]
+                                            ?? 1;
+
+
+                                        $status =
+                                            $activity["status"]
+                                            ?? "closed";
+
+
+                                        $duration =
+                                            (int)(
+                                                $activity["duration_seconds"]
+                                                ?? 0
+                                            );
+
+
+                                        ?>
+
+
+                                        <tr>
+
+
+                                            <!-- POST -->
+
+                                            <td>
+
+                                                <div
+                                                    class="
+                                                academic-post-name
+                                            ">
+
+                                                    <i
+                                                        class="
+                                                    bi
+                                                    bi-file-earmark-text
+                                                ">
+                                                    </i>
+
+                                                    <span>
+
+                                                        <?= e(
+                                                            $activity["post_title"]
+                                                                ??
+                                                                "Academic Post"
+                                                        ) ?>
+
+                                                    </span>
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <!-- SUBJECT -->
+
+                                            <td>
+
+                                                <?php if (
+                                                    !empty($activity["subject"])
+                                                ): ?>
+
+                                                    <span
+                                                        class="
+                                                    academic-subject
+                                                ">
+
+                                                        <?= e(
+                                                            $activity["subject"]
+                                                        ) ?>
+
+                                                    </span>
+
+                                                <?php else: ?>
+
+                                                    <span
+                                                        class="
+                                                    text-muted
+                                                ">
+
+                                                        —
+
+                                                    </span>
+
+                                                <?php endif; ?>
+
+                                            </td>
+
+
+                                            <!-- OPENED -->
+
+                                            <td>
+
+                                                <div
+                                                    class="
+                                                academic-time
+                                            ">
+
+                                                    <i
+                                                        class="
+                                                    bi
+                                                    bi-box-arrow-up-right
+                                                ">
+                                                    </i>
+
+                                                    <?= e(
+                                                        formatDateTime(
+                                                            $activity["opened_at"]
+                                                        )
+                                                    ) ?>
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <!-- CLOSED -->
+
+                                            <td>
+
+                                                <?php if (
+                                                    $status === "open"
+                                                ): ?>
+
+                                                    <span
+                                                        class="
+                                                    academic-open-label
+                                                ">
+
+                                                        <i
+                                                            class="
+                                                        bi
+                                                        bi-circle-fill
+                                                    ">
+                                                        </i>
+
+                                                        Currently Open
+
+                                                    </span>
+
+                                                <?php else: ?>
+
+                                                    <?= e(
+                                                        formatDateTime(
+                                                            $activity["closed_at"]
+                                                        )
+                                                    ) ?>
+
+                                                <?php endif; ?>
+
+                                            </td>
+
+
+                                            <!-- DURATION -->
+
+                                            <td>
+
+                                                <span
+                                                    class="
+                                                academic-duration
+                                            ">
+
+                                                    <i
+                                                        class="
+                                                    bi
+                                                    bi-stopwatch
+                                                ">
+                                                    </i>
+
+                                                    <?= e(
+                                                        formatDuration(
+                                                            $duration
+                                                        )
+                                                    ) ?>
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- ACCESS COUNT -->
+
+                                            <td>
+
+                                                <span
+                                                    class="
+                                                academic-access-count
+                                            ">
+
+                                                    <?= $accessCount ?>
+
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- STATUS -->
+
+                                            <td>
+
+                                                <?php if (
+                                                    $status === "open"
+                                                ): ?>
+
+                                                    <span
+                                                        class="
+                                                    academic-status
+                                                    open
+                                                ">
+
+                                                        <i
+                                                            class="
+                                                        bi
+                                                        bi-eye-fill
+                                                    ">
+                                                        </i>
+
+                                                        Open
+
+                                                    </span>
+
+                                                <?php else: ?>
+
+                                                    <span
+                                                        class="
+                                                    academic-status
+                                                    closed
+                                                ">
+
+                                                        <i
+                                                            class="
+                                                        bi
+                                                        bi-check-circle-fill
+                                                    ">
+                                                        </i>
+
+                                                        Closed
+
+                                                    </span>
+
+                                                <?php endif; ?>
+
+                                            </td>
+
+
+                                        </tr>
+
+
+                                    <?php endforeach; ?>
+
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
+                    <?php else: ?>
+
+
+                        <!-- EMPTY -->
+
+                        <div
+                            class="
+                            academic-history-empty
+                        ">
+
+                            <div
+                                class="
+                                academic-history-empty-icon
+                            ">
+
+                                <i
+                                    class="
+                                    bi
+                                    bi-file-earmark-text
+                                ">
+                                </i>
+
                             </div>
 
 
-                            <!-- DASHBOARD BODY -->
+                            <h6>
 
-                            <div class="dashboard-body">
+                                No Academic Post Activity Yet
 
-
-                                <!-- SIDEBAR -->
-
-                                <aside class="dashboard-sidebar">
-
-                                    <img
-                                        src="./assets/pubmat/head.png"
-                                        alt="ETS"
-                                        class="side-logo">
+                            </h6>
 
 
-                                    <div class="side-item active">
+                            <p>
 
-                                        <i class="bi bi-grid-1x2-fill"></i>
+                                When you open an Academic Post,
+                                your access time and reading duration
+                                will appear here.
 
-                                        Dashboard
+                            </p>
 
-                                    </div>
-
-
-                                    <div class="side-item">
-
-                                        <i class="bi bi-play-circle"></i>
-
-                                        Lectures
-
-                                    </div>
+                        </div>
 
 
-                                    <div class="side-item">
-
-                                        <i class="bi bi-journal-text"></i>
-
-                                        Activities
-
-                                    </div>
+                    <?php endif; ?>
 
 
-                                    <div class="side-item">
-
-                                        <i class="bi bi-bar-chart"></i>
-
-                                        Progress
-
-                                    </div>
+                </div>
 
 
-                                    <div class="side-item">
-
-                                        <i class="bi bi-person"></i>
-
-                                        Profile
-
-                                    </div>
-
-                                </aside>
+            </div>
 
 
-                                <!-- CONTENT -->
+            <!-- =================================================
+             NEW LEARNING ACTIVITIES
+        ================================================== -->
 
-                                <div class="dashboard-content">
-
-                                    <div class="mini-heading">
-                                        STUDENT DASHBOARD
-                                    </div>
-
-                                    <div class="mini-title">
-                                        Welcome back!
-                                    </div>
+            <div class="activity-card mb-4">
 
 
-                                    <!-- PROGRESS -->
+                <div class="activity-card-header">
 
-                                    <div class="progress-card">
+                    <div>
 
-                                        <div class="progress-header">
+                        <h5>
 
-                                            <span>
-                                                Overall Learning Progress
+                            <i class="bi bi-bell-fill me-2"></i>
+
+                            New Learning Activities
+
+                        </h5>
+
+                        <p>
+
+                            Recently created lectures and
+                            reading activities assigned to you.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="activity-count">
+
+                        <?= count($recentActivities) ?>
+
+                        <span class="ms-1">
+                            Recent
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <?php if (!empty($recentActivities)): ?>
+
+
+                    <div class="activity-list">
+
+
+                        <?php foreach (
+                            $recentActivities
+                            as $index => $activity
+                        ): ?>
+
+
+                            <?php
+
+                            $activityId =
+                                (int)$activity["id"];
+
+
+                            $activityType =
+                                $activity["type"];
+
+
+                            $activityTitle =
+                                $activity["title"];
+
+
+                            $activityDescription =
+                                trim(
+                                    $activity["description"]
+                                        ?? ""
+                                );
+
+
+                            $activityDate =
+                                $activity["created_at"];
+
+
+                            $activityStatus =
+                                $activity["progress_status"]
+                                ?? "";
+
+
+                            if (
+                                $activityStatus ===
+                                "completed"
+                            ) {
+
+                                $statusClass =
+                                    "completed";
+
+                                $statusText =
+                                    "Completed";
+
+                                $statusIcon =
+                                    "bi-check-circle-fill";
+                            } elseif (
+                                $activityStatus ===
+                                "in_progress"
+                            ) {
+
+                                $statusClass =
+                                    "in-progress";
+
+                                $statusText =
+                                    "In Progress";
+
+                                $statusIcon =
+                                    "bi-arrow-repeat";
+                            } else {
+
+                                $statusClass =
+                                    "not-started";
+
+                                $statusText =
+                                    "Not Started";
+
+                                $statusIcon =
+                                    "bi-circle";
+                            }
+
+
+                            $activityLink =
+                                $activityType === "lecture"
+
+                                ? "activity_view.php?id="
+                                . $activityId
+
+                                : "reading_activity_view.php?id="
+                                . $activityId;
+
+                            ?>
+
+
+                            <div
+                                class="
+                                activity-item
+                            ">
+
+
+                                <!-- NUMBER -->
+
+                                <div
+                                    class="
+                                    activity-number
+                                ">
+
+                                    <?= $index + 1 ?>
+
+                                </div>
+
+
+                                <!-- ICON -->
+
+                                <div
+                                    class="
+                                    activity-icon
+                                    <?= e(
+                                        $statusClass
+                                    ) ?>
+                                ">
+
+                                    <i
+                                        class="
+                                        bi
+                                        <?= e(
+                                            $activity["icon"]
+                                        ) ?>
+                                    ">
+                                    </i>
+
+                                </div>
+
+
+                                <!-- INFORMATION -->
+
+                                <div
+                                    class="
+                                    activity-information
+                                ">
+
+
+                                    <div
+                                        class="
+                                        activity-title-row
+                                    ">
+
+                                        <h5>
+
+                                            <?= e(
+                                                $activityTitle
+                                            ) ?>
+
+                                        </h5>
+
+
+                                        <?php if (
+                                            isNewActivity(
+                                                $activityDate
+                                            )
+                                        ): ?>
+
+                                            <span
+                                                class="
+                                                activity-new
+                                            ">
+
+                                                <i
+                                                    class="
+                                                    bi
+                                                    bi-stars
+                                                ">
+                                                </i>
+
+                                                NEW
+
                                             </span>
 
-                                            <span class="progress-value">
-                                                72%
-                                            </span>
-
-                                        </div>
-
-
-                                        <div class="progress-bar-custom">
-
-                                            <div
-                                                class="progress-fill"
-                                                id="progressFill">
-                                            </div>
-
-                                        </div>
+                                        <?php endif; ?>
 
                                     </div>
 
 
-                                    <!-- ACTIVITY -->
+                                    <div
+                                        class="
+                                        activity-type
+                                    ">
 
-                                    <div class="activity">
+                                        <i
+                                            class="
+                                            bi
+                                            <?= $activityType === "lecture"
+                                                ? "bi-play-circle"
+                                                : "bi-book"
+                                            ?>
+                                        ">
+                                        </i>
 
-                                        <div class="activity-icon">
-
-                                            <i class="bi bi-play-fill"></i>
-
-                                        </div>
-
-                                        <div class="activity-text">
-
-                                            <div class="activity-title">
-                                                Lecture Materials
-                                            </div>
-
-                                            <div class="activity-subtitle">
-                                                Learning resources
-                                            </div>
-
-                                        </div>
-
-                                        <span class="activity-status"></span>
+                                        <?= e(
+                                            $activity["type_label"]
+                                        ) ?>
 
                                     </div>
 
 
-                                    <div class="activity">
+                                    <?php if (
+                                        $activityDescription !== ""
+                                    ): ?>
 
-                                        <div class="activity-icon">
+                                        <div
+                                            class="
+                                            activity-description
+                                        ">
 
-                                            <i class="bi bi-pencil-square"></i>
-
-                                        </div>
-
-                                        <div class="activity-text">
-
-                                            <div class="activity-title">
-                                                Academic Activities
-                                            </div>
-
-                                            <div class="activity-subtitle">
-                                                Assigned activities
-                                            </div>
+                                            <?= e(
+                                                $activityDescription
+                                            ) ?>
 
                                         </div>
 
-                                        <span class="activity-status"></span>
-
-                                    </div>
+                                    <?php endif; ?>
 
 
-                                    <div class="activity">
+                                    <div
+                                        class="
+                                        activity-meta
+                                    ">
 
-                                        <div class="activity-icon">
+                                        <span>
 
-                                            <i class="bi bi-graph-up"></i>
+                                            <i
+                                                class="
+                                                bi
+                                                bi-clock
+                                            ">
+                                            </i>
 
-                                        </div>
+                                            <?= e(
+                                                formatActivityDate(
+                                                    $activityDate
+                                                )
+                                            ) ?>
 
-                                        <div class="activity-text">
-
-                                            <div class="activity-title">
-                                                Learning Progress
-                                            </div>
-
-                                            <div class="activity-subtitle">
-                                                Track your progress
-                                            </div>
-
-                                        </div>
-
-                                        <span class="activity-status"></span>
+                                        </span>
 
                                     </div>
 
 
                                 </div>
 
+
+                                <!-- STATUS -->
+
+                                <div
+                                    class="
+                                    activity-status
+                                ">
+
+                                    <span
+                                        class="
+                                        activity-status-badge
+                                        <?= e(
+                                            $statusClass
+                                        ) ?>
+                                    ">
+
+                                        <i
+                                            class="
+                                            bi
+                                            <?= e(
+                                                $statusIcon
+                                            ) ?>
+                                        ">
+                                        </i>
+
+                                        <?= e(
+                                            $statusText
+                                        ) ?>
+
+                                    </span>
+
+                                </div>
+
+
+                                <!-- ACTION -->
+
+                                <div
+                                    class="
+                                    activity-action
+                                ">
+
+                                    <a
+                                        href="<?= e(
+                                                    $activityLink
+                                                ) ?>"
+                                        class="
+                                        btn
+                                        btn-primary
+                                    ">
+
+                                        <i
+                                            class="
+                                            bi
+                                            bi-arrow-right
+                                            me-1
+                                        ">
+                                        </i>
+
+                                        Open
+
+                                    </a>
+
+                                </div>
+
+
+                            </div>
+
+
+                        <?php endforeach; ?>
+
+
+                    </div>
+
+
+                <?php else: ?>
+
+
+                    <div
+                        class="
+                        activity-empty
+                    ">
+
+                        <div
+                            class="
+                            activity-empty-icon
+                        ">
+
+                            <i
+                                class="
+                                bi
+                                bi-bell-slash
+                            ">
+                            </i>
+
+                        </div>
+
+
+                        <h5>
+
+                            No New Activities
+
+                        </h5>
+
+
+                        <p>
+
+                            There are currently no learning
+                            activities assigned to you.
+
+                        </p>
+
+                    </div>
+
+
+                <?php endif; ?>
+
+
+            </div>
+
+
+            <!-- =================================================
+             ACTIVITY PROGRESS
+        ================================================== -->
+
+            <div class="row g-3">
+
+
+                <!-- =================================================
+                 LECTURE PROGRESS
+            ================================================== -->
+
+                <div class="col-lg-6">
+
+                    <div
+                        class="
+                        category-progress-card
+                    ">
+
+
+                        <div
+                            class="
+                            category-progress-header
+                        ">
+
+                            <div
+                                class="
+                                category-progress-title
+                            ">
+
+                                <div
+                                    class="
+                                    category-progress-icon
+                                    lecture
+                                ">
+
+                                    <i
+                                        class="
+                                        bi
+                                        bi-play-circle-fill
+                                    ">
+                                    </i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h5>
+                                        Lecture Activities
+                                    </h5>
+
+                                    <p>
+                                        Video-based learning
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <strong>
+
+                                <?= number_format(
+                                    $lectureCompletion,
+                                    1
+                                ) ?>%
+
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                            class="
+                            category-progress-bar
+                        ">
+
+                            <div
+                                class="
+                                category-progress-fill
+                                lecture
+                            "
+                                style="
+                                width:
+                                <?= $lectureCompletion ?>%;
+                            ">
+
                             </div>
 
                         </div>
 
+
+                        <div
+                            class="
+                            category-progress-footer
+                        ">
+
+                            <span>
+
+                                <i
+                                    class="
+                                    bi
+                                    bi-check-circle-fill
+                                ">
+                                </i>
+
+                                <?= $completedLectures ?>
+
+                                completed
+
+                            </span>
+
+
+                            <span>
+
+                                <?= $totalLectures ?>
+
+                                total
+
+                            </span>
+
+                        </div>
+
                     </div>
 
                 </div>
+
+
+                <!-- =================================================
+                 READING PROGRESS
+            ================================================== -->
+
+                <div class="col-lg-6">
+
+                    <div
+                        class="
+                        category-progress-card
+                    ">
+
+
+                        <div
+                            class="
+                            category-progress-header
+                        ">
+
+                            <div
+                                class="
+                                category-progress-title
+                            ">
+
+                                <div
+                                    class="
+                                    category-progress-icon
+                                    reading
+                                ">
+
+                                    <i
+                                        class="
+                                        bi
+                                        bi-book-fill
+                                    ">
+                                    </i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h5>
+                                        Reading Activities
+                                    </h5>
+
+                                    <p>
+                                        Required learning materials
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <strong>
+
+                                <?= number_format(
+                                    $readingCompletion,
+                                    1
+                                ) ?>%
+
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                            class="
+                            category-progress-bar
+                        ">
+
+                            <div
+                                class="
+                                category-progress-fill
+                                reading
+                            "
+                                style="
+                                width:
+                                <?= $readingCompletion ?>%;
+                            ">
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                            category-progress-footer
+                        ">
+
+                            <span>
+
+                                <i
+                                    class="
+                                    bi
+                                    bi-check-circle-fill
+                                ">
+                                </i>
+
+                                <?= $completedReadingActivities ?>
+
+                                completed
+
+                            </span>
+
+
+                            <span>
+
+                                <?= $totalReadingActivities ?>
+
+                                total
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
 
             </div>
 
-        </section>
 
-
-        <!-- =====================================================
-             PLATFORM
-        ====================================================== -->
-
-        <section class="section section-light"
-            id="platform">
-
-            <div class="container-main">
-
-
-                <div class="section-heading reveal">
-
-                    <div class="section-kicker">
-                        Platform
-                    </div>
-
-                    <h2 class="section-title">
-
-                        Everything you need
-                        for asynchronous learning.
-
-                    </h2>
-
-                    <p class="section-description">
-
-                        ETS-Async provides a focused digital environment
-                        where students can access learning resources,
-                        complete academic activities, and monitor their
-                        progress.
-
-                    </p>
-
-                </div>
-
-
-                <div class="resource-grid">
-
-
-                    <!-- RESOURCE 1 -->
-
-                    <div class="resource-card reveal">
-
-                        <div class="resource-icon">
-
-                            <i class="bi bi-journal-richtext"></i>
-
-                        </div>
-
-                        <h3>
-                            Lectures & Materials
-                        </h3>
-
-                        <p>
-
-                            Access assigned lectures, readings,
-                            instructional materials, and other
-                            academic resources in one place.
-
-                        </p>
-
-                    </div>
-
-
-                    <!-- RESOURCE 2 -->
-
-                    <div class="resource-card reveal">
-
-                        <div class="resource-icon">
-
-                            <i class="bi bi-clipboard-check"></i>
-
-                        </div>
-
-                        <h3>
-                            Academic Activities
-                        </h3>
-
-                        <p>
-
-                            Complete assigned learning activities
-                            and academic tasks according to the
-                            instructions and deadlines provided.
-
-                        </p>
-
-                    </div>
-
-
-                    <!-- RESOURCE 3 -->
-
-                    <div class="resource-card reveal">
-
-                        <div class="resource-icon">
-
-                            <i class="bi bi-activity"></i>
-
-                        </div>
-
-                        <h3>
-                            Learning Progress
-                        </h3>
-
-                        <p>
-
-                            Monitor your learning activity and
-                            keep track of completed resources
-                            and academic requirements.
-
-                        </p>
-
-                    </div>
-
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             HOW IT WORKS
-        ====================================================== -->
-
-        <section class="section"
-            id="how-it-works">
-
-            <div class="container-main">
-
-
-                <div class="section-heading reveal">
-
-                    <div class="section-kicker">
-                        How It Works
-                    </div>
-
-                    <h2 class="section-title">
-
-                        A simple workflow.
-                        Focused learning.
-
-                    </h2>
-
-                    <p class="section-description">
-
-                        ETS-Async keeps asynchronous coursework
-                        organized so students can focus on learning
-                        and completing their academic responsibilities.
-
-                    </p>
-
-                </div>
-
-
-                <div class="workflow">
-
-
-                    <div class="workflow-card reveal">
-
-                        <div class="workflow-number">
-                            01
-                        </div>
-
-                        <h3>
-                            Login
-                        </h3>
-
-                        <p>
-
-                            Sign in using your assigned ETS-Async
-                            account to access your available
-                            learning resources and activities.
-
-                        </p>
-
-                    </div>
-
-
-                    <div class="workflow-card reveal">
-
-                        <div class="workflow-number">
-                            02
-                        </div>
-
-                        <h3>
-                            Study
-                        </h3>
-
-                        <p>
-
-                            Review lectures, readings, multimedia
-                            materials, and other resources provided
-                            for your classes.
-
-                        </p>
-
-                    </div>
-
-
-                    <div class="workflow-card reveal">
-
-                        <div class="workflow-number">
-                            03
-                        </div>
-
-                        <h3>
-                            Complete
-                        </h3>
-
-                        <p>
-
-                            Complete your assigned activities and
-                            monitor your learning progress through
-                            the platform.
-
-                        </p>
-
-                    </div>
-
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             GUIDELINES
-        ====================================================== -->
-
-        <section class="section section-light"
-            id="guidelines">
-
-            <div class="container-main">
-
-
-                <div class="section-heading reveal">
-
-                    <div class="section-kicker">
-                        Academic Guidelines
-                    </div>
-
-                    <h2 class="section-title">
-
-                        Learn responsibly.
-                        Work independently.
-
-                    </h2>
-
-                </div>
-
-
-                <div class="guidelines">
-
-
-                    <div class="guideline reveal">
-
-                        <div class="guideline-icon">
-
-                            <i class="bi bi-person-check"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h4>
-                                Use Your Assigned Account
-                            </h4>
-
-                            <p>
-
-                                Use only your authorized account
-                                when accessing ETS-Async.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="guideline reveal">
-
-                        <div class="guideline-icon">
-
-                            <i class="bi bi-list-check"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h4>
-                                Follow Activity Instructions
-                            </h4>
-
-                            <p>
-
-                                Read the instructions carefully
-                                before completing academic activities.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="guideline reveal">
-
-                        <div class="guideline-icon">
-
-                            <i class="bi bi-calendar-event"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h4>
-                                Observe Deadlines
-                            </h4>
-
-                            <p>
-
-                                Monitor assigned deadlines and
-                                complete requirements on time.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="guideline reveal">
-
-                        <div class="guideline-icon">
-
-                            <i class="bi bi-shield-check"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h4>
-                                Practice Academic Integrity
-                            </h4>
-
-                            <p>
-
-                                Submit your own work and follow
-                                applicable academic policies.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="guideline reveal">
-
-                        <div class="guideline-icon">
-
-                            <i class="bi bi-lock"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h4>
-                                Protect Your Account
-                            </h4>
-
-                            <p>
-
-                                Keep your login credentials private
-                                and do not share your account.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="guideline reveal">
-
-                        <div class="guideline-icon">
-
-                            <i class="bi bi-bell"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h4>
-                                Check Regularly
-                            </h4>
-
-                            <p>
-
-                                Regularly check ETS-Async for new
-                                lectures, activities, and announcements.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             FINAL CTA
-        ====================================================== -->
-
-        <section class="final-cta">
-
-            <div class="final-cta-content reveal">
-
-                <div class="section-kicker">
-                    ETS-Async
-                </div>
-
-                <h2>
-
-                    Your learning space.
-                    <span class="gradient-text">
-                        Online.
-                    </span>
-
-                </h2>
-
-                <p>
-
-                    Access your asynchronous learning environment
-                    through ETS-Async.
-
-                </p>
-
-
-                <a href="login.php"
-                    class="btn-login">
-
-                    <i class="bi bi-box-arrow-in-right"></i>
-
-                    Login
-
-                </a>
-
-            </div>
-
-        </section>
+        </div>
 
     </main>
 
 
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
+    <!-- =========================================================
+     GLOBAL SCRIPTS
+========================================================== -->
 
-    <footer>
+    <?php require_once "./globals/scripts.php"; ?>
 
-        <div class="container-main">
 
-            <div class="footer-inner">
+    <!-- =========================================================
+     DASHBOARD STYLE
+========================================================== -->
 
+    <style>
+        /* =========================================================
+   DASHBOARD HEADER
+========================================================= */
 
-                <div class="footer-brand">
+        .dashboard-heading {
 
-                    <img
-                        src="./assets/pubmat/head.png"
-                        alt="ETS-Async">
+            display:
+                flex;
 
-                    <span>
-                        ETS-Async
-                    </span>
+            justify-content:
+                space-between;
 
-                </div>
+            align-items:
+                center;
 
+            margin-bottom:
+                24px;
+        }
 
-                <div class="footer-copy">
 
-                    © <?php echo $currentYear; ?>
-                    ETS-DEV.
-                    Asynchronous Learning Portal.
+        .dashboard-heading-title {
 
-                </div>
+            margin:
+                0;
 
+            font-size:
+                24px;
 
-            </div>
+            font-weight:
+                700;
 
-        </div>
+            color:
+                var(--academic-blue-dark);
+        }
 
-    </footer>
 
+        .dashboard-heading-subtitle {
 
-    <!-- =====================================================
-         BOOTSTRAP JS
-    ====================================================== -->
+            margin:
+                6px 0 0;
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            color:
+                var(--text-secondary);
 
+            font-size:
+                14px;
+        }
 
-    <script>
-        /* =====================================================
-           ETS-ASYNC ANIME.JS INTERACTIONS
-        ====================================================== */
 
+        /* =========================================================
+   STATISTICS
+========================================================= */
 
-        /* =====================================================
-           HERO ENTRANCE ANIMATION
-        ====================================================== */
+        .student-stat-card {
 
-        anime({
-            targets: '.hero-animate',
+            background:
+                var(--activity-card-bg);
 
-            translateY: [35, 0],
+            border:
+                1px solid var(--activity-border);
 
-            opacity: [0, 1],
+            border-radius:
+                14px;
 
-            delay: anime.stagger(130),
+            padding:
+                20px;
 
-            duration: 900,
+            display:
+                flex;
 
-            easing: 'easeOutExpo'
-        });
+            align-items:
+                center;
 
+            gap:
+                15px;
 
-        /* =====================================================
-           3D SCENE ENTRANCE
-        ====================================================== */
+            height:
+                100%;
 
-        anime({
+            box-shadow:
+                0 4px 12px var(--shadow-color);
 
-            targets: '.scene-animate',
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease;
+        }
 
-            translateY: [60, 0],
 
-            scale: [0.92, 1],
+        .student-stat-card:hover {
 
-            opacity: [0, 1],
+            transform:
+                translateY(-2px);
 
-            duration: 1200,
+            box-shadow:
+                0 8px 20px var(--shadow-color);
+        }
 
-            delay: 350,
 
-            easing: 'easeOutExpo'
-        });
+        .student-stat-icon {
 
+            width:
+                50px;
 
-        /* =====================================================
-           DASHBOARD FLOATING ANIMATION
-        ====================================================== */
+            height:
+                50px;
 
-        anime({
+            min-width:
+                50px;
 
-            targets: '#dashboard3d',
+            border-radius:
+                12px;
 
-            translateY: [
+            display:
+                flex;
 
-                {
-                    value: -10,
-                    duration: 2200
-                },
+            align-items:
+                center;
 
-                {
-                    value: 0,
-                    duration: 2200
-                }
+            justify-content:
+                center;
 
-            ],
+            font-size:
+                21px;
+        }
 
-            direction: 'alternate',
 
-            loop: true,
+        .student-stat-icon.blue {
 
-            easing: 'easeInOutSine'
-        });
+            background:
+                var(--activity-icon-blue-bg);
 
+            color:
+                var(--activity-icon-blue);
+        }
 
-        /* =====================================================
-           FLOATING CARD ANIMATION
-        ====================================================== */
 
-        anime({
+        .student-stat-icon.green {
 
-            targets: '.floating-card-left',
+            background:
+                var(--activity-icon-green-bg);
 
-            translateY: [
+            color:
+                var(--activity-icon-green);
+        }
 
-                {
-                    value: -12,
-                    duration: 1800
-                },
 
-                {
-                    value: 0,
-                    duration: 1800
-                }
+        .student-stat-icon.orange {
 
-            ],
+            background:
+                var(--activity-icon-orange-bg);
 
-            direction: 'alternate',
+            color:
+                var(--activity-icon-orange);
+        }
 
-            loop: true,
 
-            easing: 'easeInOutSine'
-        });
+        .student-stat-icon.gray {
 
+            background:
+                var(--activity-icon-gray-bg);
 
-        anime({
+            color:
+                var(--activity-icon-gray);
+        }
 
-            targets: '.floating-card-right',
 
-            translateY: [
+        .student-stat-card span {
 
-                {
-                    value: 10,
-                    duration: 2100
-                },
+            display:
+                block;
 
-                {
-                    value: 0,
-                    duration: 2100
-                }
+            color:
+                var(--activity-muted);
 
-            ],
+            font-size:
+                13px;
 
-            direction: 'alternate',
+            margin-bottom:
+                3px;
+        }
 
-            loop: true,
 
-            easing: 'easeInOutSine'
-        });
+        .student-stat-card strong {
 
+            display:
+                block;
 
-        /* =====================================================
-           ORBIT ANIMATION
-        ====================================================== */
+            color:
+                var(--text-color);
 
-        anime({
+            font-size:
+                24px;
 
-            targets: '.orbit',
+            line-height:
+                1.2;
+        }
 
-            rotateZ: '+=360',
 
-            duration: 18000,
+        /* =========================================================
+   LEARNING PROGRESS
+========================================================= */
 
-            loop: true,
+        .learning-progress-card {
 
-            easing: 'linear'
-        });
+            background:
+                var(--activity-card-bg);
 
+            border:
+                1px solid var(--activity-border);
 
-        /* =====================================================
-           ORBIT DOT PULSE
-        ====================================================== */
+            border-radius:
+                14px;
 
-        anime({
+            padding:
+                22px 24px;
 
-            targets: '.orbit-dot',
+            box-shadow:
+                0 4px 12px var(--shadow-color);
+        }
 
-            scale: [
 
-                {
-                    value: 1
-                },
+        .learning-progress-header {
 
-                {
-                    value: 1.8
-                },
+            display:
+                flex;
 
-                {
-                    value: 1
-                }
+            justify-content:
+                space-between;
 
-            ],
+            align-items:
+                flex-start;
 
-            opacity: [
+            margin-bottom:
+                16px;
+        }
 
-                {
-                    value: 0.6
-                },
 
-                {
-                    value: 1
-                },
+        .learning-progress-header h5 {
 
-                {
-                    value: 0.6
-                }
+            margin:
+                0;
 
-            ],
+            font-weight:
+                700;
 
-            duration: 1800,
+            color:
+                var(--text-color);
 
-            delay: anime.stagger(300),
+            font-size:
+                16px;
+        }
 
-            direction: 'alternate',
 
-            loop: true,
+        .learning-progress-header h5 i {
 
-            easing: 'easeInOutSine'
-        });
+            color:
+                var(--activity-indigo);
+        }
 
 
-        /* =====================================================
-           PROGRESS BAR ANIMATION
-        ====================================================== */
+        .learning-progress-header p {
 
-        anime({
+            margin:
+                5px 0 0;
 
-            targets: '#progressFill',
+            color:
+                var(--text-secondary);
 
-            width: ['0%', '72%'],
+            font-size:
+                13px;
+        }
 
-            duration: 1600,
 
-            delay: 1000,
+        .learning-progress-header strong {
 
-            easing: 'easeOutExpo'
-        });
+            font-size:
+                24px;
 
+            color:
+                var(--activity-indigo);
+        }
 
-        /* =====================================================
-           SCROLL REVEAL
-        ====================================================== */
 
-        const revealElements =
-            document.querySelectorAll('.reveal');
+        .learning-progress {
 
+            height:
+                10px;
 
-        const revealObserver =
-            new IntersectionObserver(
+            border-radius:
+                20px;
 
-                entries => {
+            background:
+                var(--activity-progress-bg);
 
-                    entries.forEach(entry => {
+            overflow:
+                hidden;
+        }
 
-                        if (entry.isIntersecting) {
 
-                            anime({
+        .learning-progress .progress-bar {
 
-                                targets: entry.target,
+            height:
+                100%;
 
-                                translateY: [35, 0],
+            border-radius:
+                20px;
 
-                                opacity: [0, 1],
+            background:
+                linear-gradient(90deg,
+                    var(--activity-icon-blue),
+                    var(--activity-indigo));
+        }
 
-                                duration: 800,
 
-                                easing: 'easeOutExpo'
+        .learning-progress-footer {
 
-                            });
+            display:
+                flex;
 
+            justify-content:
+                space-between;
 
-                            revealObserver.unobserve(
-                                entry.target
-                            );
+            align-items:
+                center;
 
-                        }
+            margin-top:
+                10px;
 
-                    });
+            color:
+                var(--text-secondary);
 
-                },
+            font-size:
+                13px;
+        }
 
-                {
-                    threshold: 0.12
-                }
 
-            );
+        /* =========================================================
+   ACADEMIC POST MONITOR
+========================================================= */
 
+        .academic-monitor-card {
 
-        revealElements.forEach(element => {
+            background:
+                var(--activity-card-bg);
 
-            element.style.opacity = '0';
+            border:
+                1px solid var(--activity-border);
 
-            revealObserver.observe(element);
+            border-radius:
+                14px;
 
-        });
+            overflow:
+                hidden;
 
+            box-shadow:
+                0 4px 12px var(--shadow-color);
+        }
 
-        /* =====================================================
-           MOUSE 3D PARALLAX
-        ====================================================== */
 
-        const scene =
-            document.querySelector('.scene');
+        .academic-monitor-header {
 
-        const dashboard =
-            document.querySelector('#dashboard3d');
+            padding:
+                22px 24px;
 
+            border-bottom:
+                1px solid var(--activity-border);
 
-        if (scene && dashboard) {
+            display:
+                flex;
 
-            scene.addEventListener(
-                'mousemove',
-                function(event) {
+            justify-content:
+                space-between;
 
-                    const rect =
-                        scene.getBoundingClientRect();
+            align-items:
+                center;
+        }
 
-                    const x =
-                        event.clientX -
-                        rect.left;
 
-                    const y =
-                        event.clientY -
-                        rect.top;
+        .academic-monitor-header h5 {
 
-                    const centerX =
-                        rect.width / 2;
+            margin:
+                0;
 
-                    const centerY =
-                        rect.height / 2;
+            color:
+                var(--text-color);
 
-                    const rotateY =
-                        ((x - centerX) /
-                            centerX) * 7;
+            font-size:
+                16px;
 
-                    const rotateX =
-                        ((y - centerY) /
-                            centerY) * -5;
+            font-weight:
+                700;
+        }
 
 
-                    anime({
+        .academic-monitor-header h5 i {
 
-                        targets: dashboard,
+            color:
+                var(--activity-indigo);
+        }
 
-                        rotateY: -14 + rotateY,
 
-                        rotateX: 7 + rotateX,
+        .academic-monitor-header p {
 
-                        duration: 500,
+            margin:
+                5px 0 0;
 
-                        easing: 'easeOutQuad'
-                    });
+            color:
+                var(--text-secondary);
 
-                }
-            );
+            font-size:
+                13px;
+        }
 
 
-            scene.addEventListener(
-                'mouseleave',
-                function() {
+        .academic-monitor-icon {
 
-                    anime({
+            width:
+                45px;
 
-                        targets: dashboard,
+            height:
+                45px;
 
-                        rotateY: -14,
+            border-radius:
+                12px;
 
-                        rotateX: 7,
+            background:
+                var(--activity-indigo-bg);
 
-                        duration: 700,
+            color:
+                var(--activity-indigo);
 
-                        easing: 'easeOutElastic(1, .6)'
-                    });
+            display:
+                flex;
 
-                }
-            );
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                20px;
+        }
+
+
+        /* =========================================================
+   ACADEMIC MINI STAT
+========================================================= */
+
+        .academic-mini-stat {
+
+            background:
+                var(--surface-secondary);
+
+            border:
+                1px solid var(--activity-border-light);
+
+            border-radius:
+                12px;
+
+            padding:
+                15px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+
+            height:
+                100%;
+        }
+
+
+        .academic-mini-icon {
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            min-width:
+                42px;
+
+            border-radius:
+                10px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+        }
+
+
+        .academic-mini-icon.blue {
+
+            background:
+                var(--activity-icon-blue-bg);
+
+            color:
+                var(--activity-icon-blue);
+        }
+
+
+        .academic-mini-icon.purple {
+
+            background:
+                var(--activity-indigo-bg);
+
+            color:
+                var(--activity-indigo);
+        }
+
+
+        .academic-mini-icon.green {
+
+            background:
+                var(--activity-icon-green-bg);
+
+            color:
+                var(--activity-icon-green);
+        }
+
+
+        .academic-mini-icon.orange {
+
+            background:
+                var(--activity-icon-orange-bg);
+
+            color:
+                var(--activity-icon-orange);
+        }
+
+
+        .academic-mini-stat span {
+
+            display:
+                block;
+
+            font-size:
+                11px;
+
+            color:
+                var(--text-secondary);
+
+            margin-bottom:
+                3px;
+        }
+
+
+        .academic-mini-stat strong {
+
+            display:
+                block;
+
+            font-size:
+                18px;
+
+            color:
+                var(--text-color);
+        }
+
+
+        /* =========================================================
+   ACADEMIC HISTORY
+========================================================= */
+
+        .academic-history {
+
+            border-top:
+                1px solid var(--activity-border);
+        }
+
+
+        .academic-history-header {
+
+            padding:
+                18px 24px;
+
+            border-bottom:
+                1px solid var(--activity-border);
+        }
+
+
+        .academic-history-header h6 {
+
+            margin:
+                0;
+
+            color:
+                var(--text-color);
+
+            font-weight:
+                700;
+
+            font-size:
+                14px;
+        }
+
+
+        .academic-history-header i {
+
+            color:
+                var(--activity-indigo);
+        }
+
+
+        /* =========================================================
+   ACADEMIC HISTORY TABLE
+========================================================= */
+
+        .academic-history-table {
+
+            color:
+                var(--text-color);
+
+            vertical-align:
+                middle;
+        }
+
+
+        .academic-history-table thead th {
+
+            background:
+                var(--surface-secondary);
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                .4px;
+
+            white-space:
+                nowrap;
+
+            border-bottom:
+                1px solid var(--activity-border);
+        }
+
+
+        .academic-history-table tbody td {
+
+            color:
+                var(--text-color);
+
+            font-size:
+                12px;
+
+            border-color:
+                var(--activity-border-light);
+
+            padding:
+                13px 12px;
+        }
+
+
+        .academic-history-table tbody tr:hover {
+
+            background:
+                var(--activity-hover-bg);
+        }
+
+
+        /* =========================================================
+   POST NAME
+========================================================= */
+
+        .academic-post-name {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            font-weight:
+                600;
+
+            min-width:
+                180px;
+        }
+
+
+        .academic-post-name i {
+
+            color:
+                var(--activity-icon-blue);
+
+            font-size:
+                16px;
+        }
+
+
+        .academic-subject {
+
+            display:
+                inline-block;
+
+            padding:
+                4px 8px;
+
+            border-radius:
+                6px;
+
+            background:
+                var(--activity-indigo-bg);
+
+            color:
+                var(--activity-indigo);
+
+            font-size:
+                10px;
+
+            font-weight:
+                600;
+        }
+
+
+        /* =========================================================
+   TIME
+========================================================= */
+
+        .academic-time {
+
+            white-space:
+                nowrap;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                11px;
+        }
+
+
+        .academic-time i {
+
+            margin-right:
+                4px;
+
+            color:
+                var(--activity-icon-blue);
+        }
+
+
+        .academic-duration {
+
+            white-space:
+                nowrap;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                11px;
+        }
+
+
+        .academic-duration i {
+
+            color:
+                var(--activity-icon-orange);
+
+            margin-right:
+                4px;
+        }
+
+
+        /* =========================================================
+   ACCESS COUNT
+========================================================= */
+
+        .academic-access-count {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            min-width:
+                28px;
+
+            height:
+                28px;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--activity-icon-blue-bg);
+
+            color:
+                var(--activity-icon-blue);
+
+            font-size:
+                11px;
+
+            font-weight:
+                700;
+        }
+
+
+        /* =========================================================
+   STATUS
+========================================================= */
+
+        .academic-status {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                5px;
+
+            padding:
+                5px 9px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                10px;
+
+            font-weight:
+                600;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .academic-status.open {
+
+            background:
+                var(--activity-icon-orange-bg);
+
+            color:
+                var(--activity-inprogress);
+        }
+
+
+        .academic-status.closed {
+
+            background:
+                var(--activity-icon-green-bg);
+
+            color:
+                var(--activity-completed);
+        }
+
+
+        .academic-open-label {
+
+            color:
+                var(--activity-inprogress);
+
+            font-size:
+                11px;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .academic-open-label i {
+
+            font-size:
+                7px;
+
+            margin-right:
+                4px;
+        }
+
+
+        /* =========================================================
+   EMPTY STATE
+========================================================= */
+
+        .academic-history-empty {
+
+            text-align:
+                center;
+
+            padding:
+                45px 20px;
+        }
+
+
+        .academic-history-empty-icon {
+
+            width:
+                55px;
+
+            height:
+                55px;
+
+            border-radius:
+                50%;
+
+            margin:
+                0 auto 12px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                var(--activity-icon-gray-bg);
+
+            color:
+                var(--activity-muted);
+
+            font-size:
+                22px;
+        }
+
+
+        .academic-history-empty h6 {
+
+            margin:
+                0 0 6px;
+
+            color:
+                var(--text-color);
+
+            font-weight:
+                700;
+        }
+
+
+        .academic-history-empty p {
+
+            margin:
+                0;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                12px;
+        }
+
+
+        /* =========================================================
+   ACTIVITY CARD
+========================================================= */
+
+        .activity-card {
+
+            background:
+                var(--activity-card-bg);
+
+            border:
+                1px solid var(--activity-border);
+
+            border-radius:
+                14px;
+
+            overflow:
+                hidden;
+
+            box-shadow:
+                0 4px 12px var(--shadow-color);
+        }
+
+
+        .activity-card-header {
+
+            padding:
+                22px 24px;
+
+            border-bottom:
+                1px solid var(--activity-border);
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+        }
+
+
+        .activity-card-header h5 {
+
+            margin:
+                0;
+
+            font-weight:
+                700;
+
+            color:
+                var(--text-color);
+        }
+
+
+        .activity-card-header h5 i {
+
+            color:
+                var(--activity-indigo);
+        }
+
+
+        .activity-card-header p {
+
+            margin:
+                5px 0 0;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                13px;
+        }
+
+
+        .activity-count {
+
+            background:
+                var(--activity-indigo-bg);
+
+            color:
+                var(--activity-indigo);
+
+            padding:
+                6px 12px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                600;
+        }
+
+
+        /* =========================================================
+   ACTIVITY LIST
+========================================================= */
+
+        .activity-list {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+        }
+
+
+        .activity-item {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                36px 48px minmax(250px, 1fr) 130px 100px;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            padding:
+                20px 24px;
+
+            border-bottom:
+                1px solid var(--activity-border-light);
+
+            transition:
+                background-color .2s ease;
+        }
+
+
+        .activity-item:last-child {
+
+            border-bottom:
+                none;
+        }
+
+
+        .activity-item:hover {
+
+            background:
+                var(--activity-hover-bg);
+        }
+
+
+        .activity-number {
+
+            width:
+                32px;
+
+            height:
+                32px;
+
+            border-radius:
+                50%;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                var(--activity-number-bg);
+
+            color:
+                var(--activity-number-text);
+
+            font-size:
+                13px;
+
+            font-weight:
+                700;
+        }
+
+
+        .activity-icon {
+
+            width:
+                44px;
+
+            height:
+                44px;
+
+            border-radius:
+                12px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                19px;
+        }
+
+
+        .activity-icon.completed {
+
+            background:
+                var(--activity-icon-green-bg);
+
+            color:
+                var(--activity-icon-green);
+        }
+
+
+        .activity-icon.in-progress {
+
+            background:
+                var(--activity-icon-orange-bg);
+
+            color:
+                var(--activity-icon-orange);
+        }
+
+
+        .activity-icon.not-started {
+
+            background:
+                var(--activity-icon-gray-bg);
+
+            color:
+                var(--activity-icon-gray);
+        }
+
+
+        .activity-information {
+
+            min-width:
+                0;
+        }
+
+
+        .activity-title-row {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            flex-wrap:
+                wrap;
+        }
+
+
+        .activity-information h5 {
+
+            margin:
+                0;
+
+            color:
+                var(--text-color);
+
+            font-size:
+                15px;
+
+            font-weight:
+                700;
+
+            overflow:
+                hidden;
+
+            text-overflow:
+                ellipsis;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .activity-type {
+
+            margin-top:
+                5px;
+
+            color:
+                var(--activity-indigo);
+
+            font-size:
+                11px;
+
+            font-weight:
+                600;
+        }
+
+
+        .activity-description {
+
+            margin-top:
+                6px;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                12px;
+
+            line-height:
+                1.5;
+
+            display:
+                -webkit-box;
+
+            -webkit-line-clamp:
+                2;
+
+            -webkit-box-orient:
+                vertical;
+
+            overflow:
+                hidden;
+        }
+
+
+        .activity-meta {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                15px;
+
+            margin-top:
+                8px;
+        }
+
+
+        .activity-meta span {
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                11px;
+        }
+
+
+        .activity-new {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                4px;
+
+            padding:
+                4px 7px;
+
+            border-radius:
+                6px;
+
+            background:
+                var(--activity-icon-blue-bg);
+
+            color:
+                var(--activity-icon-blue);
+
+            font-size:
+                9px;
+
+            font-weight:
+                700;
+        }
+
+
+        .activity-status-badge {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                5px;
+
+            padding:
+                6px 10px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                600;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .activity-status-badge.completed {
+
+            background:
+                var(--activity-icon-green-bg);
+
+            color:
+                var(--activity-completed);
+        }
+
+
+        .activity-status-badge.in-progress {
+
+            background:
+                var(--activity-icon-orange-bg);
+
+            color:
+                var(--activity-inprogress);
+        }
+
+
+        .activity-status-badge.not-started {
+
+            background:
+                var(--activity-icon-gray-bg);
+
+            color:
+                var(--activity-notstarted);
+        }
+
+
+        .activity-action {
+
+            display:
+                flex;
+
+            justify-content:
+                flex-end;
+        }
+
+
+        .activity-action .btn-primary {
+
+            background:
+                var(--activity-icon-blue);
+
+            border-color:
+                var(--activity-icon-blue);
+
+            border-radius:
+                8px;
+
+            padding:
+                8px 13px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                600;
+        }
+
+
+        .activity-empty {
+
+            padding:
+                60px 20px;
+
+            text-align:
+                center;
+        }
+
+
+        .activity-empty-icon {
+
+            width:
+                65px;
+
+            height:
+                65px;
+
+            margin:
+                0 auto 15px;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--activity-icon-gray-bg);
+
+            color:
+                var(--activity-muted);
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                25px;
+        }
+
+
+        .activity-empty h5 {
+
+            margin-bottom:
+                7px;
+
+            color:
+                var(--text-color);
+
+            font-weight:
+                700;
+        }
+
+
+        .activity-empty p {
+
+            margin:
+                0;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                13px;
+        }
+
+
+        /* =========================================================
+   CATEGORY PROGRESS
+========================================================= */
+
+        .category-progress-card {
+
+            background:
+                var(--activity-card-bg);
+
+            border:
+                1px solid var(--activity-border);
+
+            border-radius:
+                14px;
+
+            padding:
+                20px;
+
+            box-shadow:
+                0 4px 12px var(--shadow-color);
+
+            height:
+                100%;
+        }
+
+
+        .category-progress-header {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            margin-bottom:
+                15px;
+        }
+
+
+        .category-progress-title {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+        }
+
+
+        .category-progress-icon {
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            min-width:
+                42px;
+
+            border-radius:
+                10px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                18px;
+        }
+
+
+        .category-progress-icon.lecture {
+
+            background:
+                var(--activity-icon-blue-bg);
+
+            color:
+                var(--activity-icon-blue);
+        }
+
+
+        .category-progress-icon.reading {
+
+            background:
+                var(--activity-indigo-bg);
+
+            color:
+                var(--activity-indigo);
+        }
+
+
+        .category-progress-title h5 {
+
+            margin:
+                0;
+
+            color:
+                var(--text-color);
+
+            font-size:
+                14px;
+
+            font-weight:
+                700;
+        }
+
+
+        .category-progress-title p {
+
+            margin:
+                3px 0 0;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                11px;
+        }
+
+
+        .category-progress-header>strong {
+
+            font-size:
+                18px;
+
+            color:
+                var(--text-color);
+        }
+
+
+        .category-progress-bar {
+
+            height:
+                8px;
+
+            background:
+                var(--activity-progress-bg);
+
+            border-radius:
+                20px;
+
+            overflow:
+                hidden;
+        }
+
+
+        .category-progress-fill {
+
+            height:
+                100%;
+
+            border-radius:
+                20px;
+        }
+
+
+        .category-progress-fill.lecture {
+
+            background:
+                var(--activity-icon-blue);
+        }
+
+
+        .category-progress-fill.reading {
+
+            background:
+                var(--activity-indigo);
+        }
+
+
+        .category-progress-footer {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            margin-top:
+                10px;
+
+            color:
+                var(--text-secondary);
+
+            font-size:
+                11px;
+        }
+
+
+        .category-progress-footer i {
+
+            color:
+                var(--activity-completed);
+
+            margin-right:
+                3px;
+        }
+
+
+        /* =========================================================
+   DARK MODE
+========================================================= */
+
+        [data-theme="dark"] .academic-history-table thead th {
+
+            background:
+                var(--surface-secondary);
+        }
+
+
+        [data-theme="dark"] .academic-history-table tbody td {
+
+            color:
+                var(--text-color);
+        }
+
+
+        [data-theme="dark"] .text-muted {
+
+            color:
+                var(--text-secondary) !important;
+        }
+
+
+        /* =========================================================
+   RESPONSIVE
+========================================================= */
+
+        @media (max-width: 1100px) {
+
+            .activity-item {
+
+                grid-template-columns:
+                    36px 48px minmax(200px, 1fr) 120px 90px;
+            }
 
         }
 
 
-        /* =====================================================
-           LOGIN BUTTON MICRO INTERACTION
-        ====================================================== */
+        @media (max-width: 900px) {
 
-        document
-            .querySelectorAll('.btn-login')
-            .forEach(button => {
+            .activity-item {
 
-                button.addEventListener(
-                    'mouseenter',
-                    function() {
-
-                        anime({
-
-                            targets: this.querySelector('i'),
-
-                            translateX: 4,
-
-                            duration: 250,
-
-                            easing: 'easeOutQuad'
-                        });
-
-                    }
-                );
-
-
-                button.addEventListener(
-                    'mouseleave',
-                    function() {
-
-                        anime({
-
-                            targets: this.querySelector('i'),
-
-                            translateX: 0,
-
-                            duration: 250,
-
-                            easing: 'easeOutQuad'
-                        });
-
-                    }
-                );
-
-            });
-
-
-        /* =====================================================
-           NAVBAR SCROLL EFFECT
-        ====================================================== */
-
-        const navbar =
-            document.querySelector('.navbar-custom');
-
-
-        window.addEventListener(
-            'scroll',
-            function() {
-
-                if (window.scrollY > 30) {
-
-                    navbar.style.background =
-                        'rgba(13, 17, 23, 0.94)';
-
-                } else {
-
-                    navbar.style.background =
-                        'rgba(13, 17, 23, 0.82)';
-
-                }
-
+                grid-template-columns:
+                    36px 48px 1fr auto;
             }
-        );
-    </script>
+
+
+            .activity-status {
+
+                display:
+                    none;
+            }
+
+        }
+
+
+        @media (max-width: 768px) {
+
+            .dashboard-heading-title {
+
+                font-size:
+                    21px;
+            }
+
+
+            .academic-monitor-header {
+
+                padding:
+                    18px;
+            }
+
+
+            .academic-history-header {
+
+                padding:
+                    16px 18px;
+            }
+
+
+            .academic-history-table {
+
+                min-width:
+                    900px;
+            }
+
+
+            .activity-item {
+
+                grid-template-columns:
+                    30px 42px 1fr;
+
+                gap:
+                    10px;
+
+                padding:
+                    17px;
+            }
+
+
+            .activity-action {
+
+                grid-column:
+                    3;
+
+                justify-content:
+                    flex-start;
+
+                margin-top:
+                    5px;
+            }
+
+
+            .activity-action .btn {
+
+                width:
+                    100%;
+            }
+
+        }
+
+
+        @media (max-width: 576px) {
+
+            .dashboard-heading-title {
+
+                font-size:
+                    20px;
+            }
+
+
+            .dashboard-heading-subtitle {
+
+                font-size:
+                    13px;
+            }
+
+
+            .student-stat-card {
+
+                padding:
+                    16px;
+            }
+
+
+            .student-stat-icon {
+
+                width:
+                    44px;
+
+                height:
+                    44px;
+
+                min-width:
+                    44px;
+            }
+
+
+            .student-stat-card strong {
+
+                font-size:
+                    21px;
+            }
+
+
+            .learning-progress-footer {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+
+                gap:
+                    5px;
+            }
+
+
+            .activity-count {
+
+                display:
+                    none;
+            }
+
+
+            .academic-monitor-icon {
+
+                display:
+                    none;
+            }
+
+        }
+
+
+        /* =========================================================
+   REDUCE MOTION
+========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            * {
+
+                transition:
+                    none !important;
+            }
+
+        }
+    </style>
+
 
 </body>
-
-</html>
