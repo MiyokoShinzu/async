@@ -1,7 +1,7 @@
 <?php
 
 /* =========================================================
-   STUDENT DASHBOARD
+   STUDENT DASHBOARD — REBUILT PROGRESS REFRESH
    ETS-Async Learning Portal
 
    FEATURES:
@@ -86,20 +86,30 @@ require_once "../src/connection.php";
 $user = $_SESSION["user"];
 
 
-$firstName =
-    trim($user["first_name"] ?? "");
+$firstName = trim((string)(
+    $user["first_name"] ?? $user["firstname"] ?? $user["name"] ?? ""
+));
 
+// Prefer the actual student ID; use the session user ID only as a fallback.
+$studentId = trim((string)(
+    $user["student_id"] ?? $user["studentID"] ?? $_SESSION["student_id"] ?? ""
+));
+if ($studentId === "") {
+    $studentId = trim((string)($_SESSION["user_id"] ?? $user["id"] ?? ""));
+}
 
-$studentId =
-    trim($user["student_id"] ?? "");
+$department = trim((string)(
+    $user["department"] ?? $user["program"] ?? $_SESSION["department"] ?? ""
+));
 
-
-$department =
-    trim($user["department"] ?? "");
-
-
-$yearSection =
-    trim($user["year_section"] ?? "");
+$yearSection = trim((string)(
+    $user["year_section"] ?? $user["year_and_section"] ?? $_SESSION["year_section"] ?? ""
+));
+if ($yearSection === "") {
+    $sessionYear = trim((string)($user["year_level"] ?? $user["year"] ?? $_SESSION["year_level"] ?? ""));
+    $sessionSection = trim((string)($user["section"] ?? $_SESSION["section"] ?? ""));
+    $yearSection = trim($sessionYear . ($sessionSection !== "" ? " - " . $sessionSection : ""));
+}
 
 /* Temporary diagnostics for the Overall Learning Progress issue. */
 $progressDiagnostics = [];
@@ -757,10 +767,23 @@ $overallProgress =
     round(
         min(
             100,
-            $overallProgress
+            max(0, $overallProgress)
         ),
         1
     );
+
+// AJAX refresh endpoint: recalculates progress in a separate request and
+// returns only the values needed by the Overall Learning Progress card.
+if (isset($_GET["ajax_progress"]) && $_GET["ajax_progress"] === "1") {
+    header("Content-Type: application/json; charset=utf-8");
+    echo json_encode([
+        "ok" => true,
+        "progress" => $overallProgress,
+        "completed" => (int)$completedActivities,
+        "total" => (int)$totalActivities
+    ], JSON_UNESCAPED_SLASHES);
+    exit;
+}
 
 
 /* =========================================================
@@ -1521,7 +1544,7 @@ include "globals/head.php";
                     </div>
 
 
-                    <strong>
+                    <strong data-overall-progress-value>
 
                         <?= number_format(
                             $overallProgress,
@@ -1537,6 +1560,7 @@ include "globals/head.php";
 
                     <div
                         class="progress-bar"
+                        data-overall-progress-bar
                         role="progressbar"
                         style="
                         width:
@@ -1553,7 +1577,7 @@ include "globals/head.php";
 
                 <div class="learning-progress-footer">
 
-                    <span>
+                    <span data-overall-progress-summary>
 
                         <i class="bi bi-check-circle-fill me-1"></i>
 
@@ -4804,5 +4828,46 @@ include "globals/head.php";
         }
     </style>
 
+
+
+    <script>
+        (function() {
+            // Refresh only the progress card. This does not reload the dashboard,
+            // alter login.php, or change any stored learning records.
+            const valueEl = document.querySelector('[data-overall-progress-value]');
+            const barEl = document.querySelector('[data-overall-progress-bar]');
+            const summaryEl = document.querySelector('[data-overall-progress-summary]');
+            if (!valueEl || !barEl || !summaryEl) return;
+
+            const endpoint = new URL(window.location.href);
+            endpoint.searchParams.set('ajax_progress', '1');
+
+            fetch(endpoint.toString(), {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Progress refresh failed');
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (!data || data.ok !== true) return;
+                    const progress = Math.max(0, Math.min(100, Number(data.progress) || 0));
+                    const completed = Math.max(0, Number(data.completed) || 0);
+                    const total = Math.max(0, Number(data.total) || 0);
+                    valueEl.textContent = progress.toFixed(1) + '%';
+                    barEl.style.width = progress + '%';
+                    barEl.setAttribute('aria-valuenow', String(progress));
+                    summaryEl.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> ' +
+                        completed + ' of ' + total + ' activities completed';
+                })
+                .catch(function() {
+                    // Keep the server-rendered values if the refresh request fails.
+                });
+        })();
+    </script>
 
 </body>
