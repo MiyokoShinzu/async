@@ -89,6 +89,9 @@ $department =
 $yearSection =
     trim($user["year_section"] ?? "");
 
+/* Temporary diagnostics for the Overall Learning Progress issue. */
+$progressDiagnostics = [];
+
 
 /*
    Use first name instead of undefined $username.
@@ -232,6 +235,10 @@ $stmt =
         $lectureProgressQuery
     );
 
+if (!$stmt) {
+    $progressDiagnostics[] = "Lecture query prepare failed: " . $mysqli->error;
+}
+
 
 if ($stmt) {
 
@@ -243,7 +250,9 @@ if ($stmt) {
         $section
     );
 
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        $progressDiagnostics[] = "Lecture query execute failed: " . $stmt->error;
+    }
 
     $result =
         $stmt->get_result();
@@ -367,6 +376,10 @@ $stmt =
         $readingProgressQuery
     );
 
+if (!$stmt) {
+    $progressDiagnostics[] = "Reading query prepare failed: " . $mysqli->error;
+}
+
 
 if ($stmt) {
 
@@ -378,7 +391,9 @@ if ($stmt) {
         $section
     );
 
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        $progressDiagnostics[] = "Reading query execute failed: " . $stmt->error;
+    }
 
     $result =
         $stmt->get_result();
@@ -1556,6 +1571,18 @@ include "globals/head.php";
                 <div class="alert alert-warning mt-3" role="status">
                     <strong>Temporary progress diagnostics</strong>
                     <ul class="mb-0 mt-2">
+                        <li>Session student ID: <?= htmlspecialchars($studentId, ENT_QUOTES, "UTF-8") ?></li>
+                        <li>Department: <?= htmlspecialchars($department, ENT_QUOTES, "UTF-8") ?></li>
+                        <li>Year/section from session: <?= htmlspecialchars($yearSection, ENT_QUOTES, "UTF-8") ?></li>
+                        <li>Parsed year level: <?= htmlspecialchars($yearLevel, ENT_QUOTES, "UTF-8") ?></li>
+                        <li>Parsed section: <?= htmlspecialchars($section, ENT_QUOTES, "UTF-8") ?></li>
+                        <?php if (!empty($progressDiagnostics)): ?>
+                            <?php foreach ($progressDiagnostics as $diagnostic): ?>
+                                <li class="text-danger"><?= htmlspecialchars($diagnostic, ENT_QUOTES, "UTF-8") ?></li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li>SQL prepare/execute errors: none detected</li>
+                        <?php endif; ?>
                         <li>Total lectures: <?= (int)$totalLectures ?></li>
                         <li>Total reading activities: <?= (int)$totalReadingActivities ?></li>
                         <li>Total activities: <?= (int)$totalActivities ?></li>
