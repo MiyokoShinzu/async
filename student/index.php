@@ -1,6 +1,6 @@
 <?php
 
-    /* =========================================================
+/* =========================================================
    STUDENT DASHBOARD
    ETS-Async Learning Portal
 
@@ -36,17 +36,17 @@
    ========================================================= */
 
 
-    /* =========================================================
+/* =========================================================
    SESSION
 ========================================================= */
 
-    session_cache_limiter('nocache');
-    session_start();
+session_cache_limiter('nocache');
+session_start();
 
-    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-    header('Cache-Control: post-check=0, pre-check=0', false);
-    header('Pragma: no-cache');
-    header('Expires: 0');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
+header('Expires: 0');
 
 /* Always fetch fresh dashboard statistics from the database. */
 if (!headers_sent()) {
@@ -1329,217 +1329,413 @@ include "globals/head.php";
 
             </div>
 
-
             <!-- =================================================
-             SUMMARY STATISTICS
+             NEW LEARNING ACTIVITIES
         ================================================== -->
 
-            <div class="row g-3 mb-4">
+            <div class="activity-card mb-4">
 
 
-                <!-- TOTAL ACTIVITIES -->
-
-                <div class="col-xl-3 col-md-6">
-
-                    <div class="student-stat-card">
-
-                        <div class="student-stat-icon blue">
-
-                            <i class="bi bi-journal-text"></i>
-
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Total Activities
-                            </span>
-
-                            <strong>
-                                <?= $totalActivities ?>
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- COMPLETED -->
-
-                <div class="col-xl-3 col-md-6">
-
-                    <div class="student-stat-card">
-
-                        <div class="student-stat-icon green">
-
-                            <i class="bi bi-check-circle-fill"></i>
-
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Completed
-                            </span>
-
-                            <strong>
-                                <?= $completedActivities ?>
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- IN PROGRESS -->
-
-                <div class="col-xl-3 col-md-6">
-
-                    <div class="student-stat-card">
-
-                        <div class="student-stat-icon orange">
-
-                            <i class="bi bi-arrow-repeat"></i>
-
-                        </div>
-
-                        <div>
-
-                            <span>
-                                In Progress
-                            </span>
-
-                            <strong>
-                                <?= $inProgressActivities ?>
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- NOT STARTED -->
-
-                <div class="col-xl-3 col-md-6">
-
-                    <div class="student-stat-card">
-
-                        <div class="student-stat-icon gray">
-
-                            <i class="bi bi-hourglass-split"></i>
-
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Not Started
-                            </span>
-
-                            <strong>
-                                <?= $notStartedActivities ?>
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-             OVERALL PROGRESS
-        ================================================== -->
-
-            <div class="learning-progress-card mb-4">
-
-
-                <div class="learning-progress-header">
+                <div class="activity-card-header">
 
                     <div>
 
                         <h5>
 
-                            <i class="bi bi-bar-chart-fill me-2"></i>
+                            <i class="bi bi-bell-fill me-2"></i>
 
-                            Overall Learning Progress
+                            New Learning Activities
 
                         </h5>
 
                         <p>
 
-                            Your completion progress across
-                            lectures and reading activities.
+                            Recently created lectures and
+                            reading activities assigned to you.
 
                         </p>
 
                     </div>
 
 
-                    <strong>
+                    <div class="activity-count">
 
-                        <?= number_format(
-                            $overallProgress,
-                            1
-                        ) ?>%
+                        <?= count($recentActivities) ?>
 
-                    </strong>
-
-                </div>
-
-
-                <div class="learning-progress">
-
-                    <div
-                        class="progress-bar"
-                        role="progressbar"
-                        style="
-                        width:
-                        <?= $overallProgress ?>%;
-                    "
-                        aria-valuenow="<?= $overallProgress ?>"
-                        aria-valuemin="0"
-                        aria-valuemax="100">
+                        <span class="ms-1">
+                            Recent
+                        </span>
 
                     </div>
 
                 </div>
 
 
-                <div class="learning-progress-footer">
-
-                    <span>
-
-                        <i class="bi bi-check-circle-fill me-1"></i>
-
-                        <?= $completedActivities ?>
-
-                        of
-
-                        <?= $totalActivities ?>
-
-                        activities completed
-
-                    </span>
+                <?php if (!empty($recentActivities)): ?>
 
 
-                    <span>
+                    <div class="activity-list">
 
-                        <i class="bi bi-arrow-up-right-circle me-1"></i>
 
-                        Keep progressing
+                        <?php foreach (
+                            $recentActivities
+                            as $index => $activity
+                        ): ?>
 
-                    </span>
 
-                </div>
+                            <?php
+
+                            $activityId =
+                                (int)$activity["id"];
+
+
+                            $activityType =
+                                $activity["type"];
+
+
+                            $activityTitle =
+                                $activity["title"];
+
+
+                            $activityDescription =
+                                trim(
+                                    $activity["description"]
+                                        ?? ""
+                                );
+
+
+                            $activityDate =
+                                $activity["created_at"];
+
+
+                            $activityStatus = strtolower(trim(
+                                (string)($activity["progress_status"] ?? "")
+                            ));
+
+
+                            if (
+                                $activityStatus ===
+                                "completed"
+                            ) {
+
+                                $statusClass =
+                                    "completed";
+
+                                $statusText =
+                                    "Completed";
+
+                                $statusIcon =
+                                    "bi-check-circle-fill";
+                            } elseif (
+                                $activityStatus ===
+                                "in_progress"
+                            ) {
+
+                                $statusClass =
+                                    "in-progress";
+
+                                $statusText =
+                                    "In Progress";
+
+                                $statusIcon =
+                                    "bi-arrow-repeat";
+                            } else {
+
+                                $statusClass =
+                                    "not-started";
+
+                                $statusText =
+                                    "Not Started";
+
+                                $statusIcon =
+                                    "bi-circle";
+                            }
+
+
+                            $activityLink =
+                                $activityType === "lecture"
+
+                                ? "activity_view.php?id="
+                                . $activityId
+
+                                : "reading_activity_view.php?id="
+                                . $activityId;
+
+                            ?>
+
+
+                            <div
+                                class="
+                                activity-item
+                            ">
+
+
+                                <!-- NUMBER -->
+
+                                <div
+                                    class="
+                                    activity-number
+                                ">
+
+                                    <?= $index + 1 ?>
+
+                                </div>
+
+
+                                <!-- ICON -->
+
+                                <div
+                                    class="
+                                    activity-icon
+                                    <?= e(
+                                        $statusClass
+                                    ) ?>
+                                ">
+
+                                    <i
+                                        class="
+                                        bi
+                                        <?= e(
+                                            $activity["icon"]
+                                        ) ?>
+                                    ">
+                                    </i>
+
+                                </div>
+
+
+                                <!-- INFORMATION -->
+
+                                <div
+                                    class="
+                                    activity-information
+                                ">
+
+
+                                    <div
+                                        class="
+                                        activity-title-row
+                                    ">
+
+                                        <h5>
+
+                                            <?= e(
+                                                $activityTitle
+                                            ) ?>
+
+                                        </h5>
+
+
+                                        <?php if (
+                                            isNewActivity(
+                                                $activityDate
+                                            )
+                                        ): ?>
+
+                                            <span
+                                                class="
+                                                activity-new
+                                            ">
+
+                                                <i
+                                                    class="
+                                                    bi
+                                                    bi-stars
+                                                ">
+                                                </i>
+
+                                                NEW
+
+                                            </span>
+
+                                        <?php endif; ?>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                        activity-type
+                                    ">
+
+                                        <i
+                                            class="
+                                            bi
+                                            <?= $activityType === "lecture"
+                                                ? "bi-play-circle"
+                                                : "bi-book"
+                                            ?>
+                                        ">
+                                        </i>
+
+                                        <?= e(
+                                            $activity["type_label"]
+                                        ) ?>
+
+                                    </div>
+
+
+                                    <?php if (
+                                        $activityDescription !== ""
+                                    ): ?>
+
+                                        <div
+                                            class="
+                                            activity-description
+                                        ">
+
+                                            <?= e(
+                                                $activityDescription
+                                            ) ?>
+
+                                        </div>
+
+                                    <?php endif; ?>
+
+
+                                    <div
+                                        class="
+                                        activity-meta
+                                    ">
+
+                                        <span>
+
+                                            <i
+                                                class="
+                                                bi
+                                                bi-clock
+                                            ">
+                                            </i>
+
+                                            <?= e(
+                                                formatActivityDate(
+                                                    $activityDate
+                                                )
+                                            ) ?>
+
+                                        </span>
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <!-- STATUS -->
+
+                                <div
+                                    class="
+                                    activity-status
+                                ">
+
+                                    <span
+                                        class="
+                                        activity-status-badge
+                                        <?= e(
+                                            $statusClass
+                                        ) ?>
+                                    ">
+
+                                        <i
+                                            class="
+                                            bi
+                                            <?= e(
+                                                $statusIcon
+                                            ) ?>
+                                        ">
+                                        </i>
+
+                                        <?= e(
+                                            $statusText
+                                        ) ?>
+
+                                    </span>
+
+                                </div>
+
+
+                                <!-- ACTION -->
+
+                                <div
+                                    class="
+                                    activity-action
+                                ">
+
+                                    <a
+                                        href="<?= e(
+                                                    $activityLink
+                                                ) ?>"
+                                        class="
+                                        btn
+                                        btn-primary
+                                    ">
+
+                                        <i
+                                            class="
+                                            bi
+                                            bi-arrow-right
+                                            me-1
+                                        ">
+                                        </i>
+
+                                        Open
+
+                                    </a>
+
+                                </div>
+
+
+                            </div>
+
+
+                        <?php endforeach; ?>
+
+
+                    </div>
+
+
+                <?php else: ?>
+
+
+                    <div
+                        class="
+                        activity-empty
+                    ">
+
+                        <div
+                            class="
+                            activity-empty-icon
+                        ">
+
+                            <i
+                                class="
+                                bi
+                                bi-bell-slash
+                            ">
+                            </i>
+
+                        </div>
+
+
+                        <h5>
+
+                            No New Activities
+
+                        </h5>
+
+
+                        <p>
+
+                            There are currently no learning
+                            activities assigned to you.
+
+                        </p>
+
+                    </div>
+
+
+                <?php endif; ?>
+
 
             </div>
 
@@ -2113,667 +2309,7 @@ include "globals/head.php";
             </div>
 
 
-            <!-- =================================================
-             NEW LEARNING ACTIVITIES
-        ================================================== -->
 
-            <div class="activity-card mb-4">
-
-
-                <div class="activity-card-header">
-
-                    <div>
-
-                        <h5>
-
-                            <i class="bi bi-bell-fill me-2"></i>
-
-                            New Learning Activities
-
-                        </h5>
-
-                        <p>
-
-                            Recently created lectures and
-                            reading activities assigned to you.
-
-                        </p>
-
-                    </div>
-
-
-                    <div class="activity-count">
-
-                        <?= count($recentActivities) ?>
-
-                        <span class="ms-1">
-                            Recent
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <?php if (!empty($recentActivities)): ?>
-
-
-                    <div class="activity-list">
-
-
-                        <?php foreach (
-                            $recentActivities
-                            as $index => $activity
-                        ): ?>
-
-
-                            <?php
-
-                            $activityId =
-                                (int)$activity["id"];
-
-
-                            $activityType =
-                                $activity["type"];
-
-
-                            $activityTitle =
-                                $activity["title"];
-
-
-                            $activityDescription =
-                                trim(
-                                    $activity["description"]
-                                        ?? ""
-                                );
-
-
-                            $activityDate =
-                                $activity["created_at"];
-
-
-                            $activityStatus = strtolower(trim(
-                                (string)($activity["progress_status"] ?? "")
-                            ));
-
-
-                            if (
-                                $activityStatus ===
-                                "completed"
-                            ) {
-
-                                $statusClass =
-                                    "completed";
-
-                                $statusText =
-                                    "Completed";
-
-                                $statusIcon =
-                                    "bi-check-circle-fill";
-                            } elseif (
-                                $activityStatus ===
-                                "in_progress"
-                            ) {
-
-                                $statusClass =
-                                    "in-progress";
-
-                                $statusText =
-                                    "In Progress";
-
-                                $statusIcon =
-                                    "bi-arrow-repeat";
-                            } else {
-
-                                $statusClass =
-                                    "not-started";
-
-                                $statusText =
-                                    "Not Started";
-
-                                $statusIcon =
-                                    "bi-circle";
-                            }
-
-
-                            $activityLink =
-                                $activityType === "lecture"
-
-                                ? "activity_view.php?id="
-                                . $activityId
-
-                                : "reading_activity_view.php?id="
-                                . $activityId;
-
-                            ?>
-
-
-                            <div
-                                class="
-                                activity-item
-                            ">
-
-
-                                <!-- NUMBER -->
-
-                                <div
-                                    class="
-                                    activity-number
-                                ">
-
-                                    <?= $index + 1 ?>
-
-                                </div>
-
-
-                                <!-- ICON -->
-
-                                <div
-                                    class="
-                                    activity-icon
-                                    <?= e(
-                                        $statusClass
-                                    ) ?>
-                                ">
-
-                                    <i
-                                        class="
-                                        bi
-                                        <?= e(
-                                            $activity["icon"]
-                                        ) ?>
-                                    ">
-                                    </i>
-
-                                </div>
-
-
-                                <!-- INFORMATION -->
-
-                                <div
-                                    class="
-                                    activity-information
-                                ">
-
-
-                                    <div
-                                        class="
-                                        activity-title-row
-                                    ">
-
-                                        <h5>
-
-                                            <?= e(
-                                                $activityTitle
-                                            ) ?>
-
-                                        </h5>
-
-
-                                        <?php if (
-                                            isNewActivity(
-                                                $activityDate
-                                            )
-                                        ): ?>
-
-                                            <span
-                                                class="
-                                                activity-new
-                                            ">
-
-                                                <i
-                                                    class="
-                                                    bi
-                                                    bi-stars
-                                                ">
-                                                </i>
-
-                                                NEW
-
-                                            </span>
-
-                                        <?php endif; ?>
-
-                                    </div>
-
-
-                                    <div
-                                        class="
-                                        activity-type
-                                    ">
-
-                                        <i
-                                            class="
-                                            bi
-                                            <?= $activityType === "lecture"
-                                                ? "bi-play-circle"
-                                                : "bi-book"
-                                            ?>
-                                        ">
-                                        </i>
-
-                                        <?= e(
-                                            $activity["type_label"]
-                                        ) ?>
-
-                                    </div>
-
-
-                                    <?php if (
-                                        $activityDescription !== ""
-                                    ): ?>
-
-                                        <div
-                                            class="
-                                            activity-description
-                                        ">
-
-                                            <?= e(
-                                                $activityDescription
-                                            ) ?>
-
-                                        </div>
-
-                                    <?php endif; ?>
-
-
-                                    <div
-                                        class="
-                                        activity-meta
-                                    ">
-
-                                        <span>
-
-                                            <i
-                                                class="
-                                                bi
-                                                bi-clock
-                                            ">
-                                            </i>
-
-                                            <?= e(
-                                                formatActivityDate(
-                                                    $activityDate
-                                                )
-                                            ) ?>
-
-                                        </span>
-
-                                    </div>
-
-
-                                </div>
-
-
-                                <!-- STATUS -->
-
-                                <div
-                                    class="
-                                    activity-status
-                                ">
-
-                                    <span
-                                        class="
-                                        activity-status-badge
-                                        <?= e(
-                                            $statusClass
-                                        ) ?>
-                                    ">
-
-                                        <i
-                                            class="
-                                            bi
-                                            <?= e(
-                                                $statusIcon
-                                            ) ?>
-                                        ">
-                                        </i>
-
-                                        <?= e(
-                                            $statusText
-                                        ) ?>
-
-                                    </span>
-
-                                </div>
-
-
-                                <!-- ACTION -->
-
-                                <div
-                                    class="
-                                    activity-action
-                                ">
-
-                                    <a
-                                        href="<?= e(
-                                                    $activityLink
-                                                ) ?>"
-                                        class="
-                                        btn
-                                        btn-primary
-                                    ">
-
-                                        <i
-                                            class="
-                                            bi
-                                            bi-arrow-right
-                                            me-1
-                                        ">
-                                        </i>
-
-                                        Open
-
-                                    </a>
-
-                                </div>
-
-
-                            </div>
-
-
-                        <?php endforeach; ?>
-
-
-                    </div>
-
-
-                <?php else: ?>
-
-
-                    <div
-                        class="
-                        activity-empty
-                    ">
-
-                        <div
-                            class="
-                            activity-empty-icon
-                        ">
-
-                            <i
-                                class="
-                                bi
-                                bi-bell-slash
-                            ">
-                            </i>
-
-                        </div>
-
-
-                        <h5>
-
-                            No New Activities
-
-                        </h5>
-
-
-                        <p>
-
-                            There are currently no learning
-                            activities assigned to you.
-
-                        </p>
-
-                    </div>
-
-
-                <?php endif; ?>
-
-
-            </div>
-
-
-            <!-- =================================================
-             ACTIVITY PROGRESS
-        ================================================== -->
-
-            <div class="row g-3">
-
-
-                <!-- =================================================
-                 LECTURE PROGRESS
-            ================================================== -->
-
-                <div class="col-lg-6">
-
-                    <div
-                        class="
-                        category-progress-card
-                    ">
-
-
-                        <div
-                            class="
-                            category-progress-header
-                        ">
-
-                            <div
-                                class="
-                                category-progress-title
-                            ">
-
-                                <div
-                                    class="
-                                    category-progress-icon
-                                    lecture
-                                ">
-
-                                    <i
-                                        class="
-                                        bi
-                                        bi-play-circle-fill
-                                    ">
-                                    </i>
-
-                                </div>
-
-
-                                <div>
-
-                                    <h5>
-                                        Lecture Activities
-                                    </h5>
-
-                                    <p>
-                                        Video-based learning
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-
-                            <strong>
-
-                                <?= number_format(
-                                    $lectureCompletion,
-                                    1
-                                ) ?>%
-
-                            </strong>
-
-                        </div>
-
-
-                        <div
-                            class="
-                            category-progress-bar
-                        ">
-
-                            <div
-                                class="
-                                category-progress-fill
-                                lecture
-                            "
-                                style="
-                                width:
-                                <?= $lectureCompletion ?>%;
-                            ">
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="
-                            category-progress-footer
-                        ">
-
-                            <span>
-
-                                <i
-                                    class="
-                                    bi
-                                    bi-check-circle-fill
-                                ">
-                                </i>
-
-                                <?= $completedLectures ?>
-
-                                completed
-
-                            </span>
-
-
-                            <span>
-
-                                <?= $totalLectures ?>
-
-                                total
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- =================================================
-                 READING PROGRESS
-            ================================================== -->
-
-                <div class="col-lg-6">
-
-                    <div
-                        class="
-                        category-progress-card
-                    ">
-
-
-                        <div
-                            class="
-                            category-progress-header
-                        ">
-
-                            <div
-                                class="
-                                category-progress-title
-                            ">
-
-                                <div
-                                    class="
-                                    category-progress-icon
-                                    reading
-                                ">
-
-                                    <i
-                                        class="
-                                        bi
-                                        bi-book-fill
-                                    ">
-                                    </i>
-
-                                </div>
-
-
-                                <div>
-
-                                    <h5>
-                                        Reading Activities
-                                    </h5>
-
-                                    <p>
-                                        Required learning materials
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-
-                            <strong>
-
-                                <?= number_format(
-                                    $readingCompletion,
-                                    1
-                                ) ?>%
-
-                            </strong>
-
-                        </div>
-
-
-                        <div
-                            class="
-                            category-progress-bar
-                        ">
-
-                            <div
-                                class="
-                                category-progress-fill
-                                reading
-                            "
-                                style="
-                                width:
-                                <?= $readingCompletion ?>%;
-                            ">
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="
-                            category-progress-footer
-                        ">
-
-                            <span>
-
-                                <i
-                                    class="
-                                    bi
-                                    bi-check-circle-fill
-                                ">
-                                </i>
-
-                                <?= $completedReadingActivities ?>
-
-                                completed
-
-                            </span>
-
-
-                            <span>
-
-                                <?= $totalReadingActivities ?>
-
-                                total
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-            </div>
 
 
         </div>
