@@ -35,6 +35,18 @@
    account fields with different collations.
    ========================================================= */
 
+/*
+ * FILE STRUCTURE
+ * ---------------------------------------------------------
+ * 1. Session and student authentication
+ * 2. Database connection and student context
+ * 3. Activity progress queries
+ * 4. Academic post activity queries
+ * 5. Progress calculations and recent activities
+ * 6. Shared formatting helpers
+ * 7. Existing dashboard HTML and CSS (visual design preserved)
+ */
+
 
 /* =========================================================
    SESSION
@@ -110,26 +122,27 @@ $displayName =
 $yearLevel = "";
 $section = "";
 
+/*
+ * Prefer an explicit separator between year level and section.
+ * This avoids splitting labels such as "3rd Year - A" into
+ * "3rd" and "Year - A".
+ */
+$yearSection = trim($yearSection);
 
-$parts =
-    preg_split(
-        '/[-\s]+/',
-        trim($yearSection),
-        2
-    );
+if ($yearSection !== "") {
+    // Accept hyphen, en dash, or em dash as the separator.
+    $parts = preg_split('/\s*[-–—]\s*/u', $yearSection, 2);
 
+    if (count($parts) === 2) {
+        $yearLevel = trim($parts[0]);
+        $section = trim($parts[1]);
+    } else {
+        // Backward-compatible fallback for simple values such as "3 A".
+        $parts = preg_split('/\s+/', $yearSection, 2);
 
-if (!empty($parts[0])) {
-
-    $yearLevel =
-        trim($parts[0]);
-}
-
-
-if (!empty($parts[1])) {
-
-    $section =
-        trim($parts[1]);
+        $yearLevel = trim($parts[0] ?? "");
+        $section = trim($parts[1] ?? "");
+    }
 }
 
 
