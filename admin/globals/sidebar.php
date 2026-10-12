@@ -145,6 +145,17 @@
             </span>
 
         </a>
+        <a
+            href="question_media_management.php"
+            class="sidebar-link">
+
+            <i class="bi bi-journal-text"></i>
+
+            <span>
+                Question Media Management
+            </span>
+
+        </a>
 
 
         <!-- GRADES -->
