@@ -273,7 +273,6 @@ try {
     .qp-question {
         padding: 22px;
         border: 2px solid #cbd5e1;
-        border-left: 5px solid var(--qp-primary);
         border-radius: 13px;
         background: #fff;
         box-shadow: 0 3px 10px rgba(15, 23, 42, .06);
@@ -483,6 +482,67 @@ try {
 
     .ql-formula {
         font-family: inherit
+    }
+
+    /* Render code blocks created in the question editor clearly inside the practice exam. */
+    .rich-content pre,
+    .rich-content pre.ql-syntax,
+    .rich-content .ql-code-block-container,
+    .rich-content .ql-code-block {
+        display: block;
+        box-sizing: border-box;
+        max-width: 100%;
+        margin: 12px 0;
+        padding: 14px 16px;
+        overflow-x: auto;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        background: #0f172a;
+        color: #e2e8f0;
+        font-family: Consolas, Monaco, "Courier New", monospace;
+        font-size: .88rem;
+        font-weight: 400;
+        line-height: 1.6;
+        text-align: left;
+        white-space: pre;
+        overflow-wrap: normal;
+        word-break: normal;
+        tab-size: 4;
+    }
+
+    .rich-content .ql-code-block-container {
+        white-space: normal;
+    }
+
+    .rich-content .ql-code-block {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    .rich-content code,
+    .rich-content p code,
+    .rich-content li code {
+        padding: 2px 5px;
+        border-radius: 4px;
+        background: #eef2f7;
+        color: #be123c;
+        font-family: Consolas, Monaco, "Courier New", monospace;
+        font-size: .92em;
+        font-weight: 400;
+        overflow-wrap: anywhere;
+    }
+
+    .qp-question-text .rich-content,
+    .qp-question-text.rich-content,
+    .qp-option-text {
+        min-width: 0;
+    }
+
+    .qp-option-text {
+        flex: 1 1 auto;
     }
 
     @media(max-width:900px) {
