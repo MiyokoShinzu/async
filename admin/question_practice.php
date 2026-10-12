@@ -261,9 +261,20 @@ try {
         display: none
     }
 
+    .qp-question-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 28px;
+        row-gap: 0;
+        align-items: start;
+        min-width: 0
+    }
+
     .qp-question {
         padding: 26px 0;
-        border-bottom: 2px solid #e9edf5
+        border-bottom: 2px solid #e9edf5;
+        min-width: 0;
+        overflow-wrap: anywhere
     }
 
     .qp-question+.qp-question {
@@ -475,6 +486,11 @@ try {
         .qp-filter-submit {
             grid-column: 1 / -1
         }
+
+        .qp-question-grid {
+            grid-template-columns: minmax(0, 1fr);
+            column-gap: 0
+        }
     }
 
     @media(max-width:600px) {
@@ -574,13 +590,13 @@ try {
                                 </div>
                             </div>
                             <div class="qp-body">
-                                <?php foreach ($questions as $i => $q): ?><section class="qp-question" id="question-<?= (int)$q['id'] ?>"><input type="hidden" name="question_ids[]" value="<?= (int)$q['id'] ?>">
-                                        <div class="qp-meta"><span><?= e($q['subject_code']) ?></span><span><?= e($q['topic_name']) ?></span><span><?= e(ucfirst($q['difficulty'])) ?></span></div>
-                                        <div class="qp-question-title">
-                                            <div class="qp-number"><?= $i + 1 ?></div>
-                                            <div class="qp-question-text rich-content"><?= safe_rich($q['question_text']) ?></div>
-                                        </div><?php foreach ($q['choices'] as $c): ?><label class="qp-option"><input type="radio" name="answers[<?= (int)$q['id'] ?>]" value="<?= e($c['choice_label']) ?>"><span class="qp-option-label"><?= e($c['choice_label']) ?>.</span><span class="qp-option-text rich-content"><?= safe_rich($c['choice_text']) ?></span></label><?php endforeach; ?>
-                                    </section><?php endforeach; ?>
+                                <div class="qp-question-grid"><?php foreach ($questions as $i => $q): ?><section class="qp-question" id="question-<?= (int)$q['id'] ?>"><input type="hidden" name="question_ids[]" value="<?= (int)$q['id'] ?>">
+                                            <div class="qp-meta"><span><?= e($q['subject_code']) ?></span><span><?= e($q['topic_name']) ?></span><span><?= e(ucfirst($q['difficulty'])) ?></span></div>
+                                            <div class="qp-question-title">
+                                                <div class="qp-number"><?= $i + 1 ?></div>
+                                                <div class="qp-question-text rich-content"><?= safe_rich($q['question_text']) ?></div>
+                                            </div><?php foreach ($q['choices'] as $c): ?><label class="qp-option"><input type="radio" name="answers[<?= (int)$q['id'] ?>]" value="<?= e($c['choice_label']) ?>"><span class="qp-option-label"><?= e($c['choice_label']) ?>.</span><span class="qp-option-text rich-content"><?= safe_rich($c['choice_text']) ?></span></label><?php endforeach; ?>
+                                        </section><?php endforeach; ?></div>
                                 <div class="qp-actions"><span class="text-secondary small"><i class="bi bi-info-circle me-1"></i>Your score will appear after submission.</span><button type="submit" class="btn qp-btn qp-btn-primary"><i class="bi bi-check2-circle me-1"></i>Submit Answers</button></div>
                             </div>
                         </div>
@@ -606,13 +622,13 @@ try {
                         </div>
                     </div>
                     <div class="qp-body">
-                        <?php foreach ($results as $i => $q): ?><section class="qp-question">
-                                <div class="qp-question-title">
-                                    <div class="qp-number"><?= $i + 1 ?></div>
-                                    <div class="qp-question-text rich-content"><?= safe_rich($q['question_text']) ?></div>
-                                </div><?php foreach ($q['choices'] as $c): $correctChoice = $c['choice_label'] === $q['correct'];
-                                            $pickedChoice = $c['choice_label'] === $q['picked']; ?><div class="qp-option" style="cursor:default;<?= $correctChoice ? 'border-color:#86efac;background:#f0fdf4;' : ($pickedChoice ? 'border-color:#fdba74;background:#fff7ed;' : '') ?>"><span class="qp-option-label"><?= e($c['choice_label']) ?>.</span><span class="qp-option-text rich-content"><?= safe_rich($c['choice_text']) ?><?php if ($correctChoice): ?> <strong class="text-success ms-1">Correct answer</strong><?php elseif ($pickedChoice): ?> <strong class="text-warning-emphasis ms-1">Your answer</strong><?php endif; ?></span></div><?php endforeach; ?><div class="qp-result <?= $q['is_correct'] ? 'good' : 'bad' ?>"><strong><?= $q['is_correct'] ? 'Correct!' : 'Not quite.' ?></strong> <?php if (!$q['picked']): ?>You did not select an answer. <?php else: ?>Your answer: <?= e($q['picked']) ?>. <?php endif; ?>Correct answer: <?= e($q['correct'] ?: 'Not configured') ?>.</div><?php if (trim(strip_tags((string)$q['explanation'])) !== ''): ?><div class="qp-explanation"><strong>Explanation:</strong> <span class="rich-content"><?= safe_rich($q['explanation']) ?></span></div><?php endif; ?>
-                            </section><?php endforeach; ?>
+                        <div class="qp-question-grid"><?php foreach ($results as $i => $q): ?><section class="qp-question">
+                                    <div class="qp-question-title">
+                                        <div class="qp-number"><?= $i + 1 ?></div>
+                                        <div class="qp-question-text rich-content"><?= safe_rich($q['question_text']) ?></div>
+                                    </div><?php foreach ($q['choices'] as $c): $correctChoice = $c['choice_label'] === $q['correct'];
+                                                                $pickedChoice = $c['choice_label'] === $q['picked']; ?><div class="qp-option" style="cursor:default;<?= $correctChoice ? 'border-color:#86efac;background:#f0fdf4;' : ($pickedChoice ? 'border-color:#fdba74;background:#fff7ed;' : '') ?>"><span class="qp-option-label"><?= e($c['choice_label']) ?>.</span><span class="qp-option-text rich-content"><?= safe_rich($c['choice_text']) ?><?php if ($correctChoice): ?> <strong class="text-success ms-1">Correct answer</strong><?php elseif ($pickedChoice): ?> <strong class="text-warning-emphasis ms-1">Your answer</strong><?php endif; ?></span></div><?php endforeach; ?><div class="qp-result <?= $q['is_correct'] ? 'good' : 'bad' ?>"><strong><?= $q['is_correct'] ? 'Correct!' : 'Not quite.' ?></strong> <?php if (!$q['picked']): ?>You did not select an answer. <?php else: ?>Your answer: <?= e($q['picked']) ?>. <?php endif; ?>Correct answer: <?= e($q['correct'] ?: 'Not configured') ?>.</div><?php if (trim(strip_tags((string)$q['explanation'])) !== ''): ?><div class="qp-explanation"><strong>Explanation:</strong> <span class="rich-content"><?= safe_rich($q['explanation']) ?></span></div><?php endif; ?>
+                                </section><?php endforeach; ?></div>
                         <div class="qp-actions"><a class="btn btn-outline-secondary qp-btn" href="question_practice.php"><i class="bi bi-arrow-left me-1"></i>Back to Setup</a><a class="btn qp-btn qp-btn-primary" href="question_practice.php?<?= e(http_build_query(['subject' => $subjectId, 'topic_ids' => $topicIds, 'count' => $limit])) ?>"><i class="bi bi-arrow-repeat me-1"></i>Try Another Set</a></div>
                     </div>
                 </div>
