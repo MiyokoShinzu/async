@@ -52,6 +52,52 @@ if (
 
 
 /* =========================================================
+   TOPBAR USER IDENTITY
+   ========================================================= */
+
+$user = $_SESSION["user"] ?? [];
+$firstName = trim((string)($user["first_name"] ?? ""));
+$lastName = trim((string)($user["last_name"] ?? ""));
+$middleInitial = trim((string)($user["middle_initial"] ?? ""));
+$extensionName = trim((string)($user["extension_name"] ?? ""));
+$email = trim((string)($user["email"] ?? ""));
+$username = trim((string)($user["username"] ?? ""));
+
+$fullName = trim(
+    $firstName . " " .
+        ($middleInitial !== "" ? $middleInitial . ". " : "") .
+        $lastName .
+        ($extensionName !== "" ? " " . $extensionName : "")
+);
+
+if ($fullName === "") {
+    $fullName = $username !== "" ? $username : ($email !== "" ? $email : "Administrator");
+}
+
+$initials = "";
+if ($firstName !== "") {
+    $initials .= strtoupper(substr($firstName, 0, 1));
+}
+if ($lastName !== "") {
+    $initials .= strtoupper(substr($lastName, 0, 1));
+}
+if ($initials === "") {
+    $fallbackName = $username !== "" ? $username : $email;
+    $nameParts = preg_split('/[\s._@-]+/', $fallbackName, -1, PREG_SPLIT_NO_EMPTY);
+    foreach (array_slice($nameParts ?: [], 0, 2) as $part) {
+        $initials .= strtoupper(substr($part, 0, 1));
+    }
+}
+if ($initials === "") {
+    $initials = "AD";
+}
+
+// Compatibility aliases for older topbar templates.
+$fullname = $fullName;
+$adminInitials = $initials;
+
+
+/* =========================================================
 
    DATABASE
 
@@ -2562,12 +2608,6 @@ function buildMonitorUrl(
 
 
 
-                                    <th>
-
-                                        Submission
-
-                                    </th>
-
 
 
                                 </tr>
@@ -2637,14 +2677,6 @@ function buildMonitorUrl(
                                         ?? "";
 
 
-
-
-
-                                    $submissionStatus =
-
-                                        $record["submission_status"]
-
-                                        ?? "";
 
 
 
@@ -3122,149 +3154,7 @@ function buildMonitorUrl(
 
 
 
-                                        <!-- SUBMISSION -->
 
-
-
-                                        <td>
-
-
-
-                                            <?php if (
-
-                                                !empty($record["submitted_at"])
-
-                                            ): ?>
-
-
-
-
-
-                                                <span
-
-                                                    class="status-badge submitted">
-
-
-
-                                                    <i
-
-                                                        class="bi bi-check-circle me-1">
-
-                                                    </i>
-
-
-
-                                                    Submitted
-
-
-
-                                                </span>
-
-
-
-
-
-                                                <div
-
-                                                    class="monitor-date">
-
-
-
-                                                    <?= htmlspecialchars(
-
-                                                        date(
-
-                                                            "M d, Y h:i A",
-
-                                                            strtotime(
-
-                                                                $record["submitted_at"]
-
-                                                            )
-
-                                                        )
-
-                                                    ) ?>
-
-
-
-                                                </div>
-
-
-
-
-
-                                                <?php if (
-
-                                                    $record["score"] !== null
-
-                                                ): ?>
-
-
-
-                                                    <div
-
-                                                        class="monitor-score">
-
-
-
-                                                        Score:
-
-
-
-                                                        <strong>
-
-
-
-                                                            <?= htmlspecialchars(
-
-                                                                $record["score"]
-
-                                                            ) ?>
-
-
-
-                                                        </strong>
-
-
-
-                                                    </div>
-
-
-
-                                                <?php endif; ?>
-
-
-
-
-
-                                            <?php else: ?>
-
-
-
-
-
-                                                <span
-
-                                                    class="status-badge not-submitted">
-
-
-
-                                                    Not Submitted
-
-
-
-                                                </span>
-
-
-
-
-
-                                            <?php endif; ?>
-
-
-
-                                        </td>
 
 
 
