@@ -64,7 +64,7 @@ if ($connectionPath === null) {
     exit('Database connection file not found. Expected src/connection.php in the project folder.');
 }
 require_once $connectionPath;
-$db = $mysqli ?? $db ?? null;
+$db = $mysqli ?? $db ?? $conn ?? $con ?? null;
 if (!$db instanceof mysqli) {
     http_response_code(500);
     exit('Database connection is unavailable. Check src/connection.php.');
@@ -387,7 +387,10 @@ if ($selectedLeaderboardExamId > 0 && !isset($leaderboards[$selectedLeaderboardE
     $selectedLeaderboardExamId = 0;
 }
 if ($selectedLeaderboardExamId === 0 && $leaderboards) {
-    $selectedLeaderboardExamId = (int)array_key_first($leaderboards);
+    // Avoid array_key_first() so this also works on older supported PHP builds.
+    reset($leaderboards);
+    $firstLeaderboardKey = key($leaderboards);
+    $selectedLeaderboardExamId = ($firstLeaderboardKey !== null) ? (int)$firstLeaderboardKey : 0;
 }
 $visibleLeaderboards = $selectedLeaderboardExamId > 0 && isset($leaderboards[$selectedLeaderboardExamId])
     ? [$selectedLeaderboardExamId => $leaderboards[$selectedLeaderboardExamId]]
@@ -791,7 +794,7 @@ ex_page_start('Student Examinations', true);
                 <div class="exam-card-body">
                     <form method="get" class="leaderboard-filter-form">
                         <label for="leaderboardExamFilter" class="form-label fw-semibold"><i class="bi bi-funnel me-1" aria-hidden="true"></i>Choose an exam</label>
-                        <select class="form-select" id="leaderboardExamFilter" name="leaderboard_exam" onchange="this.form.requestSubmit()" aria-controls="examLeaderboard">
+                        <select class="form-select" id="leaderboardExamFilter" name="leaderboard_exam" onchange="if (this.form.requestSubmit) { this.form.requestSubmit(); } else { this.form.submit(); }" aria-controls="examLeaderboard">
                             <?php foreach ($examIdsForBoards as $filterExam): ?>
                                 <option value="<?= (int)$filterExam['id'] ?>" <?= $selectedLeaderboardExamId === (int)$filterExam['id'] ? 'selected' : '' ?>><?= $selectedLeaderboardExamId === (int)$filterExam['id'] ? '✓  ' : '' ?><?= ex_e($filterExam['title']) ?></option>
                             <?php endforeach; ?>
@@ -1981,5 +1984,5 @@ ex_page_start('Student Examinations', true);
         background: var(--exam-surface-soft);
         color: var(--exam-text);
     }
-</style> 
+</style>
 <?php ex_page_end(true); ?>
