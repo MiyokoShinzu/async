@@ -748,18 +748,45 @@ ex_page_start('Student Examinations', true);
                 <div class="d-flex justify-content-between gap-2 flex-wrap mb-2">
                     <div class="small text-secondary fw-semibold">QUESTION <?= $index + 1 ?> OF <?= count($questions) ?></div><?php if ((int)($q['is_correct'] ?? 0) === 1): ?><span class="badge text-bg-success">Correct</span><?php else: ?><span class="badge text-bg-danger">Incorrect / unanswered</span><?php endif; ?>
                 </div>
-                <div class="text-rich fw-semibold mb-2"><?= ex_rich((string)$q['question_text']) ?></div><?php ex_render_media($db, (int)$q['question_id']);
-                                                                                                            $choices = ex_rows($db, 'SELECT choice_label,choice_text,is_correct FROM question_choices WHERE question_id=? ORDER BY FIELD(choice_label,\'A\',\'B\',\'C\',\'D\',\'E\',\'F\')', 'i', [(int)$q['question_id']]);
-                                                                                                            foreach ($choices as $c): $picked = ((string)$c['choice_label'] === (string)$q['selected_choice']);
-                                                                                                                $correct = ((string)$c['choice_label'] === (string)$q['correct_choice'] && (int)$c['is_correct'] === 1); ?><div class="choice-row <?= ($correct ? 'choice-correct' : ($picked ? 'choice-wrong' : '')) ?>"><strong><?= ex_e($c['choice_label']) ?>.</strong><span class="text-rich"><?= ex_rich((string)$c['choice_text']) ?></span><?php if ($correct): ?><span class="ms-auto small fw-bold text-success">Correct answer</span><?php elseif ($picked): ?><span class="ms-auto small fw-bold text-danger">Your answer</span><?php endif; ?></div><?php endforeach; ?>
+                <div class="text-rich fw-semibold mb-2"><?= ex_rich((string)$q['question_text']) ?></div>
+                <?php
+                // Keep review rendering resilient if optional media or solution data differs on hosting.
+                try {
+                    ex_render_media($db, (int)$q['question_id']);
+                } catch (Throwable $mediaError) {
+                    error_log('Review media rendering failed for question ' . (int)$q['question_id'] . ': ' . $mediaError->getMessage());
+                }
+                $reviewChoices = [];
+                try {
+                    $reviewChoices = ex_rows($db, 'SELECT choice_label,choice_text,is_correct FROM question_choices WHERE question_id=? ORDER BY FIELD(choice_label,\'A\',\'B\',\'C\',\'D\',\'E\',\'F\')', 'i', [(int)$q['question_id']]);
+                } catch (Throwable $choiceError) {
+                    error_log('Review choices query failed for question ' . (int)$q['question_id'] . ': ' . $choiceError->getMessage());
+                }
+                foreach ($reviewChoices as $c):
+                    $picked = ((string)$c['choice_label'] === (string)($q['selected_choice'] ?? ''));
+                    $correct = ((string)$c['choice_label'] === (string)($q['correct_choice'] ?? '') && (int)$c['is_correct'] === 1);
+                ?><div class="choice-row <?= ($correct ? 'choice-correct' : ($picked ? 'choice-wrong' : '')) ?>">
+                        <strong><?= ex_e($c['choice_label']) ?>.</strong>
+                        <span class="text-rich"><?= ex_rich((string)$c['choice_text']) ?></span>
+                        <?php if ($correct): ?><span class="ms-auto small fw-bold text-success">Correct answer</span><?php elseif ($picked): ?><span class="ms-auto small fw-bold text-danger">Your answer</span><?php endif; ?>
+                    </div><?php endforeach; ?>
+                <?php if (!$reviewChoices): ?><div class="alert alert-warning mt-3">Answer choices are unavailable for this question. Please contact your instructor.</div><?php endif; ?>
                 <?php if (trim((string)($q['explanation'] ?? '')) !== ''): ?><div class="solution-block mt-3">
                         <h6 class="fw-bold"><i class="bi bi-lightbulb me-1"></i>Explanation</h6>
                         <div class="text-rich"><?= ex_rich((string)$q['explanation']) ?></div>
                     </div><?php endif; ?>
-                <?php $solutions = ex_rows($db, 'SELECT solution_type,solution_content FROM question_solutions WHERE question_id=? ORDER BY display_order,id', 'i', [(int)$q['question_id']]);
+                <?php
+                $solutions = [];
+                try {
+                    $solutions = ex_rows($db, 'SELECT solution_type,solution_content FROM question_solutions WHERE question_id=? ORDER BY display_order,id', 'i', [(int)$q['question_id']]);
+                } catch (Throwable $solutionError) {
+                    error_log('Review solutions query failed for question ' . (int)$q['question_id'] . ': ' . $solutionError->getMessage());
+                }
                 if ($solutions): ?><div class="solution-block mt-3">
-                        <h6 class="fw-bold"><i class="bi bi-journal-check me-1"></i>Solutions</h6><?php foreach ($solutions as $sol): ?><div class="solution-item">
-                                <div class="small text-secondary text-uppercase fw-semibold mb-2"><?= ex_e(str_replace('_', ' ', (string)$sol['solution_type'])) ?></div><?= st_solution_embed((string)$sol['solution_type'], (string)$sol['solution_content']) ?>
+                        <h6 class="fw-bold"><i class="bi bi-journal-check me-1"></i>Solutions</h6>
+                        <?php foreach ($solutions as $sol): ?><div class="solution-item">
+                                <div class="small text-secondary text-uppercase fw-semibold mb-2"><?= ex_e(str_replace('_', ' ', (string)$sol['solution_type'])) ?></div>
+                                <?= st_solution_embed((string)$sol['solution_type'], (string)$sol['solution_content']) ?>
                             </div><?php endforeach; ?>
                     </div><?php endif; ?>
             </section><?php endforeach; ?>
