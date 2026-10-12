@@ -28,7 +28,7 @@
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<link rel="shortcut icon" href="../../assets/pubmat/head.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../../assets/pubmat/head.png" type="image/x-icon">
     <style>
         /* =====================================================
            GENERAL
@@ -913,5 +913,25 @@
 
         }
     </style>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [
+                    ['\\(', '\\)']
+                ],
+                displayMath: [
+                    ['\\[', '\\]']
+                ]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+        async>
+    </script>
 
 </head>
