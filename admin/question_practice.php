@@ -4,6 +4,15 @@ require_once '../src/connection.php';
 $db = $mysqli;
 if (!$db instanceof mysqli) exit('Database connection is unavailable.');
 $db->set_charset('utf8mb4');
+$db->query("CREATE TABLE IF NOT EXISTS question_solutions (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
+    solution_type ENUM('text','simple_text','rich_text','image','youtube') NOT NULL,
+    solution_content MEDIUMTEXT NOT NULL,
+    display_order TINYINT UNSIGNED NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_question_solutions_question (question_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 if (empty($_SESSION['practice_csrf'])) $_SESSION['practice_csrf'] = bin2hex(random_bytes(32));
 $csrf = $_SESSION['practice_csrf'];
@@ -38,6 +47,62 @@ function question_media(mysqli $db, int $questionId): array
         'i',
         [$questionId]
     );
+}
+
+
+function question_solutions(mysqli $db, int $questionId): array
+{
+    return rows($db, 'SELECT id, solution_type, solution_content, display_order FROM question_solutions WHERE question_id = ? ORDER BY display_order, id', 'i', [$questionId]);
+}
+
+function render_question_solutions(array $items): void
+{
+    if (!$items) return;
+    echo '<div class="qp-solutions"><h6><i class="bi bi-lightbulb me-2"></i>Solution</h6>';
+    foreach ($items as $item) {
+        $type = (string)($item['solution_type'] ?? '');
+        $content = trim((string)($item['solution_content'] ?? ''));
+        if ($content === '') continue;
+        if (in_array($type, ['text', 'simple_text'], true)) {
+            echo '<div class="qp-solution-text rich-content">' . nl2br(e($content)) . '</div>';
+            continue;
+        }
+        if ($type === 'rich_text') {
+            echo '<div class="qp-solution-text rich-content">' . safe_rich($content) . '</div>';
+            continue;
+        }
+        $parts = parse_url($content);
+        $host = strtolower($parts['host'] ?? '');
+        $path = $parts['path'] ?? '';
+        $embedUrl = '';
+        $label = '';
+        if ($type === 'image' && in_array($host, ['drive.google.com', 'www.drive.google.com'], true)) {
+            $fileId = '';
+            if (preg_match('~/file/d/([A-Za-z0-9_-]+)~', $path, $m)) $fileId = $m[1];
+            else {
+                parse_str($parts['query'] ?? '', $query);
+                if (!empty($query['id']) && preg_match('/^[A-Za-z0-9_-]+$/', (string)$query['id'])) $fileId = (string)$query['id'];
+            }
+            if ($fileId !== '') {
+                $embedUrl = 'https://drive.google.com/file/d/' . rawurlencode($fileId) . '/preview';
+                $label = 'Solution image';
+            }
+        } elseif ($type === 'youtube') {
+            $videoId = '';
+            if ($host === 'youtu.be') $videoId = explode('/', trim($path, '/'))[0] ?? '';
+            elseif (in_array($host, ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'], true)) {
+                parse_str($parts['query'] ?? '', $query);
+                if (str_starts_with($path, '/watch')) $videoId = (string)($query['v'] ?? '');
+                elseif (preg_match('~/(?:embed|shorts)/([A-Za-z0-9_-]+)~', $path, $m)) $videoId = $m[1];
+            }
+            if (preg_match('/^[A-Za-z0-9_-]{11}$/', $videoId)) {
+                $embedUrl = 'https://www.youtube-nocookie.com/embed/' . rawurlencode($videoId);
+                $label = 'Solution video';
+            }
+        }
+        if ($embedUrl !== '') echo '<div class="qp-solution-media"><div class="qp-media-label">' . e($label) . '</div><div class="qp-media-frame"><iframe src="' . e($embedUrl) . '" title="' . e($label) . '" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><div class="qp-media-open"><a href="' . e($content) . '" target="_blank" rel="noopener noreferrer">Open original <i class="bi bi-box-arrow-up-right"></i></a></div></div>';
+    }
+    echo '</div>';
 }
 
 function render_question_media(array $items): void
@@ -136,6 +201,7 @@ try {
             if ($isCorrect) $score++;
             $q['choices'] = $choices;
             $q['media'] = question_media($db, (int)$q['id']);
+            $q['solutions'] = question_solutions($db, (int)$q['id']);
             $q['picked'] = $picked;
             $q['correct'] = $correct;
             $q['is_correct'] = $isCorrect;
@@ -540,6 +606,30 @@ try {
         line-height: 1.6
     }
 
+    .qp-solutions {
+        margin-top: 16px;
+        padding: 15px;
+        border: 1px solid #bfdbfe;
+        border-radius: 10px;
+        background: #eff6ff;
+    }
+
+    .qp-solutions h6 {
+        font-weight: 750;
+        color: #1d4ed8;
+        margin-bottom: 10px;
+    }
+
+    .qp-solution-text {
+        color: #1f2937;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .qp-solution-media {
+        margin-top: 12px;
+    }
+
     .qp-empty {
         padding: 34px;
         text-align: center;
@@ -820,7 +910,7 @@ try {
                                         <div class="qp-number"><?= $i + 1 ?></div>
                                         <div class="qp-question-text rich-content"><?= safe_rich($q['question_text']) ?></div>
                                     </div><?php render_question_media($q['media'] ?? []); ?><?php foreach ($q['choices'] as $c): $correctChoice = $c['choice_label'] === $q['correct'];
-                                                                                                $pickedChoice = $c['choice_label'] === $q['picked']; ?><div class="qp-option" style="cursor:default;<?= $correctChoice ? 'border-color:#86efac;background:#f0fdf4;' : ($pickedChoice ? 'border-color:#fdba74;background:#fff7ed;' : '') ?>"><span class="qp-option-label"><?= e($c['choice_label']) ?>.</span><span class="qp-option-text rich-content"><?= safe_rich($c['choice_text']) ?><?php if ($correctChoice): ?> <strong class="text-success ms-1">Correct answer</strong><?php elseif ($pickedChoice): ?> <strong class="text-warning-emphasis ms-1">Your answer</strong><?php endif; ?></span></div><?php endforeach; ?><?php if (trim(strip_tags((string)$q['explanation'])) !== ''): ?><div class="qp-explanation"><span class="rich-content"><?= safe_rich($q['explanation']) ?></span></div><?php endif; ?>
+                                                                                                $pickedChoice = $c['choice_label'] === $q['picked']; ?><div class="qp-option" style="cursor:default;<?= $correctChoice ? 'border-color:#86efac;background:#f0fdf4;' : ($pickedChoice ? 'border-color:#fdba74;background:#fff7ed;' : '') ?>"><span class="qp-option-label"><?= e($c['choice_label']) ?>.</span><span class="qp-option-text rich-content"><?= safe_rich($c['choice_text']) ?><?php if ($correctChoice): ?> <strong class="text-success ms-1">Correct answer</strong><?php elseif ($pickedChoice): ?> <strong class="text-warning-emphasis ms-1">Your answer</strong><?php endif; ?></span></div><?php endforeach; ?><?php if (trim(strip_tags((string)$q['explanation'])) !== ''): ?><div class="qp-explanation"><span class="rich-content"><?= safe_rich($q['explanation']) ?></span></div><?php endif; ?><?php render_question_solutions($q['solutions'] ?? []); ?>
                                 </section><?php endforeach; ?></div>
                         <div class="qp-actions"><a class="btn btn-outline-secondary qp-btn" href="question_practice.php"><i class="bi bi-arrow-left me-1"></i>Back to Setup</a><a class="btn qp-btn qp-btn-primary" href="question_practice.php?<?= e(http_build_query(['subject' => $subjectId, 'topic_ids' => $topicIds, 'count' => $limit])) ?>"><i class="bi bi-arrow-repeat me-1"></i>Try Another Set</a></div>
                     </div>

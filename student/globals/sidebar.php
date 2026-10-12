@@ -202,6 +202,17 @@ function sidebarActive($page)
             </span>
 
         </a>
+        <a
+            href="assessment.php"
+            class="sidebar-link <?= sidebarActive('assessment.php') ?>">
+
+            <i class="bi bi-clipboard-data"></i>
+
+            <span>
+               Assessment
+            </span>
+
+        </a>
 
 
         <!-- =================================================

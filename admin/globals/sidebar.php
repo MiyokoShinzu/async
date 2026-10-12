@@ -156,6 +156,28 @@
             </span>
 
         </a>
+        <a
+            href="question_solutions_management.php"
+            class="sidebar-link">
+
+            <i class="bi bi-journal-text"></i>
+
+            <span>
+                Question Solutions Management
+            </span>
+
+        </a>
+        <a
+            href="exam_manager.php"
+            class="sidebar-link">
+
+            <i class="bi bi-journal-text"></i>
+
+            <span>
+                Exam Manager
+            </span>
+
+        </a>
 
 
         <!-- GRADES -->
