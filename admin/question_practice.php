@@ -199,16 +199,36 @@ try {
         color: var(--qp-text)
     }
 
+    .qp-filter-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+        gap: 20px 24px;
+        align-items: start
+    }
+
+    .qp-filter-field {
+        min-width: 0
+    }
+
+    .qp-filter-count {
+        grid-column: 1 / 2
+    }
+
+    .qp-filter-submit {
+        grid-column: 1 / -1
+    }
+
     .qp-topic-list {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
         max-height: 220px;
         overflow-y: auto;
         border: 1px solid #d1d5db;
         border-radius: 8px;
         padding: 10px;
-        background: #fff
+        background: #fff;
+        min-width: 0
     }
 
     .qp-topic-item {
@@ -242,8 +262,33 @@ try {
     }
 
     .qp-question {
-        padding: 22px 0;
-        border-bottom: 1px solid #eef0f4
+        padding: 26px 0;
+        border-bottom: 2px solid #e9edf5
+    }
+
+    .qp-question+.qp-question {
+        margin-top: 2px
+    }
+
+    .qp-question .rich-content p {
+        margin: 0 0 .75rem
+    }
+
+    .qp-question .rich-content p:last-child {
+        margin-bottom: 0
+    }
+
+    .rich-content {
+        overflow-wrap: anywhere;
+        word-break: normal
+    }
+
+    .qp-score-card {
+        margin-bottom: 30px
+    }
+
+    .qp-review-card {
+        margin-top: 0
     }
 
     .qp-question:first-child {
@@ -421,6 +466,23 @@ try {
         font-family: inherit
     }
 
+    @media(max-width:900px) {
+        .qp-filter-grid {
+            grid-template-columns: minmax(0, 1fr)
+        }
+
+        .qp-filter-count,
+        .qp-filter-submit {
+            grid-column: 1 / -1
+        }
+    }
+
+    @media(max-width:600px) {
+        .qp-topic-list {
+            grid-template-columns: minmax(0, 1fr)
+        }
+    }
+
     @media(max-width:768px) {
         .page-header {
             align-items: flex-start;
@@ -454,6 +516,10 @@ try {
             height: 65px;
             flex-basis: 65px
         }
+
+        .qp-question {
+            padding: 22px 0
+        }
     }
 </style>
 
@@ -479,16 +545,16 @@ try {
                         </div>
                     </div>
                     <div class="qp-body">
-                        <form method="get" class="row g-3 align-items-start">
-                            <div class="col-md-5"><label class="qp-label" for="subject">Subject</label><select class="qp-select" id="subject" name="subject">
+                        <form method="get" class="qp-filter-grid">
+                            <div class="qp-filter-field"><label class="qp-label" for="subject">Subject</label><select class="qp-select" id="subject" name="subject">
                                     <option value="0">All subjects</option><?php foreach ($subjects as $s): ?><option value="<?= (int)$s['id'] ?>" <?= (int)$subjectId === (int)$s['id'] ? 'selected' : '' ?>><?= e($s['subject_code'] . ' — ' . $s['subject_name']) ?></option><?php endforeach; ?>
                                 </select></div>
-                            <div class="col-md-7"><label class="qp-label">Topics <span class="text-secondary fw-normal">(check any topics you want)</span></label>
+                            <div class="qp-filter-field"><label class="qp-label">Topics <span class="text-secondary fw-normal">(check any topics you want)</span></label>
                                 <div class="qp-topic-list" id="topicList"><?php foreach ($topics as $t): ?><label class="qp-topic-item" data-subject="<?= (int)$t['subject_id'] ?>"><input type="checkbox" name="topic_ids[]" value="<?= (int)$t['id'] ?>" <?php if (in_array((int)$t['id'], $topicIds, true)) echo 'checked'; ?>><span><?= e($t['topic_name']) ?></span></label><?php endforeach; ?></div>
                                 <div class="form-text">Leave all topics unchecked to include every topic for the selected subject.</div>
                             </div>
-                            <div class="col-md-4"><label class="qp-label" for="count">Questions</label><select class="qp-select" id="count" name="count"><?php foreach ([5, 10, 15, 20, 30, 50] as $n): ?><option value="<?= $n ?>" <?= $limit === $n ? 'selected' : '' ?>><?= $n ?> questions</option><?php endforeach; ?></select></div>
-                            <div class="col-12"><button class="btn qp-btn qp-btn-primary"><i class="bi bi-arrow-repeat me-1"></i>Load Practice Questions</button></div>
+                            <div class="qp-filter-field qp-filter-count"><label class="qp-label" for="count">Questions</label><select class="qp-select" id="count" name="count"><?php foreach ([5, 10, 15, 20, 30, 50] as $n): ?><option value="<?= $n ?>" <?= $limit === $n ? 'selected' : '' ?>><?= $n ?> questions</option><?php endforeach; ?></select></div>
+                            <div class="qp-filter-submit"><button class="btn qp-btn qp-btn-primary"><i class="bi bi-arrow-repeat me-1"></i>Load Practice Questions</button></div>
                         </form>
                     </div>
                 </div>
@@ -521,7 +587,7 @@ try {
                     </form>
                 <?php endif; ?>
             <?php else: ?>
-                <div class="qp-card">
+                <div class="qp-card qp-score-card">
                     <div class="qp-score">
                         <div class="qp-score-circle"><?= number_format(($score / max(1, $total)) * 100, 0) ?>%</div>
                         <div>
@@ -531,7 +597,7 @@ try {
                         </div>
                     </div>
                 </div>
-                <div class="qp-card">
+                <div class="qp-card qp-review-card">
                     <div class="qp-head">
                         <div class="qp-icon"><i class="bi bi-clipboard-check"></i></div>
                         <div>
