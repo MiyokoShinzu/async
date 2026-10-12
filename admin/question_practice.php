@@ -264,21 +264,25 @@ try {
     .qp-question-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        column-gap: 28px;
-        row-gap: 0;
-        align-items: start;
+        column-gap: 24px;
+        row-gap: 22px;
+        align-items: stretch;
         min-width: 0
     }
 
     .qp-question {
-        padding: 26px 0;
-        border-bottom: 2px solid #e9edf5;
+        padding: 22px;
+        border: 2px solid #cbd5e1;
+        border-left: 5px solid var(--qp-primary);
+        border-radius: 13px;
+        background: #fff;
+        box-shadow: 0 3px 10px rgba(15, 23, 42, .06);
         min-width: 0;
         overflow-wrap: anywhere
     }
 
     .qp-question+.qp-question {
-        margin-top: 2px
+        margin-top: 0
     }
 
     .qp-question .rich-content p {
@@ -303,12 +307,11 @@ try {
     }
 
     .qp-question:first-child {
-        padding-top: 0
+        padding-top: 22px
     }
 
     .qp-question:last-child {
-        border-bottom: 0;
-        padding-bottom: 0
+        padding-bottom: 22px
     }
 
     .qp-question-title {
@@ -458,9 +461,14 @@ try {
     }
 
     .qp-explanation {
-        margin-top: 10px;
-        color: #4b5563;
-        font-size: .9rem
+        margin-top: 16px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        border-left: 3px solid #64748b;
+        background: #f8fafc;
+        color: #374151;
+        font-size: .9rem;
+        line-height: 1.6
     }
 
     .qp-empty {
@@ -534,7 +542,8 @@ try {
         }
 
         .qp-question {
-            padding: 22px 0
+            padding: 18px;
+            border-radius: 11px
         }
     }
 </style>
@@ -627,7 +636,7 @@ try {
                                         <div class="qp-number"><?= $i + 1 ?></div>
                                         <div class="qp-question-text rich-content"><?= safe_rich($q['question_text']) ?></div>
                                     </div><?php foreach ($q['choices'] as $c): $correctChoice = $c['choice_label'] === $q['correct'];
-                                                                $pickedChoice = $c['choice_label'] === $q['picked']; ?><div class="qp-option" style="cursor:default;<?= $correctChoice ? 'border-color:#86efac;background:#f0fdf4;' : ($pickedChoice ? 'border-color:#fdba74;background:#fff7ed;' : '') ?>"><span class="qp-option-label"><?= e($c['choice_label']) ?>.</span><span class="qp-option-text rich-content"><?= safe_rich($c['choice_text']) ?><?php if ($correctChoice): ?> <strong class="text-success ms-1">Correct answer</strong><?php elseif ($pickedChoice): ?> <strong class="text-warning-emphasis ms-1">Your answer</strong><?php endif; ?></span></div><?php endforeach; ?><div class="qp-result <?= $q['is_correct'] ? 'good' : 'bad' ?>"><strong><?= $q['is_correct'] ? 'Correct!' : 'Not quite.' ?></strong> <?php if (!$q['picked']): ?>You did not select an answer. <?php else: ?>Your answer: <?= e($q['picked']) ?>. <?php endif; ?>Correct answer: <?= e($q['correct'] ?: 'Not configured') ?>.</div><?php if (trim(strip_tags((string)$q['explanation'])) !== ''): ?><div class="qp-explanation"><strong>Explanation:</strong> <span class="rich-content"><?= safe_rich($q['explanation']) ?></span></div><?php endif; ?>
+                                                                $pickedChoice = $c['choice_label'] === $q['picked']; ?><div class="qp-option" style="cursor:default;<?= $correctChoice ? 'border-color:#86efac;background:#f0fdf4;' : ($pickedChoice ? 'border-color:#fdba74;background:#fff7ed;' : '') ?>"><span class="qp-option-label"><?= e($c['choice_label']) ?>.</span><span class="qp-option-text rich-content"><?= safe_rich($c['choice_text']) ?><?php if ($correctChoice): ?> <strong class="text-success ms-1">Correct answer</strong><?php elseif ($pickedChoice): ?> <strong class="text-warning-emphasis ms-1">Your answer</strong><?php endif; ?></span></div><?php endforeach; ?><?php if (trim(strip_tags((string)$q['explanation'])) !== ''): ?><div class="qp-explanation"><span class="rich-content"><?= safe_rich($q['explanation']) ?></span></div><?php endif; ?>
                                 </section><?php endforeach; ?></div>
                         <div class="qp-actions"><a class="btn btn-outline-secondary qp-btn" href="question_practice.php"><i class="bi bi-arrow-left me-1"></i>Back to Setup</a><a class="btn qp-btn qp-btn-primary" href="question_practice.php?<?= e(http_build_query(['subject' => $subjectId, 'topic_ids' => $topicIds, 'count' => $limit])) ?>"><i class="bi bi-arrow-repeat me-1"></i>Try Another Set</a></div>
                     </div>
