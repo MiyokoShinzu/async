@@ -113,13 +113,13 @@
         <!-- ACTIVITIES -->
 
         <a
-            href="activities.php"
+            href="academic_posts.php"
             class="sidebar-link">
 
             <i class="bi bi-journal-text"></i>
 
             <span>
-                Activities
+                Academic Posts
             </span>
 
         </a>
