@@ -1612,6 +1612,7 @@ foreach ($editC as $c) $cmap[$c['choice_label']] = $c;
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/contrib/auto-render.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/mathlive@0.110.0"></script>
     <script>
@@ -1814,6 +1815,59 @@ foreach ($editC as $c) $cmap[$c['choice_label']] = $c;
             const previewChoices = document.getElementById('qmPreviewChoices');
             const previewExplanation = document.getElementById('qmPreviewExplanation');
 
+            // Render formulas in the preview with MathLive, and ordinary LaTeX
+            // delimiters with KaTeX Auto-render. This does not alter saved content.
+            function renderPreviewMath(container) {
+                if (!container) return;
+
+                container.querySelectorAll('.ql-formula').forEach(function(formula) {
+                    const latex = formula.getAttribute('data-value') || formula.textContent || '';
+                    if (!latex.trim()) return;
+
+                    const mathFieldPreview = document.createElement('math-field');
+                    mathFieldPreview.setAttribute('read-only', '');
+                    mathFieldPreview.setAttribute('virtual-keyboard-mode', 'off');
+                    mathFieldPreview.setAttribute('aria-label', 'Mathematical formula preview');
+                    mathFieldPreview.value = latex;
+                    mathFieldPreview.style.display = 'inline-block';
+                    mathFieldPreview.style.maxWidth = '100%';
+                    mathFieldPreview.style.border = '0';
+                    mathFieldPreview.style.background = 'transparent';
+                    mathFieldPreview.style.padding = '0';
+                    mathFieldPreview.style.pointerEvents = 'none';
+                    formula.replaceWith(mathFieldPreview);
+                });
+
+                if (typeof window.renderMathInElement === 'function') {
+                    window.renderMathInElement(container, {
+                        delimiters: [{
+                                left: '$$',
+                                right: '$$',
+                                display: true
+                            },
+                            {
+                                left: '\\[',
+                                right: '\\]',
+                                display: true
+                            },
+                            {
+                                left: '\\(',
+                                right: '\\)',
+                                display: false
+                            },
+                            {
+                                left: '$',
+                                right: '$',
+                                display: false
+                            }
+                        ],
+                        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'option', 'math-field'],
+                        throwOnError: false,
+                        strict: 'ignore'
+                    });
+                }
+            }
+
             function openQuestionPreview() {
                 if (!previewModal) return;
 
@@ -1856,6 +1910,11 @@ foreach ($editC as $c) $cmap[$c['choice_label']] = $c;
                     previewExplanation.style.display = 'none';
                     previewExplanation.innerHTML = '';
                 }
+
+                // Render MathLive/LaTeX after the preview HTML has been assembled.
+                renderPreviewMath(previewQuestion);
+                renderPreviewMath(previewChoices);
+                renderPreviewMath(previewExplanation);
 
                 previewModal.classList.add('is-open');
                 document.body.style.overflow = 'hidden';
