@@ -469,15 +469,36 @@ ex_page_start('Student Examinations', true);
                 <div class="alert alert-info"><i class="bi bi-info-circle me-1"></i> Choose one answer for each question. Unanswered questions will be marked incorrect.</div>
                 <?php foreach ($questions as $index => $q): ?><section class="question-card">
                         <div class="small text-secondary fw-semibold mb-2">QUESTION <?= $index + 1 ?> OF <?= count($questions) ?></div>
-                        <div class="text-rich fw-semibold mb-2"><?= ex_rich((string)$q['question_text']) ?></div><?php ex_render_media($db, (int)$q['question_id']);
-                                                                                                                    $choices = ex_rows($db, 'SELECT choice_label,choice_text FROM question_choices WHERE question_id=?', 'i', [(int)$q['question_id']]);
-                                                                                                                    $map = [];
-                                                                                                                    foreach ($choices as $c) $map[(string)$c['choice_label']] = (string)$c['choice_text'];
-                                                                                                                    $order = json_decode((string)$q['choice_order_json'], true);
-                                                                                                                    if (!is_array($order)) $order = array_keys($map);
-                                                                                                                    $display = 'A';
-                                                                                                                    foreach ($order as $original): if (!array_key_exists((string)$original, $map)) continue; ?><label class="choice-row"><input class="form-check-input mt-1" type="radio" name="answers[<?= (int)$q['question_id'] ?>]" value="<?= ex_e($original) ?>"><strong><?= ex_e($display) ?>.</strong><span class="text-rich"><?= ex_rich($map[(string)$original]) ?></span></label><?php $display++;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            endforeach; ?>
+                        <div class="text-rich fw-semibold mb-2"><?= ex_rich((string)$q['question_text']) ?></div><?php
+                            // Media is optional: a hosting schema mismatch must not stop the exam from rendering.
+                            try {
+                                ex_render_media($db, (int)$q['question_id']);
+                            } catch (Throwable $mediaError) {
+                                error_log('Student exam media rendering failed for question ' . (int)$q['question_id'] . ': ' . $mediaError->getMessage());
+                            }
+                            $choices = [];
+                            try {
+                                $choices = ex_rows($db, 'SELECT choice_label,choice_text FROM question_choices WHERE question_id=?', 'i', [(int)$q['question_id']]);
+                            } catch (Throwable $choiceError) {
+                                error_log('Student exam choices query failed for question ' . (int)$q['question_id'] . ': ' . $choiceError->getMessage());
+                            }
+                            $map = [];
+                            foreach ($choices as $c) $map[trim((string)$c['choice_label'])] = (string)$c['choice_text'];
+                            $order = json_decode((string)($q['choice_order_json'] ?? ''), true);
+                            if (!is_array($order)) $order = [];
+                            // Preserve the randomized order where valid; append choices absent from older order data.
+                            $validOrder = [];
+                            foreach ($order as $choiceKey) {
+                                $choiceKey = trim((string)$choiceKey);
+                                if (array_key_exists($choiceKey, $map) && !in_array($choiceKey, $validOrder, true)) $validOrder[] = $choiceKey;
+                            }
+                            foreach (array_keys($map) as $choiceKey) {
+                                if (!in_array($choiceKey, $validOrder, true)) $validOrder[] = $choiceKey;
+                            }
+                            $display = 'A';
+                            foreach ($validOrder as $original): ?><label class="choice-row"><input class="form-check-input mt-1" type="radio" name="answers[<?= (int)$q['question_id'] ?>]" value="<?= ex_e($original) ?>"><strong><?= ex_e($display) ?>.</strong><span class="text-rich"><?= ex_rich($map[$original]) ?></span></label><?php $display++;
+                            endforeach;
+                            if (!$validOrder): ?><div class="alert alert-danger mt-3">Answer choices could not be loaded for this question. Please contact your instructor.</div><?php endif; ?>
                     </section><?php endforeach; ?>
                 <button type="submit" class="btn btn-success btn-lg w-100 mb-5" onclick="return confirm('Submit your exam now? You cannot change answers after submitting.');"><i class="bi bi-send me-1"></i> Submit examination</button>
             </form>
@@ -1984,5 +2005,5 @@ ex_page_start('Student Examinations', true);
         background: var(--exam-surface-soft);
         color: var(--exam-text);
     }
-</style>
+</style> 
 <?php ex_page_end(true); ?>
