@@ -1220,6 +1220,130 @@ foreach ($editC as $c) $cmap[$c['choice_label']] = $c;
             min-height: 85px
         }
     }
+
+    /* Floating question preview - added without changing existing form behavior */
+    .qm-preview-fab {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 9990;
+        width: 56px;
+        height: 56px;
+        border: 0;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background: #4f46e5;
+        box-shadow: 0 8px 24px rgba(79, 70, 229, .35);
+        font-size: 1.35rem;
+        cursor: pointer;
+        transition: transform .2s, background .2s, box-shadow .2s;
+    }
+
+    .qm-preview-fab:hover {
+        color: #fff;
+        background: #4338ca;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(79, 70, 229, .4);
+    }
+
+    .qm-preview-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 100001;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        background: rgba(15, 23, 42, .6);
+    }
+
+    .qm-preview-modal.is-open {
+        display: flex;
+    }
+
+    .qm-preview-dialog {
+        width: min(780px, 100%);
+        max-height: 90vh;
+        overflow: auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, .28);
+    }
+
+    .qm-preview-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 22px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .qm-preview-head h5 {
+        margin: 0;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .qm-preview-body {
+        padding: 22px;
+    }
+
+    .qm-preview-question {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin-bottom: 18px;
+        overflow-wrap: anywhere;
+    }
+
+    .qm-preview-choice {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 11px 13px;
+        margin: 8px 0;
+        border: 1px solid #e5e7eb;
+        border-radius: 9px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .qm-preview-choice-label {
+        flex: 0 0 24px;
+        font-weight: 700;
+        color: #4f46e5;
+    }
+
+    .qm-preview-explanation {
+        margin-top: 18px;
+        padding: 13px 15px;
+        background: #f8fafc;
+        border-radius: 9px;
+        color: #475569;
+        line-height: 1.6;
+    }
+
+    .qm-preview-empty {
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    @media (max-width: 575px) {
+        .qm-preview-fab {
+            right: 16px;
+            bottom: 16px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .qm-preview-head,
+        .qm-preview-body {
+            padding: 16px;
+        }
+    }
 </style>
 
 <body>
@@ -1442,6 +1566,25 @@ foreach ($editC as $c) $cmap[$c['choice_label']] = $c;
                             </div>
     </main>
 
+    <?php if ($tab === 'questions'): ?>
+        <button type="button" class="qm-preview-fab" id="qmPreviewOpen" aria-label="Preview question" title="Preview question">
+            <i class="bi bi-eye"></i>
+        </button>
+        <div class="qm-preview-modal" id="qmPreviewModal" role="dialog" aria-modal="true" aria-labelledby="qmPreviewTitle">
+            <div class="qm-preview-dialog">
+                <div class="qm-preview-head">
+                    <h5 id="qmPreviewTitle"><i class="bi bi-eye me-2"></i>Question Preview</h5>
+                    <button type="button" class="btn-close" id="qmPreviewClose" aria-label="Close"></button>
+                </div>
+                <div class="qm-preview-body">
+                    <div class="qm-preview-question" id="qmPreviewQuestion"><span class="qm-preview-empty">Enter a question to see its preview.</span></div>
+                    <div id="qmPreviewChoices"></div>
+                    <div class="qm-preview-explanation" id="qmPreviewExplanation" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <div class="qm-math-modal" id="qmMathModal" role="dialog" aria-modal="true" aria-labelledby="qmMathTitle">
         <div class="qm-math-dialog">
             <div class="qm-math-dialog-head">
@@ -1662,6 +1805,80 @@ foreach ($editC as $c) $cmap[$c['choice_label']] = $c;
                     compact: true
                 });
             });
+
+            // Floating live preview for the current question and its answer choices.
+            const previewOpen = document.getElementById('qmPreviewOpen');
+            const previewModal = document.getElementById('qmPreviewModal');
+            const previewClose = document.getElementById('qmPreviewClose');
+            const previewQuestion = document.getElementById('qmPreviewQuestion');
+            const previewChoices = document.getElementById('qmPreviewChoices');
+            const previewExplanation = document.getElementById('qmPreviewExplanation');
+
+            function openQuestionPreview() {
+                if (!previewModal) return;
+
+                const questionItem = editors.find(item => item.source.classList.contains('qm-rich-question'));
+                const explanationItem = editors.find(item => item.source.classList.contains('qm-rich-explanation'));
+
+                if (questionItem && questionItem.quill) {
+                    const questionHtml = questionItem.quill.root.innerHTML.trim();
+                    previewQuestion.innerHTML = questionItem.quill.getText().trim() ||
+                        questionItem.quill.root.querySelector('.ql-formula') ?
+                        questionHtml : '<span class="qm-preview-empty">Enter a question to see its preview.</span>';
+                }
+
+                previewChoices.innerHTML = '';
+                const choiceItems = editors.filter(item => item.source.classList.contains('qm-rich-choice'));
+                choiceItems.forEach(function(item) {
+                    const name = item.source.getAttribute('name') || '';
+                    const match = name.match(/choice_text\[([A-F])\]/);
+                    const label = match ? match[1] : '';
+                    const hasText = item.quill.getText().trim() || item.quill.root.querySelector('.ql-formula');
+                    if (!hasText) return;
+
+                    const row = document.createElement('div');
+                    row.className = 'qm-preview-choice';
+                    const letter = document.createElement('span');
+                    letter.className = 'qm-preview-choice-label';
+                    letter.textContent = label ? label + '.' : '';
+                    const content = document.createElement('div');
+                    content.innerHTML = item.quill.root.innerHTML;
+                    row.appendChild(letter);
+                    row.appendChild(content);
+                    previewChoices.appendChild(row);
+                });
+
+                if (explanationItem && explanationItem.quill &&
+                    (explanationItem.quill.getText().trim() || explanationItem.quill.root.querySelector('.ql-formula'))) {
+                    previewExplanation.style.display = '';
+                    previewExplanation.innerHTML = '<strong>Explanation:</strong><div>' + explanationItem.quill.root.innerHTML + '</div>';
+                } else {
+                    previewExplanation.style.display = 'none';
+                    previewExplanation.innerHTML = '';
+                }
+
+                previewModal.classList.add('is-open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeQuestionPreview() {
+                if (!previewModal) return;
+                previewModal.classList.remove('is-open');
+                document.body.style.overflow = '';
+            }
+
+            if (previewOpen && previewModal) {
+                previewOpen.addEventListener('click', openQuestionPreview);
+                previewClose.addEventListener('click', closeQuestionPreview);
+                previewModal.addEventListener('click', function(event) {
+                    if (event.target === previewModal) closeQuestionPreview();
+                });
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape' && previewModal.classList.contains('is-open')) {
+                        closeQuestionPreview();
+                    }
+                });
+            }
 
             const form = questionEditor && questionEditor.root.closest('form');
             if (form) {
