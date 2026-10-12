@@ -110,6 +110,65 @@ if ($lastName !== "") {
 
 require_once "../src/connection.php";
 
+if (empty($_SESSION['students_csrf'])) {
+    $_SESSION['students_csrf'] = bin2hex(random_bytes(32));
+}
+$studentsCsrf = $_SESSION['students_csrf'];
+$studentMessage = '';
+$studentMessageType = 'success';
+
+/* =========================================================
+   UPDATE STUDENT DETAILS
+========================================================= */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'update_student') {
+    try {
+        if (!hash_equals($studentsCsrf, (string)($_POST['csrf'] ?? ''))) {
+            throw new RuntimeException('Your session token expired. Refresh the page and try again.');
+        }
+
+        $id = (int)($_POST['student_record_id'] ?? 0);
+        $first = trim($_POST['first_name'] ?? '');
+        $middle = trim($_POST['middle_initial'] ?? '');
+        $last = trim($_POST['last_name'] ?? '');
+        $extension = trim($_POST['extension_name'] ?? '');
+        $studentId = trim($_POST['student_id'] ?? '');
+        $emailAddress = trim($_POST['email'] ?? '');
+        $usernameValue = trim($_POST['username'] ?? '');
+        $departmentValue = trim($_POST['department'] ?? '');
+        $yearSectionValue = trim($_POST['year_section'] ?? '');
+
+        if ($id < 1 || $first === '' || $last === '' || $studentId === '' || $emailAddress === '' || $usernameValue === '') {
+            throw new RuntimeException('Please complete the required fields: first name, last name, student ID, email, and username.');
+        }
+        if (!filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
+            throw new RuntimeException('Please enter a valid email address.');
+        }
+
+        $update = $mysqli->prepare("UPDATE accounts SET first_name=?, middle_initial=?, last_name=?, extension_name=?, student_id=?, email=?, username=?, department=?, year_section=? WHERE id=? AND access='student'");
+        if (!$update) {
+            throw new RuntimeException('Unable to prepare student update.');
+        }
+        $update->bind_param('sssssssssi', $first, $middle, $last, $extension, $studentId, $emailAddress, $usernameValue, $departmentValue, $yearSectionValue, $id);
+        if (!$update->execute()) {
+            $error = $update->error;
+            $update->close();
+            if (stripos($error, 'Duplicate') !== false) {
+                throw new RuntimeException('The student ID, email, or username is already assigned to another account.');
+            }
+            throw new RuntimeException('Unable to update student details. Please check the information and try again.');
+        }
+        $update->close();
+        header('Location: students.php?updated=1');
+        exit;
+    } catch (Throwable $e) {
+        $studentMessage = $e->getMessage();
+        $studentMessageType = 'danger';
+    }
+}
+if (isset($_GET['updated'])) {
+    $studentMessage = 'Student details updated successfully.';
+}
+
 
 /* =========================================================
    FILTER VALUES
@@ -261,6 +320,27 @@ $sections =
 
 sort($sections);
 
+
+/* =========================================================
+   LOAD STUDENT FOR EDITING
+========================================================= */
+$editStudent = null;
+if (isset($_GET['edit_student'])) {
+    $editId = (int)$_GET['edit_student'];
+    if ($editId > 0) {
+        $editStmt = $mysqli->prepare("SELECT id, first_name, middle_initial, last_name, extension_name, student_id, email, username, department, year_section FROM accounts WHERE id=? AND access='student' LIMIT 1");
+        if ($editStmt) {
+            $editStmt->bind_param('i', $editId);
+            $editStmt->execute();
+            $editStudent = $editStmt->get_result()->fetch_assoc() ?: null;
+            $editStmt->close();
+        }
+        if (!$editStudent && $studentMessage === '') {
+            $studentMessage = 'The selected student record could not be found.';
+            $studentMessageType = 'danger';
+        }
+    }
+}
 
 /* =========================================================
    BUILD STUDENT QUERY
@@ -444,8 +524,7 @@ $studentSQL = "
         student_id,
         email,
         username,
-        created_at,
-        profile_photo
+        created_at
     FROM accounts
     WHERE $whereSQL
     ORDER BY
@@ -506,134 +585,6 @@ function buildPageUrl($page)
     return "?" .
         http_build_query($params);
 }
-
-
-/* =========================================================
-   PROFILE PHOTO URL
-========================================================= */
-
-
-/* =========================================================
-   PROFILE PHOTO URL
-========================================================= */
-
-function getStudentPhotoUrl($profilePhoto)
-{
-    $profilePhoto = trim($profilePhoto ?? "");
-
-    if ($profilePhoto === "") {
-        return "";
-    }
-
-    /* -----------------------------------------------------
-       Normalize path
-    ----------------------------------------------------- */
-
-    $profilePhoto = str_replace("\\", "/", $profilePhoto);
-
-    $profilePhoto = ltrim($profilePhoto, "/");
-
-
-    /* -----------------------------------------------------
-       Security
-    ----------------------------------------------------- */
-
-    if (strpos($profilePhoto, "..") !== false) {
-        return "";
-    }
-
-
-    /* -----------------------------------------------------
-       Only allow profile photo directory
-    ----------------------------------------------------- */
-
-    $allowedPrefix = "shared/uploads/profile_photos/";
-
-    if (strpos($profilePhoto, $allowedPrefix) !== 0) {
-        return "";
-    }
-
-
-    /* -----------------------------------------------------
-       Allowed image extensions
-    ----------------------------------------------------- */
-
-    $extension = strtolower(
-        pathinfo(
-            $profilePhoto,
-            PATHINFO_EXTENSION
-        )
-    );
-
-    $allowedExtensions = [
-        "jpg",
-        "jpeg",
-        "png",
-        "gif",
-        "webp"
-    ];
-
-    if (!in_array(
-        $extension,
-        $allowedExtensions,
-        true
-    )) {
-        return "";
-    }
-
-
-    /* =====================================================
-       ACTUAL FILE LOCATION
-
-       Current file:
-       
-       /public_html/admin/students.php
-
-       Database path:
-
-       shared/uploads/profile_photos/file.jpg
-
-       Therefore:
-
-       /public_html/admin/
-              ↓ ../
-       /public_html/shared/
-    ===================================================== */
-
-    $filesystemPath =
-        __DIR__ .
-        "/../" .
-        $profilePhoto;
-
-
-    /* =====================================================
-       BROWSER URL
-
-       /admin/students.php
-              ↓ ../
-       /shared/uploads/profile_photos/file.jpg
-    ===================================================== */
-
-    $urlPath =
-        "../" .
-        $profilePhoto;
-
-
-    /* =====================================================
-       CHECK FILE
-    ===================================================== */
-
-    if (
-        is_file($filesystemPath) &&
-        is_readable($filesystemPath)
-    ) {
-        return $urlPath;
-    }
-
-
-    return "";
-}
-
 
 
 ?>
@@ -750,7 +701,7 @@ function getStudentPhotoUrl($profilePhoto)
 
         color:
             var(--student-muted);
-        
+
         font-size: 14px;
     }
 
@@ -1172,144 +1123,6 @@ function getStudentPhotoUrl($profilePhoto)
 
         font-weight:
             600;
-    }
-
-
-    /* =========================================================
-   STUDENT PROFILE
-========================================================= */
-
-    .student-profile {
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        gap:
-            12px;
-
-        min-width:
-            230px;
-    }
-
-
-    /* =========================================================
-   AVATAR
-========================================================= */
-
-    .student-avatar {
-
-        position:
-            relative;
-
-        width:
-            48px;
-
-        height:
-            48px;
-
-        min-width:
-            48px;
-
-        border-radius:
-            50%;
-
-        overflow:
-            hidden;
-
-        background:
-            linear-gradient(135deg,
-                #EAF3FA,
-                #DDECF7);
-
-        border:
-            2px solid #D7E6F1;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        justify-content:
-            center;
-
-        box-shadow:
-            0 3px 8px rgba(11, 79, 138, .08);
-
-        transition:
-            transform .3s ease,
-            box-shadow .3s ease,
-            border-color .3s ease;
-    }
-
-    .student-table tbody tr:hover .student-avatar {
-
-        transform:
-            scale(1.07);
-
-        border-color:
-            var(--student-primary);
-
-        box-shadow:
-            0 5px 14px rgba(11, 79, 138, .16);
-    }
-
-    .student-avatar img {
-
-        width:
-            100%;
-
-        height:
-            100%;
-
-        object-fit:
-            cover;
-
-        display:
-            block;
-    }
-
-
-    /* =========================================================
-   AVATAR PLACEHOLDER
-========================================================= */
-
-    .avatar-placeholder {
-
-        width:
-            100%;
-
-        height:
-            100%;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        justify-content:
-            center;
-
-        background:
-            linear-gradient(135deg,
-                #EAF3FA,
-                #DCECF7);
-
-        color:
-            var(--student-primary);
-
-        font-size:
-            21px;
-    }
-
-    .avatar-placeholder i {
-
-        opacity:
-            .85;
     }
 
 
@@ -1844,7 +1657,7 @@ function getStudentPhotoUrl($profilePhoto)
         .student-table {
 
             min-width:
-                1050px;
+                900px;
         }
 
         .table-responsive {
@@ -1948,25 +1761,7 @@ function getStudentPhotoUrl($profilePhoto)
         .student-table {
 
             min-width:
-                1000px;
-        }
-
-        .student-profile {
-
-            min-width:
-                210px;
-        }
-
-        .student-avatar {
-
-            width:
-                44px;
-
-            height:
-                44px;
-
-            min-width:
-                44px;
+                900px;
         }
 
         .student-name {
@@ -2045,31 +1840,13 @@ function getStudentPhotoUrl($profilePhoto)
         .student-table {
 
             min-width:
-                950px;
-        }
-
-        .student-avatar {
-
-            width:
-                42px;
-
-            height:
-                42px;
-
-            min-width:
-                42px;
+                850px;
         }
 
         .student-name {
 
             max-width:
                 165px;
-        }
-
-        .student-profile {
-
-            min-width:
-                190px;
         }
 
         .empty-state {
@@ -2146,11 +1923,49 @@ function getStudentPhotoUrl($profilePhoto)
                 </h2>
 
                 <p>
-                    View and manage registered students.
+                    View, search, and edit complete student account details.
                 </p>
 
             </div>
 
+            <?php if ($studentMessage !== ''): ?>
+                <div class="alert alert-<?= htmlspecialchars($studentMessageType, ENT_QUOTES, 'UTF-8') ?> alert-dismissible fade show mb-3" role="alert">
+                    <?= htmlspecialchars($studentMessage, ENT_QUOTES, 'UTF-8') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($editStudent): ?>
+                <section class="filter-card student-edit-card" id="edit-student">
+                    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap mb-3">
+                        <div>
+                            <h5 class="mb-1 fw-bold" style="color:var(--student-primary-dark)"><i class="bi bi-pencil-square me-2"></i>Edit Student Details</h5>
+                            <p class="text-muted small mb-0">Update the student's full account and academic information.</p>
+                        </div>
+                        <a href="students.php" class="btn btn-outline-secondary"><i class="bi bi-x-lg me-1"></i>Cancel</a>
+                    </div>
+                    <form method="POST" action="students.php?edit_student=<?= (int)$editStudent['id'] ?>#edit-student">
+                        <input type="hidden" name="csrf" value="<?= htmlspecialchars($studentsCsrf, ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="action" value="update_student">
+                        <input type="hidden" name="student_record_id" value="<?= (int)$editStudent['id'] ?>">
+                        <div class="row g-3">
+                            <div class="col-md-6 col-lg-3"><label class="form-label">First Name <span class="text-danger">*</span></label><input class="form-control" name="first_name" maxlength="100" required value="<?= htmlspecialchars($editStudent['first_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                            <div class="col-md-6 col-lg-2"><label class="form-label">Middle Initial</label><input class="form-control" name="middle_initial" maxlength="20" value="<?= htmlspecialchars($editStudent['middle_initial'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                            <div class="col-md-6 col-lg-3"><label class="form-label">Last Name <span class="text-danger">*</span></label><input class="form-control" name="last_name" maxlength="100" required value="<?= htmlspecialchars($editStudent['last_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                            <div class="col-md-6 col-lg-2"><label class="form-label">Extension Name</label><input class="form-control" name="extension_name" maxlength="30" placeholder="Jr., III" value="<?= htmlspecialchars($editStudent['extension_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                            <div class="col-md-6 col-lg-2"><label class="form-label">Student ID <span class="text-danger">*</span></label><input class="form-control" name="student_id" maxlength="100" required value="<?= htmlspecialchars($editStudent['student_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                            <div class="col-md-6 col-lg-4"><label class="form-label">Email Address <span class="text-danger">*</span></label><input type="email" class="form-control" name="email" maxlength="190" required value="<?= htmlspecialchars($editStudent['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                            <div class="col-md-6 col-lg-4"><label class="form-label">Username <span class="text-danger">*</span></label><input class="form-control" name="username" maxlength="100" required value="<?= htmlspecialchars($editStudent['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                            <div class="col-md-6 col-lg-4"><label class="form-label">Department</label><input class="form-control" name="department" maxlength="150" value="<?= htmlspecialchars($editStudent['department'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                            <div class="col-md-6 col-lg-4"><label class="form-label">Year / Section</label><input class="form-control" name="year_section" maxlength="100" placeholder="e.g. 3-A" value="<?= htmlspecialchars($editStudent['year_section'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top flex-wrap">
+                            <a href="students.php" class="btn btn-light border">Cancel</a>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Save Student Details</button>
+                        </div>
+                    </form>
+                </section>
+            <?php endif; ?>
 
             <!-- =====================================================
              FILTERS
@@ -2407,8 +2222,8 @@ function getStudentPhotoUrl($profilePhoto)
                                         Created
                                     </th>
 
-                                    <th class="text-center">
-                                        Action
+                                    <th class="text-center" style="min-width:110px;">
+                                        EDIT PROFILE
                                     </th>
 
                                 </tr>
@@ -2476,19 +2291,6 @@ function getStudentPhotoUrl($profilePhoto)
 
 
                                     /* =================================================
-                               PROFILE PHOTO
-                            ================================================= */
-
-                                    $profilePhoto =
-                                        $student["profile_photo"] ?? "";
-
-                                    $photoUrl =
-                                        getStudentPhotoUrl(
-                                            $profilePhoto
-                                        );
-
-
-                                    /* =================================================
                                CREATED DATE
                             ================================================= */
 
@@ -2532,77 +2334,14 @@ function getStudentPhotoUrl($profilePhoto)
                                         </td>
 
 
-                                        <!-- STUDENT PROFILE -->
-
+                                        <!-- STUDENT NAME (NO IMAGE COLUMN) -->
                                         <td class="align-middle">
-
-                                            <div class="student-profile">
-
-
-                                                <!-- PROFILE IMAGE -->
-
-                                                <div class="student-avatar">
-
-                                                    <?php if ($photoUrl !== ""): ?>
-
-                                                        <img
-                                                            src="<?= htmlspecialchars(
-                                                                        $photoUrl,
-                                                                        ENT_QUOTES,
-                                                                        'UTF-8'
-                                                                    ) ?>"
-                                                            alt="<?= htmlspecialchars(
-                                                                        $studentName,
-                                                                        ENT_QUOTES,
-                                                                        'UTF-8'
-                                                                    ) ?>"
-                                                            loading="lazy"
-                                                            onerror="
-                                                        this.style.display='none';
-                                                        this.nextElementSibling.style.display='flex';
-                                                    ">
-
-
-                                                        <div
-                                                            class="avatar-placeholder"
-                                                            style="display:none;">
-
-                                                            <i class="bi bi-person-fill"></i>
-
-                                                        </div>
-
-                                                    <?php else: ?>
-
-                                                        <div class="avatar-placeholder">
-
-                                                            <i class="bi bi-person-fill"></i>
-
-                                                        </div>
-
-                                                    <?php endif; ?>
-
+                                            <div class="student-info">
+                                                <div class="student-name">
+                                                    <?= htmlspecialchars($studentName, ENT_QUOTES, 'UTF-8') ?>
                                                 </div>
-
-
-                                                <!-- NAME -->
-
-                                                <div class="student-info">
-
-                                                    <div class="student-name">
-
-                                                        <?= htmlspecialchars(
-                                                            $studentName,
-                                                            ENT_QUOTES,
-                                                            'UTF-8'
-                                                        ) ?>
-                                                    </div>
-                                                    <small class="text-muted">
-                                                        Student 
-                                                    </small> 
-
-                                                </div>
+                                                <small class="text-muted">Student</small>
                                             </div>
-
                                         </td>
 
                                         <!-- STUDENT ID -->
@@ -2687,12 +2426,14 @@ function getStudentPhotoUrl($profilePhoto)
                                         <td class="text-center align-middle">
 
                                             <a
-                                                href="#"
-                                                class="btn btn-sm btn-outline-primary student-view-btn">
+                                                href="students.php?edit_student=<?= (int)$student['id'] ?>#edit-student"
+                                                class="btn btn-sm student-view-btn"
+                                                style="display:inline-flex!important;align-items:center;justify-content:center;gap:6px;background:#0B4F8A!important;color:#FFFFFF!important;border:1px solid #0B4F8A!important;padding:8px 14px!important;border-radius:7px!important;font-weight:700!important;text-decoration:none!important;visibility:visible!important;opacity:1!important;"
+                                                aria-label="Edit <?= htmlspecialchars($studentName, ENT_QUOTES, 'UTF-8') ?>">
 
-                                                <i class="bi bi-eye me-1"></i>
+                                                <i class="bi bi-pencil-square me-1"></i>
 
-                                                View
+                                                Edit Profile
 
                                             </a>
 

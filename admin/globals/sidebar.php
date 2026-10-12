@@ -123,18 +123,40 @@
             </span>
 
         </a>
+        <a
+            href="subjects.php"
+            class="sidebar-link">
+
+            <i class="bi bi-journal-text"></i>
+
+            <span>
+                Subjects
+            </span>
+
+        </a>
+        <a
+            href="question_management.php"
+            class="sidebar-link">
+
+            <i class="bi bi-journal-text"></i>
+
+            <span>
+                Question Management
+            </span>
+
+        </a>
 
 
         <!-- GRADES -->
 
         <a
-            href="grades.php"
+            href="question_practice.php"
             class="sidebar-link">
 
             <i class="bi bi-bar-chart"></i>
 
             <span>
-                Grades
+                Practice Exam
             </span>
 
         </a>
@@ -143,18 +165,51 @@
         <!-- SCHEDULE -->
 
         <a
-            href="schedule.php"
+            href="support_transactions.php"
             class="sidebar-link">
 
             <i class="bi bi-calendar3"></i>
 
             <span>
-                Schedule
+                Supports
+            </span>
+
+        </a>
+        <a
+            href="reading_activity_create.php"
+            class="sidebar-link">
+
+            <i class="bi bi-calendar3"></i>
+
+            <span>
+                Reading Activity
+            </span>
+
+        </a>
+        <a
+            href="activity_monitor.php"
+            class="sidebar-link">
+
+            <i class="bi bi-calendar3"></i>
+
+            <span>
+                Activity Monitor
+            </span>
+
+        </a>
+        <a
+            href="academic_posts.php"
+            class="sidebar-link">
+
+            <i class="bi bi-calendar3"></i>
+
+            <span>
+                Academic Posts
             </span>
 
         </a>
 
-
+ 
         <!-- =================================================
              SYSTEM
         ================================================== -->
