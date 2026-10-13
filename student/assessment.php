@@ -142,17 +142,26 @@ elseif (trim((string)($user['username'] ?? '')) !== '') $accountKey = 'user:' . 
 else $accountKey = 'email:' . trim((string)($user['email'] ?? ''));
 $accountKey = substr($accountKey, 0, 190);
 
-// Optional profile-picture lookup for leaderboard avatars. This is intentionally
-// schema-tolerant: if the installation has no supported profile image column,
-// podium avatars fall back to student initials instead of breaking the page.
+// Profile pictures follow the same session-user format used by globals/topbar.php.
+// The leaderboard additionally resolves each student's stored image from the account table.
+function st_normalize_profile_path(string $image): string
+{
+    $image = trim(str_replace('\\', '/', $image));
+    if ($image === '' || preg_match('~^(?:javascript:|data:)~i', $image)) return '';
+    if (preg_match('~^(?:https?:)?//~i', $image) || str_starts_with($image, '/')) return $image;
+    // Image paths are stored relative to the project root; this page lives in /student.
+    $image = preg_replace('~^(?:\./)+~', '', $image);
+    if (str_starts_with($image, 'student/')) return '../' . $image;
+    if (str_starts_with($image, 'uploads/') || str_starts_with($image, 'assets/') || str_starts_with($image, 'images/')) return '../' . $image;
+    return '../' . ltrim($image, '/');
+}
 function st_profile_image(mysqli $db, array $student): string
 {
     static $lookup = null;
     if ($lookup === null) {
         $lookup = ['table' => null, 'match' => null, 'image' => null];
         foreach (['users', 'user_accounts', 'accounts', 'students'] as $table) {
-            $safeTable = $db->real_escape_string($table);
-            $tableResult = $db->query("SHOW TABLES LIKE '{$safeTable}'");
+            $tableResult = $db->query("SHOW TABLES LIKE '" . $db->real_escape_string($table) . "'");
             if (!$tableResult || $tableResult->num_rows < 1) {
                 if ($tableResult) $tableResult->free();
                 continue;
@@ -164,14 +173,14 @@ function st_profile_image(mysqli $db, array $student): string
             while ($column = $columnsResult->fetch_assoc()) $columns[] = (string)$column['Field'];
             $columnsResult->free();
             $imageCol = null;
-            foreach (['profile_picture', 'profile_image', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic'] as $candidate) {
+            foreach (['profile_picture', 'profile_image', 'profile_img', 'profile_photo', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] as $candidate) {
                 if (in_array($candidate, $columns, true)) {
                     $imageCol = $candidate;
                     break;
                 }
             }
             $matchCol = null;
-            foreach (['student_id', 'student_number', 'username', 'email'] as $candidate) {
+            foreach (['student_id', 'student_number', 'username', 'email', 'account_id', 'user_id', 'id'] as $candidate) {
                 if (in_array($candidate, $columns, true)) {
                     $matchCol = $candidate;
                     break;
@@ -183,28 +192,71 @@ function st_profile_image(mysqli $db, array $student): string
             }
         }
     }
+    // If this is the signed-in student, use the same picture fields that may be present in the topbar session.
+    $sessionUser = $_SESSION['user'] ?? [];
+    $studentNumber = trim((string)($student['student_number'] ?? $student['student_id'] ?? ''));
+    $studentKey = trim((string)($student['student_account_key'] ?? ''));
+    $sessionStudentId = trim((string)($sessionUser['student_id'] ?? ''));
+    $sessionUsername = trim((string)($sessionUser['username'] ?? ''));
+    $sameUser = ($studentNumber !== '' && $sessionStudentId !== '' && $studentNumber === $sessionStudentId)
+        || ($studentKey !== '' && $sessionUsername !== '' && $studentKey === 'user:' . $sessionUsername)
+        || ($studentKey !== '' && !empty($sessionUser['email']) && $studentKey === 'email:' . trim((string)$sessionUser['email']));
+    if ($sameUser) {
+        foreach (['profile_picture', 'profile_image', 'profile_img', 'profile_photo', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] as $field) {
+            $sessionImage = st_normalize_profile_path((string)($sessionUser[$field] ?? ''));
+            if ($sessionImage !== '') return $sessionImage;
+        }
+    }
     if (!$lookup['table'] || !$lookup['match'] || !$lookup['image']) return '';
-    $matchValue = trim((string)($student['student_number'] ?? ''));
-    $key = trim((string)($student['student_account_key'] ?? ''));
-    if ($matchValue === '' && strpos($key, ':') !== false) $matchValue = substr($key, strpos($key, ':') + 1);
-    if ($matchValue === '') return '';
+    $matchValues = [];
+    foreach (['student_number', 'student_id', 'username', 'email'] as $field) {
+        if (!empty($student[$field])) $matchValues[] = trim((string)$student[$field]);
+    }
+    if ($studentKey !== '' && strpos($studentKey, ':') !== false) $matchValues[] = substr($studentKey, strpos($studentKey, ':') + 1);
+    $matchValues = array_values(array_unique(array_filter($matchValues, static fn($v) => $v !== '')));
+    if (!$matchValues) return '';
     $table = '`' . str_replace('`', '', $lookup['table']) . '`';
     $matchCol = '`' . str_replace('`', '', $lookup['match']) . '`';
     $imageCol = '`' . str_replace('`', '', $lookup['image']) . '`';
-    $stmt = $db->prepare("SELECT {$imageCol} AS profile_image FROM {$table} WHERE {$matchCol}=? LIMIT 1");
-    if (!$stmt) return '';
-    $stmt->bind_param('s', $matchValue);
-    if (!$stmt->execute()) {
+    foreach ($matchValues as $matchValue) {
+        $stmt = $db->prepare("SELECT {$imageCol} AS profile_image FROM {$table} WHERE {$matchCol}=? LIMIT 1");
+        if (!$stmt) continue;
+        $stmt->bind_param('s', $matchValue);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            continue;
+        }
+        $result = $stmt->get_result();
+        $row = $result ? $result->fetch_assoc() : null;
+        if ($result) $result->free();
         $stmt->close();
-        return '';
+        $image = st_normalize_profile_path((string)($row['profile_image'] ?? ''));
+        if ($image !== '') return $image;
     }
-    $result = $stmt->get_result();
-    $row = $result ? $result->fetch_assoc() : null;
-    if ($result) $result->free();
-    $stmt->close();
-    $image = trim((string)($row['profile_image'] ?? ''));
-    if ($image === '' || preg_match('~^(?:javascript:|data:)~i', $image)) return '';
-    return $image;
+    return '';
+}
+
+// Normalize the signed-in user's picture aliases for the shared topbar include.
+// Existing session fields are preserved; profile_picture is populated only when a usable image exists.
+foreach (['profile_picture', 'profile_image', 'profile_img', 'profile_photo', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] as $profileField) {
+    $topbarImage = st_normalize_profile_path((string)($user[$profileField] ?? ''));
+    if ($topbarImage !== '') {
+        $user['profile_picture'] = $topbarImage;
+        $_SESSION['user']['profile_picture'] = $topbarImage;
+        break;
+    }
+}
+if (empty($user['profile_picture'])) {
+    $topbarImage = st_profile_image($db, [
+        'student_number' => (string)($user['student_id'] ?? ''),
+        'student_account_key' => $accountKey,
+        'username' => (string)($user['username'] ?? ''),
+        'email' => (string)($user['email'] ?? ''),
+    ]);
+    if ($topbarImage !== '') {
+        $user['profile_picture'] = $topbarImage;
+        $_SESSION['user']['profile_picture'] = $topbarImage;
+    }
 }
 
 $error = '';
@@ -935,14 +987,14 @@ ex_page_start('Student Examinations', true);
                         <div class="leaderboard-podium" aria-label="Top three students">
                             <?php foreach (array_slice($boardTakers, 0, 3) as $podiumRank => $podiumTaker): ?>
                                 <div class="podium-place podium-<?= $podiumRank + 1 ?>">
-                                    <div class="podium-avatar-wrap">
+                                    <div class="podium-avatar-wrap podium-avatar-rank-<?= $podiumRank + 1 ?>">
                                         <?php $podiumName = trim((string)($podiumTaker['student_name'] ?? 'Student'));
                                         $podiumInitials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $podiumName), 0, 2));
                                         if ($podiumInitials === '') $podiumInitials = 'S';
                                         $podiumPhoto = (string)($podiumTaker['_profile_image'] ?? ''); ?>
                                         <?php if ($podiumPhoto !== ''): ?><img class="podium-avatar" src="<?= ex_e($podiumPhoto) ?>" alt="<?= ex_e($podiumName) ?> profile picture" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><?php endif; ?>
                                         <span class="podium-avatar-fallback" <?= $podiumPhoto !== '' ? 'hidden' : '' ?>><?= ex_e($podiumInitials) ?></span>
-                                        <span class="podium-icon" aria-hidden="true"><?php if ($podiumRank === 1): ?>🏅<?php else: ?><i class="<?= $podiumRank === 0 ? 'bi bi-trophy-fill' : 'bi bi-medal-fill' ?>"></i><?php endif; ?></span>
+                                        <span class="podium-icon" aria-hidden="true"><i class="bi <?= $podiumRank === 0 ? 'bi-trophy-fill' : ($podiumRank === 1 ? 'bi-award-fill' : 'bi-medal-fill') ?>"></i></span>
                                     </div>
                                     <div class="podium-rank"><?= $podiumRank === 0 ? '1st Place' : ($podiumRank === 1 ? '2nd Place' : '3rd Place') ?></div>
                                     <div class="podium-award">
@@ -2334,6 +2386,81 @@ ex_page_start('Student Examinations', true);
         color: #7c2d12;
         border: 2px solid #c2410c;
         box-shadow: 0 3px 0 rgba(124, 45, 18, .16);
+    }
+
+    /* Highly visible animated rings for the three podium avatars. */
+    .student-exams-page .podium-avatar-wrap {
+        isolation: isolate;
+    }
+
+    .student-exams-page .podium-avatar-wrap::before {
+        content: "";
+        position: absolute;
+        inset: -7px;
+        border-radius: 50%;
+        z-index: -1;
+        background: conic-gradient(from 0deg, #38bdf8, #2563eb, #a78bfa, #22d3ee, #38bdf8);
+        animation: podiumRingSpin 2.2s linear infinite, podiumRingPulse 1.35s ease-in-out infinite;
+        filter: drop-shadow(0 0 7px rgba(56, 189, 248, .75));
+    }
+
+    .student-exams-page .podium-avatar-wrap::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        z-index: -1;
+        background: var(--exam-surface, #fff);
+    }
+
+    .student-exams-page .podium-avatar-wrap.podium-avatar-rank-1::before {
+        background: conic-gradient(from 0deg, #60a5fa, #1d4ed8, #c4b5fd, #06b6d4, #60a5fa);
+        animation-duration: 1.5s, .95s;
+        filter: drop-shadow(0 0 10px rgba(37, 99, 235, .95));
+    }
+
+    .student-exams-page .podium-avatar-wrap.podium-avatar-rank-2::before {
+        background: conic-gradient(from 0deg, #e2e8f0, #64748b, #f8fafc, #94a3b8, #e2e8f0);
+        animation-duration: 2s, 1.2s;
+        filter: drop-shadow(0 0 8px rgba(148, 163, 184, .9));
+    }
+
+    .student-exams-page .podium-avatar-wrap.podium-avatar-rank-3::before {
+        background: conic-gradient(from 0deg, #22d3ee, #0e7490, #67e8f9, #3b82f6, #22d3ee);
+        animation-duration: 1.8s, 1.05s;
+        filter: drop-shadow(0 0 9px rgba(34, 211, 238, .9));
+    }
+
+    .student-exams-page .podium-avatar {
+        position: relative;
+        z-index: 0;
+        border: 3px solid #fff;
+    }
+
+    @keyframes podiumRingSpin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes podiumRingPulse {
+
+        0%,
+        100% {
+            opacity: .8;
+            scale: 1;
+        }
+
+        50% {
+            opacity: 1;
+            scale: 1.07;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .student-exams-page .podium-avatar-wrap::before {
+            animation: none;
+        }
     }
 </style>
 <script>
