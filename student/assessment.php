@@ -148,12 +148,26 @@ function st_normalize_profile_path(string $image): string
 {
     $image = trim(str_replace('\\', '/', $image));
     if ($image === '' || preg_match('~^(?:javascript:|data:)~i', $image)) return '';
-    if (preg_match('~^(?:https?:)?//~i', $image) || str_starts_with($image, '/')) return $image;
-    // Profile photos for this portal are served from https://vertigation.com/shared/.
     $image = preg_replace('~^(?:\./)+~', '', $image);
-    if (str_starts_with($image, 'shared/')) return 'https://vertigation.com/' . ltrim($image, '/');
-    if (str_starts_with($image, 'student/')) return '../' . $image;
-    if (str_starts_with($image, 'uploads/') || str_starts_with($image, 'assets/') || str_starts_with($image, 'images/')) return '../' . $image;
+
+    // The shared profile-photo storage belongs to the main vertigation.com domain,
+    // not async.vertigation.com. Handle full URLs and both relative path formats.
+    if (preg_match('~^https?://~i', $image)) {
+        $path = (string)(parse_url($image, PHP_URL_PATH) ?? '');
+        if (strpos($path, '/shared/uploads/profile_photos/') === 0) {
+            return 'https://vertigation.com' . $path;
+        }
+        return $image;
+    }
+    if (strpos($image, '//') === 0) return 'https:' . $image;
+    if (strpos($image, '/shared/uploads/profile_photos/') === 0) return 'https://vertigation.com' . $image;
+    if (strpos($image, 'shared/uploads/profile_photos/') === 0) return 'https://vertigation.com/' . $image;
+    if (strpos($image, 'async/shared/uploads/profile_photos/') === 0) {
+        return 'https://vertigation.com/' . substr($image, strlen('async/'));
+    }
+    if (strpos($image, '/') === 0) return $image;
+    if (strpos($image, 'shared/') === 0) return 'https://vertigation.com/' . $image;
+    if (strpos($image, 'uploads/profile_photos/') === 0) return 'https://vertigation.com/shared/' . $image;
     return 'https://vertigation.com/shared/' . ltrim($image, '/');
 }
 function st_profile_image(mysqli $db, array $student): string
@@ -161,7 +175,7 @@ function st_profile_image(mysqli $db, array $student): string
     static $lookup = null;
     if ($lookup === null) {
         $lookup = ['table' => null, 'match' => null, 'image' => null];
-        foreach (['users', 'user_accounts', 'accounts', 'students'] as $table) {
+        foreach (['accounts', 'users', 'user_accounts', 'students'] as $table) {
             $tableResult = $db->query("SHOW TABLES LIKE '" . $db->real_escape_string($table) . "'");
             if (!$tableResult || $tableResult->num_rows < 1) {
                 if ($tableResult) $tableResult->free();
@@ -174,7 +188,7 @@ function st_profile_image(mysqli $db, array $student): string
             while ($column = $columnsResult->fetch_assoc()) $columns[] = (string)$column['Field'];
             $columnsResult->free();
             $imageCol = null;
-            foreach (['profile_picture', 'profile_image', 'profile_img', 'profile_photo', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] as $candidate) {
+            foreach (($table === 'accounts' ? ['profile_photo', 'profile_picture', 'profile_image', 'profile_img', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] : ['profile_photo', 'profile_picture', 'profile_image', 'profile_img', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image']) as $candidate) {
                 if (in_array($candidate, $columns, true)) {
                     $imageCol = $candidate;
                     break;
@@ -203,7 +217,7 @@ function st_profile_image(mysqli $db, array $student): string
         || ($studentKey !== '' && $sessionUsername !== '' && $studentKey === 'user:' . $sessionUsername)
         || ($studentKey !== '' && !empty($sessionUser['email']) && $studentKey === 'email:' . trim((string)$sessionUser['email']));
     if ($sameUser) {
-        foreach (['profile_picture', 'profile_image', 'profile_img', 'profile_photo', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] as $field) {
+        foreach (['profile_photo', 'profile_picture', 'profile_image', 'profile_img', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] as $field) {
             $sessionImage = st_normalize_profile_path((string)($sessionUser[$field] ?? ''));
             if ($sessionImage !== '') return $sessionImage;
         }
@@ -239,11 +253,13 @@ function st_profile_image(mysqli $db, array $student): string
 
 // Normalize the signed-in user's picture aliases for the shared topbar include.
 // Existing session fields are preserved; profile_picture is populated only when a usable image exists.
-foreach (['profile_picture', 'profile_image', 'profile_img', 'profile_photo', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] as $profileField) {
+foreach (['profile_photo', 'profile_picture', 'profile_image', 'profile_img', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic', 'picture', 'image', 'user_image'] as $profileField) {
     $topbarImage = st_normalize_profile_path((string)($user[$profileField] ?? ''));
     if ($topbarImage !== '') {
         $user['profile_picture'] = $topbarImage;
+        $user['profile_photo'] = $topbarImage;
         $_SESSION['user']['profile_picture'] = $topbarImage;
+        $_SESSION['user']['profile_photo'] = $topbarImage;
         break;
     }
 }
@@ -256,8 +272,38 @@ if (empty($user['profile_picture'])) {
     ]);
     if ($topbarImage !== '') {
         $user['profile_picture'] = $topbarImage;
+        $user['profile_photo'] = $topbarImage;
         $_SESSION['user']['profile_picture'] = $topbarImage;
+        $_SESSION['user']['profile_photo'] = $topbarImage;
     }
+}
+
+// Exact variables used by the supplied shared topbar code.
+$topbarProfilePhoto = '';
+$topbarProfilePhotoURL = '';
+$topbarStudentId = trim((string)($user['student_id'] ?? ''));
+$initials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $fullName), 0, 2));
+if ($initials === '') $initials = 'ST';
+if ($topbarStudentId !== '') {
+    $topbarPhotoStmt = $mysqli->prepare('SELECT profile_photo FROM accounts WHERE student_id = ? LIMIT 1');
+    if ($topbarPhotoStmt) {
+        $topbarPhotoStmt->bind_param('s', $topbarStudentId);
+        if ($topbarPhotoStmt->execute()) {
+            $topbarPhotoResult = $topbarPhotoStmt->get_result();
+            $topbarPhotoRow = $topbarPhotoResult ? $topbarPhotoResult->fetch_assoc() : null;
+            if ($topbarPhotoResult) $topbarPhotoResult->free();
+            $topbarProfilePhoto = trim((string)($topbarPhotoRow['profile_photo'] ?? ''));
+        }
+        $topbarPhotoStmt->close();
+    }
+}
+if ($topbarProfilePhoto === '') $topbarProfilePhoto = (string)($user['profile_photo'] ?? $user['profile_picture'] ?? '');
+$topbarProfilePhotoURL = st_normalize_profile_path($topbarProfilePhoto);
+if ($topbarProfilePhotoURL !== '') {
+    $user['profile_photo'] = $topbarProfilePhotoURL;
+    $user['profile_picture'] = $topbarProfilePhotoURL;
+    $_SESSION['user']['profile_photo'] = $topbarProfilePhotoURL;
+    $_SESSION['user']['profile_picture'] = $topbarProfilePhotoURL;
 }
 
 $error = '';
