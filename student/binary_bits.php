@@ -1,5 +1,204 @@
 <?php
-// Binary Bits — standalone PHP page. No database or external connection is used.
+// Binary Bits — database-backed game page for the ETS-Async student portal.
+date_default_timezone_set('Asia/Manila');
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    $https = (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off') || ((int)($_SERVER['SERVER_PORT'] ?? 0) === 443);
+    session_set_cookie_params(['lifetime' => 0, 'path' => '/', 'secure' => $https, 'httponly' => true, 'samesite' => 'Lax']);
+    session_start();
+}
+$projectRoot = dirname(__DIR__);
+$user = $_SESSION['user'] ?? [];
+if (!is_array($user)) $user = [];
+$loggedIn = ($_SESSION['logged_in'] ?? false) === true || in_array(strtolower((string)($_SESSION['logged_in'] ?? '')), ['1', 'true', 'yes'], true);
+$role = strtolower(trim((string)($user['access'] ?? $user['role'] ?? '')));
+if (!$loggedIn || $role !== 'student') {
+    header('Location: ' . (is_file($projectRoot . '/login.php') ? '../login.php' : '/login.php'));
+    exit;
+}
+$dbCandidates = [$projectRoot . '/src/connection.php', __DIR__ . '/../src/connection.php', __DIR__ . '/src/connection.php'];
+$dbPath = null;
+foreach ($dbCandidates as $candidate) if (is_file($candidate)) {
+    $dbPath = $candidate;
+    break;
+}
+if (!$dbPath) {
+    http_response_code(500);
+    exit('Database connection file not found.');
+}
+require_once $dbPath;
+$db = $mysqli ?? $db ?? $conn ?? $con ?? null;
+if (!$db instanceof mysqli) {
+    http_response_code(500);
+    exit('Database connection is unavailable.');
+}
+
+function bb_e($v): string
+{
+    return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+}
+function bb_photo_url(string $photo): string
+{
+    $photo = trim(str_replace('\\', '/', $photo));
+    if ($photo === '' || preg_match('~^(?:javascript:|data:)~i', $photo)) return '';
+    if (preg_match('~^https?://~i', $photo)) {
+        $path = (string)(parse_url($photo, PHP_URL_PATH) ?? '');
+        return strpos($path, '/shared/uploads/profile_photos/') === 0 ? 'https://vertigation.com' . $path : $photo;
+    }
+    if (strpos($photo, '/shared/uploads/profile_photos/') === 0) return 'https://vertigation.com' . $photo;
+    if (strpos($photo, 'shared/uploads/profile_photos/') === 0) return 'https://vertigation.com/' . $photo;
+    if (strpos($photo, 'async/shared/uploads/profile_photos/') === 0) return 'https://vertigation.com/' . substr($photo, 6);
+    if (strpos($photo, 'uploads/profile_photos/') === 0) return 'https://vertigation.com/shared/' . ltrim($photo, '/');
+    if (strpos($photo, '/') === 0) return $photo;
+    // The accounts table may store only the uploaded filename.
+    return 'https://vertigation.com/shared/uploads/profile_photos/' . rawurlencode(basename($photo));
+}
+$studentId = trim((string)($user['student_id'] ?? ''));
+$studentName = trim(implode(' ', array_filter([
+    trim((string)($user['first_name'] ?? '')),
+    trim((string)($user['middle_initial'] ?? '')) !== '' ? trim((string)$user['middle_initial']) . '.' : '',
+    trim((string)($user['last_name'] ?? '')),
+    trim((string)($user['extension_name'] ?? ''))
+])));
+if ($studentName === '') $studentName = trim((string)($user['full_name'] ?? $user['username'] ?? 'Student'));
+$studentPhoto = bb_photo_url((string)($user['profile_photo'] ?? $user['profile_picture'] ?? ''));
+if ($studentId !== '') {
+    $photoStmt = $db->prepare('SELECT profile_photo FROM accounts WHERE student_id = ? LIMIT 1');
+    if ($photoStmt) {
+        $photoStmt->bind_param('s', $studentId);
+        if ($photoStmt->execute()) {
+            $photoRes = $photoStmt->get_result();
+            $photoRow = $photoRes ? $photoRes->fetch_assoc() : null;
+            if ($photoRes) $photoRes->free();
+            $dbPhoto = bb_photo_url((string)($photoRow['profile_photo'] ?? ''));
+            if ($dbPhoto !== '') $studentPhoto = $dbPhoto;
+        }
+        $photoStmt->close();
+    }
+}
+if ($studentPhoto !== '') {
+    $_SESSION['user']['profile_photo'] = $studentPhoto;
+    $_SESSION['user']['profile_picture'] = $studentPhoto;
+}
+if (empty($_SESSION['bb_csrf'])) $_SESSION['bb_csrf'] = bin2hex(random_bytes(32));
+$csrf = (string)$_SESSION['bb_csrf'];
+
+// Shared score table: other games can write to the same schema using their own game_key/category.
+$createScores = "CREATE TABLE IF NOT EXISTS game_scores (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    game_key VARCHAR(80) NOT NULL,
+    game_name VARCHAR(120) NOT NULL,
+    category VARCHAR(80) NOT NULL DEFAULT 'General',
+    student_id VARCHAR(100) NOT NULL,
+    student_name VARCHAR(190) NOT NULL,
+    score INT UNSIGNED NOT NULL DEFAULT 0,
+    correct_answers INT UNSIGNED NOT NULL DEFAULT 0,
+    wrong_answers INT UNSIGNED NOT NULL DEFAULT 0,
+    duration_seconds INT UNSIGNED NOT NULL DEFAULT 0,
+    time_limit_minutes TINYINT UNSIGNED NOT NULL DEFAULT 2,
+    range_max SMALLINT UNSIGNED NOT NULL DEFAULT 15,
+    played_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_game_scores_game_category (game_key, category),
+    KEY idx_game_scores_student (student_id),
+    KEY idx_game_scores_score (score, played_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+if (!$db->query($createScores)) {
+    error_log('game_scores table setup failed: ' . $db->error);
+}
+// Upgrade existing shared tables safely; these fields are specific to Binary Bits settings.
+$bbColumns = [];
+$bbColumnResult = $db->query('SHOW COLUMNS FROM game_scores');
+if ($bbColumnResult) {
+    while ($col = $bbColumnResult->fetch_assoc()) $bbColumns[$col['Field']] = true;
+    $bbColumnResult->free();
+}
+if (!isset($bbColumns['time_limit_minutes'])) $db->query('ALTER TABLE game_scores ADD COLUMN time_limit_minutes TINYINT UNSIGNED NOT NULL DEFAULT 2');
+if (!isset($bbColumns['range_max'])) $db->query('ALTER TABLE game_scores ADD COLUMN range_max SMALLINT UNSIGNED NOT NULL DEFAULT 15');
+$bbCategories = ['4-bit', '6-bit', '8-bit'];
+$bbGames = ['binary_bits' => 'Binary Bits'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bb_action'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    if (!hash_equals($csrf, (string)($_POST['csrf'] ?? ''))) {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'error' => 'Session expired. Refresh the page.']);
+        exit;
+    }
+    $action = (string)$_POST['bb_action'];
+    if ($action === 'save_score') {
+        $score = max(0, min(1000000, (int)($_POST['score'] ?? 0)));
+        $correct = max(0, min(1000000, (int)($_POST['correct_answers'] ?? $score)));
+        $wrong = max(0, min(1000000, (int)($_POST['wrong_answers'] ?? 0)));
+        $duration = max(0, min(86400, (int)($_POST['duration_seconds'] ?? 0)));
+        $minutes = max(1, min(5, (int)($_POST['time_limit_minutes'] ?? 2)));
+        $range = (int)($_POST['range_max'] ?? 15);
+        if (!in_array($range, [15, 63, 255], true)) $range = 15;
+        $category = $range === 15 ? '4-bit' : ($range === 63 ? '6-bit' : '8-bit');
+        if ($studentId === '') {
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'Your account has no student ID, so the score could not be linked safely.']);
+            exit;
+        }
+        $stmt = $db->prepare('INSERT INTO game_scores (game_key, game_name, category, student_id, student_name, score, correct_answers, wrong_answers, duration_seconds, time_limit_minutes, range_max, played_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,NOW())');
+        if (!$stmt) {
+            http_response_code(500);
+            echo json_encode(['ok' => false, 'error' => 'Could not prepare score save: ' . $db->error]);
+            exit;
+        }
+        $gameKey = 'binary_bits';
+        $gameName = 'Binary Bits';
+        $stmt->bind_param('sssssiiiiii', $gameKey, $gameName, $category, $studentId, $studentName, $score, $correct, $wrong, $duration, $minutes, $range);
+        $ok = $stmt->execute();
+        $stmt->close();
+        if (!$ok) {
+            http_response_code(500);
+            echo json_encode(['ok' => false, 'error' => 'Could not save score: ' . $db->error]);
+            exit;
+        }
+        echo json_encode(['ok' => true, 'category' => $category]);
+        exit;
+    }
+    if ($action === 'leaderboard') {
+        $category = trim((string)($_POST['category'] ?? '4-bit'));
+        $minutes = max(1, min(5, (int)($_POST['minutes'] ?? 2)));
+        if (!in_array($category, ['4-bit', '6-bit', '8-bit'], true)) $category = '4-bit';
+        $sql = "SELECT gs.student_id, gs.game_key, MAX(gs.game_name) AS game_name, gs.category,
+                       MAX(gs.student_name) AS student_name, MAX(gs.score) AS best_score,
+                       MAX(gs.correct_answers) AS correct_answers, MAX(gs.played_at) AS played_at,
+                       MAX(a.profile_photo) AS profile_photo
+                FROM game_scores gs
+                LEFT JOIN accounts a ON CONVERT(a.student_id USING utf8mb4) COLLATE utf8mb4_unicode_ci = CONVERT(gs.student_id USING utf8mb4) COLLATE utf8mb4_unicode_ci
+                WHERE gs.game_key = 'binary_bits' AND gs.category = ? AND gs.time_limit_minutes = ?
+                GROUP BY gs.student_id, gs.game_key, gs.category
+                ORDER BY best_score DESC, correct_answers DESC, played_at ASC
+                LIMIT 50";
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            http_response_code(500);
+            echo json_encode(['ok' => false, 'error' => 'Leaderboard query failed: ' . $db->error]);
+            exit;
+        }
+        $stmt->bind_param('si', $category, $minutes);
+        if (!$stmt->execute()) {
+            http_response_code(500);
+            echo json_encode(['ok' => false, 'error' => 'Leaderboard query failed: ' . $stmt->error]);
+            $stmt->close();
+            exit;
+        }
+        $res = $stmt->get_result();
+        $rows = [];
+        if ($res) while ($row = $res->fetch_assoc()) {
+            $row['profile_photo'] = bb_photo_url((string)($row['profile_photo'] ?? ''));
+            $rows[] = $row;
+        }
+        if ($res) $res->free();
+        $stmt->close();
+        echo json_encode(['ok' => true, 'rows' => $rows]);
+        exit;
+    }
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Unknown action.']);
+    exit;
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -207,6 +406,24 @@
             cursor: pointer;
             font: inherit;
             font-size: 10px
+        }
+
+        .exit-game-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+            font-size: 10px;
+            color: #ffb7bd;
+            border-color: #ff758455;
+            white-space: nowrap;
+        }
+
+        .exit-game-link:hover {
+            background: #ff75841c;
+            border-color: #ff7584aa;
         }
 
         .eyebrow {
@@ -2064,6 +2281,198 @@
                 transform: rotate(-1deg)
             }
         }
+
+
+        .leaderboard-panel {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: #0b192bd9;
+            padding: 13px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .leaderboard-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .leaderboard-head strong {
+            display: block;
+            font-size: 17px;
+            margin-top: 3px;
+        }
+
+        .leaderboard-filters {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .leaderboard-filters select {
+            max-width: 145px;
+            min-width: 0;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #10223a;
+            color: var(--text);
+            padding: 7px 8px;
+            font-size: 10px;
+        }
+
+        .leaderboard-rows {
+            display: grid;
+            gap: 6px;
+            max-height: 245px;
+            overflow: auto;
+        }
+
+        .leader-row {
+            display: grid;
+            grid-template-columns: 22px 34px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 8px;
+            border: 1px solid #ffffff12;
+            border-radius: 11px;
+            background: #14243a;
+        }
+
+        .leader-rank {
+            font-size: 12px;
+            font-weight: 900;
+            color: var(--cyan);
+            text-align: center;
+        }
+
+        .leader-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #6ea8fe;
+            display: grid;
+            place-items: center;
+            background: #183450;
+        }
+
+        .leader-fallback {
+            font-size: 15px;
+        }
+
+        .leader-name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .leader-name small,
+        .leader-score small {
+            display: block;
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .leader-score {
+            text-align: right;
+            font-size: 16px;
+            font-weight: 950;
+            color: var(--cyan);
+        }
+
+        .leaderboard-empty {
+            color: var(--muted);
+            text-align: center;
+            font-size: 11px;
+            padding: 12px 5px;
+        }
+
+        /* During a round, 0/1 float to random safe spots on the screen. */
+        #gameScreen {
+            position: relative;
+        }
+
+        #zeroButton.floating-answer,
+        #oneButton.floating-answer {
+            position: absolute !important;
+            width: 76px !important;
+            height: 58px !important;
+            z-index: 12;
+            margin: 0;
+            touch-action: manipulation;
+            transition: left .28s ease, top .28s ease, transform .24s ease;
+            box-shadow: 0 5px 14px #0003;
+        }
+
+        #zeroButton.floating-answer {
+            transform: rotate(-4deg);
+        }
+
+        #oneButton.floating-answer {
+            transform: rotate(4deg);
+        }
+
+        #zeroButton.floating-answer:hover {
+            transform: rotate(-2deg) scale(1.035);
+        }
+
+        #oneButton.floating-answer:hover {
+            transform: rotate(2deg) scale(1.035);
+        }
+
+        .bit-btn.position-shift {
+            animation: answerShift .32s cubic-bezier(.2, .8, .2, 1);
+        }
+
+        @keyframes answerShift {
+            0% {
+                scale: .96
+            }
+
+            55% {
+                scale: 1.06
+            }
+
+            100% {
+                scale: 1
+            }
+        }
+
+        :root[data-theme="light"] .leaderboard-panel {
+            background: #ffffffdc;
+        }
+
+        :root[data-theme="light"] .leader-row {
+            background: #f0f6fc;
+            border-color: #dbe7f2;
+        }
+
+        :root[data-theme="light"] .leaderboard-filters select {
+            background: #fff;
+            color: #24415e;
+        }
+
+        @media(max-width:380px) {
+            .leaderboard-panel {
+                padding: 10px;
+            }
+
+            .leaderboard-head {
+                align-items: flex-start;
+            }
+
+            .leaderboard-filters select {
+                max-width: 125px;
+            }
+        }
     </style>
 </head>
 
@@ -2079,7 +2488,7 @@
         <section id="startScreen" class="screen">
             <div class="topline">
                 <div class="brand">BINARY<span style="color:var(--text)">/</span>BITS</div>
-                <div class="top-actions"><button class="pill theme-toggle" type="button" data-theme-toggle>☼ LIGHT</button>
+                <div class="top-actions"><a class="pill exit-game-link" href="index.php">← EXIT GAME</a><button class="pill theme-toggle" type="button" data-theme-toggle>☼ LIGHT</button>
                     <div class="pill">MENTAL MATH · 01</div>
                 </div>
             </div>
@@ -2100,6 +2509,30 @@
                 <div class="time-options" id="timeOptions"><button class="time-btn" data-min="1">1<small>MIN</small></button><button class="time-btn selected" data-min="2">2<small>MIN</small></button><button class="time-btn" data-min="3">3<small>MIN</small></button><button class="time-btn" data-min="4">4<small>MIN</small></button><button class="time-btn" data-min="5">5<small>MIN</small></button></div>
             </div>
             <button class="primary" id="startButton">START GAME ↗</button>
+            <section class="leaderboard-panel" aria-label="Game leaderboard">
+                <div class="leaderboard-head">
+                    <div>
+                        <div class="eyebrow">COMMUNITY RANKING</div><strong>Leaderboard</strong>
+                    </div>
+                    <div class="leaderboard-filters">
+                        <select id="leaderboardCategory" aria-label="Filter Binary Bits leaderboard by range">
+                            <option value="4-bit">Range 0–15</option>
+                            <option value="6-bit">Range 0–63</option>
+                            <option value="8-bit">Range 0–255</option>
+                        </select>
+                        <select id="leaderboardMinutes" aria-label="Filter Binary Bits leaderboard by minutes">
+                            <option value="1">1 minute</option>
+                            <option value="2" selected>2 minutes</option>
+                            <option value="3">3 minutes</option>
+                            <option value="4">4 minutes</option>
+                            <option value="5">5 minutes</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="leaderboardRows" class="leaderboard-rows">
+                    <div class="leaderboard-empty">Loading scores…</div>
+                </div>
+            </section>
             <div class="howto">
                 <div class="tip">
                     <div class="tip-icon">01</div>
@@ -2110,11 +2543,12 @@
                     <div><strong style="color:#d9e8fb">Wrong answer?</strong><br>BOOM! Lose 2 seconds and try the next number.</div>
                 </div>
             </div>
+            <div class="developer-credit" style="text-align:center;color:var(--muted);font-size:11px;margin:18px 0 4px;letter-spacing:.04em;">Developed by <strong style="color:var(--text);font-weight:750;">Engr. Karl Stephen O. Evallo</strong></div>
         </section>
         <section id="gameScreen" class="screen hidden">
             <div class="game-head">
                 <div class="brand">BINARY<span style="color:var(--text)">/</span>BITS</div>
-                <div class="top-actions"><button class="pill theme-toggle" type="button" data-theme-toggle>☼ LIGHT</button><button class="pill" id="soundToggle" type="button" aria-pressed="true">♫ SOUND ON</button>
+                <div class="top-actions"><a class="pill exit-game-link" href="index.php">← EXIT GAME</a><button class="pill theme-toggle" type="button" data-theme-toggle>☼ LIGHT</button><button class="pill" id="soundToggle" type="button" aria-pressed="true">♫ SOUND ON</button>
                     <div class="pill" id="roundPill">ROUND 01</div>
                 </div>
             </div>
@@ -2137,7 +2571,7 @@
                 <div class="bit-controls"><button class="bit-btn zero" id="zeroButton">0</button><button class="bit-btn one" id="oneButton">1</button></div>
                 <button class="bit-btn clear" id="clearButton">CLEAR ALL ↺</button><button class="primary" id="checkButton">SUBMIT ANSWER →</button>
             </div>
-            <div class="game-bottom"><span id="challengeLabel">4-BIT CHALLENGE</span><button id="quitButton">End game</button></div>
+            <div class="game-bottom"><span id="challengeLabel">4-BIT CHALLENGE</span></div>
         </section>
         <section id="resultScreen" class="screen hidden">
             <div class="topline">
@@ -2179,6 +2613,7 @@
                 start = $('startScreen'),
                 game = $('gameScreen'),
                 result = $('resultScreen');
+            const csrfToken = <?= json_encode($csrf) ?>;
             let minutes = 2,
                 rangeMax = 15,
                 duration = 120,
@@ -2192,8 +2627,19 @@
                 round = 0,
                 accepting = true,
                 requiredBits = 4,
+                initialButtonMoveDone = false,
+                answerPositionFlip = false,
+                scoreSaved = false,
                 crackTriggered = false,
-                crackTimeout = null;
+                crackTimeout = null,
+                shakeTimeout = null,
+                shakePulseTimer = null,
+                crackCount = 0,
+                isFinishing = false,
+                bigCrackUsed = false,
+                bigCrackAt = 12 + Math.random() * 3;
+            const stage = $('stage'),
+                shakenAt = new Set();
             let audioCtx = null,
                 soundEnabled = true,
                 musicEnabled = true,
@@ -2226,6 +2672,7 @@
                     o = audioCtx.createOscillator(),
                     g = audioCtx.createGain(),
                     filter = audioCtx.createBiquadFilter();
+                vol = Math.min(vol * 1.7, 0.14);
                 o.type = wave;
                 o.frequency.setValueAtTime(freq, t);
                 filter.type = 'lowpass';
@@ -2296,6 +2743,7 @@
                 const t = audioCtx.currentTime + when,
                     o = audioCtx.createOscillator(),
                     g = audioCtx.createGain();
+                vol = Math.min(vol * 1.8, 0.16);
                 o.type = wave;
                 o.frequency.setValueAtTime(freq, t);
                 if (endFreq) o.frequency.exponentialRampToValueAtTime(Math.max(1, endFreq), t + len);
@@ -2376,7 +2824,7 @@
                     filter.frequency.setValueAtTime(700, t);
                     filter.frequency.exponentialRampToValueAtTime(2600, t + .035);
                     gain.gain.setValueAtTime(.0001, t);
-                    gain.gain.exponentialRampToValueAtTime(.18, t + .006);
+                    gain.gain.exponentialRampToValueAtTime(.28, t + .006);
                     gain.gain.exponentialRampToValueAtTime(.0001, t + .22);
                     noise.connect(filter);
                     filter.connect(gain);
@@ -2389,6 +2837,23 @@
                     tone(160, 0, .18, 'sawtooth', .06, 55)
                 }
             }
+            window.addEventListener('resize', () => {
+                // Keep buttons within the game viewport after resizing without triggering a new random move.
+                const game = $('gameScreen');
+                if (!game || game.classList.contains('hidden')) return;
+                [$('zeroButton'), $('oneButton')].forEach(button => {
+                    if (!button || !button.classList.contains('floating-answer')) return;
+                    const maxLeft = Math.max(8, game.clientWidth - button.offsetWidth - 8);
+                    const maxTop = Math.max(8, game.clientHeight - button.offsetHeight - 8);
+                    button.style.left = Math.min(maxLeft, Math.max(8, parseFloat(button.style.left) || 8)) + 'px';
+                    button.style.top = Math.min(maxTop, Math.max(8, parseFloat(button.style.top) || 8)) + 'px';
+                });
+            });
+
+            if ($('leaderboardCategory')) $('leaderboardCategory').addEventListener('change', loadLeaderboard);
+            if ($('leaderboardMinutes')) $('leaderboardMinutes').addEventListener('change', loadLeaderboard);
+            loadLeaderboard();
+
             $('timeOptions').addEventListener('click', e => {
                 const b = e.target.closest('[data-min]');
                 if (!b) return;
@@ -2403,11 +2868,79 @@
                 playSound('menu');
                 document.querySelectorAll('#rangeOptions .time-btn').forEach(x => x.classList.toggle('selected', x === b));
             });
-            $('startButton').onclick = () => {
-                playSound('menu');
-                startGame()
+            $('startButton').onclick = event => {
+                if (event) event.preventDefault();
+                // Audio is optional: browser audio restrictions must never block gameplay.
+                try {
+                    initAudio();
+                } catch (audioError) {
+                    console.warn('Audio unavailable; starting silently.', audioError);
+                }
+                try {
+                    startGame();
+                } catch (startError) {
+                    console.error('Binary Bits startup error:', startError);
+                    // Retry with the minimum gameplay path, without audio or visual effects.
+                    try {
+                        stop();
+                        if (timer) {
+                            clearInterval(timer);
+                            timer = null;
+                        }
+                        scoreSaved = false;
+                        initialButtonMoveDone = false;
+                        answerPositionFlip = false;
+                        resetAnswerButtonPositions();
+                        duration = Math.max(1, Number(minutes) || 2) * 60;
+                        remaining = duration;
+                        score = 0;
+                        wrong = 0;
+                        round = 0;
+                        isFinishing = false;
+                        try {
+                            resetCracks();
+                        } catch (e) {
+                            console.warn('Crack animation reset skipped.', e);
+                        }
+                        try {
+                            clearUrgencyMotion();
+                        } catch (e) {
+                            console.warn('Urgency animation reset skipped.', e);
+                        }
+                        try {
+                            shakenAt.clear();
+                        } catch (e) {}
+                        $('score').textContent = '0';
+                        show(game);
+                        next();
+                        deadline = Date.now() + duration * 1000;
+                        timer = setInterval(() => {
+                            try {
+                                tick();
+                            } catch (e) {
+                                console.error('Timer error:', e);
+                            }
+                        }, 100);
+                        tick();
+                    } catch (fallbackError) {
+                        console.error('Binary Bits fallback startup error:', fallbackError);
+                        show(start);
+                        alert('The game could not start. Please refresh the page and check the browser Console (F12) for the startup error.');
+                    }
+                }
+                try {
+                    playSound('menu');
+                } catch (audioError) {
+                    console.warn('Menu sound unavailable.', audioError);
+                }
             };
-            $('playAgainButton').onclick = startGame;
+            $('playAgainButton').onclick = () => {
+                try {
+                    startGame();
+                } catch (error) {
+                    console.error('Could not restart Binary Bits:', error);
+                }
+            };
             $('soundToggle').onclick = () => {
                 soundEnabled = !soundEnabled;
                 musicEnabled = soundEnabled;
@@ -2428,7 +2961,8 @@
             $('oneButton').onclick = () => add('1');
             $('clearButton').onclick = clear;
             $('checkButton').onclick = check;
-            $('quitButton').onclick = () => finish('ended');
+            // The bottom End Game control was removed; bind it only if an older layout still contains it.
+            if ($('quitButton')) $('quitButton').onclick = () => finish('ended');
 
             function show(s) {
                 [start, game, result].forEach(x => x.classList.toggle('hidden', x !== s))
@@ -2462,35 +2996,56 @@
             }
 
             function startGame() {
-                initAudio();
-                playSound('start');
+                // Reset and start gameplay before attempting any optional audio.
                 stop();
-                duration = minutes * 60;
+                scoreSaved = false;
+                answerPositionFlip = false;
+                initialButtonMoveDone = false;
+                $('zeroButton').style.order = '1';
+                $('oneButton').style.order = '2';
+                resetAnswerButtonPositions();
+                duration = Math.max(1, Number(minutes) || 2) * 60;
                 remaining = duration;
-                score = wrong = round = 0;
+                score = 0;
+                wrong = 0;
+                round = 0;
                 isFinishing = false;
-                resetCracks();
-                clearUrgencyMotion();
-                shakenAt.clear();
-                $('score').textContent = 0;
+                try {
+                    resetCracks();
+                } catch (e) {
+                    console.warn('Crack effects unavailable.', e);
+                }
+                try {
+                    clearUrgencyMotion();
+                } catch (e) {
+                    console.warn('Urgency effects unavailable.', e);
+                }
+                try {
+                    shakenAt.clear();
+                } catch (e) {}
+                $('score').textContent = '0';
                 show(game);
                 next();
                 deadline = Date.now() + duration * 1000;
+                timer = setInterval(() => {
+                    try {
+                        tick();
+                    } catch (e) {
+                        console.error('Timer error:', e);
+                    }
+                }, 100);
                 tick();
-                timer = setInterval(tick, 100);
-                if (soundEnabled) {
-                    musicEnabled = true;
-                    startMusic()
+                try {
+                    initAudio();
+                    playSound('start');
+                    if (soundEnabled) {
+                        musicEnabled = true;
+                        startMusic();
+                    }
+                } catch (audioError) {
+                    console.warn('Audio could not start; game continues without sound.', audioError);
                 }
             }
-            const stage = $('stage'),
-                shakenAt = new Set();
-            let shakeTimeout = null,
-                shakePulseTimer = null,
-                crackCount = 0,
-                isFinishing = false,
-                bigCrackUsed = false,
-                bigCrackAt = 12 + Math.random() * 3;
 
             function clearUrgencyMotion() {
                 stage.classList.remove('urgency-30', 'urgency-20', 'urgency-10', 'urgency-shake', 'final-impact', 'crumble-active', 'crumble-critical');
@@ -2661,6 +3216,13 @@
                 $('timeLeft').textContent = String(Math.floor(remaining / 60)).padStart(2, '0') + ':' + String(Math.ceil(remaining % 60)).padStart(2, '0');
                 $('timerBar').style.width = remaining / duration * 100 + '%';
                 $('timerBar').classList.toggle('low', remaining <= 15);
+                // Do not move the answer buttons while more than 20 seconds remain.
+                // The first move happens when the countdown reaches 20 seconds; after that,
+                // buttons move only after a complete answer is submitted while in this window.
+                if (!initialButtonMoveDone && remaining <= 20) {
+                    initialButtonMoveDone = true;
+                    shiftAnswerButtons();
+                }
                 for (const mark of [30, 20, 10]) {
                     if (remaining <= mark && !shakenAt.has(mark)) {
                         shakenAt.add(mark);
@@ -2690,6 +3252,8 @@
 
             function next() {
                 round++;
+                roundStartedAt = Date.now();
+                lastMovementBucket = 0;
                 target = Math.floor(Math.random() * (rangeMax + 1));
                 requiredBits = Math.max(4, target.toString(2).length);
                 if (rangeMax === 255) requiredBits = 4 + Math.floor(Math.random() * 5);
@@ -2764,6 +3328,7 @@
                     $('feedback').className = 'feedback boom';
                     return
                 }
+                if (remaining <= 20) shiftAnswerButtons();
                 if (parseInt(bits.join(''), 2) === target) {
                     playSound('correct');
                     accepting = false;
@@ -2832,13 +3397,226 @@
                 stage.classList.remove('final-impact');
                 resetCracks();
                 show(result);
+                resetAnswerButtonPositions();
                 playSound(reason === 'ended' ? 'ended' : 'result');
                 $('resultTitle').textContent = reason === 'ended' ? 'Game ended' : "Time's up!";
                 $('resultIcon').textContent = reason === 'ended' ? 'Ⅱ' : '✦';
                 $('finalScore').textContent = score;
                 $('finalCorrect').textContent = score;
                 $('finalWrong').textContent = wrong;
-                $('resultNote').textContent = score ? `Nice work! You converted ${score} ${score===1?'number':'numbers'} correctly in ${minutes} minute${minutes===1?'':'s'}.` : 'Keep practicing — your speed and accuracy will improve with every round.'
+                $('resultNote').textContent = score ? `Nice work! You converted ${score} ${score===1?'number':'numbers'} correctly in ${minutes} minute${minutes===1?'':'s'}.` : 'Keep practicing — your speed and accuracy will improve with every round.';
+                saveScore();
+            }
+
+            function resetAnswerButtonPositions() {
+                const zero = $('zeroButton'),
+                    one = $('oneButton');
+                [zero, one].forEach(button => {
+                    if (!button) return;
+                    button.classList.remove('floating-answer', 'position-shift');
+                    button.style.left = '';
+                    button.style.top = '';
+                    button.style.position = '';
+                    button.style.order = '';
+                });
+            }
+
+            function shiftAnswerButtons() {
+                const zero = $('zeroButton'),
+                    one = $('oneButton'),
+                    game = $('gameScreen');
+                if (!zero || !one || !game || game.classList.contains('hidden')) return;
+                const buttons = [zero, one];
+                const gameRect = game.getBoundingClientRect();
+                const margin = 8,
+                    gap = 8,
+                    w = 76,
+                    h = 58;
+                // Capture the normal button locations before making them absolute.
+                const original = buttons.map(button => {
+                    const r = button.getBoundingClientRect();
+                    return {
+                        left: r.left - gameRect.left,
+                        top: r.top - gameRect.top
+                    };
+                });
+                const blockedSelectors = ['.game-head', '.timer-wrap', '.statrow', '.target-card', '.feedback', '.bit-heading', '.bits', '#clearButton', '#checkButton', '.game-bottom'];
+                const blocked = blockedSelectors.map(sel => $(sel)).filter(Boolean).map(el => {
+                    const r = el.getBoundingClientRect();
+                    return {
+                        left: r.left - gameRect.left - gap,
+                        top: r.top - gameRect.top - gap,
+                        right: r.right - gameRect.left + gap,
+                        bottom: r.bottom - gameRect.top + gap
+                    };
+                });
+                const bounds = {
+                    left: margin,
+                    top: margin,
+                    right: Math.max(margin + w, gameRect.width - w - margin),
+                    bottom: Math.max(margin + h, gameRect.height - h - margin)
+                };
+                const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
+                function chooseNear(base, other) {
+                    // Try small shifts around the original position first; never leave the game area.
+                    for (let radius of [18, 30, 42, 54, 66]) {
+                        for (let i = 0; i < 36; i++) {
+                            const angle = Math.random() * Math.PI * 2;
+                            const distance = radius * (0.55 + Math.random() * 0.45);
+                            const left = Math.max(bounds.left, Math.min(bounds.right, base.left + Math.cos(angle) * distance));
+                            const top = Math.max(bounds.top, Math.min(bounds.bottom, base.top + Math.sin(angle) * distance));
+                            const spot = {
+                                left,
+                                top,
+                                right: left + w,
+                                bottom: top + h
+                            };
+                            if (blocked.some(b => overlaps(spot, b)) || (other && overlaps(spot, other))) continue;
+                            return spot;
+                        }
+                    }
+                    // If nearby space is tight, keep the button at its closest safe in-game location.
+                    const candidates = [{
+                            left: base.left,
+                            top: base.top
+                        },
+                        {
+                            left: base.left - 24,
+                            top: base.top
+                        }, {
+                            left: base.left + 24,
+                            top: base.top
+                        },
+                        {
+                            left: base.left,
+                            top: base.top - 24
+                        }, {
+                            left: base.left,
+                            top: base.top + 24
+                        }
+                    ];
+                    for (const c of candidates) {
+                        const spot = {
+                            left: Math.max(bounds.left, Math.min(bounds.right, c.left)),
+                            top: Math.max(bounds.top, Math.min(bounds.bottom, c.top))
+                        };
+                        spot.right = spot.left + w;
+                        spot.bottom = spot.top + h;
+                        if (!blocked.some(b => overlaps(spot, b)) && (!other || !overlaps(spot, other))) return spot;
+                    }
+                    return {
+                        left: Math.max(bounds.left, Math.min(bounds.right, base.left)),
+                        top: Math.max(bounds.top, Math.min(bounds.bottom, base.top)),
+                        right: Math.max(bounds.left, Math.min(bounds.right, base.left)) + w,
+                        bottom: Math.max(bounds.top, Math.min(bounds.bottom, base.top)) + h
+                    };
+                }
+                const first = chooseNear(original[0], null),
+                    second = chooseNear(original[1], first);
+                [first, second].forEach((spot, i) => {
+                    const button = buttons[i];
+                    button.classList.add('floating-answer');
+                    button.style.left = spot.left + 'px';
+                    button.style.top = spot.top + 'px';
+                    button.classList.remove('position-shift');
+                    void button.offsetWidth;
+                    button.classList.add('position-shift');
+                });
+            }
+
+            async function saveScore() {
+                if (scoreSaved) return;
+                scoreSaved = true;
+                try {
+                    const body = new URLSearchParams({
+                        bb_action: 'save_score',
+                        csrf: csrfToken,
+                        score: String(score),
+                        correct_answers: String(score),
+                        wrong_answers: String(wrong),
+                        duration_seconds: String(Math.min(86400, Math.max(0, Math.round(duration - remaining)))),
+                        range_max: String(rangeMax),
+                        time_limit_minutes: String(minutes)
+                    });
+                    const response = await fetch(location.pathname + location.search, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        credentials: 'same-origin',
+                        body,
+                        keepalive: true
+                    });
+                    const rawResponse = await response.text();
+                    let data;
+                    try {
+                        data = JSON.parse(rawResponse);
+                    } catch (_) {
+                        throw new Error('Server did not return JSON: ' + rawResponse.slice(0, 180).replace(/\s+/g, ' '));
+                    }
+                    if (!response.ok || !data.ok) throw new Error(data.error || 'Score save failed');
+                    await loadLeaderboard();
+                } catch (err) {
+                    scoreSaved = false;
+                    $('resultNote').textContent += ' Your score could not sync to the leaderboard; please retry by ending another session.';
+                    console.error(err);
+                }
+            }
+
+            async function loadLeaderboard() {
+                const host = $('leaderboardRows');
+                if (!host) return;
+                const body = new URLSearchParams({
+                    bb_action: 'leaderboard',
+                    csrf: csrfToken,
+                    category: $('leaderboardCategory')?.value || '4-bit',
+                    minutes: $('leaderboardMinutes')?.value || '2'
+                });
+                try {
+                    const response = await fetch(location.pathname + location.search, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        credentials: 'same-origin',
+                        body
+                    });
+                    const rawResponse = await response.text();
+                    let data;
+                    try {
+                        data = JSON.parse(rawResponse);
+                    } catch (_) {
+                        throw new Error('Server did not return JSON: ' + rawResponse.slice(0, 180).replace(/\s+/g, ' '));
+                    }
+                    if (!response.ok || !data.ok) throw new Error(data.error || 'Leaderboard unavailable');
+                    if (!data.rows.length) {
+                        host.innerHTML = '<div class="leaderboard-empty">No scores yet for this filter. Be the first!</div>';
+                        return;
+                    }
+                    host.innerHTML = data.rows.map((row, index) => {
+                        const name = String(row.student_name || 'Student').trim();
+                        const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part.charAt(0).toUpperCase()).join('') || 'S';
+                        const fallback = '<span class="leader-avatar leader-fallback" aria-label="' + escapeHtml(name) + '">' + escapeHtml(initials) + '</span>';
+                        const photo = row.profile_photo ? '<img class="leader-avatar" src="' + escapeHtml(row.profile_photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.fallback" data-fallback="' + escapeHtml(fallback) + '">' : fallback;
+                        return '<div class="leader-row"><span class="leader-rank">' + (index + 1) + '</span>' + photo +
+                            '<span class="leader-name">' + escapeHtml(name) + '<small>' + escapeHtml('Binary Bits · ' + (row.category || '4-bit')) + '</small></span>' +
+                            '<span class="leader-score">' + Number(row.best_score || 0) + '<small>PTS</small></span></div>';
+                    }).join('');
+                } catch (err) {
+                    host.innerHTML = '<div class="leaderboard-empty">' + escapeHtml(err.message || 'Leaderboard could not load. Check the database connection.') + '</div>';
+                    console.error(err);
+                }
+            }
+
+            function escapeHtml(value) {
+                return String(value).replace(/[&<>"']/g, ch => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                } [ch]));
             }
         })();
     </script>

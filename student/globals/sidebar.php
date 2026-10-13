@@ -234,7 +234,7 @@ function sidebarActive($page)
             href="binary_bits.php"
             class="sidebar-link <?= sidebarActive('binary_bits.php') ?>">
 
-            <i class="bi bi-heart"></i>
+            <i class="bi bi-file-binary"></i>
 
             <span>
                 Binary Bits
