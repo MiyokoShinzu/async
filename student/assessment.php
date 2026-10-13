@@ -586,6 +586,41 @@ $activeExamInProgress = ($view === 'attempt' && $attempt && $attempt['status'] =
 
 ex_page_start('Student Examinations', true);
 ?>
+<script>
+    (function() {
+        const profilePhotoUrl = <?= json_encode((string)($topbarProfilePhotoURL ?? ''), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+        if (!profilePhotoUrl) return;
+
+        function replaceTopbarInitialsWithPhoto() {
+            const targets = document.querySelectorAll(
+                '.topbar-avatar-button .topbar-avatar, .topbar-profile-menu-avatar, .topbar-profile-menu-avatar .topbar-avatar'
+            );
+            targets.forEach(function(target) {
+                if (target.tagName === 'IMG') {
+                    target.src = profilePhotoUrl;
+                    target.alt = 'Profile photo';
+                    target.classList.add('topbar-avatar-image');
+                    return;
+                }
+                let image = target.querySelector('img');
+                if (!image) {
+                    image = document.createElement('img');
+                    target.replaceChildren(image);
+                }
+                image.src = profilePhotoUrl;
+                image.alt = 'Profile photo';
+                image.className = 'topbar-avatar-image';
+                image.style.cssText = 'display:block;width:100%;height:100%;min-width:0;object-fit:cover;border-radius:50%;';
+                target.style.overflow = 'hidden';
+            });
+        }
+        replaceTopbarInitialsWithPhoto();
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', replaceTopbarInitialsWithPhoto, {
+            once: true
+        });
+    })();
+</script>
+
 <div class="student-exams-page<?= $activeExamInProgress ? ' exam-active' : '' ?>">
     <?php if (!$activeExamInProgress): ?>
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
@@ -2921,5 +2956,96 @@ ex_page_start('Student Examinations', true);
     body.dark-mode .student-exams-page .leaderboard-top-row-3 td,
     body.dark-theme .student-exams-page .leaderboard-top-row-3 td {
         background: rgba(184, 115, 51, .20) !important;
+    }
+
+
+    /* Podium: rotating rank-colored border only — no glow, no hover animation. */
+    .student-exams-page .podium-place {
+        position: relative !important;
+        isolation: isolate !important;
+        overflow: hidden !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .student-exams-page .podium-place::before {
+        content: "" !important;
+        position: absolute !important;
+        inset: 0 !important;
+        padding: 2px !important;
+        border-radius: inherit !important;
+        background: conic-gradient(from var(--podium-angle, 0deg), var(--podium-border-a), var(--podium-border-b), var(--podium-border-a)) !important;
+        animation: podiumCardBorderRotate 4s linear infinite !important;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+        -webkit-mask-composite: xor !important;
+        mask-composite: exclude !important;
+        pointer-events: none !important;
+        z-index: 2 !important;
+        filter: none !important;
+        box-shadow: none !important;
+    }
+
+    .student-exams-page .podium-place::after {
+        content: none !important;
+        animation: none !important;
+        box-shadow: none !important;
+    }
+
+    .student-exams-page .podium-place>* {
+        position: relative;
+        z-index: 1;
+    }
+
+    .student-exams-page .podium-place.podium-1 {
+        --podium-border-a: #b8860b;
+        --podium-border-b: #ffe08a;
+    }
+
+    .student-exams-page .podium-place.podium-2 {
+        --podium-border-a: #8995a3;
+        --podium-border-b: #e2e8f0;
+    }
+
+    .student-exams-page .podium-place.podium-3 {
+        --podium-border-a: #9a5726;
+        --podium-border-b: #e7b27f;
+    }
+
+    .student-exams-page .podium-place:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Remove the previous avatar glow/ring; only the podium card border rotates. */
+    .student-exams-page .podium-avatar-wrap::before,
+    .student-exams-page .podium-avatar-wrap::after {
+        content: none !important;
+        animation: none !important;
+        filter: none !important;
+        box-shadow: none !important;
+    }
+
+    .student-exams-page .podium-avatar {
+        box-shadow: none !important;
+    }
+
+    @property --podium-angle {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 0deg;
+    }
+
+    @keyframes podiumCardBorderRotate {
+        to {
+            --podium-angle: 360deg;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .student-exams-page .podium-place::before {
+            animation: none !important;
+        }
     }
 </style>
