@@ -2665,3 +2665,171 @@ ex_page_start('Student Examinations', true);
         }
     }
 </style>
+
+<style>
+    /* Prominent rotating neon borders around each podium card, with extra breathing room. */
+    .student-exams-page .leaderboard-podium {
+        gap: 18px !important;
+        padding: 24px !important;
+    }
+
+    .student-exams-page .podium-place {
+        position: relative;
+        isolation: isolate;
+        overflow: visible !important;
+        padding: 24px 16px 22px !important;
+        border: 2px solid transparent !important;
+        border-radius: 20px !important;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, .10);
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .student-exams-page .podium-place::before {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 22px;
+        z-index: -1;
+        background: conic-gradient(from 0deg, var(--podium-a), var(--podium-b), var(--podium-c), var(--podium-a));
+        animation: podiumCardBorderSpin 2.4s linear infinite, podiumCardBorderGlow 1.35s ease-in-out infinite alternate;
+        box-shadow: 0 0 12px var(--podium-glow), 0 0 25px var(--podium-glow);
+    }
+
+    .student-exams-page .podium-place::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        border-radius: 15px;
+        z-index: -1;
+        pointer-events: none;
+        opacity: .35;
+        background: linear-gradient(145deg, rgba(255, 255, 255, .28), transparent 55%);
+    }
+
+    .student-exams-page .podium-place>* {
+        position: relative;
+    }
+
+    .student-exams-page .podium-place.podium-1 {
+        --podium-a: #38bdf8;
+        --podium-b: #2563eb;
+        --podium-c: #c4b5fd;
+        --podium-glow: rgba(37, 99, 235, .65);
+        padding-top: 30px !important;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, .20);
+    }
+
+    .student-exams-page .podium-place.podium-2 {
+        --podium-a: #f8fafc;
+        --podium-b: #64748b;
+        --podium-c: #cbd5e1;
+        --podium-glow: rgba(148, 163, 184, .65);
+    }
+
+    .student-exams-page .podium-place.podium-3 {
+        --podium-a: #22d3ee;
+        --podium-b: #0e7490;
+        --podium-c: #67e8f9;
+        --podium-glow: rgba(6, 182, 212, .65);
+    }
+
+    .student-exams-page .podium-place:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 32px var(--podium-glow, rgba(37, 99, 235, .18));
+    }
+
+    .student-exams-page .podium-avatar-wrap {
+        margin-bottom: 16px !important;
+    }
+
+    .student-exams-page .podium-rank {
+        margin-top: 6px;
+    }
+
+    .student-exams-page .podium-name {
+        margin-top: 12px !important;
+        line-height: 1.4;
+    }
+
+    .student-exams-page .podium-score {
+        margin-top: 9px !important;
+    }
+
+    .student-exams-page .podium-points {
+        margin-top: 4px;
+    }
+
+    @keyframes podiumCardBorderSpin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes podiumCardBorderGlow {
+        from {
+            opacity: .78;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .student-exams-page .leaderboard-podium {
+            gap: 12px !important;
+            padding: 18px 12px !important;
+        }
+
+        .student-exams-page .podium-place {
+            padding: 18px 9px 16px !important;
+            border-radius: 16px !important;
+        }
+
+        .student-exams-page .podium-place.podium-1 {
+            padding-top: 22px !important;
+        }
+
+        .student-exams-page .podium-place::before {
+            border-radius: 18px;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .student-exams-page .leaderboard-podium {
+            gap: 10px !important;
+            padding: 14px 8px !important;
+        }
+
+        .student-exams-page .podium-place {
+            padding: 15px 6px 14px !important;
+        }
+
+        .student-exams-page .podium-place.podium-1 {
+            padding-top: 18px !important;
+        }
+
+        .student-exams-page .podium-name {
+            font-size: .84rem;
+            overflow-wrap: anywhere;
+        }
+
+        .student-exams-page .podium-score {
+            font-size: 1.1rem !important;
+        }
+
+        .student-exams-page .podium-points {
+            font-size: .74rem !important;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .student-exams-page .podium-place::before {
+            animation: none !important;
+        }
+
+        .student-exams-page .podium-place {
+            transition: none !important;
+        }
+    }
+</style>
