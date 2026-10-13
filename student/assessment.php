@@ -476,7 +476,7 @@ if ($exam && !empty($exam['id'])) {
 foreach ($examIdsForBoards as $boardExam) {
     $examIdForBoard = (int)$boardExam['id'];
     try {
-        $leaderRows = ex_rows($db, "SELECT a.student_name,a.student_number,a.student_account_key,a.score,a.total_items,a.submitted_at
+        $leaderRows = ex_rows($db, "SELECT a.student_name,a.student_number,a.student_account_key,a.score,a.total_items,a.started_at,a.submitted_at
             FROM exam_attempts a
             WHERE a.exam_id=? AND a.status IN ('submitted','timed_out') AND a.score IS NOT NULL AND a.total_items > 0
             ORDER BY (a.score / a.total_items) DESC, a.score DESC, a.submitted_at ASC", 'i', [$examIdForBoard]);
@@ -489,6 +489,9 @@ foreach ($examIdsForBoards as $boardExam) {
             if ($identity === 'name:' || isset($seenStudents[$identity])) continue;
             $seenStudents[$identity] = true;
             $lr['_percentage'] = (int)$lr['total_items'] > 0 ? ((int)$lr['score'] / (int)$lr['total_items']) : 0;
+            $startedTs = !empty($lr['started_at']) ? strtotime((string)$lr['started_at']) : false;
+            $submittedTs = !empty($lr['submitted_at']) ? strtotime((string)$lr['submitted_at']) : false;
+            $lr['_time_taken_seconds'] = ($startedTs !== false && $submittedTs !== false && $submittedTs >= $startedTs) ? ($submittedTs - $startedTs) : null;
             $lr['_profile_image'] = st_profile_image($db, $lr);
             $rankedTakers[] = $lr;
         }
@@ -1015,6 +1018,7 @@ ex_page_start('Student Examinations', true);
                                         <th>Rank</th>
                                         <th>Student</th>
                                         <th>Score</th>
+                                        <th>Time Taken</th>
                                         <th>Percentage</th>
                                         <th>Achievement</th>
                                     </tr>
@@ -1022,7 +1026,7 @@ ex_page_start('Student Examinations', true);
                                 <tbody>
                                     <?php foreach ($boardTakers as $rank => $leader): ?>
                                         <tr class="<?= $rank < 3 ? 'leaderboard-top-row' : '' ?>">
-                                            <td><span class="leader-rank rank-<?= min(3, $rank + 1) ?>"><?php if ($rank === 0): ?><i class="bi bi-trophy-fill" aria-label="First place"></i><span class="visually-hidden">1st place</span><?php elseif ($rank === 1): ?><span class="runner-up-medal" role="img" aria-label="Second place medal">🏅</span><span class="visually-hidden">2nd place</span><?php elseif ($rank === 2): ?><i class="bi bi-pen-fill" aria-label="Third place"></i><span class="visually-hidden">3rd place</span><?php else: ?><?= $rank + 1 ?><?php endif; ?></span></td>
+                                            <td><span class="leader-rank rank-<?= min(3, $rank + 1) ?>"><?php if ($rank === 0): ?><i class="bi bi-trophy-fill" aria-label="First place"></i><span class="visually-hidden">1st place</span><?php elseif ($rank === 1): ?><i class="bi bi-award-fill" aria-label="Second place medal" role="img"></i><span class="visually-hidden">2nd place</span><?php elseif ($rank === 2): ?><i class="bi bi-pen-fill" aria-label="Third place"></i><span class="visually-hidden">3rd place</span><?php else: ?><?= $rank + 1 ?><?php endif; ?></span></td>
                                             <td>
                                                 <div class="leader-student-cell"><?php $leaderName = trim((string)($leader['student_name'] ?? 'Student'));
                                                                                     $leaderInitials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $leaderName), 0, 2));
@@ -1030,6 +1034,10 @@ ex_page_start('Student Examinations', true);
                                                                                     $leaderPhoto = (string)($leader['_profile_image'] ?? ''); ?><?php if ($leaderPhoto !== ''): ?><img class="leader-avatar" src="<?= ex_e($leaderPhoto) ?>" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><?php endif; ?><span class="leader-avatar-fallback" <?= $leaderPhoto !== '' ? 'hidden' : '' ?>><?= ex_e($leaderInitials) ?></span><span class="fw-semibold"><?= ex_e($leaderName !== '' ? $leaderName : 'Student') ?></span></div>
                                             </td>
                                             <td><?= (int)$leader['score'] ?> / <?= (int)$leader['total_items'] ?></td>
+                                            <td><?php if ($leader['_time_taken_seconds'] !== null): ?><?php $elapsed = (int)$leader['_time_taken_seconds'];
+                                                                                                        $hours = intdiv($elapsed, 3600);
+                                                                                                        $minutes = intdiv($elapsed % 3600, 60);
+                                                                                                        $seconds = $elapsed % 60; ?><span class="leader-time-taken"><i class="bi bi-stopwatch me-1" aria-hidden="true"></i><?php if ($hours > 0): ?><?= $hours ?>h <?php endif; ?><?= $minutes ?>m <?= $seconds ?>s</span><?php else: ?><span class="text-secondary small">Not recorded</span><?php endif; ?></td>
                                             <td><strong><?= number_format(((float)$leader['_percentage']) * 100, 1) ?>%</strong></td>
                                             <td><?php if ($rank === 0): ?><span class="leader-achievement gold"><i class="bi bi-crown-fill me-1" aria-hidden="true"></i>Champion</span><?php elseif ($rank === 1): ?><span class="leader-achievement silver"><i class="bi bi-award-fill me-1" aria-hidden="true"></i>Runner-up</span><?php elseif ($rank === 2): ?><span class="leader-achievement bronze"><i class="bi bi-medal-fill me-1" aria-hidden="true"></i>3rd Place</span><?php else: ?><span class="text-secondary small"><i class="bi bi-check-circle me-1" aria-hidden="true"></i>Completed</span><?php endif; ?></td>
                                         </tr>
@@ -2487,5 +2495,33 @@ ex_page_start('Student Examinations', true);
         background: #cffafe !important;
         color: #155e75 !important;
         border: 1px solid #67e8f9 !important;
+    }
+</style>
+
+<style>
+    .student-exams-page .leaderboard-table .leader-rank.rank-2 .bi-award-fill {
+        display: inline-block;
+        font-size: 1rem;
+        line-height: 1;
+        color: #475569;
+    }
+
+    .student-exams-page .leader-time-taken {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        padding: 5px 8px;
+        border-radius: 7px;
+        background: rgba(37, 99, 235, .08);
+        border: 1px solid rgba(37, 99, 235, .22);
+        color: var(--exam-text);
+        font-size: .78rem;
+        font-weight: 650;
+        font-variant-numeric: tabular-nums;
+    }
+
+    html[data-theme="dark"] .student-exams-page .leader-time-taken {
+        background: rgba(96, 165, 250, .12);
+        border-color: rgba(96, 165, 250, .28);
     }
 </style>
