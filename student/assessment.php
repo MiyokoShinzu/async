@@ -732,7 +732,7 @@ ex_page_start('Student Examinations', true);
                     <div class="display-5 fw-bold"><?= (int)$attempt['score'] ?> / <?= (int)$attempt['total_items'] ?></div>
                     <p class="text-secondary">Status: <?= ex_e(str_replace('_', ' ', $attempt['status'])) ?></p>
                     <div class="result-activity-badge"><i class="bi bi-arrow-left-right me-1"></i> Tab switches recorded: <strong><?= (int)($attempt['tab_switch_count'] ?? 0) ?></strong></div>
-                    <div class="d-flex justify-content-center flex-wrap gap-2"><a href="assessment.php?review=<?= (int)$attempt['id'] ?>" class="btn btn-primary">View solutions</a><a href="assessment.php#examHistory" class="btn btn-outline-secondary">Exam history</a></div>
+                    <div class="d-flex justify-content-center flex-wrap gap-2"><a href="assessment.php?review=<?= (int)$attempt['id'] ?>" class="btn btn-primary">View solutions</a><button type="button" class="btn btn-primary js-share-result" data-share-title="<?= ex_e($attempt['title']) ?>" data-share-text="I scored <?= (int)$attempt['score'] ?> out of <?= (int)$attempt['total_items'] ?> on <?= ex_e($attempt['title']) ?>!"> <i class="bi bi-facebook me-1" aria-hidden="true"></i> Share result</button><a href="assessment.php#examHistory" class="btn btn-outline-secondary">Exam history</a></div>
                 </div>
             </section><?php endif; ?>
     <?php elseif ($view === 'review' && $attempt): ?>
@@ -742,7 +742,8 @@ ex_page_start('Student Examinations', true);
                 <h3 class="fw-bold mb-1"><?= ex_e($attempt['title']) ?></h3>
                 <div class="text-secondary">Score: <strong><?= (int)$attempt['score'] ?> / <?= (int)$attempt['total_items'] ?></strong> · <?= ex_e(date('M j, Y g:i A', strtotime((string)($attempt['submitted_at'] ?? $attempt['started_at'])))) ?></div>
                 <div class="result-activity-badge mt-2"><i class="bi bi-arrow-left-right me-1"></i> Tab switches recorded: <strong><?= (int)($attempt['tab_switch_count'] ?? 0) ?></strong></div>
-            </div><a class="btn btn-outline-secondary" href="assessment.php#examHistory">Back to history</a>
+            </div>
+            <div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-primary js-share-result" data-share-title="<?= ex_e($attempt['title']) ?>" data-share-text="I scored <?= (int)$attempt['score'] ?> out of <?= (int)$attempt['total_items'] ?> on <?= ex_e($attempt['title']) ?>!"><i class="bi bi-facebook me-1" aria-hidden="true"></i> Share result</button><a class="btn btn-outline-secondary" href="assessment.php#examHistory">Back to history</a></div>
         </div>
         <?php foreach ($questions as $index => $q): ?><section class="question-card">
                 <div class="d-flex justify-content-between gap-2 flex-wrap mb-2">
@@ -859,7 +860,7 @@ ex_page_start('Student Examinations', true);
                         <h5 class="fw-bold mb-1"><i class="bi bi-trophy-fill me-2 text-warning" aria-hidden="true"></i><?= ex_e($board['title']) ?> leaderboard</h5>
                         <div class="text-secondary small">All completed takers for this exam, ranked by percentage.</div>
                     </div>
-                    <span class="badge text-bg-warning"><i class="bi bi-people-fill me-1" aria-hidden="true"></i><?= count($boardTakers) ?> takers</span>
+                    <div class="d-flex align-items-center flex-wrap gap-2"><span class="badge text-bg-warning"><i class="bi bi-people-fill me-1" aria-hidden="true"></i><?= count($boardTakers) ?> takers</span><button type="button" class="btn btn-sm btn-primary js-share-leaderboard" data-share-title="<?= ex_e($board['title']) ?>" data-share-text="Check out the <?= ex_e($board['title']) ?> leaderboard on ETS-ASYNC Learning Portal."><i class="bi bi-facebook me-1" aria-hidden="true"></i> Share leaderboard</button></div>
                 </div>
                 <div class="exam-card-body p-0">
                     <?php if (!$boardTakers): ?>
@@ -895,7 +896,7 @@ ex_page_start('Student Examinations', true);
                                 <tbody>
                                     <?php foreach ($boardTakers as $rank => $leader): ?>
                                         <tr class="<?= $rank < 3 ? 'leaderboard-top-row' : '' ?>">
-                                            <td><span class="leader-rank rank-<?= min(3, $rank + 1) ?>"><?php if ($rank === 0): ?><i class="bi bi-trophy-fill" aria-label="First place"></i><?php elseif ($rank === 1): ?><i class="bi bi-award-fill" aria-label="Second place"></i><?php elseif ($rank === 2): ?><i class="bi bi-medal-fill" aria-label="Third place"></i><?php else: ?><?= $rank + 1 ?><?php endif; ?></span></td>
+                                            <td><span class="leader-rank rank-<?= min(3, $rank + 1) ?>"><?php if ($rank === 0): ?><i class="bi bi-trophy-fill" aria-label="First place"></i><span class="visually-hidden">1st place</span><?php elseif ($rank === 1): ?><i class="bi bi-award-fill" aria-label="Second place"></i><span class="visually-hidden">2nd place</span><?php elseif ($rank === 2): ?><i class="bi bi-medal-fill" aria-label="Third place"></i><span class="rank-label rank-label-bronze">3rd</span><?php else: ?><?= $rank + 1 ?><?php endif; ?></span><?php if ($rank === 2): ?><span class="leader-achievement bronze table-rank-badge"><i class="bi bi-medal-fill me-1" aria-hidden="true"></i>3rd Place</span><?php endif; ?></td>
                                             <td class="fw-semibold"><?= ex_e(trim((string)$leader['student_name']) !== '' ? (string)$leader['student_name'] : 'Student') ?></td>
                                             <td><?= (int)$leader['score'] ?> / <?= (int)$leader['total_items'] ?></td>
                                             <td><strong><?= number_format(((float)$leader['_percentage']) * 100, 1) ?>%</strong></td>
@@ -2100,5 +2101,54 @@ ex_page_start('Student Examinations', true);
         background: var(--exam-surface-soft);
         color: var(--exam-text);
     }
+
+    .student-exams-page .rank-label-bronze {
+        display: inline-block;
+        margin-left: 4px;
+        font-size: .72rem;
+        font-weight: 900;
+        color: #9a3412;
+    }
+
+    .student-exams-page .table-rank-badge {
+        display: inline-flex;
+        margin-top: 5px;
+        white-space: nowrap;
+    }
+
+    .student-exams-page .leaderboard-table td {
+        vertical-align: middle;
+    }
+
+    .student-exams-page .podium-place.podium-3 .podium-icon {
+        color: #b45309;
+    }
+
+    .student-exams-page .podium-place.podium-3 .podium-award .leader-achievement.bronze {
+        display: inline-flex;
+        padding: 6px 11px;
+        font-size: .82rem;
+        font-weight: 850;
+        background: #fed7aa;
+        color: #7c2d12;
+        border: 2px solid #c2410c;
+        box-shadow: 0 3px 0 rgba(124, 45, 18, .16);
+    }
 </style>
+<script>
+    (function() {
+        function facebookShare(text) {
+            const pageUrl = window.location.href;
+            const shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl) + '&quote=' + encodeURIComponent(text || 'Check out my exam result on ETS-ASYNC Learning Portal.');
+            window.open(shareUrl, 'facebook-share', 'width=680,height=560,noopener,noreferrer');
+        }
+        document.querySelectorAll('.js-share-result, .js-share-leaderboard').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const text = button.getAttribute('data-share-text') || 'Check out this exam result on ETS-ASYNC Learning Portal.';
+                // Facebook sharing works best when this page is publicly reachable over HTTPS.
+                facebookShare(text);
+            });
+        });
+    })();
+</script>
 <?php ex_page_end(true); ?>
