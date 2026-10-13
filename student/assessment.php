@@ -870,6 +870,11 @@ ex_page_start('Student Examinations', true);
                                 <div class="podium-place podium-<?= $podiumRank + 1 ?>">
                                     <div class="podium-icon" aria-hidden="true"><i class="bi <?= $podiumRank === 0 ? 'bi-trophy-fill' : ($podiumRank === 1 ? 'bi-award-fill' : 'bi-medal-fill') ?>"></i></div>
                                     <div class="podium-rank"><?= $podiumRank === 0 ? '1st Place' : ($podiumRank === 1 ? '2nd Place' : '3rd Place') ?></div>
+                                    <div class="podium-award">
+                                        <?php if ($podiumRank === 0): ?><span class="leader-achievement gold"><i class="bi bi-crown-fill me-1" aria-hidden="true"></i>Champion</span>
+                                        <?php elseif ($podiumRank === 1): ?><span class="leader-achievement silver"><i class="bi bi-award-fill me-1" aria-hidden="true"></i>Runner-up</span>
+                                        <?php else: ?><span class="leader-achievement bronze"><i class="bi bi-medal-fill me-1" aria-hidden="true"></i>3rd Place</span><?php endif; ?>
+                                    </div>
                                     <div class="podium-name"><?= ex_e(trim((string)$podiumTaker['student_name']) !== '' ? (string)$podiumTaker['student_name'] : 'Student') ?></div>
                                     <div class="podium-score"><?= number_format(((float)$podiumTaker['_percentage']) * 100, 1) ?>%</div>
                                     <div class="podium-points"><?= (int)$podiumTaker['score'] ?> / <?= (int)$podiumTaker['total_items'] ?></div>
@@ -1762,6 +1767,23 @@ ex_page_start('Student Examinations', true);
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .04em;
+    }
+
+    .student-exams-page .podium-award {
+        margin-top: 8px;
+        min-height: 25px;
+    }
+
+    .student-exams-page .podium-award .leader-achievement {
+        justify-content: center;
+        max-width: 100%;
+    }
+
+    .student-exams-page .leader-achievement.bronze {
+        background: #ffedd5;
+        color: #9a3412;
+        border: 1px solid #fdba74;
+        box-shadow: 0 2px 5px rgba(154, 52, 18, .12);
     }
 
     .student-exams-page .podium-name {
