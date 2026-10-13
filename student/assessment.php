@@ -285,7 +285,7 @@ $topbarStudentId = trim((string)($user['student_id'] ?? ''));
 $initials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $fullName), 0, 2));
 if ($initials === '') $initials = 'ST';
 if ($topbarStudentId !== '') {
-    $topbarPhotoStmt = $mysqli->prepare('SELECT profile_photo FROM accounts WHERE student_id = ? LIMIT 1');
+    $topbarPhotoStmt = $db->prepare('SELECT profile_photo FROM accounts WHERE student_id = ? LIMIT 1');
     if ($topbarPhotoStmt) {
         $topbarPhotoStmt->bind_param('s', $topbarStudentId);
         if ($topbarPhotoStmt->execute()) {
@@ -297,7 +297,11 @@ if ($topbarStudentId !== '') {
         $topbarPhotoStmt->close();
     }
 }
-if ($topbarProfilePhoto === '') $topbarProfilePhoto = (string)($user['profile_photo'] ?? $user['profile_picture'] ?? '');
+if ($topbarProfilePhoto === '') {
+    $topbarProfilePhoto = (string)($user['profile_photo'] ?? $user['profile_picture'] ?? '');
+}
+// If the session contains an old relative path or an initials-only state, prefer the
+// current database photo and normalize it to the shared profile-photo host.
 $topbarProfilePhotoURL = st_normalize_profile_path($topbarProfilePhoto);
 if ($topbarProfilePhotoURL !== '') {
     $user['profile_photo'] = $topbarProfilePhotoURL;
@@ -2808,5 +2812,114 @@ ex_page_start('Student Examinations', true);
         .student-exams-page .podium-avatar-wrap::before {
             animation: none !important;
         }
+    }
+
+    /* Gold / silver / bronze leaderboard palette */
+    .student-exams-page .podium-place.podium-1 {
+        border: 1px solid #d4a72c !important;
+        box-shadow: inset 0 0 0 1px rgba(212, 167, 44, .14) !important;
+    }
+
+    .student-exams-page .podium-place.podium-2 {
+        border: 1px solid #aeb8c4 !important;
+        box-shadow: inset 0 0 0 1px rgba(148, 163, 184, .16) !important;
+    }
+
+    .student-exams-page .podium-place.podium-3 {
+        border: 1px solid #b87333 !important;
+        box-shadow: inset 0 0 0 1px rgba(184, 115, 51, .16) !important;
+    }
+
+    .student-exams-page .podium-place.podium-1 .podium-rank,
+    .student-exams-page .podium-place.podium-1 .podium-score,
+    .student-exams-page .leaderboard-table .leader-rank.rank-1 {
+        color: #a87900 !important;
+    }
+
+    .student-exams-page .podium-place.podium-2 .podium-rank,
+    .student-exams-page .podium-place.podium-2 .podium-score,
+    .student-exams-page .leaderboard-table .leader-rank.rank-2 {
+        color: #64748b !important;
+    }
+
+    .student-exams-page .podium-place.podium-3 .podium-rank,
+    .student-exams-page .podium-place.podium-3 .podium-score,
+    .student-exams-page .leaderboard-table .leader-rank.rank-3 {
+        color: #a45a20 !important;
+    }
+
+    .student-exams-page .podium-place.podium-1 .podium-icon,
+    .student-exams-page .leaderboard-table .leader-rank.rank-1 {
+        background: #fff0b3 !important;
+        border-color: #d4a72c !important;
+        color: #805b00 !important;
+    }
+
+    .student-exams-page .podium-place.podium-2 .podium-icon,
+    .student-exams-page .leaderboard-table .leader-rank.rank-2 {
+        background: #edf1f5 !important;
+        border-color: #aeb8c4 !important;
+        color: #536273 !important;
+    }
+
+    .student-exams-page .podium-place.podium-3 .podium-icon,
+    .student-exams-page .leaderboard-table .leader-rank.rank-3 {
+        background: #f8e1cc !important;
+        border-color: #b87333 !important;
+        color: #874516 !important;
+    }
+
+    .student-exams-page .leader-achievement.gold {
+        background: #fff0b3 !important;
+        color: #805b00 !important;
+        border: 1px solid #d4a72c !important;
+    }
+
+    .student-exams-page .leader-achievement.silver {
+        background: #edf1f5 !important;
+        color: #536273 !important;
+        border: 1px solid #aeb8c4 !important;
+    }
+
+    .student-exams-page .leader-achievement.bronze {
+        background: #f8e1cc !important;
+        color: #874516 !important;
+        border: 1px solid #b87333 !important;
+    }
+
+    .student-exams-page .leaderboard-top-row-1 td {
+        background: rgba(212, 167, 44, .13) !important;
+        border-color: rgba(212, 167, 44, .30) !important;
+    }
+
+    .student-exams-page .leaderboard-top-row-2 td {
+        background: rgba(148, 163, 184, .16) !important;
+        border-color: rgba(148, 163, 184, .30) !important;
+    }
+
+    .student-exams-page .leaderboard-top-row-3 td {
+        background: rgba(184, 115, 51, .13) !important;
+        border-color: rgba(184, 115, 51, .30) !important;
+    }
+
+    html[data-theme="dark"] .student-exams-page .leaderboard-top-row-1 td,
+    html[data-bs-theme="dark"] .student-exams-page .leaderboard-top-row-1 td,
+    body.dark-mode .student-exams-page .leaderboard-top-row-1 td,
+    body.dark-theme .student-exams-page .leaderboard-top-row-1 td {
+        background: rgba(212, 167, 44, .20) !important;
+    }
+
+    html[data-theme="dark"] .student-exams-page .leaderboard-top-row-2 td,
+    html[data-bs-theme="dark"] .student-exams-page .leaderboard-top-row-2 td,
+    body.dark-mode .student-exams-page .leaderboard-top-row-2 td,
+    body.dark-theme .student-exams-page .leaderboard-top-row-2 td {
+        background: rgba(148, 163, 184, .20) !important;
+    }
+
+    html[data-theme="dark"] .student-exams-page .leaderboard-top-row-3 td,
+    html[data-bs-theme="dark"] .student-exams-page .leaderboard-top-row-3 td,
+    body.dark-mode .student-exams-page .leaderboard-top-row-3 td,
+    body.dark-theme .student-exams-page .leaderboard-top-row-3 td {
+        background: rgba(184, 115, 51, .20) !important;
     }
 </style>
