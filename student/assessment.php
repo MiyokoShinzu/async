@@ -149,11 +149,12 @@ function st_normalize_profile_path(string $image): string
     $image = trim(str_replace('\\', '/', $image));
     if ($image === '' || preg_match('~^(?:javascript:|data:)~i', $image)) return '';
     if (preg_match('~^(?:https?:)?//~i', $image) || str_starts_with($image, '/')) return $image;
-    // Image paths are stored relative to the project root; this page lives in /student.
+    // Profile photos for this portal are served from https://vertigation.com/shared/.
     $image = preg_replace('~^(?:\./)+~', '', $image);
+    if (str_starts_with($image, 'shared/')) return 'https://vertigation.com/' . ltrim($image, '/');
     if (str_starts_with($image, 'student/')) return '../' . $image;
     if (str_starts_with($image, 'uploads/') || str_starts_with($image, 'assets/') || str_starts_with($image, 'images/')) return '../' . $image;
-    return '../' . ltrim($image, '/');
+    return 'https://vertigation.com/shared/' . ltrim($image, '/');
 }
 function st_profile_image(mysqli $db, array $student): string
 {
@@ -495,6 +496,21 @@ foreach ($examIdsForBoards as $boardExam) {
             $lr['_profile_image'] = st_profile_image($db, $lr);
             $rankedTakers[] = $lr;
         }
+        // Rank by score percentage, then raw score; for equal scores, the fastest valid completion wins.
+        usort($rankedTakers, static function (array $a, array $b): int {
+            $pctCompare = ((float)$b['_percentage']) <=> ((float)$a['_percentage']);
+            if ($pctCompare !== 0) return $pctCompare;
+            $scoreCompare = ((int)$b['score']) <=> ((int)$a['score']);
+            if ($scoreCompare !== 0) return $scoreCompare;
+            $timeA = $a['_time_taken_seconds'];
+            $timeB = $b['_time_taken_seconds'];
+            if ($timeA === null && $timeB !== null) return 1;
+            if ($timeB === null && $timeA !== null) return -1;
+            if ($timeA !== null && $timeB !== null && $timeA !== $timeB) return $timeA <=> $timeB;
+            $submittedA = !empty($a['submitted_at']) ? strtotime((string)$a['submitted_at']) : PHP_INT_MAX;
+            $submittedB = !empty($b['submitted_at']) ? strtotime((string)$b['submitted_at']) : PHP_INT_MAX;
+            return $submittedA <=> $submittedB;
+        });
         $leaderboards[$examIdForBoard] = ['title' => $boardExam['title'], 'takers' => $rankedTakers];
     } catch (Throwable $leaderboardError) {
         error_log('Exam leaderboard query failed for exam ' . $examIdForBoard . ': ' . $leaderboardError->getMessage());
@@ -1001,9 +1017,9 @@ ex_page_start('Student Examinations', true);
                                     </div>
                                     <div class="podium-rank"><?= $podiumRank === 0 ? '1st Place' : ($podiumRank === 1 ? '2nd Place' : '3rd Place') ?></div>
                                     <div class="podium-award">
-                                        <?php if ($podiumRank === 0): ?><span class="leader-achievement gold"><i class="bi bi-crown-fill me-1" aria-hidden="true"></i>Champion</span>
-                                        <?php elseif ($podiumRank === 1): ?><span class="leader-achievement silver"><i class="bi bi-award-fill me-1" aria-hidden="true"></i>Runner-up</span>
-                                        <?php else: ?><span class="leader-achievement bronze"><i class="bi bi-medal-fill me-1" aria-hidden="true"></i>3rd Place</span><?php endif; ?>
+                                        <?php if ($podiumRank === 0): ?><span class="leader-achievement gold">Champion</span>
+                                        <?php elseif ($podiumRank === 1): ?><span class="leader-achievement silver">Runner-up</span>
+                                        <?php else: ?><span class="leader-achievement bronze">3rd Place</span><?php endif; ?>
                                     </div>
                                     <div class="podium-name"><?= ex_e(trim((string)$podiumTaker['student_name']) !== '' ? (string)$podiumTaker['student_name'] : 'Student') ?></div>
                                     <div class="podium-score"><?= number_format(((float)$podiumTaker['_percentage']) * 100, 1) ?>%</div>
@@ -1039,7 +1055,7 @@ ex_page_start('Student Examinations', true);
                                                                                                         $minutes = intdiv($elapsed % 3600, 60);
                                                                                                         $seconds = $elapsed % 60; ?><span class="leader-time-taken"><i class="bi bi-stopwatch me-1" aria-hidden="true"></i><?php if ($hours > 0): ?><?= $hours ?>h <?php endif; ?><?= $minutes ?>m <?= $seconds ?>s</span><?php else: ?><span class="text-secondary small">Not recorded</span><?php endif; ?></td>
                                             <td><strong><?= number_format(((float)$leader['_percentage']) * 100, 1) ?>%</strong></td>
-                                            <td><?php if ($rank === 0): ?><span class="leader-achievement gold"><i class="bi bi-crown-fill me-1" aria-hidden="true"></i>Champion</span><?php elseif ($rank === 1): ?><span class="leader-achievement silver"><i class="bi bi-award-fill me-1" aria-hidden="true"></i>Runner-up</span><?php elseif ($rank === 2): ?><span class="leader-achievement bronze"><i class="bi bi-medal-fill me-1" aria-hidden="true"></i>3rd Place</span><?php else: ?><span class="text-secondary small"><i class="bi bi-check-circle me-1" aria-hidden="true"></i>Completed</span><?php endif; ?></td>
+                                            <td><?php if ($rank === 0): ?><span class="leader-achievement gold">Champion</span><?php elseif ($rank === 1): ?><span class="leader-achievement silver">Runner-up</span><?php elseif ($rank === 2): ?><span class="leader-achievement bronze">3rd Place</span><?php else: ?><span class="leader-achievement completed">Completed</span><?php endif; ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -2523,5 +2539,83 @@ ex_page_start('Student Examinations', true);
     html[data-theme="dark"] .student-exams-page .leader-time-taken {
         background: rgba(96, 165, 250, .12);
         border-color: rgba(96, 165, 250, .28);
+    }
+</style>
+
+<style>
+    /* Text-only achievement badges (no icon glyphs in the last column). */
+    .student-exams-page .leaderboard-table td:last-child .leader-achievement,
+    .student-exams-page .podium-award .leader-achievement {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+    }
+
+    .student-exams-page .leader-achievement.completed {
+        background: #f1f5f9 !important;
+        color: #475569 !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: .75rem;
+        font-weight: 750;
+    }
+
+    /* Bright neon rings rotate and glow differently for each podium rank. */
+    .student-exams-page .podium-avatar-wrap::before {
+        inset: -9px !important;
+        background: conic-gradient(from 0deg, var(--neon-a), var(--neon-b), var(--neon-c), var(--neon-a)) !important;
+        animation: leaderNeonSpin 1.35s linear infinite, leaderNeonGlow 1s ease-in-out infinite alternate !important;
+        filter: drop-shadow(0 0 5px var(--neon-a)) drop-shadow(0 0 12px var(--neon-b)) drop-shadow(0 0 20px var(--neon-c)) !important;
+    }
+
+    .student-exams-page .podium-avatar-wrap.podium-avatar-rank-1 {
+        --neon-a: #38bdf8;
+        --neon-b: #2563eb;
+        --neon-c: #a78bfa;
+    }
+
+    .student-exams-page .podium-avatar-wrap.podium-avatar-rank-2 {
+        --neon-a: #f8fafc;
+        --neon-b: #94a3b8;
+        --neon-c: #64748b;
+    }
+
+    .student-exams-page .podium-avatar-wrap.podium-avatar-rank-3 {
+        --neon-a: #22d3ee;
+        --neon-b: #06b6d4;
+        --neon-c: #0e7490;
+    }
+
+    .student-exams-page .podium-avatar-wrap::after {
+        inset: -4px !important;
+    }
+
+    .student-exams-page .podium-avatar {
+        border: 3px solid #fff;
+        box-shadow: 0 0 10px var(--neon-a, #38bdf8), 0 0 20px var(--neon-b, #2563eb);
+    }
+
+    @keyframes leaderNeonSpin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes leaderNeonGlow {
+        from {
+            opacity: .78;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .student-exams-page .podium-avatar-wrap::before {
+            animation: none !important;
+        }
     }
 </style>
