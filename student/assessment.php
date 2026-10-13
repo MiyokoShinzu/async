@@ -1059,7 +1059,7 @@ ex_page_start('Student Examinations', true);
                                         $podiumPhoto = (string)($podiumTaker['_profile_image'] ?? ''); ?>
                                         <?php if ($podiumPhoto !== ''): ?><img class="podium-avatar" src="<?= ex_e($podiumPhoto) ?>" alt="<?= ex_e($podiumName) ?> profile picture" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><?php endif; ?>
                                         <span class="podium-avatar-fallback" <?= $podiumPhoto !== '' ? 'hidden' : '' ?>><?= ex_e($podiumInitials) ?></span>
-                                        <span class="podium-icon" aria-hidden="true"><i class="bi <?= $podiumRank === 0 ? 'bi-trophy-fill' : ($podiumRank === 1 ? 'bi-award-fill' : 'bi-medal-fill') ?>"></i></span>
+                                        <span class="podium-icon podium-medal-<?= $podiumRank + 1 ?>" aria-hidden="true"><?php if ($podiumRank === 0): ?><i class="bi bi-trophy-fill"></i><?php elseif ($podiumRank === 1): ?><i class="bi bi-award-fill"></i><?php else: ?><span class="podium-bronze-medal">🥉</span><?php endif; ?></span>
                                     </div>
                                     <div class="podium-rank"><?= $podiumRank === 0 ? '1st Place' : ($podiumRank === 1 ? '2nd Place' : '3rd Place') ?></div>
                                     <div class="podium-award">
@@ -1087,7 +1087,7 @@ ex_page_start('Student Examinations', true);
                                 </thead>
                                 <tbody>
                                     <?php foreach ($boardTakers as $rank => $leader): ?>
-                                        <tr class="<?= $rank < 3 ? 'leaderboard-top-row' : '' ?>">
+                                        <tr class="<?= $rank < 3 ? 'leaderboard-top-row leaderboard-top-row-' . ($rank + 1) : '' ?>">
                                             <td><span class="leader-rank rank-<?= min(3, $rank + 1) ?>"><?php if ($rank === 0): ?><i class="bi bi-trophy-fill" aria-label="First place"></i><span class="visually-hidden">1st place</span><?php elseif ($rank === 1): ?><i class="bi bi-award-fill" aria-label="Second place medal" role="img"></i><span class="visually-hidden">2nd place</span><?php elseif ($rank === 2): ?><i class="bi bi-pen-fill" aria-label="Third place"></i><span class="visually-hidden">3rd place</span><?php else: ?><?= $rank + 1 ?><?php endif; ?></span></td>
                                             <td>
                                                 <div class="leader-student-cell"><?php $leaderName = trim((string)($leader['student_name'] ?? 'Student'));
@@ -1940,22 +1940,14 @@ ex_page_start('Student Examinations', true);
         overflow-wrap: anywhere;
     }
 
-    .student-exams-page .podium-place.podium-1 {
-        background: #eff6ff;
-        border-color: #60a5fa;
-        color: #1e40af;
-    }
-
-    .student-exams-page .podium-place.podium-2 {
-        background: #f8fafc;
-        border-color: #cbd5e1;
-        color: #334155;
-    }
-
+    .student-exams-page .podium-place.podium-1,
+    .student-exams-page .podium-place.podium-2,
     .student-exams-page .podium-place.podium-3 {
-        background: #ecfeff;
-        border-color: #67e8f9;
-        color: #155e75;
+        background: var(--exam-surface-soft) !important;
+        border-color: var(--exam-border) !important;
+        color: var(--exam-text) !important;
+        box-shadow: none !important;
+        transform: none !important;
     }
 
     .student-exams-page .podium-icon {
@@ -2029,8 +2021,37 @@ ex_page_start('Student Examinations', true);
         color: #9a3412;
     }
 
-    .student-exams-page .leaderboard-top-row td {
-        background: color-mix(in srgb, var(--exam-surface-soft) 78%, #fbbf24 22%);
+    .student-exams-page .leaderboard-top-row-1 td {
+        background: rgba(37, 99, 235, .10) !important;
+    }
+
+    .student-exams-page .leaderboard-top-row-2 td {
+        background: rgba(100, 116, 139, .12) !important;
+    }
+
+    .student-exams-page .leaderboard-top-row-3 td {
+        background: rgba(8, 145, 178, .11) !important;
+    }
+
+    html[data-theme="dark"] .student-exams-page .leaderboard-top-row-1 td,
+    html[data-bs-theme="dark"] .student-exams-page .leaderboard-top-row-1 td,
+    body.dark-mode .student-exams-page .leaderboard-top-row-1 td,
+    body.dark-theme .student-exams-page .leaderboard-top-row-1 td {
+        background: rgba(59, 130, 246, .18) !important;
+    }
+
+    html[data-theme="dark"] .student-exams-page .leaderboard-top-row-2 td,
+    html[data-bs-theme="dark"] .student-exams-page .leaderboard-top-row-2 td,
+    body.dark-mode .student-exams-page .leaderboard-top-row-2 td,
+    body.dark-theme .student-exams-page .leaderboard-top-row-2 td {
+        background: rgba(148, 163, 184, .16) !important;
+    }
+
+    html[data-theme="dark"] .student-exams-page .leaderboard-top-row-3 td,
+    html[data-bs-theme="dark"] .student-exams-page .leaderboard-top-row-3 td,
+    body.dark-mode .student-exams-page .leaderboard-top-row-3 td,
+    body.dark-theme .student-exams-page .leaderboard-top-row-3 td {
+        background: rgba(6, 182, 212, .16) !important;
     }
 
     @media (max-width: 575.98px) {
@@ -2667,79 +2688,67 @@ ex_page_start('Student Examinations', true);
 </style>
 
 <style>
-    /* Prominent rotating neon borders around each podium card, with extra breathing room. */
+    /* Neutral podium cards: animation is limited to the student's avatar border. */
     .student-exams-page .leaderboard-podium {
-        gap: 18px !important;
-        padding: 24px !important;
+        gap: 14px !important;
+        padding: 18px !important;
     }
 
     .student-exams-page .podium-place {
         position: relative;
         isolation: isolate;
         overflow: visible !important;
-        padding: 24px 16px 22px !important;
-        border: 2px solid transparent !important;
-        border-radius: 20px !important;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, .10);
-        transition: transform .25s ease, box-shadow .25s ease;
+        padding: 22px 14px 20px !important;
+        background: var(--exam-surface-soft) !important;
+        color: var(--exam-text) !important;
+        border: 1px solid var(--exam-border) !important;
+        border-radius: 16px !important;
+        box-shadow: none !important;
+        transform: none !important;
+        transition: none !important;
     }
 
-    .student-exams-page .podium-place::before {
-        content: "";
-        position: absolute;
-        inset: -3px;
-        border-radius: 22px;
-        z-index: -1;
-        background: conic-gradient(from 0deg, var(--podium-a), var(--podium-b), var(--podium-c), var(--podium-a));
-        animation: podiumCardBorderSpin 2.4s linear infinite, podiumCardBorderGlow 1.35s ease-in-out infinite alternate;
-        box-shadow: 0 0 12px var(--podium-glow), 0 0 25px var(--podium-glow);
-    }
-
+    .student-exams-page .podium-place::before,
     .student-exams-page .podium-place::after {
-        content: "";
-        position: absolute;
-        inset: 2px;
-        border-radius: 15px;
-        z-index: -1;
-        pointer-events: none;
-        opacity: .35;
-        background: linear-gradient(145deg, rgba(255, 255, 255, .28), transparent 55%);
-    }
-
-    .student-exams-page .podium-place>* {
-        position: relative;
-    }
-
-    .student-exams-page .podium-place.podium-1 {
-        --podium-a: #38bdf8;
-        --podium-b: #2563eb;
-        --podium-c: #c4b5fd;
-        --podium-glow: rgba(37, 99, 235, .65);
-        padding-top: 30px !important;
-        box-shadow: 0 10px 30px rgba(37, 99, 235, .20);
-    }
-
-    .student-exams-page .podium-place.podium-2 {
-        --podium-a: #f8fafc;
-        --podium-b: #64748b;
-        --podium-c: #cbd5e1;
-        --podium-glow: rgba(148, 163, 184, .65);
-    }
-
-    .student-exams-page .podium-place.podium-3 {
-        --podium-a: #22d3ee;
-        --podium-b: #0e7490;
-        --podium-c: #67e8f9;
-        --podium-glow: rgba(6, 182, 212, .65);
+        content: none !important;
+        animation: none !important;
+        box-shadow: none !important;
     }
 
     .student-exams-page .podium-place:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 14px 32px var(--podium-glow, rgba(37, 99, 235, .18));
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .student-exams-page .podium-place.podium-1,
+    .student-exams-page .podium-place.podium-2,
+    .student-exams-page .podium-place.podium-3 {
+        background: var(--exam-surface-soft) !important;
+        color: var(--exam-text) !important;
+        box-shadow: none !important;
+    }
+
+    .student-exams-page .podium-place.podium-1 {
+        padding-top: 22px !important;
     }
 
     .student-exams-page .podium-avatar-wrap {
         margin-bottom: 16px !important;
+        z-index: 1;
+    }
+
+    .student-exams-page .podium-icon {
+        z-index: 3 !important;
+    }
+
+    .student-exams-page .podium-bronze-medal {
+        display: inline-block;
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    .student-exams-page .podium-icon.podium-medal-3 {
+        color: #b45309 !important;
     }
 
     .student-exams-page .podium-rank {
@@ -2759,54 +2768,26 @@ ex_page_start('Student Examinations', true);
         margin-top: 4px;
     }
 
-    @keyframes podiumCardBorderSpin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    @keyframes podiumCardBorderGlow {
-        from {
-            opacity: .78;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
     @media (max-width: 767.98px) {
         .student-exams-page .leaderboard-podium {
-            gap: 12px !important;
-            padding: 18px 12px !important;
+            gap: 10px !important;
+            padding: 16px 10px !important;
         }
 
         .student-exams-page .podium-place {
             padding: 18px 9px 16px !important;
-            border-radius: 16px !important;
-        }
-
-        .student-exams-page .podium-place.podium-1 {
-            padding-top: 22px !important;
-        }
-
-        .student-exams-page .podium-place::before {
-            border-radius: 18px;
+            border-radius: 14px !important;
         }
     }
 
     @media (max-width: 575.98px) {
         .student-exams-page .leaderboard-podium {
-            gap: 10px !important;
-            padding: 14px 8px !important;
+            gap: 8px !important;
+            padding: 12px 6px !important;
         }
 
         .student-exams-page .podium-place {
-            padding: 15px 6px 14px !important;
-        }
-
-        .student-exams-page .podium-place.podium-1 {
-            padding-top: 18px !important;
+            padding: 14px 5px 13px !important;
         }
 
         .student-exams-page .podium-name {
@@ -2824,12 +2805,8 @@ ex_page_start('Student Examinations', true);
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .student-exams-page .podium-place::before {
+        .student-exams-page .podium-avatar-wrap::before {
             animation: none !important;
-        }
-
-        .student-exams-page .podium-place {
-            transition: none !important;
         }
     }
 </style>
