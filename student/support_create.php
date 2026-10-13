@@ -594,8 +594,7 @@ try {
 
     $stmt =
         $mysqli->prepare(
-            "UPDATE support_transactions
-             SET status = 'failed'
+            "DELETE FROM support_transactions
              WHERE id = ?"
         );
 
@@ -704,8 +703,7 @@ if (
 
     $stmt =
         $mysqli->prepare(
-            "UPDATE support_transactions
-             SET status = 'failed'
+            "DELETE FROM support_transactions
              WHERE id = ?"
         );
 

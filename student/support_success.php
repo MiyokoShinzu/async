@@ -1,4 +1,3 @@
-
 <?php
 
 /* =========================================================
@@ -124,19 +123,16 @@ $statusMessage =
 if ($status === "paid") {
 
     $statusClass =
-        "status-paid";
+        "status-pending";
 
     $statusIcon =
-        "bi-check-lg";
+        "bi-hourglass-split";
 
     $statusTitle =
-        "Thank You So Much!";
+        "Payment Confirmation Pending";
 
     $statusMessage =
-        "Your support has been successfully received.
-         Your generosity helps us continue developing
-         learning resources, academic tools, and
-         meaningful experiences for our students.";
+        "Thank you for your support. PayMongo has returned you to the portal, but the payment has not yet been confirmed by our server. This page will not mark the transaction as paid; please refresh in a moment after PayMongo sends its confirmation.";
 }
 
 

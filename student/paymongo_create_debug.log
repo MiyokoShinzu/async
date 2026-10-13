@@ -1,0 +1,537 @@
+
+
+========================================
+2026-10-14 07:46:11
+PAYMONGO CHECKOUT RESPONSE
+========================================
+Success: YES
+HTTP Code: 200
+Response:
+Array
+(
+    [data] => Array
+        (
+            [id] => cs_f6bb4bddbe4ca805a1e2939b
+            [type] => checkout_session
+            [attributes] => Array
+                (
+                    [billing] => Array
+                        (
+                            [address] => Array
+                                (
+                                    [city] => 
+                                    [country] => 
+                                    [line1] => 
+                                    [line2] => 
+                                    [postal_code] => 
+                                    [state] => 
+                                )
+
+                            [email] => 
+                            [name] => 
+                            [phone] => 
+                        )
+
+                    [billing_information_fields_editable] => enabled
+                    [cancel_url] => https://async.vertigation.com/student/support_cancel.php?reference=ETS-ASYNC20261014074610-6895B6B1
+                    [checkout_url] => https://checkout.paymongo.com/f6bb4bddbe4ca805a1e2939b
+                    [client_key] => cs_f6bb4bddbe4ca805a1e2939b_client_8621ce7ee4f0630cb476e4cf
+                    [collection] => Array
+                        (
+                            [customer_info] => Array
+                                (
+                                    [email] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [name] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [mobile_phone] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [address] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                )
+
+                        )
+
+                    [customer_email] => 
+                    [customer_id] => 
+                    [description] => Support contribution to ETS-Async Learning Portal
+                    [line_items] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [amount] => 5000
+                                    [currency] => PHP
+                                    [description] => Support contribution to ETS-Async Learning Portal
+                                    [images] => Array
+                                        (
+                                        )
+
+                                    [name] => ETS-Async Support
+                                    [quantity] => 1
+                                )
+
+                        )
+
+                    [livemode] => 
+                    [merchant] => Karl Stephen Evallo
+                    [metadata] => Array
+                        (
+                            [reference_code] => ETS-ASYNC20261014074610-6895B6B1
+                            [student_id] => 19-20844
+                            [transaction_id] => 3
+                        )
+
+                    [organization_id] => org_EHisdS3C6dL254SL95Ra614G
+                    [pass_on_fees] => 
+                    [payment_intent] => Array
+                        (
+                            [id] => pi_h3D8nAX2ZkorYhHTAkZCTu4g
+                            [type] => payment_intent
+                            [attributes] => Array
+                                (
+                                    [amount] => 5000
+                                    [capture_type] => automatic
+                                    [client_key] => pi_h3D8nAX2ZkorYhHTAkZCTu4g_client_SNxLNhqJpT5sBAMAELvjqcZB
+                                    [currency] => PHP
+                                    [description] => Support contribution to ETS-Async Learning Portal
+                                    [last_payment_error] => 
+                                    [livemode] => 
+                                    [metadata] => Array
+                                        (
+                                            [reference_code] => ETS-ASYNC20261014074610-6895B6B1
+                                            [student_id] => 19-20844
+                                            [transaction_id] => 3
+                                        )
+
+                                    [next_action] => 
+                                    [original_amount] => 5000
+                                    [payment_method_allowed] => Array
+                                        (
+                                            [0] => qrph
+                                            [1] => gcash
+                                            [2] => card
+                                            [3] => paymaya
+                                        )
+
+                                    [payment_method_options] => Array
+                                        (
+                                            [card] => Array
+                                                (
+                                                    [request_three_d_secure] => any
+                                                )
+
+                                        )
+
+                                    [payments] => Array
+                                        (
+                                        )
+
+                                    [setup_future_usage] => 
+                                    [statement_descriptor] => Karl Stephen Evallo
+                                    [status] => awaiting_payment_method
+                                    [created_at] => 1791935171
+                                    [updated_at] => 1791935171
+                                )
+
+                        )
+
+                    [payment_method_types] => Array
+                        (
+                            [0] => gcash
+                            [1] => paymaya
+                            [2] => card
+                            [3] => qrph
+                        )
+
+                    [payments] => Array
+                        (
+                        )
+
+                    [public_key] => pk_test_cd6WVe7HBqyuoYYApNMZJvJ2
+                    [reference_number] => 
+                    [send_email_receipt] => 
+                    [show_description] => 1
+                    [show_line_items] => 1
+                    [status] => active
+                    [success_url] => https://async.vertigation.com/student/support_success.php?reference=ETS-ASYNC20261014074610-6895B6B1
+                    [created_at] => 1791935171
+                    [updated_at] => 1791935171
+                )
+
+        )
+
+)
+
+Error:
+
+========================================
+
+
+========================================
+2026-10-14 07:47:42
+PAYMONGO CHECKOUT RESPONSE
+========================================
+Success: YES
+HTTP Code: 200
+Response:
+Array
+(
+    [data] => Array
+        (
+            [id] => cs_d9c473b63ede8479917ca1d1
+            [type] => checkout_session
+            [attributes] => Array
+                (
+                    [billing] => Array
+                        (
+                            [address] => Array
+                                (
+                                    [city] => 
+                                    [country] => 
+                                    [line1] => 
+                                    [line2] => 
+                                    [postal_code] => 
+                                    [state] => 
+                                )
+
+                            [email] => 
+                            [name] => 
+                            [phone] => 
+                        )
+
+                    [billing_information_fields_editable] => enabled
+                    [cancel_url] => https://async.vertigation.com/student/support_cancel.php?reference=ETS-ASYNC20261014074741-9DD0FB55
+                    [checkout_url] => https://checkout.paymongo.com/d9c473b63ede8479917ca1d1
+                    [client_key] => cs_d9c473b63ede8479917ca1d1_client_af449ea110bc889fd4e6d25d
+                    [collection] => Array
+                        (
+                            [customer_info] => Array
+                                (
+                                    [email] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [name] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [mobile_phone] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [address] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                )
+
+                        )
+
+                    [customer_email] => 
+                    [customer_id] => 
+                    [description] => Support contribution to ETS-Async Learning Portal
+                    [line_items] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [amount] => 501200
+                                    [currency] => PHP
+                                    [description] => Support contribution to ETS-Async Learning Portal
+                                    [images] => Array
+                                        (
+                                        )
+
+                                    [name] => ETS-Async Support
+                                    [quantity] => 1
+                                )
+
+                        )
+
+                    [livemode] => 
+                    [merchant] => Karl Stephen Evallo
+                    [metadata] => Array
+                        (
+                            [reference_code] => ETS-ASYNC20261014074741-9DD0FB55
+                            [student_id] => 19-20844
+                            [transaction_id] => 4
+                        )
+
+                    [organization_id] => org_EHisdS3C6dL254SL95Ra614G
+                    [pass_on_fees] => 
+                    [payment_intent] => Array
+                        (
+                            [id] => pi_uA4XGqYScT5LBUDaAMEht7eb
+                            [type] => payment_intent
+                            [attributes] => Array
+                                (
+                                    [amount] => 501200
+                                    [capture_type] => automatic
+                                    [client_key] => pi_uA4XGqYScT5LBUDaAMEht7eb_client_gPqgdc62LVHsCtSEkrG3pGQN
+                                    [currency] => PHP
+                                    [description] => Support contribution to ETS-Async Learning Portal
+                                    [last_payment_error] => 
+                                    [livemode] => 
+                                    [metadata] => Array
+                                        (
+                                            [reference_code] => ETS-ASYNC20261014074741-9DD0FB55
+                                            [student_id] => 19-20844
+                                            [transaction_id] => 4
+                                        )
+
+                                    [next_action] => 
+                                    [original_amount] => 501200
+                                    [payment_method_allowed] => Array
+                                        (
+                                            [0] => gcash
+                                            [1] => paymaya
+                                            [2] => card
+                                            [3] => qrph
+                                        )
+
+                                    [payment_method_options] => Array
+                                        (
+                                            [card] => Array
+                                                (
+                                                    [request_three_d_secure] => any
+                                                )
+
+                                        )
+
+                                    [payments] => Array
+                                        (
+                                        )
+
+                                    [setup_future_usage] => 
+                                    [statement_descriptor] => Karl Stephen Evallo
+                                    [status] => awaiting_payment_method
+                                    [created_at] => 1791935262
+                                    [updated_at] => 1791935262
+                                )
+
+                        )
+
+                    [payment_method_types] => Array
+                        (
+                            [0] => gcash
+                            [1] => paymaya
+                            [2] => card
+                            [3] => qrph
+                        )
+
+                    [payments] => Array
+                        (
+                        )
+
+                    [public_key] => pk_test_cd6WVe7HBqyuoYYApNMZJvJ2
+                    [reference_number] => 
+                    [send_email_receipt] => 
+                    [show_description] => 1
+                    [show_line_items] => 1
+                    [status] => active
+                    [success_url] => https://async.vertigation.com/student/support_success.php?reference=ETS-ASYNC20261014074741-9DD0FB55
+                    [created_at] => 1791935262
+                    [updated_at] => 1791935262
+                )
+
+        )
+
+)
+
+Error:
+
+========================================
+
+
+========================================
+2026-10-14 07:58:54
+PAYMONGO CHECKOUT RESPONSE
+========================================
+Success: YES
+HTTP Code: 200
+Response:
+Array
+(
+    [data] => Array
+        (
+            [id] => cs_34bb648cb4a98338ffe19696
+            [type] => checkout_session
+            [attributes] => Array
+                (
+                    [billing] => Array
+                        (
+                            [address] => Array
+                                (
+                                    [city] => 
+                                    [country] => 
+                                    [line1] => 
+                                    [line2] => 
+                                    [postal_code] => 
+                                    [state] => 
+                                )
+
+                            [email] => 
+                            [name] => 
+                            [phone] => 
+                        )
+
+                    [billing_information_fields_editable] => enabled
+                    [cancel_url] => https://async.vertigation.com/student/support_cancel.php?reference=ETS-ASYNC20261014075853-B26B6140
+                    [checkout_url] => https://checkout.paymongo.com/34bb648cb4a98338ffe19696
+                    [client_key] => cs_34bb648cb4a98338ffe19696_client_0f27ca24d441fd511e32db54
+                    [collection] => Array
+                        (
+                            [customer_info] => Array
+                                (
+                                    [email] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [name] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [mobile_phone] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                    [address] => Array
+                                        (
+                                            [state] => auto
+                                        )
+
+                                )
+
+                        )
+
+                    [customer_email] => 
+                    [customer_id] => 
+                    [description] => Support contribution to ETS-Async Learning Portal
+                    [line_items] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [amount] => 10000
+                                    [currency] => PHP
+                                    [description] => Support contribution to ETS-Async Learning Portal
+                                    [images] => Array
+                                        (
+                                        )
+
+                                    [name] => ETS-Async Support
+                                    [quantity] => 1
+                                )
+
+                        )
+
+                    [livemode] => 
+                    [merchant] => Karl Stephen Evallo
+                    [metadata] => Array
+                        (
+                            [reference_code] => ETS-ASYNC20261014075853-B26B6140
+                            [student_id] => 19-20844
+                            [transaction_id] => 5
+                        )
+
+                    [organization_id] => org_EHisdS3C6dL254SL95Ra614G
+                    [pass_on_fees] => 
+                    [payment_intent] => Array
+                        (
+                            [id] => pi_jwP7oXifckpVSobsSC4yryQv
+                            [type] => payment_intent
+                            [attributes] => Array
+                                (
+                                    [amount] => 10000
+                                    [capture_type] => automatic
+                                    [client_key] => pi_jwP7oXifckpVSobsSC4yryQv_client_buzbt5cCPYZCkdC1srgjmmb6
+                                    [currency] => PHP
+                                    [description] => Support contribution to ETS-Async Learning Portal
+                                    [last_payment_error] => 
+                                    [livemode] => 
+                                    [metadata] => Array
+                                        (
+                                            [reference_code] => ETS-ASYNC20261014075853-B26B6140
+                                            [student_id] => 19-20844
+                                            [transaction_id] => 5
+                                        )
+
+                                    [next_action] => 
+                                    [original_amount] => 10000
+                                    [payment_method_allowed] => Array
+                                        (
+                                            [0] => card
+                                            [1] => gcash
+                                            [2] => paymaya
+                                            [3] => qrph
+                                        )
+
+                                    [payment_method_options] => Array
+                                        (
+                                            [card] => Array
+                                                (
+                                                    [request_three_d_secure] => any
+                                                )
+
+                                        )
+
+                                    [payments] => Array
+                                        (
+                                        )
+
+                                    [setup_future_usage] => 
+                                    [statement_descriptor] => Karl Stephen Evallo
+                                    [status] => awaiting_payment_method
+                                    [created_at] => 1791935934
+                                    [updated_at] => 1791935934
+                                )
+
+                        )
+
+                    [payment_method_types] => Array
+                        (
+                            [0] => gcash
+                            [1] => paymaya
+                            [2] => card
+                            [3] => qrph
+                        )
+
+                    [payments] => Array
+                        (
+                        )
+
+                    [public_key] => pk_test_cd6WVe7HBqyuoYYApNMZJvJ2
+                    [reference_number] => 
+                    [send_email_receipt] => 
+                    [show_description] => 1
+                    [show_line_items] => 1
+                    [status] => active
+                    [success_url] => https://async.vertigation.com/student/support_success.php?reference=ETS-ASYNC20261014075853-B26B6140
+                    [created_at] => 1791935934
+                    [updated_at] => 1791935934
+                )
+
+        )
+
+)
+
+Error:
+
+========================================
