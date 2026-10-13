@@ -142,6 +142,71 @@ elseif (trim((string)($user['username'] ?? '')) !== '') $accountKey = 'user:' . 
 else $accountKey = 'email:' . trim((string)($user['email'] ?? ''));
 $accountKey = substr($accountKey, 0, 190);
 
+// Optional profile-picture lookup for leaderboard avatars. This is intentionally
+// schema-tolerant: if the installation has no supported profile image column,
+// podium avatars fall back to student initials instead of breaking the page.
+function st_profile_image(mysqli $db, array $student): string
+{
+    static $lookup = null;
+    if ($lookup === null) {
+        $lookup = ['table' => null, 'match' => null, 'image' => null];
+        foreach (['users', 'user_accounts', 'accounts', 'students'] as $table) {
+            $safeTable = $db->real_escape_string($table);
+            $tableResult = $db->query("SHOW TABLES LIKE '{$safeTable}'");
+            if (!$tableResult || $tableResult->num_rows < 1) {
+                if ($tableResult) $tableResult->free();
+                continue;
+            }
+            $tableResult->free();
+            $columnsResult = $db->query("SHOW COLUMNS FROM `{$table}`");
+            if (!$columnsResult) continue;
+            $columns = [];
+            while ($column = $columnsResult->fetch_assoc()) $columns[] = (string)$column['Field'];
+            $columnsResult->free();
+            $imageCol = null;
+            foreach (['profile_picture', 'profile_image', 'avatar_url', 'avatar', 'photo_url', 'photo', 'image_path', 'profile_pic'] as $candidate) {
+                if (in_array($candidate, $columns, true)) {
+                    $imageCol = $candidate;
+                    break;
+                }
+            }
+            $matchCol = null;
+            foreach (['student_id', 'student_number', 'username', 'email'] as $candidate) {
+                if (in_array($candidate, $columns, true)) {
+                    $matchCol = $candidate;
+                    break;
+                }
+            }
+            if ($imageCol && $matchCol) {
+                $lookup = ['table' => $table, 'match' => $matchCol, 'image' => $imageCol];
+                break;
+            }
+        }
+    }
+    if (!$lookup['table'] || !$lookup['match'] || !$lookup['image']) return '';
+    $matchValue = trim((string)($student['student_number'] ?? ''));
+    $key = trim((string)($student['student_account_key'] ?? ''));
+    if ($matchValue === '' && strpos($key, ':') !== false) $matchValue = substr($key, strpos($key, ':') + 1);
+    if ($matchValue === '') return '';
+    $table = '`' . str_replace('`', '', $lookup['table']) . '`';
+    $matchCol = '`' . str_replace('`', '', $lookup['match']) . '`';
+    $imageCol = '`' . str_replace('`', '', $lookup['image']) . '`';
+    $stmt = $db->prepare("SELECT {$imageCol} AS profile_image FROM {$table} WHERE {$matchCol}=? LIMIT 1");
+    if (!$stmt) return '';
+    $stmt->bind_param('s', $matchValue);
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return '';
+    }
+    $result = $stmt->get_result();
+    $row = $result ? $result->fetch_assoc() : null;
+    if ($result) $result->free();
+    $stmt->close();
+    $image = trim((string)($row['profile_image'] ?? ''));
+    if ($image === '' || preg_match('~^(?:javascript:|data:)~i', $image)) return '';
+    return $image;
+}
+
 $error = '';
 $notice = '';
 $exam = null;
@@ -372,6 +437,7 @@ foreach ($examIdsForBoards as $boardExam) {
             if ($identity === 'name:' || isset($seenStudents[$identity])) continue;
             $seenStudents[$identity] = true;
             $lr['_percentage'] = (int)$lr['total_items'] > 0 ? ((int)$lr['score'] / (int)$lr['total_items']) : 0;
+            $lr['_profile_image'] = st_profile_image($db, $lr);
             $rankedTakers[] = $lr;
         }
         $leaderboards[$examIdForBoard] = ['title' => $boardExam['title'], 'takers' => $rankedTakers];
@@ -857,10 +923,10 @@ ex_page_start('Student Examinations', true);
             <section id="examLeaderboard" class="exam-card leaderboard-card mb-4" aria-label="Leaderboard for <?= ex_e($board['title']) ?>">
                 <div class="exam-card-head d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div>
-                        <h5 class="fw-bold mb-1"><i class="bi bi-trophy-fill me-2 text-warning" aria-hidden="true"></i><?= ex_e($board['title']) ?> leaderboard</h5>
+                        <h5 class="fw-bold mb-1"><i class="bi bi-trophy-fill me-2" aria-hidden="true"></i><?= ex_e($board['title']) ?> leaderboard</h5>
                         <div class="text-secondary small">All completed takers for this exam, ranked by percentage.</div>
                     </div>
-                    <div class="d-flex align-items-center flex-wrap gap-2"><span class="badge text-bg-warning"><i class="bi bi-people-fill me-1" aria-hidden="true"></i><?= count($boardTakers) ?> takers</span></div>
+                    <div class="d-flex align-items-center flex-wrap gap-2"><span class="badge leaderboard-count-badge"><i class="bi bi-people-fill me-1" aria-hidden="true"></i><?= count($boardTakers) ?> takers</span></div>
                 </div>
                 <div class="exam-card-body p-0">
                     <?php if (!$boardTakers): ?>
@@ -869,7 +935,15 @@ ex_page_start('Student Examinations', true);
                         <div class="leaderboard-podium" aria-label="Top three students">
                             <?php foreach (array_slice($boardTakers, 0, 3) as $podiumRank => $podiumTaker): ?>
                                 <div class="podium-place podium-<?= $podiumRank + 1 ?>">
-                                    <div class="podium-icon" aria-hidden="true"><i class="bi <?= $podiumRank === 0 ? 'bi-trophy-fill' : ($podiumRank === 1 ? 'bi-award-fill' : 'bi-medal-fill') ?>"></i></div>
+                                    <div class="podium-avatar-wrap">
+                                        <?php $podiumName = trim((string)($podiumTaker['student_name'] ?? 'Student'));
+                                        $podiumInitials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $podiumName), 0, 2));
+                                        if ($podiumInitials === '') $podiumInitials = 'S';
+                                        $podiumPhoto = (string)($podiumTaker['_profile_image'] ?? ''); ?>
+                                        <?php if ($podiumPhoto !== ''): ?><img class="podium-avatar" src="<?= ex_e($podiumPhoto) ?>" alt="<?= ex_e($podiumName) ?> profile picture" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><?php endif; ?>
+                                        <span class="podium-avatar-fallback" <?= $podiumPhoto !== '' ? 'hidden' : '' ?>><?= ex_e($podiumInitials) ?></span>
+                                        <span class="podium-icon" aria-hidden="true"><?php if ($podiumRank === 1): ?>🏅<?php else: ?><i class="<?= $podiumRank === 0 ? 'bi bi-trophy-fill' : 'bi bi-medal-fill' ?>"></i><?php endif; ?></span>
+                                    </div>
                                     <div class="podium-rank"><?= $podiumRank === 0 ? '1st Place' : ($podiumRank === 1 ? '2nd Place' : '3rd Place') ?></div>
                                     <div class="podium-award">
                                         <?php if ($podiumRank === 0): ?><span class="leader-achievement gold"><i class="bi bi-crown-fill me-1" aria-hidden="true"></i>Champion</span>
@@ -896,8 +970,13 @@ ex_page_start('Student Examinations', true);
                                 <tbody>
                                     <?php foreach ($boardTakers as $rank => $leader): ?>
                                         <tr class="<?= $rank < 3 ? 'leaderboard-top-row' : '' ?>">
-                                            <td><span class="leader-rank rank-<?= min(3, $rank + 1) ?>"><?php if ($rank === 0): ?><i class="bi bi-trophy-fill" aria-label="First place"></i><span class="visually-hidden">1st place</span><?php elseif ($rank === 1): ?><i class="bi bi-medal-fill" aria-label="Second place"></i><span class="visually-hidden">2nd place</span><?php elseif ($rank === 2): ?><i class="bi bi-pen-fill" aria-label="Third place"></i><span class="visually-hidden">3rd place</span><?php else: ?><?= $rank + 1 ?><?php endif; ?></span></td>
-                                            <td class="fw-semibold"><?= ex_e(trim((string)$leader['student_name']) !== '' ? (string)$leader['student_name'] : 'Student') ?></td>
+                                            <td><span class="leader-rank rank-<?= min(3, $rank + 1) ?>"><?php if ($rank === 0): ?><i class="bi bi-trophy-fill" aria-label="First place"></i><span class="visually-hidden">1st place</span><?php elseif ($rank === 1): ?><span class="runner-up-medal" role="img" aria-label="Second place medal">🏅</span><span class="visually-hidden">2nd place</span><?php elseif ($rank === 2): ?><i class="bi bi-pen-fill" aria-label="Third place"></i><span class="visually-hidden">3rd place</span><?php else: ?><?= $rank + 1 ?><?php endif; ?></span></td>
+                                            <td>
+                                                <div class="leader-student-cell"><?php $leaderName = trim((string)($leader['student_name'] ?? 'Student'));
+                                                                                    $leaderInitials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $leaderName), 0, 2));
+                                                                                    if ($leaderInitials === '') $leaderInitials = 'S';
+                                                                                    $leaderPhoto = (string)($leader['_profile_image'] ?? ''); ?><?php if ($leaderPhoto !== ''): ?><img class="leader-avatar" src="<?= ex_e($leaderPhoto) ?>" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><?php endif; ?><span class="leader-avatar-fallback" <?= $leaderPhoto !== '' ? 'hidden' : '' ?>><?= ex_e($leaderInitials) ?></span><span class="fw-semibold"><?= ex_e($leaderName !== '' ? $leaderName : 'Student') ?></span></div>
+                                            </td>
                                             <td><?= (int)$leader['score'] ?> / <?= (int)$leader['total_items'] ?></td>
                                             <td><strong><?= number_format(((float)$leader['_percentage']) * 100, 1) ?>%</strong></td>
                                             <td><?php if ($rank === 0): ?><span class="leader-achievement gold"><i class="bi bi-crown-fill me-1" aria-hidden="true"></i>Champion</span><?php elseif ($rank === 1): ?><span class="leader-achievement silver"><i class="bi bi-award-fill me-1" aria-hidden="true"></i>Runner-up</span><?php elseif ($rank === 2): ?><span class="leader-achievement bronze"><i class="bi bi-medal-fill me-1" aria-hidden="true"></i>3rd Place</span><?php else: ?><span class="text-secondary small"><i class="bi bi-check-circle me-1" aria-hidden="true"></i>Completed</span><?php endif; ?></td>
@@ -1598,9 +1677,9 @@ ex_page_start('Student Examinations', true);
     }
 
     .student-exams-page .leader-rank.rank-1 {
-        background: #fef3c7;
-        border-color: #fbbf24;
-        color: #92400e;
+        background: #dbeafe;
+        border-color: #60a5fa;
+        color: #1d4ed8;
     }
 
     .student-exams-page .leader-rank.rank-2 {
@@ -1610,9 +1689,9 @@ ex_page_start('Student Examinations', true);
     }
 
     .student-exams-page .leader-rank.rank-3 {
-        background: #ffedd5;
-        border-color: #fdba74;
-        color: #9a3412;
+        background: #cffafe;
+        border-color: #67e8f9;
+        color: #155e75;
     }
 
     html[data-theme="dark"] .student-exams-page .result-activity-badge,
@@ -1740,9 +1819,9 @@ ex_page_start('Student Examinations', true);
     }
 
     .student-exams-page .podium-place.podium-1 {
-        background: #fffbeb;
-        border-color: #fbbf24;
-        color: #92400e;
+        background: #eff6ff;
+        border-color: #60a5fa;
+        color: #1e40af;
     }
 
     .student-exams-page .podium-place.podium-2 {
@@ -1752,9 +1831,9 @@ ex_page_start('Student Examinations', true);
     }
 
     .student-exams-page .podium-place.podium-3 {
-        background: #fff7ed;
-        border-color: #fdba74;
-        color: #9a3412;
+        background: #ecfeff;
+        border-color: #67e8f9;
+        color: #155e75;
     }
 
     .student-exams-page .podium-icon {
@@ -2094,6 +2173,128 @@ ex_page_start('Student Examinations', true);
         }
     }
 
+
+    .student-exams-page .leaderboard-count-badge {
+        background: #e0f2fe;
+        color: #075985;
+        border: 1px solid #7dd3fc;
+    }
+
+    .student-exams-page .podium-avatar-wrap {
+        position: relative;
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 10px;
+    }
+
+    .student-exams-page .podium-avatar,
+    .student-exams-page .podium-avatar-fallback {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        object-fit: cover;
+        border: 3px solid currentColor;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, .15);
+    }
+
+    .student-exams-page .podium-avatar-fallback,
+    .student-exams-page .leader-avatar-fallback {
+        background: #e0f2fe;
+        color: #075985;
+        font-weight: 850;
+    }
+
+    .student-exams-page .podium-icon {
+        position: absolute;
+        right: -5px;
+        bottom: -5px;
+        width: 31px;
+        height: 31px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border: 2px solid currentColor;
+        font-size: 1rem;
+        margin: 0;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, .18);
+    }
+
+    .student-exams-page .podium-place.podium-1 .podium-icon {
+        color: #1d4ed8;
+    }
+
+    .student-exams-page .podium-place.podium-2 .podium-icon {
+        color: #475569;
+    }
+
+    .student-exams-page .podium-place.podium-3 .podium-icon {
+        color: #0e7490;
+    }
+
+    .student-exams-page .leader-student-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .student-exams-page .leader-avatar,
+    .student-exams-page .leader-avatar-fallback {
+        flex: 0 0 34px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #bae6fd;
+    }
+
+    .student-exams-page .leaderboard-table .leader-rank.rank-2 {
+        background: #e2e8f0;
+        border-color: #94a3b8;
+        color: #334155;
+    }
+
+    .student-exams-page .leaderboard-table .leader-rank.rank-2 i {
+        display: inline-block;
+        font-size: 1rem;
+    }
+
+    .student-exams-page .runner-up-medal {
+        display: inline-block;
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    .student-exams-page .leaderboard-table .leader-rank.rank-3 {
+        background: #cffafe;
+        border-color: #67e8f9;
+        color: #155e75;
+    }
+
+    @media (max-width: 575.98px) {
+
+        .student-exams-page .podium-avatar-wrap,
+        .student-exams-page .podium-avatar,
+        .student-exams-page .podium-avatar-fallback {
+            width: 58px;
+            height: 58px;
+        }
+
+        .student-exams-page .podium-icon {
+            width: 27px;
+            height: 27px;
+            font-size: .85rem;
+        }
+    }
+
     html[data-theme="dark"] .student-exams-page .podium-place,
     html[data-bs-theme="dark"] .student-exams-page .podium-place,
     body.dark-mode .student-exams-page .podium-place,
@@ -2141,3 +2342,23 @@ ex_page_start('Student Examinations', true);
     })();
 </script>
 <?php ex_page_end(true); ?>
+<style>
+    .student-exams-page .leader-achievement.gold {
+        background: #dbeafe !important;
+        color: #1d4ed8 !important;
+        border: 1px solid #60a5fa !important;
+        box-shadow: 0 2px 5px rgba(29, 78, 216, .12) !important;
+    }
+
+    .student-exams-page .leader-achievement.silver {
+        background: #e2e8f0 !important;
+        color: #334155 !important;
+        border: 1px solid #94a3b8 !important;
+    }
+
+    .student-exams-page .leader-achievement.bronze {
+        background: #cffafe !important;
+        color: #155e75 !important;
+        border: 1px solid #67e8f9 !important;
+    }
+</style>
