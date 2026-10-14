@@ -78,6 +78,17 @@
             </span>
 
         </a>
+        <a
+            href="academic_calendar_manager.php"
+            class="sidebar-link">
+
+            <i class="bi bi-calendar3"></i>
+
+            <span>
+                Calendar Manager
+            </span>
+
+        </a>
 
 
         <!-- STUDENTS -->

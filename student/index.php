@@ -144,6 +144,137 @@ if (!empty($parts[1])) {
 
 
 /* =========================================================
+   STUDENT ACADEMIC CALENDAR
+   Includes existing learning activities and admin-managed
+   calendar events/activities from dedicated tables.
+========================================================= */
+
+$studentCalendarEvents = [];
+
+// Existing lecture and reading activity dates.
+$calendarSources = [
+    ["table" => "lectures", "type" => "Lecture", "url" => "activity_view.php?id=", "dateFields" => ["start_date" => "Available", "due_date" => "Due"]],
+    ["table" => "reading_activity_table", "type" => "Reading Activity", "url" => "reading_activity_view.php?id=", "dateFields" => ["start_date" => "Available", "due_date" => "Due"]],
+];
+
+foreach ($calendarSources as $calendarSource) {
+    $table = $calendarSource["table"];
+    $calendarQuery = "SELECT id, title, description, start_date, due_date
+        FROM `{$table}`
+        WHERE (department = ? OR department = '' OR department IS NULL)
+          AND (CAST(year_level AS CHAR) = ? OR year_level = '' OR year_level IS NULL)
+          AND (section = ? OR section = '' OR section IS NULL)
+          AND (status = 'active' OR status IS NULL)
+          AND (start_date IS NOT NULL OR due_date IS NOT NULL)
+        ORDER BY COALESCE(start_date, due_date) ASC, id DESC LIMIT 300";
+    $calendarStmt = $mysqli->prepare($calendarQuery);
+    if ($calendarStmt) {
+        $calendarStmt->bind_param("sss", $department, $yearLevel, $section);
+        $calendarStmt->execute();
+        $calendarResult = $calendarStmt->get_result();
+        while ($calendarRow = $calendarResult->fetch_assoc()) {
+            $activityId = (int)$calendarRow["id"];
+            $activityTitle = trim((string)($calendarRow["title"] ?? ""));
+            $activityDescription = trim((string)($calendarRow["description"] ?? ""));
+            foreach ($calendarSource["dateFields"] as $dateField => $dateLabel) {
+                if (empty($calendarRow[$dateField])) continue;
+                $timestamp = strtotime((string)$calendarRow[$dateField]);
+                if ($timestamp === false) continue;
+                $eventDate = date("Y-m-d", $timestamp);
+                $studentCalendarEvents[$eventDate][] = [
+                    "id" => $activityId,
+                    "title" => $activityTitle !== "" ? $activityTitle : $calendarSource["type"],
+                    "description" => $activityDescription,
+                    "type" => $dateLabel === "Due" ? "Deadline" : $calendarSource["type"],
+                    "dateLabel" => $dateLabel,
+                    "date" => $eventDate,
+                    "dateTime" => $calendarRow[$dateField],
+                    "url" => $calendarSource["url"] . $activityId
+                ];
+            }
+        }
+        $calendarStmt->close();
+    }
+}
+
+// Admin-created general events and activities live in separate tables.
+$managedCalendarSources = [
+    ["table" => "academic_calendar_events", "type" => "Event", "dateField" => "event_date", "label" => "Event"],
+    ["table" => "academic_calendar_activities", "type" => "Calendar Activity", "dateField" => "activity_date", "label" => "Scheduled"],
+];
+foreach ($managedCalendarSources as $source) {
+    $table = $source["table"];
+    $dateField = $source["dateField"];
+    $query = "SELECT id, title, description, {$dateField} AS primary_date, " .
+        ($table === "academic_calendar_activities" ? "due_date" : "NULL AS due_date") . ", start_time, location, category
+        FROM `{$table}`
+        WHERE status = 'active'
+          AND (department = ? OR department = '' OR department IS NULL)
+          AND (CAST(year_level AS CHAR) = ? OR year_level = '' OR year_level IS NULL)
+          AND (section = ? OR section = '' OR section IS NULL)
+          AND ({$dateField} IS NOT NULL OR " . ($table === "academic_calendar_activities" ? "due_date IS NOT NULL" : "1=0") . ")
+        ORDER BY {$dateField} ASC, id DESC LIMIT 300";
+    $stmt = $mysqli->prepare($query);
+    if (!$stmt) continue; // Keep the dashboard working until the SQL setup is imported.
+    $stmt->bind_param("sss", $department, $yearLevel, $section);
+    if (!$stmt->execute()) {
+        $stmt->close();
+        continue;
+    }
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $id = (int)$row["id"];
+        $title = trim((string)($row["title"] ?? ""));
+        $description = trim((string)($row["description"] ?? ""));
+        $location = trim((string)($row["location"] ?? ""));
+        $category = trim((string)($row["category"] ?? ""));
+        if (!empty($row["primary_date"])) {
+            $ts = strtotime((string)$row["primary_date"]);
+            if ($ts !== false) {
+                $key = date("Y-m-d", $ts);
+                $studentCalendarEvents[$key][] = [
+                    "id" => $id,
+                    "title" => $title !== "" ? $title : $source["type"],
+                    "description" => $description,
+                    "type" => $source["type"],
+                    "category" => $category,
+                    "dateLabel" => $source["label"],
+                    "date" => $key,
+                    "dateTime" => $row["start_time"] ?? "",
+                    "location" => $location,
+                    "url" => ""
+                ];
+            }
+        }
+        if (!empty($row["due_date"])) {
+            $ts = strtotime((string)$row["due_date"]);
+            if ($ts !== false) {
+                $key = date("Y-m-d", $ts);
+                $studentCalendarEvents[$key][] = [
+                    "id" => $id,
+                    "title" => $title !== "" ? $title : $source["type"],
+                    "description" => $description,
+                    "type" => "Deadline",
+                    "dateLabel" => "Due",
+                    "date" => $key,
+                    "dateTime" => "",
+                    "location" => $location,
+                    "url" => ""
+                ];
+            }
+        }
+    }
+    $stmt->close();
+}
+
+$studentCalendarEventsJson = json_encode(
+    $studentCalendarEvents,
+    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE
+);
+if ($studentCalendarEventsJson === false) $studentCalendarEventsJson = "{}";
+
+
+/* =========================================================
    INITIALIZE STATISTICS
 ========================================================= */
 
@@ -1328,6 +1459,53 @@ include "globals/head.php";
                 </div>
 
             </div>
+
+            <!-- =================================================
+                 RESPONSIVE STUDENT ACADEMIC CALENDAR
+            ================================================== -->
+            <section class="student-calendar-card mb-4" aria-labelledby="studentCalendarTitle">
+                <div class="student-calendar-header">
+                    <div class="student-calendar-heading">
+                        <div class="student-calendar-heading-icon"><i class="bi bi-calendar3"></i></div>
+                        <div>
+                            <h5 id="studentCalendarTitle">Academic Calendar</h5>
+                            <p>Admin-managed events and activities, plus your assigned lectures and reading deadlines.</p>
+                        </div>
+                    </div>
+                    <div class="student-calendar-controls">
+                        <button type="button" class="student-calendar-today" id="studentCalendarToday">Today</button>
+                        <div class="student-calendar-nav">
+                            <button type="button" id="studentCalendarPrev" aria-label="Previous month"><i class="bi bi-chevron-left"></i></button>
+                            <button type="button" id="studentCalendarNext" aria-label="Next month"><i class="bi bi-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="student-calendar-body">
+                    <div class="student-calendar-month-row">
+                        <h3 id="studentCalendarMonth" aria-live="polite"></h3>
+                        <div class="student-calendar-legend">
+                            <span><i class="calendar-legend-dot lecture"></i> Lecture</span>
+                            <span><i class="calendar-legend-dot reading"></i> Reading</span>
+                            <span><i class="calendar-legend-dot deadline"></i> Due date</span>
+                            <span><i class="calendar-legend-dot event"></i> Admin event</span>
+                            <span><i class="calendar-legend-dot event"></i> Admin event</span>
+                        </div>
+                    </div>
+
+                    <div class="student-calendar-weekdays" aria-hidden="true">
+                        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                    </div>
+                    <div class="student-calendar-grid" id="studentCalendarGrid" role="grid" aria-label="Academic calendar dates"></div>
+
+                    <div class="student-calendar-detail" id="studentCalendarDetail" aria-live="polite">
+                        <div class="student-calendar-detail-empty">
+                            <i class="bi bi-calendar-check"></i>
+                            <span>Select a date to view its activities.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <!-- =================================================
              NEW LEARNING ACTIVITIES
@@ -4274,7 +4452,646 @@ include "globals/head.php";
             }
 
         }
+
+        /* =========================================================
+           RESPONSIVE STUDENT ACADEMIC CALENDAR
+        ========================================================= */
+        .student-calendar-card {
+            --sc-border: var(--activity-border, #e5e7eb);
+            --sc-muted: var(--text-secondary, #64748b);
+            --sc-text: var(--text-color, #172033);
+            box-sizing: border-box;
+            width: 50%;
+            max-width: 100%;
+            min-width: 0;
+            background: var(--activity-card-bg, #fff);
+            color: var(--sc-text);
+            border: 1px solid var(--sc-border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 18px var(--shadow-color, rgba(15, 23, 42, .06));
+        }
+
+        .student-calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--sc-border);
+        }
+
+        .student-calendar-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .student-calendar-heading-icon {
+            width: 44px;
+            height: 44px;
+            flex: 0 0 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--activity-indigo-bg, #eef2ff);
+            color: var(--activity-indigo, #4f46e5);
+            font-size: 20px;
+        }
+
+        .student-calendar-heading h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 750;
+            color: var(--sc-text);
+        }
+
+        .student-calendar-heading p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: var(--sc-muted);
+        }
+
+        .student-calendar-controls,
+        .student-calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-calendar-controls button {
+            min-height: 36px;
+            border: 1px solid var(--sc-border);
+            border-radius: 9px;
+            background: var(--surface-secondary, #f8fafc);
+            color: var(--sc-text);
+            padding: 7px 11px;
+            font-size: 12px;
+            font-weight: 650;
+            cursor: pointer;
+        }
+
+        .student-calendar-controls button:hover {
+            border-color: var(--activity-indigo, #4f46e5);
+            color: var(--activity-indigo, #4f46e5);
+        }
+
+        .student-calendar-nav button {
+            width: 36px;
+            padding: 7px;
+        }
+
+        .student-calendar-body {
+            padding: 20px 22px 22px;
+        }
+
+        .student-calendar-month-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .student-calendar-month-row h3 {
+            margin: 0;
+            font-size: 21px;
+            font-weight: 750;
+            letter-spacing: -.4px;
+            color: var(--sc-text);
+        }
+
+        .student-calendar-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: var(--sc-muted);
+            font-size: 11px;
+        }
+
+        .student-calendar-legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .calendar-legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .calendar-legend-dot.lecture {
+            background: #3b82f6;
+        }
+
+        .calendar-legend-dot.reading {
+            background: #8b5cf6;
+        }
+
+        .calendar-legend-dot.deadline {
+            background: #f97316;
+        }
+
+        .calendar-legend-dot.event {
+            background: #0d9488;
+        }
+
+        .calendar-legend-dot.event {
+            background: #0d9488;
+        }
+
+        .student-calendar-weekdays,
+        .student-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+        }
+
+        .student-calendar-weekdays {
+            margin-bottom: 7px;
+        }
+
+        .student-calendar-weekdays span {
+            text-align: center;
+            padding: 8px 0;
+            color: var(--sc-muted);
+            font-size: 10px;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+
+        .student-calendar-day {
+            position: relative;
+            min-width: 0;
+            min-height: 83px;
+            padding: 8px 8px 7px;
+            border: 1px solid var(--sc-border);
+            border-right: 0;
+            border-bottom: 0;
+            background: transparent;
+            color: var(--sc-text);
+            text-align: left;
+            cursor: pointer;
+            transition: background .15s ease, box-shadow .15s ease;
+        }
+
+        .student-calendar-day:nth-child(7n) {
+            border-right: 1px solid var(--sc-border);
+        }
+
+        .student-calendar-day:nth-last-child(-n+7) {
+            border-bottom: 1px solid var(--sc-border);
+        }
+
+        .student-calendar-day:hover {
+            background: var(--activity-hover-bg, rgba(99, 102, 241, .06));
+        }
+
+        .student-calendar-day.outside-month {
+            color: var(--sc-muted);
+            opacity: .55;
+        }
+
+        .student-calendar-day.is-today .day-number {
+            background: var(--activity-indigo, #4f46e5);
+            color: #fff;
+        }
+
+        .student-calendar-day.is-selected {
+            z-index: 1;
+            box-shadow: inset 0 0 0 2px var(--activity-indigo, #4f46e5);
+            background: var(--activity-indigo-bg, #eef2ff);
+        }
+
+        .day-number {
+            display: grid;
+            place-items: center;
+            width: 27px;
+            height: 27px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .day-event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 5px;
+        }
+
+        .day-event-chip {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            border-radius: 4px;
+            padding: 3px 5px;
+            font-size: 9px;
+            font-weight: 650;
+            line-height: 1.3;
+        }
+
+        .day-event-chip.lecture {
+            background: rgba(59, 130, 246, .13);
+            color: #2563eb;
+        }
+
+        .day-event-chip.reading {
+            background: rgba(139, 92, 246, .13);
+            color: #7c3aed;
+        }
+
+        .day-event-chip.deadline {
+            background: rgba(249, 115, 22, .14);
+            color: #c2410c;
+        }
+
+        .day-event-chip.event {
+            background: rgba(13, 148, 136, .14);
+            color: #0f766e;
+        }
+
+        .day-event-chip.event {
+            background: rgba(13, 148, 136, .14);
+            color: #0f766e;
+        }
+
+        .day-event-more {
+            font-size: 9px;
+            color: var(--sc-muted);
+            padding-left: 3px;
+        }
+
+        .student-calendar-detail {
+            margin-top: 18px;
+            border: 1px solid var(--sc-border);
+            border-radius: 12px;
+            padding: 15px 16px;
+        }
+
+        .student-calendar-detail-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .student-calendar-detail-head h6 {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 750;
+            color: var(--sc-text);
+        }
+
+        .student-calendar-detail-count {
+            color: var(--sc-muted);
+            font-size: 11px;
+        }
+
+        .student-calendar-detail-empty {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--sc-muted);
+            font-size: 12px;
+        }
+
+        .student-calendar-detail-empty i {
+            font-size: 20px;
+            color: var(--activity-indigo, #4f46e5);
+        }
+
+        .student-calendar-event {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            padding: 11px 0;
+            border-top: 1px solid var(--sc-border);
+        }
+
+        .student-calendar-event:first-of-type {
+            border-top: 0;
+        }
+
+        .student-calendar-event-marker {
+            width: 4px;
+            min-height: 42px;
+            border-radius: 5px;
+            flex: 0 0 4px;
+            background: #3b82f6;
+        }
+
+        .student-calendar-event-marker.reading {
+            background: #8b5cf6;
+        }
+
+        .student-calendar-event-marker.deadline {
+            background: #f97316;
+        }
+
+        .student-calendar-event-marker.event {
+            background: #0d9488;
+        }
+
+        .student-calendar-event-marker.event {
+            background: #0d9488;
+        }
+
+        .student-calendar-event-main {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .student-calendar-event-title {
+            margin: 0 0 4px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--sc-text);
+            overflow-wrap: anywhere;
+        }
+
+        .student-calendar-event-meta {
+            font-size: 10px;
+            color: var(--sc-muted);
+        }
+
+        .student-calendar-event-description {
+            margin-top: 5px;
+            font-size: 11px;
+            color: var(--sc-muted);
+            overflow-wrap: anywhere;
+        }
+
+        .student-calendar-event-open {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--activity-indigo, #4f46e5);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .student-calendar-event-open:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width:1199.98px) {
+            .student-calendar-card {
+                width: 100%;
+            }
+        }
+
+        @media (max-width:767.98px) {
+            .student-calendar-header {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 17px;
+            }
+
+            .student-calendar-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .student-calendar-body {
+                padding: 14px;
+            }
+
+            .student-calendar-month-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .student-calendar-month-row h3 {
+                font-size: 19px;
+            }
+
+            .student-calendar-weekdays span {
+                font-size: 9px;
+            }
+
+            .student-calendar-day {
+                min-height: 65px;
+                padding: 5px 3px;
+            }
+
+            .day-number {
+                width: 23px;
+                height: 23px;
+                font-size: 11px;
+            }
+
+            .day-event-chip {
+                padding: 3px 2px;
+                font-size: 8px;
+            }
+
+            .day-event-chip .chip-label {
+                display: none;
+            }
+
+            .day-event-more {
+                font-size: 8px;
+            }
+
+            .student-calendar-detail {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width:420px) {
+            .student-calendar-legend {
+                gap: 8px;
+                font-size: 10px;
+            }
+
+            .student-calendar-day {
+                min-height: 55px;
+            }
+
+            .day-event-chip {
+                height: 5px;
+                padding: 0;
+                border-radius: 4px;
+                font-size: 0;
+            }
+
+            .day-event-more {
+                display: none;
+            }
+
+            .student-calendar-event {
+                flex-wrap: wrap;
+            }
+
+            .student-calendar-event-open {
+                margin-left: 15px;
+            }
+        }
     </style>
 
+
+
+    <script>
+        (function() {
+            "use strict";
+            const eventsByDate = <?= $studentCalendarEventsJson ?>;
+            const monthLabel = document.getElementById("studentCalendarMonth");
+            const grid = document.getElementById("studentCalendarGrid");
+            const detail = document.getElementById("studentCalendarDetail");
+            if (!monthLabel || !grid || !detail) return;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let visibleMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            let selectedDate = toDateKey(today);
+
+            function toDateKey(date) {
+                return date.getFullYear() + "-" +
+                    String(date.getMonth() + 1).padStart(2, "0") + "-" +
+                    String(date.getDate()).padStart(2, "0");
+            }
+
+            function escapeHtml(value) {
+                return String(value ?? "").replace(/[&<>"']/g, ch => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+                })[ch]);
+            }
+
+            function eventClass(event) {
+                if (event.dateLabel === "Due" || event.type === "Deadline") return "deadline";
+                if (event.type === "Event") return "event";
+                if (event.type === "Reading Activity" || event.type === "Calendar Activity") return "reading";
+                return "lecture";
+            }
+
+            function renderDetail(dateKey) {
+                const date = new Date(dateKey + "T12:00:00");
+                const events = eventsByDate[dateKey] || [];
+                const readableDate = date.toLocaleDateString(undefined, {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric"
+                });
+                if (!events.length) {
+                    detail.innerHTML = '<div class="student-calendar-detail-head"><h6>' +
+                        escapeHtml(readableDate) + '</h6><span class="student-calendar-detail-count">No activities</span></div>' +
+                        '<div class="student-calendar-detail-empty"><i class="bi bi-calendar-check"></i><span>No scheduled activities for this date.</span></div>';
+                    return;
+                }
+                let html = '<div class="student-calendar-detail-head"><h6>' + escapeHtml(readableDate) +
+                    '</h6><span class="student-calendar-detail-count">' + events.length +
+                    (events.length === 1 ? ' activity' : ' activities') + '</span></div>';
+                events.forEach(event => {
+                    const cls = eventClass(event);
+                    const description = event.description ?
+                        '<div class="student-calendar-event-description">' + escapeHtml(event.description) + '</div>' : '';
+                    const dateTime = event.dateTime ?
+                        (/^\d{2}:\d{2}/.test(String(event.dateTime)) ?
+                            new Date("2000-01-01T" + String(event.dateTime)).toLocaleTimeString([], {
+                                hour: "numeric",
+                                minute: "2-digit"
+                            }) :
+                            new Date(String(event.dateTime).replace(" ", "T")).toLocaleTimeString([], {
+                                hour: "numeric",
+                                minute: "2-digit"
+                            })) :
+                        "All day";
+                    const location = event.location ? ' · ' + escapeHtml(event.location) : '';
+                    const openLink = event.url ? '<a class="student-calendar-event-open" href="' + escapeHtml(event.url) + '">Open <i class="bi bi-arrow-up-right"></i></a>' : '';
+                    html += '<article class="student-calendar-event">' +
+                        '<span class="student-calendar-event-marker ' + cls + '"></span>' +
+                        '<div class="student-calendar-event-main"><h6 class="student-calendar-event-title">' +
+                        escapeHtml(event.dateLabel + ': ' + event.title) + '</h6>' +
+                        '<div class="student-calendar-event-meta">' + escapeHtml(event.category || event.type) + ' · ' + escapeHtml(dateTime) + location + '</div>' +
+                        description + '</div>' + openLink + '</article>';
+                });
+                detail.innerHTML = html;
+            }
+
+            function renderCalendar() {
+                const year = visibleMonth.getFullYear();
+                const month = visibleMonth.getMonth();
+                monthLabel.textContent = visibleMonth.toLocaleDateString(undefined, {
+                    month: "long",
+                    year: "numeric"
+                });
+                grid.innerHTML = "";
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const previousMonthDays = new Date(year, month, 0).getDate();
+                const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+                for (let i = 0; i < totalCells; i++) {
+                    let date;
+                    let outside = false;
+                    if (i < firstDay) {
+                        date = new Date(year, month - 1, previousMonthDays - firstDay + i + 1);
+                        outside = true;
+                    } else if (i >= firstDay + daysInMonth) {
+                        date = new Date(year, month + 1, i - firstDay - daysInMonth + 1);
+                        outside = true;
+                    } else {
+                        date = new Date(year, month, i - firstDay + 1);
+                    }
+                    const key = toDateKey(date);
+                    const dayEvents = eventsByDate[key] || [];
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "student-calendar-day" +
+                        (outside ? " outside-month" : "") +
+                        (key === toDateKey(today) ? " is-today" : "") +
+                        (key === selectedDate ? " is-selected" : "");
+                    button.setAttribute("role", "gridcell");
+                    button.setAttribute("aria-label", date.toLocaleDateString(undefined, {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric"
+                    }) + (dayEvents.length ? ", " + dayEvents.length + " activities" : ""));
+                    let chips = "";
+                    dayEvents.slice(0, 2).forEach(event => {
+                        chips += '<span class="day-event-chip ' + eventClass(event) + '">' +
+                            escapeHtml(event.dateLabel + ": " + event.title) + '</span>';
+                    });
+                    if (dayEvents.length > 2) chips += '<span class="day-event-more">+' + (dayEvents.length - 2) + ' more</span>';
+                    button.innerHTML = '<span class="day-number">' + date.getDate() + '</span>' +
+                        '<span class="day-event-list">' + chips + '</span>';
+                    button.addEventListener("click", function() {
+                        selectedDate = key;
+                        if (outside) visibleMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+                        renderCalendar();
+                        renderDetail(selectedDate);
+                    });
+                    grid.appendChild(button);
+                }
+            }
+            document.getElementById("studentCalendarPrev")?.addEventListener("click", () => {
+                visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1);
+                renderCalendar();
+            });
+            document.getElementById("studentCalendarNext")?.addEventListener("click", () => {
+                visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1);
+                renderCalendar();
+            });
+            document.getElementById("studentCalendarToday")?.addEventListener("click", () => {
+                visibleMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                selectedDate = toDateKey(today);
+                renderCalendar();
+                renderDetail(selectedDate);
+            });
+            renderCalendar();
+            renderDetail(selectedDate);
+        })();
+    </script>
 
 </body>
