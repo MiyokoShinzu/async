@@ -372,7 +372,7 @@ $profilePhoto = trim(
 
     Main domain:
 
-    http\://localhost/
+    http\://vertigation.com/
 
 
 
@@ -396,7 +396,7 @@ $profilePhoto = trim(
 
     Final browser URL:
 
-    http\://localhost/shared/uploads/profile_photos/photo.jpg
+    http\://vertigation.com/shared/uploads/profile_photos/photo.jpg
 
 */
 
@@ -495,7 +495,7 @@ if ($profilePhoto !== "") {
 
             $profilePhotoURL =
 
-                "http\://localhost" .
+                "http\://vertigation.com" .
 
                 $path;
         }
@@ -533,7 +533,7 @@ if ($profilePhoto !== "") {
 
         $profilePhotoURL =
 
-            "http\://localhost" .
+            "http\://vertigation.com" .
 
             $profilePhoto;
     }
@@ -570,7 +570,7 @@ if ($profilePhoto !== "") {
 
         $profilePhotoURL =
 
-            "http\://localhost/" .
+            "http\://vertigation.com/" .
 
             $profilePhoto;
     }
@@ -595,7 +595,7 @@ if ($profilePhoto !== "") {
 
        Convert to:
 
-       http\://localhost/shared/uploads/...
+       http\://vertigation.com/shared/uploads/...
 
     ====================================================== */ elseif (
 
@@ -627,7 +627,7 @@ if ($profilePhoto !== "") {
 
         $profilePhotoURL =
 
-            "http\://localhost/" .
+            "http\://vertigation.com/" .
 
             $cleanPath;
     }
@@ -662,7 +662,7 @@ if ($profilePhoto !== "") {
 
         $profilePhotoURL =
 
-            "http\://localhost/" .
+            "http\://vertigation.com/" .
 
             $cleanPath;
     }
