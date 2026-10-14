@@ -1460,335 +1460,326 @@ include "globals/head.php";
 
             </div>
 
-            <!-- =================================================
-                 RESPONSIVE STUDENT ACADEMIC CALENDAR
-            ================================================== -->
-            <section class="student-calendar-card mb-4" aria-labelledby="studentCalendarTitle">
-                <div class="student-calendar-header">
-                    <div class="student-calendar-heading">
-                        <div class="student-calendar-heading-icon"><i class="bi bi-calendar3"></i></div>
-                        <div>
-                            <h5 id="studentCalendarTitle">Academic Calendar</h5>
-                            <p>Admin-managed events and activities, plus your assigned lectures and reading deadlines.</p>
-                        </div>
-                    </div>
-                    <div class="student-calendar-controls">
-                        <button type="button" class="student-calendar-today" id="studentCalendarToday">Today</button>
-                        <div class="student-calendar-nav">
-                            <button type="button" id="studentCalendarPrev" aria-label="Previous month"><i class="bi bi-chevron-left"></i></button>
-                            <button type="button" id="studentCalendarNext" aria-label="Next month"><i class="bi bi-chevron-right"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="student-calendar-body">
-                    <div class="student-calendar-month-row">
-                        <h3 id="studentCalendarMonth" aria-live="polite"></h3>
-                        <div class="student-calendar-legend">
-                            <span><i class="calendar-legend-dot lecture"></i> Lecture</span>
-                            <span><i class="calendar-legend-dot reading"></i> Reading</span>
-                            <span><i class="calendar-legend-dot deadline"></i> Due date</span>
-                            <span><i class="calendar-legend-dot event"></i> Admin event</span>
-                            <span><i class="calendar-legend-dot event"></i> Admin event</span>
-                        </div>
-                    </div>
-
-                    <div class="student-calendar-weekdays" aria-hidden="true">
-                        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-                    </div>
-                    <div class="student-calendar-grid" id="studentCalendarGrid" role="grid" aria-label="Academic calendar dates"></div>
-
-                    <div class="student-calendar-detail" id="studentCalendarDetail" aria-live="polite">
-                        <div class="student-calendar-detail-empty">
-                            <i class="bi bi-calendar-check"></i>
-                            <span>Select a date to view its activities.</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- =================================================
+            <!-- New learning activities first, with a compact agenda sidebar. -->
+            <section class="student-learning-overview mb-3" aria-label="New learning activities">
+                <!-- =================================================
              NEW LEARNING ACTIVITIES
         ================================================== -->
 
-            <div class="activity-card mb-4">
+                <div class="activity-card mb-4">
 
 
-                <div class="activity-card-header">
+                    <div class="activity-card-header">
 
-                    <div>
+                        <div>
 
-                        <h5>
+                            <h5>
 
-                            <i class="bi bi-bell-fill me-2"></i>
+                                <i class="bi bi-bell-fill me-2"></i>
 
-                            New Learning Activities
+                                New Learning Activities
 
-                        </h5>
+                            </h5>
 
-                        <p>
+                            <p>
 
-                            Recently created lectures and
-                            reading activities assigned to you.
+                                Recently created lectures and
+                                reading activities assigned to you.
 
-                        </p>
+                            </p>
+
+                        </div>
+
+
+                        <div class="activity-count">
+
+                            <?= count($recentActivities) ?>
+
+                            <span class="ms-1">
+                                Recent
+                            </span>
+
+                        </div>
 
                     </div>
 
 
-                    <div class="activity-count">
-
-                        <?= count($recentActivities) ?>
-
-                        <span class="ms-1">
-                            Recent
-                        </span>
-
-                    </div>
-
-                </div>
+                    <?php if (!empty($recentActivities)): ?>
 
 
-                <?php if (!empty($recentActivities)): ?>
+                        <div class="activity-list">
 
 
-                    <div class="activity-list">
+                            <?php foreach (
+                                $recentActivities
+                                as $index => $activity
+                            ): ?>
 
 
-                        <?php foreach (
-                            $recentActivities
-                            as $index => $activity
-                        ): ?>
+                                <?php
+
+                                $activityId =
+                                    (int)$activity["id"];
 
 
-                            <?php
-
-                            $activityId =
-                                (int)$activity["id"];
+                                $activityType =
+                                    $activity["type"];
 
 
-                            $activityType =
-                                $activity["type"];
+                                $activityTitle =
+                                    $activity["title"];
 
 
-                            $activityTitle =
-                                $activity["title"];
+                                $activityDescription =
+                                    trim(
+                                        $activity["description"]
+                                            ?? ""
+                                    );
 
 
-                            $activityDescription =
-                                trim(
-                                    $activity["description"]
-                                        ?? ""
-                                );
+                                $activityDate =
+                                    $activity["created_at"];
 
 
-                            $activityDate =
-                                $activity["created_at"];
+                                $activityStatus = strtolower(trim(
+                                    (string)($activity["progress_status"] ?? "")
+                                ));
 
 
-                            $activityStatus = strtolower(trim(
-                                (string)($activity["progress_status"] ?? "")
-                            ));
+                                if (
+                                    $activityStatus ===
+                                    "completed"
+                                ) {
+
+                                    $statusClass =
+                                        "completed";
+
+                                    $statusText =
+                                        "Completed";
+
+                                    $statusIcon =
+                                        "bi-check-circle-fill";
+                                } elseif (
+                                    $activityStatus ===
+                                    "in_progress"
+                                ) {
+
+                                    $statusClass =
+                                        "in-progress";
+
+                                    $statusText =
+                                        "In Progress";
+
+                                    $statusIcon =
+                                        "bi-arrow-repeat";
+                                } else {
+
+                                    $statusClass =
+                                        "not-started";
+
+                                    $statusText =
+                                        "Not Started";
+
+                                    $statusIcon =
+                                        "bi-circle";
+                                }
 
 
-                            if (
-                                $activityStatus ===
-                                "completed"
-                            ) {
+                                $activityLink =
+                                    $activityType === "lecture"
 
-                                $statusClass =
-                                    "completed";
+                                    ? "activity_view.php?id="
+                                    . $activityId
 
-                                $statusText =
-                                    "Completed";
+                                    : "reading_activity_view.php?id="
+                                    . $activityId;
 
-                                $statusIcon =
-                                    "bi-check-circle-fill";
-                            } elseif (
-                                $activityStatus ===
-                                "in_progress"
-                            ) {
-
-                                $statusClass =
-                                    "in-progress";
-
-                                $statusText =
-                                    "In Progress";
-
-                                $statusIcon =
-                                    "bi-arrow-repeat";
-                            } else {
-
-                                $statusClass =
-                                    "not-started";
-
-                                $statusText =
-                                    "Not Started";
-
-                                $statusIcon =
-                                    "bi-circle";
-                            }
+                                ?>
 
 
-                            $activityLink =
-                                $activityType === "lecture"
-
-                                ? "activity_view.php?id="
-                                . $activityId
-
-                                : "reading_activity_view.php?id="
-                                . $activityId;
-
-                            ?>
-
-
-                            <div
-                                class="
+                                <div
+                                    class="
                                 activity-item
                             ">
 
 
-                                <!-- NUMBER -->
+                                    <!-- NUMBER -->
 
-                                <div
-                                    class="
+                                    <div
+                                        class="
                                     activity-number
                                 ">
 
-                                    <?= $index + 1 ?>
+                                        <?= $index + 1 ?>
 
-                                </div>
+                                    </div>
 
 
-                                <!-- ICON -->
+                                    <!-- ICON -->
 
-                                <div
-                                    class="
+                                    <div
+                                        class="
                                     activity-icon
                                     <?= e(
                                         $statusClass
                                     ) ?>
                                 ">
 
-                                    <i
-                                        class="
+                                        <i
+                                            class="
                                         bi
                                         <?= e(
                                             $activity["icon"]
                                         ) ?>
                                     ">
-                                    </i>
-
-                                </div>
-
-
-                                <!-- INFORMATION -->
-
-                                <div
-                                    class="
-                                    activity-information
-                                ">
-
-
-                                    <div
-                                        class="
-                                        activity-title-row
-                                    ">
-
-                                        <h5>
-
-                                            <?= e(
-                                                $activityTitle
-                                            ) ?>
-
-                                        </h5>
-
-
-                                        <?php if (
-                                            isNewActivity(
-                                                $activityDate
-                                            )
-                                        ): ?>
-
-                                            <span
-                                                class="
-                                                activity-new
-                                            ">
-
-                                                <i
-                                                    class="
-                                                    bi
-                                                    bi-stars
-                                                ">
-                                                </i>
-
-                                                NEW
-
-                                            </span>
-
-                                        <?php endif; ?>
+                                        </i>
 
                                     </div>
 
 
+                                    <!-- INFORMATION -->
+
                                     <div
                                         class="
+                                    activity-information
+                                ">
+
+
+                                        <div
+                                            class="
+                                        activity-title-row
+                                    ">
+
+                                            <h5>
+
+                                                <?= e(
+                                                    $activityTitle
+                                                ) ?>
+
+                                            </h5>
+
+
+                                            <?php if (
+                                                isNewActivity(
+                                                    $activityDate
+                                                )
+                                            ): ?>
+
+                                                <span
+                                                    class="
+                                                activity-new
+                                            ">
+
+                                                    <i
+                                                        class="
+                                                    bi
+                                                    bi-stars
+                                                ">
+                                                    </i>
+
+                                                    NEW
+
+                                                </span>
+
+                                            <?php endif; ?>
+
+                                        </div>
+
+
+                                        <div
+                                            class="
                                         activity-type
                                     ">
 
-                                        <i
-                                            class="
+                                            <i
+                                                class="
                                             bi
                                             <?= $activityType === "lecture"
                                                 ? "bi-play-circle"
                                                 : "bi-book"
                                             ?>
                                         ">
-                                        </i>
-
-                                        <?= e(
-                                            $activity["type_label"]
-                                        ) ?>
-
-                                    </div>
-
-
-                                    <?php if (
-                                        $activityDescription !== ""
-                                    ): ?>
-
-                                        <div
-                                            class="
-                                            activity-description
-                                        ">
+                                            </i>
 
                                             <?= e(
-                                                $activityDescription
+                                                $activity["type_label"]
                                             ) ?>
 
                                         </div>
 
-                                    <?php endif; ?>
+
+                                        <?php if (
+                                            $activityDescription !== ""
+                                        ): ?>
+
+                                            <div
+                                                class="
+                                            activity-description
+                                        ">
+
+                                                <?= e(
+                                                    $activityDescription
+                                                ) ?>
+
+                                            </div>
+
+                                        <?php endif; ?>
 
 
-                                    <div
-                                        class="
+                                        <div
+                                            class="
                                         activity-meta
                                     ">
 
-                                        <span>
+                                            <span>
 
-                                            <i
-                                                class="
+                                                <i
+                                                    class="
                                                 bi
                                                 bi-clock
                                             ">
+                                                </i>
+
+                                                <?= e(
+                                                    formatActivityDate(
+                                                        $activityDate
+                                                    )
+                                                ) ?>
+
+                                            </span>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <!-- STATUS -->
+
+                                    <div
+                                        class="
+                                    activity-status
+                                ">
+
+                                        <span
+                                            class="
+                                        activity-status-badge
+                                        <?= e(
+                                            $statusClass
+                                        ) ?>
+                                    ">
+
+                                            <i
+                                                class="
+                                            bi
+                                            <?= e(
+                                                $statusIcon
+                                            ) ?>
+                                        ">
                                             </i>
 
                                             <?= e(
-                                                formatActivityDate(
-                                                    $activityDate
-                                                )
+                                                $statusText
                                             ) ?>
 
                                         </span>
@@ -1796,127 +1787,185 @@ include "globals/head.php";
                                     </div>
 
 
-                                </div>
+                                    <!-- ACTION -->
 
-
-                                <!-- STATUS -->
-
-                                <div
-                                    class="
-                                    activity-status
-                                ">
-
-                                    <span
+                                    <div
                                         class="
-                                        activity-status-badge
-                                        <?= e(
-                                            $statusClass
-                                        ) ?>
-                                    ">
-
-                                        <i
-                                            class="
-                                            bi
-                                            <?= e(
-                                                $statusIcon
-                                            ) ?>
-                                        ">
-                                        </i>
-
-                                        <?= e(
-                                            $statusText
-                                        ) ?>
-
-                                    </span>
-
-                                </div>
-
-
-                                <!-- ACTION -->
-
-                                <div
-                                    class="
                                     activity-action
                                 ">
 
-                                    <a
-                                        href="<?= e(
-                                                    $activityLink
-                                                ) ?>"
-                                        class="
+                                        <a
+                                            href="<?= e(
+                                                        $activityLink
+                                                    ) ?>"
+                                            class="
                                         btn
                                         btn-primary
                                     ">
 
-                                        <i
-                                            class="
+                                            <i
+                                                class="
                                             bi
                                             bi-arrow-right
                                             me-1
                                         ">
-                                        </i>
+                                            </i>
 
-                                        Open
+                                            Open
 
-                                    </a>
+                                        </a>
+
+                                    </div>
+
 
                                 </div>
 
 
-                            </div>
+                            <?php endforeach; ?>
 
-
-                        <?php endforeach; ?>
-
-
-                    </div>
-
-
-                <?php else: ?>
-
-
-                    <div
-                        class="
-                        activity-empty
-                    ">
-
-                        <div
-                            class="
-                            activity-empty-icon
-                        ">
-
-                            <i
-                                class="
-                                bi
-                                bi-bell-slash
-                            ">
-                            </i>
 
                         </div>
 
 
-                        <h5>
-
-                            No New Activities
-
-                        </h5>
+                    <?php else: ?>
 
 
-                        <p>
+                        <div
+                            class="
+                        activity-empty
+                    ">
 
-                            There are currently no learning
-                            activities assigned to you.
+                            <div
+                                class="
+                            activity-empty-icon
+                        ">
 
-                        </p>
+                                <i
+                                    class="
+                                bi
+                                bi-bell-slash
+                            ">
+                                </i>
 
+                            </div>
+
+
+                            <h5>
+
+                                No New Activities
+
+                            </h5>
+
+
+                            <p>
+
+                                There are currently no learning
+                                activities assigned to you.
+
+                            </p>
+
+                        </div>
+
+
+                    <?php endif; ?>
+
+
+                </div>
+
+
+            </section>
+
+            <aside class="student-agenda-sidebar mb-4" aria-label="Events and activities overview">
+                <section class="student-agenda-panel" aria-labelledby="agendaTodayTitle">
+                    <header><span class="agenda-panel-icon today"><i class="bi bi-sun"></i></span>
+                        <div>
+                            <h5 id="agendaTodayTitle">Events/Activities Today</h5>
+                            <p>Scheduled for today</p>
+                        </div><strong id="agendaTodayTotal">0</strong>
+                    </header>
+                    <div class="student-agenda-list" id="agendaTodayList">
+                        <p class="agenda-empty">Checking today's schedule…</p>
                     </div>
+                </section>
+                <section class="student-agenda-panel" aria-labelledby="agendaUpcomingTitle">
+                    <header><span class="agenda-panel-icon upcoming"><i class="bi bi-calendar2-week"></i></span>
+                        <div>
+                            <h5 id="agendaUpcomingTitle">Upcoming Events/Activities</h5>
+                            <p>Next scheduled items</p>
+                        </div><strong id="agendaUpcomingTotal">0</strong>
+                    </header>
+                    <div class="student-agenda-list" id="agendaUpcomingList">
+                        <p class="agenda-empty">Loading upcoming activities…</p>
+                    </div>
+                </section>
+                <section class="student-agenda-panel" aria-labelledby="agendaEndedTitle">
+                    <header><span class="agenda-panel-icon ended"><i class="bi bi-check2-circle"></i></span>
+                        <div>
+                            <h5 id="agendaEndedTitle">Recently Ended Events/Activities</h5>
+                            <p>Previous scheduled items</p>
+                        </div><strong id="agendaEndedTotal">0</strong>
+                    </header>
+                    <div class="student-agenda-list" id="agendaEndedList">
+                        <p class="agenda-empty">Loading recent history…</p>
+                    </div>
+                </section>
+            </aside>
 
+            <!-- Floating calendar launcher keeps the dashboard uncluttered. -->
+            <button type="button" class="student-calendar-fab" id="studentCalendarOpen" aria-label="Open academic calendar" aria-haspopup="dialog" aria-controls="studentCalendarModal">
+                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                <span class="student-calendar-fab-label">Calendar</span>
+                <span class="student-calendar-fab-count" id="studentCalendarFabCount" aria-label="Scheduled activities">0</span>
+            </button>
 
-                <?php endif; ?>
+            <div class="student-calendar-modal" id="studentCalendarModal" role="dialog" aria-modal="true" aria-labelledby="studentCalendarTitle" aria-hidden="true">
+                <button type="button" class="student-calendar-modal-backdrop" id="studentCalendarBackdrop" aria-label="Close calendar"></button>
+                <div class="student-calendar-modal-dialog" role="document">
+                    <button type="button" class="student-calendar-modal-close" id="studentCalendarClose" aria-label="Close academic calendar"><i class="bi bi-x-lg"></i></button>
+                    <section class="student-calendar-card" aria-labelledby="studentCalendarTitle">
+                        <div class="student-calendar-header">
+                            <div class="student-calendar-heading">
+                                <div class="student-calendar-heading-icon"><i class="bi bi-calendar3"></i></div>
+                                <div>
+                                    <h5 id="studentCalendarTitle">Academic Calendar</h5>
+                                    <p>Admin-managed events and activities, plus your assigned lectures and reading deadlines.</p>
+                                </div>
+                            </div>
+                            <div class="student-calendar-controls">
+                                <button type="button" class="student-calendar-today" id="studentCalendarToday">Today</button>
+                                <div class="student-calendar-nav">
+                                    <button type="button" id="studentCalendarPrev" aria-label="Previous month"><i class="bi bi-chevron-left"></i></button>
+                                    <button type="button" id="studentCalendarNext" aria-label="Next month"><i class="bi bi-chevron-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="student-calendar-body">
+                            <div class="student-calendar-month-row">
+                                <h3 id="studentCalendarMonth" aria-live="polite"></h3>
+                                <div class="student-calendar-legend">
+                                    <span><i class="calendar-legend-dot lecture"></i> Lecture</span>
+                                    <span><i class="calendar-legend-dot reading"></i> Reading</span>
+                                    <span><i class="calendar-legend-dot deadline"></i> Due date</span>
+                                    <span><i class="calendar-legend-dot event"></i> Admin event</span>
+                                </div>
+                            </div>
 
+                            <div class="student-calendar-weekdays" aria-hidden="true">
+                                <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                            </div>
+                            <div class="student-calendar-grid" id="studentCalendarGrid" role="grid" aria-label="Academic calendar dates"></div>
+
+                            <div class="student-calendar-detail" id="studentCalendarDetail" aria-live="polite">
+                                <div class="student-calendar-detail-empty">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span>Select a date to view its activities.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
             </div>
-
 
             <!-- =================================================
              ACADEMIC POST MONITORING
@@ -4453,6 +4502,165 @@ include "globals/head.php";
 
         }
 
+        /* Floating calendar launcher + responsive modal */
+        .student-calendar-fab {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 1040;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 56px;
+            padding: 0 17px;
+            border: 0;
+            border-radius: 999px;
+            color: #fff;
+            background: linear-gradient(135deg, #4f46e5, #2563eb);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, .32);
+            cursor: pointer;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 800;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .student-calendar-fab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 34px rgba(37, 99, 235, .4);
+        }
+
+        .student-calendar-fab>i {
+            font-size: 20px;
+        }
+
+        .student-calendar-fab-count {
+            display: grid;
+            place-items: center;
+            min-width: 23px;
+            height: 23px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .2);
+            font-size: 11px;
+        }
+
+        .student-calendar-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1055;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .student-calendar-modal.is-open {
+            display: flex;
+        }
+
+        .student-calendar-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: rgba(8, 15, 32, .66);
+            backdrop-filter: blur(5px);
+            cursor: default;
+        }
+
+        .student-calendar-modal-dialog {
+            position: relative;
+            z-index: 1;
+            width: min(1120px, 100%);
+            max-height: min(92vh, 1000px);
+            overflow: auto;
+            border-radius: 18px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .3);
+            animation: studentCalendarPop .18s ease-out;
+        }
+
+        .student-calendar-modal-dialog .student-calendar-card {
+            width: 100%;
+            max-width: none;
+        }
+
+        .student-calendar-modal-close {
+            position: sticky;
+            top: 10px;
+            float: right;
+            z-index: 3;
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            margin: 10px 10px -46px 0;
+            border: 1px solid var(--activity-border, #e5e7eb);
+            border-radius: 50%;
+            color: var(--text-color, #172033);
+            background: var(--activity-card-bg, #fff);
+            cursor: pointer;
+        }
+
+        .student-calendar-modal .student-calendar-header {
+            padding-right: 58px;
+        }
+
+        body.student-calendar-modal-open {
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .student-calendar-modal-close {
+            border-color: var(--activity-border, #30394b);
+        }
+
+        @keyframes studentCalendarPop {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(.99);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .student-calendar-fab {
+                right: 15px;
+                bottom: 15px;
+                min-height: 52px;
+                padding: 0 14px;
+            }
+
+            .student-calendar-modal {
+                padding: 8px;
+                align-items: flex-end;
+            }
+
+            .student-calendar-modal-dialog {
+                max-height: 94vh;
+                border-radius: 16px 16px 10px 10px;
+            }
+
+            .student-calendar-modal .student-calendar-header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 16px 52px 14px 14px;
+            }
+
+            .student-calendar-modal .student-calendar-controls {
+                justify-content: space-between;
+            }
+
+            .student-calendar-modal .student-calendar-body {
+                padding: 12px;
+            }
+        }
+
         /* =========================================================
            RESPONSIVE STUDENT ACADEMIC CALENDAR
         ========================================================= */
@@ -4461,7 +4669,7 @@ include "globals/head.php";
             --sc-muted: var(--text-secondary, #64748b);
             --sc-text: var(--text-color, #172033);
             box-sizing: border-box;
-            width: 50%;
+            width: 100%;
             max-width: 100%;
             min-width: 0;
             background: var(--activity-card-bg, #fff);
@@ -4839,9 +5047,470 @@ include "globals/head.php";
             text-decoration: underline;
         }
 
+        .student-learning-overview {
+            display: block;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .student-learning-overview>.activity-card {
+            min-width: 0;
+            margin-bottom: 0 !important;
+        }
+
+        .student-agenda-sidebar {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .student-agenda-sidebar>.student-agenda-panel {
+            height: 100%;
+        }
+
+        .student-agenda-panel {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid var(--activity-border, #e5e7eb);
+            border-radius: 15px;
+            background: var(--activity-card-bg, #fff);
+            color: var(--text-color, #172033);
+            box-shadow: 0 5px 18px var(--shadow-color, rgba(15, 23, 42, .05));
+        }
+
+        .student-agenda-panel>header {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 12px 13px;
+            border-bottom: 1px solid var(--activity-border, #e5e7eb);
+        }
+
+        .agenda-panel-icon {
+            flex: 0 0 34px;
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--surface-secondary, #f1f5f9);
+            color: var(--activity-indigo, #4f46e5);
+        }
+
+        .agenda-panel-icon.today {
+            color: #d97706;
+            background: rgba(245, 158, 11, .12);
+        }
+
+        .agenda-panel-icon.upcoming {
+            color: #2563eb;
+            background: rgba(59, 130, 246, .12);
+        }
+
+        .agenda-panel-icon.ended {
+            color: #059669;
+            background: rgba(16, 185, 129, .12);
+        }
+
+        .student-agenda-panel header div {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .student-agenda-panel header h5 {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-color, #172033);
+        }
+
+        .student-agenda-panel header p {
+            margin: 3px 0 0;
+            font-size: 10px;
+            color: var(--text-secondary, #64748b);
+        }
+
+        .student-agenda-panel header>strong {
+            display: grid;
+            place-items: center;
+            min-width: 25px;
+            height: 25px;
+            padding: 0 6px;
+            border-radius: 8px;
+            background: var(--surface-secondary, #f1f5f9);
+            font-size: 11px;
+            color: var(--text-color, #172033);
+        }
+
+        .student-agenda-list {
+            max-height: 190px;
+            overflow-y: auto;
+            padding: 4px 12px 8px;
+        }
+
+        .student-agenda-item {
+            display: block;
+            width: 100%;
+            padding: 10px 1px;
+            border: 0;
+            border-bottom: 1px solid var(--activity-border, #e5e7eb);
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .student-agenda-item:last-child {
+            border-bottom: 0;
+        }
+
+        .student-agenda-item:hover .agenda-item-title {
+            color: var(--activity-indigo, #4f46e5);
+        }
+
+        .agenda-item-title {
+            display: block;
+            font-size: 12px;
+            line-height: 1.4;
+            font-weight: 750;
+            color: var(--text-color, #172033);
+            overflow-wrap: anywhere;
+        }
+
+        .agenda-item-meta {
+            display: block;
+            margin-top: 4px;
+            font-size: 10px;
+            line-height: 1.4;
+            color: var(--text-secondary, #64748b);
+        }
+
+        .agenda-empty {
+            margin: 0;
+            padding: 14px 2px;
+            font-size: 11px;
+            color: var(--text-secondary, #64748b);
+        }
+
+        [data-theme="dark"] .student-agenda-panel {
+            border-color: var(--activity-border, #30394b);
+        }
+
+        [data-theme="dark"] .student-agenda-item {
+            border-color: var(--activity-border, #30394b);
+        }
+
         @media (max-width:1199.98px) {
-            .student-calendar-card {
-                width: 100%;
+            .student-agenda-sidebar {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .student-agenda-list {
+                max-height: 220px;
+            }
+        }
+
+        @media (max-width:767.98px) {
+            .student-agenda-sidebar {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .student-agenda-list {
+                max-height: 180px;
+            }
+        }
+
+        /* Calendar and agenda share the dashboard grid. */
+        .student-planner-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 3fr) minmax(280px, 1fr);
+            align-items: start;
+            gap: 18px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .student-calendar-card {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .student-upcoming-card {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid var(--activity-border, #e5e7eb);
+            border-radius: 16px;
+            background: var(--activity-card-bg, #fff);
+            color: var(--text-color, #172033);
+            box-shadow: 0 5px 18px var(--shadow-color, rgba(15, 23, 42, .06));
+        }
+
+        .student-upcoming-header {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 18px;
+            border-bottom: 1px solid var(--activity-border, #e5e7eb);
+        }
+
+        .student-upcoming-icon {
+            display: grid;
+            place-items: center;
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--activity-indigo-bg, #eef2ff);
+            color: var(--activity-indigo, #4f46e5);
+            font-size: 19px;
+        }
+
+        .student-upcoming-heading {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .student-upcoming-heading h5 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-color, #172033);
+        }
+
+        .student-upcoming-heading p {
+            margin: 4px 0 0;
+            font-size: 11px;
+            line-height: 1.45;
+            color: var(--text-secondary, #64748b);
+        }
+
+        .student-upcoming-total {
+            display: grid;
+            place-items: center;
+            min-width: 30px;
+            height: 30px;
+            padding: 0 8px;
+            border-radius: 10px;
+            background: #315eea;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .student-upcoming-summary {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            padding: 13px 15px;
+            border-bottom: 1px solid var(--activity-border, #e5e7eb);
+        }
+
+        .student-upcoming-stat {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px;
+            border-radius: 11px;
+            background: var(--surface-secondary, #f8fafc);
+            min-width: 0;
+        }
+
+        .student-upcoming-stat strong {
+            display: block;
+            color: var(--text-color, #172033);
+            font-size: 17px;
+            line-height: 1.1;
+        }
+
+        .student-upcoming-stat small {
+            display: block;
+            margin-top: 3px;
+            color: var(--text-secondary, #64748b);
+            font-size: 10px;
+        }
+
+        .upcoming-stat-dot {
+            width: 9px;
+            height: 9px;
+            flex: 0 0 9px;
+            border-radius: 50%;
+            background: #2563eb;
+        }
+
+        .upcoming-stat-dot.today {
+            background: #f97316;
+        }
+
+        .upcoming-stat-dot.soon {
+            background: #10b981;
+        }
+
+        .student-upcoming-list {
+            max-height: 620px;
+            overflow: auto;
+            padding: 5px 14px 12px;
+        }
+
+        .student-upcoming-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 13px 2px;
+            border-bottom: 1px solid var(--activity-border, #e5e7eb);
+            cursor: pointer;
+        }
+
+        .student-upcoming-item:last-child {
+            border-bottom: 0;
+        }
+
+        .student-upcoming-item:hover {
+            background: var(--activity-hover-bg, rgba(99, 102, 241, .06));
+        }
+
+        .student-upcoming-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 44px;
+            min-height: 48px;
+            border-radius: 10px;
+            background: var(--surface-secondary, #f8fafc);
+            color: var(--text-color, #172033);
+        }
+
+        .student-upcoming-date strong {
+            font-size: 17px;
+            line-height: 1.1;
+        }
+
+        .student-upcoming-date span {
+            margin-top: 3px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-secondary, #64748b);
+        }
+
+        .student-upcoming-item-main {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .student-upcoming-item-title {
+            margin: 0;
+            color: var(--text-color, #172033);
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .student-upcoming-item-meta {
+            margin-top: 4px;
+            color: var(--text-secondary, #64748b);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .student-upcoming-tag {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 6px;
+            padding: 3px 7px;
+            border-radius: 6px;
+            background: rgba(59, 130, 246, .12);
+            color: #2563eb;
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .student-upcoming-tag.reading {
+            background: rgba(139, 92, 246, .14);
+            color: #7c3aed;
+        }
+
+        .student-upcoming-tag.deadline {
+            background: rgba(249, 115, 22, .15);
+            color: #c2410c;
+        }
+
+        .student-upcoming-tag.event {
+            background: rgba(13, 148, 136, .14);
+            color: #0f766e;
+        }
+
+        .student-upcoming-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 35px 18px;
+            text-align: center;
+            color: var(--text-secondary, #64748b);
+            font-size: 12px;
+        }
+
+        .student-upcoming-empty i {
+            font-size: 27px;
+            color: var(--activity-indigo, #4f46e5);
+        }
+
+        /* Follow the global page theme (the portal uses data-theme="dark"). */
+        [data-theme="dark"] .student-calendar-card,
+        [data-theme="dark"] .student-upcoming-card {
+            --sc-border: var(--activity-border, #30394b);
+            --sc-muted: var(--text-secondary, #a6b0c2);
+            --sc-text: var(--text-color, #edf2f7);
+        }
+
+        [data-theme="dark"] .student-calendar-day {
+            color: var(--text-color, #edf2f7);
+        }
+
+        [data-theme="dark"] .student-calendar-day.is-selected {
+            background: var(--activity-indigo-bg, rgba(99, 102, 241, .22));
+        }
+
+        [data-theme="dark"] .student-calendar-weekdays span {
+            color: var(--text-secondary, #a6b0c2);
+        }
+
+        [data-theme="dark"] .student-upcoming-stat,
+        [data-theme="dark"] .student-upcoming-date {
+            background: var(--surface-secondary, #202a3a);
+        }
+
+        [data-theme="dark"] .student-upcoming-tag {
+            color: #93c5fd;
+            background: rgba(59, 130, 246, .2);
+        }
+
+        [data-theme="dark"] .student-upcoming-tag.reading {
+            color: #c4b5fd;
+            background: rgba(139, 92, 246, .2);
+        }
+
+        [data-theme="dark"] .student-upcoming-tag.deadline {
+            color: #fdba74;
+            background: rgba(249, 115, 22, .2);
+        }
+
+        [data-theme="dark"] .student-upcoming-tag.event {
+            color: #5eead4;
+            background: rgba(13, 148, 136, .2);
+        }
+
+        @media (max-width:1199.98px) {
+            .student-planner-layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .student-upcoming-list {
+                max-height: 420px;
             }
         }
 
@@ -5018,6 +5687,169 @@ include "globals/head.php";
                 detail.innerHTML = html;
             }
 
+            function renderUpcoming() {
+                const list = document.getElementById("studentUpcomingList");
+                const totalEl = document.getElementById("studentUpcomingTotal");
+                const todayCountEl = document.getElementById("studentTodayCount");
+                const soonCountEl = document.getElementById("studentSoonCount");
+                if (!list) return;
+                const todayKey = toDateKey(today);
+                const soonLimit = new Date(today);
+                soonLimit.setDate(soonLimit.getDate() + 7);
+                const soonKey = toDateKey(soonLimit);
+                const items = [];
+                Object.keys(eventsByDate).forEach(dateKey => {
+                    if (dateKey < todayKey) return;
+                    (eventsByDate[dateKey] || []).forEach(event => {
+                        items.push({
+                            ...event,
+                            scheduleDate: dateKey
+                        });
+                    });
+                });
+                items.sort((a, b) => {
+                    const dateCompare = a.scheduleDate.localeCompare(b.scheduleDate);
+                    if (dateCompare !== 0) return dateCompare;
+                    const timeA = String(a.dateTime || "");
+                    const timeB = String(b.dateTime || "");
+                    return timeA.localeCompare(timeB) || String(a.title).localeCompare(String(b.title));
+                });
+                // Remove duplicate instances of the same source entry/date while preserving separate due dates.
+                const seen = new Set();
+                const uniqueItems = items.filter(item => {
+                    const key = [item.type, item.id, item.dateLabel, item.scheduleDate, item.title].join("|");
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+                const todayCount = uniqueItems.filter(item => item.scheduleDate === todayKey).length;
+                const soonCount = uniqueItems.filter(item => item.scheduleDate >= todayKey && item.scheduleDate <= soonKey).length;
+                if (totalEl) totalEl.textContent = String(uniqueItems.length);
+                if (todayCountEl) todayCountEl.textContent = String(todayCount);
+                if (soonCountEl) soonCountEl.textContent = String(soonCount);
+                if (!uniqueItems.length) {
+                    list.innerHTML = '<div class="student-upcoming-empty"><i class="bi bi-calendar-check"></i><span>You are all caught up. No upcoming activities are scheduled.</span></div>';
+                    return;
+                }
+                list.innerHTML = uniqueItems.slice(0, 40).map(item => {
+                    const date = new Date(item.scheduleDate + "T12:00:00");
+                    const cls = eventClass(item);
+                    const time = item.dateTime && /^\d{2}:\d{2}/.test(String(item.dateTime)) ?
+                        new Date("2000-01-01T" + String(item.dateTime)).toLocaleTimeString([], {
+                            hour: "numeric",
+                            minute: "2-digit"
+                        }) :
+                        "All day";
+                    const dayLabel = item.scheduleDate === todayKey ? "Today" : date.toLocaleDateString(undefined, {
+                        weekday: "short"
+                    });
+                    const meta = date.toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric"
+                    }) + " · " + time + (item.location ? " · " + item.location : "");
+                    const url = item.url || "";
+                    return '<article class="student-upcoming-item" data-date="' + escapeHtml(item.scheduleDate) + '" tabindex="0" role="button" aria-label="Show ' + escapeHtml(item.title) + ' on calendar">' +
+                        '<div class="student-upcoming-date"><strong>' + date.getDate() + '</strong><span>' + escapeHtml(dayLabel) + '</span></div>' +
+                        '<div class="student-upcoming-item-main"><h6 class="student-upcoming-item-title">' + escapeHtml(item.title) + '</h6>' +
+                        '<div class="student-upcoming-item-meta">' + escapeHtml(meta) + '</div>' +
+                        '<span class="student-upcoming-tag ' + cls + '">' + escapeHtml(item.dateLabel || item.type) + '</span></div></article>';
+                }).join("");
+                list.querySelectorAll(".student-upcoming-item").forEach(itemEl => {
+                    const selectUpcomingDate = () => {
+                        selectedDate = itemEl.dataset.date;
+                        const chosen = new Date(selectedDate + "T12:00:00");
+                        visibleMonth = new Date(chosen.getFullYear(), chosen.getMonth(), 1);
+                        renderCalendar();
+                        renderDetail(selectedDate);
+                    };
+                    itemEl.addEventListener("click", selectUpcomingDate);
+                    itemEl.addEventListener("keydown", e => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            selectUpcomingDate();
+                        }
+                    });
+                });
+            }
+
+            function renderActivitySidebar() {
+                const todayKey = toDateKey(today);
+                const todayItems = [];
+                const futureItems = [];
+                const pastItems = [];
+                const recentLimit = new Date(today);
+                recentLimit.setDate(recentLimit.getDate() - 30);
+                const recentLimitKey = toDateKey(recentLimit);
+                Object.keys(eventsByDate).sort().forEach(dateKey => {
+                    (eventsByDate[dateKey] || []).forEach(event => {
+                        const item = {
+                            ...event,
+                            scheduleDate: dateKey
+                        };
+                        if (dateKey === todayKey) todayItems.push(item);
+                        else if (dateKey > todayKey) futureItems.push(item);
+                        else if (dateKey >= recentLimitKey) pastItems.push(item);
+                    });
+                });
+                const sorter = (a, b) => a.scheduleDate.localeCompare(b.scheduleDate) || String(a.dateTime || '').localeCompare(String(b.dateTime || '')) || String(a.title || '').localeCompare(String(b.title || ''));
+                todayItems.sort(sorter);
+                futureItems.sort(sorter);
+                pastItems.sort((a, b) => sorter(b, a));
+                const configs = [{
+                        items: todayItems,
+                        list: 'agendaTodayList',
+                        count: 'agendaTodayTotal',
+                        empty: 'No activities scheduled for today.'
+                    },
+                    {
+                        items: futureItems,
+                        list: 'agendaUpcomingList',
+                        count: 'agendaUpcomingTotal',
+                        empty: 'Nothing upcoming is scheduled.'
+                    },
+                    {
+                        items: pastItems,
+                        list: 'agendaEndedList',
+                        count: 'agendaEndedTotal',
+                        empty: 'No previous activities or events found.'
+                    }
+                ];
+                configs.forEach(config => {
+                    const list = document.getElementById(config.list);
+                    const count = document.getElementById(config.count);
+                    if (count) count.textContent = String(config.items.length);
+                    if (!list) return;
+                    if (!config.items.length) {
+                        list.innerHTML = '<p class="agenda-empty">' + escapeHtml(config.empty) + '</p>';
+                        return;
+                    }
+                    list.innerHTML = config.items.slice(0, 8).map(item => {
+                        const date = new Date(item.scheduleDate + 'T12:00:00');
+                        const dateText = item.scheduleDate === todayKey ? 'Today' : date.toLocaleDateString(undefined, {
+                            month: 'short',
+                            day: 'numeric',
+                            year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
+                        });
+                        const time = item.dateTime && /^\d{2}:\d{2}/.test(String(item.dateTime)) ? new Date('2000-01-01T' + String(item.dateTime)).toLocaleTimeString([], {
+                            hour: 'numeric',
+                            minute: '2-digit'
+                        }) : 'All day';
+                        return '<button type="button" class="student-agenda-item" data-agenda-date="' + escapeHtml(item.scheduleDate) + '"><span class="agenda-item-title">' + escapeHtml(item.title || 'Untitled activity') + '</span><span class="agenda-item-meta">' + escapeHtml(dateText + ' · ' + time + ' · ' + (item.dateLabel || item.type || 'Activity')) + '</span></button>';
+                    }).join('');
+                    list.querySelectorAll('[data-agenda-date]').forEach(button => button.addEventListener('click', () => {
+                        selectedDate = button.dataset.agendaDate;
+                        const chosen = new Date(selectedDate + 'T12:00:00');
+                        visibleMonth = new Date(chosen.getFullYear(), chosen.getMonth(), 1);
+                        renderCalendar();
+                        renderDetail(selectedDate);
+                        document.querySelector('.student-calendar-card')?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }));
+                });
+            }
+
             function renderCalendar() {
                 const year = visibleMonth.getFullYear();
                 const month = visibleMonth.getMonth();
@@ -5089,8 +5921,40 @@ include "globals/head.php";
                 renderCalendar();
                 renderDetail(selectedDate);
             });
+            const calendarModal = document.getElementById("studentCalendarModal");
+            const calendarOpenButton = document.getElementById("studentCalendarOpen");
+            const calendarCloseButton = document.getElementById("studentCalendarClose");
+            const calendarBackdrop = document.getElementById("studentCalendarBackdrop");
+            let calendarPreviousFocus = null;
+            const openCalendarModal = () => {
+                calendarPreviousFocus = document.activeElement;
+                calendarModal?.classList.add("is-open");
+                calendarModal?.setAttribute("aria-hidden", "false");
+                document.body.classList.add("student-calendar-modal-open");
+                calendarCloseButton?.focus();
+            };
+            const closeCalendarModal = () => {
+                calendarModal?.classList.remove("is-open");
+                calendarModal?.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("student-calendar-modal-open");
+                calendarPreviousFocus?.focus?.();
+            };
+            calendarOpenButton?.addEventListener("click", openCalendarModal);
+            calendarCloseButton?.addEventListener("click", closeCalendarModal);
+            calendarBackdrop?.addEventListener("click", closeCalendarModal);
+            document.addEventListener("keydown", event => {
+                if (event.key === "Escape" && calendarModal?.classList.contains("is-open")) closeCalendarModal();
+            });
+            const calendarFabCount = document.getElementById("studentCalendarFabCount");
+            if (calendarFabCount) {
+                const totalScheduled = Object.values(eventsByDate).reduce((sum, items) => sum + (Array.isArray(items) ? items.length : 0), 0);
+                calendarFabCount.textContent = String(totalScheduled);
+            }
+
             renderCalendar();
             renderDetail(selectedDate);
+            renderUpcoming();
+            renderActivitySidebar();
         })();
     </script>
 
