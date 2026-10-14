@@ -372,13 +372,13 @@ $profilePhoto = trim(
 
     Main domain:
 
-    https://vertigation.com/
+    http\://localhost/
 
 
 
     Student subdomain:
 
-    https\://vertigation.com/
+    https\://async.vertigation.com/
 
 
 
@@ -396,7 +396,7 @@ $profilePhoto = trim(
 
     Final browser URL:
 
-    https://vertigation.com/shared/uploads/profile_photos/photo.jpg
+    http\://localhost/shared/uploads/profile_photos/photo.jpg
 
 */
 
@@ -455,7 +455,7 @@ if ($profilePhoto !== "") {
 
        Example:
 
-       https\://vertigation.com/shared/...
+       https\://async.vertigation.com/shared/...
 
     ====================================================== */ elseif (
 
@@ -495,7 +495,7 @@ if ($profilePhoto !== "") {
 
             $profilePhotoURL =
 
-                "https://vertigation.com" .
+                "http\://localhost" .
 
                 $path;
         }
@@ -533,7 +533,7 @@ if ($profilePhoto !== "") {
 
         $profilePhotoURL =
 
-            "https://vertigation.com" .
+            "http\://localhost" .
 
             $profilePhoto;
     }
@@ -570,7 +570,7 @@ if ($profilePhoto !== "") {
 
         $profilePhotoURL =
 
-            "https://vertigation.com/" .
+            "http\://localhost/" .
 
             $profilePhoto;
     }
@@ -595,7 +595,7 @@ if ($profilePhoto !== "") {
 
        Convert to:
 
-       https://vertigation.com/shared/uploads/...
+       http\://localhost/shared/uploads/...
 
     ====================================================== */ elseif (
 
@@ -627,7 +627,7 @@ if ($profilePhoto !== "") {
 
         $profilePhotoURL =
 
-            "https://vertigation.com/" .
+            "http\://localhost/" .
 
             $cleanPath;
     }
@@ -662,7 +662,7 @@ if ($profilePhoto !== "") {
 
         $profilePhotoURL =
 
-            "https://vertigation.com/" .
+            "http\://localhost/" .
 
             $cleanPath;
     }
@@ -2377,6 +2377,428 @@ $error =
         })();
     </script>
 
+
+
+    <style id="profile-photo-professional-refresh">
+        /* Profile Photo page refresh — presentation only; PHP/upload/crop logic unchanged */
+        .main-content .content-wrapper {
+            width: min(1180px, 100%);
+            margin-inline: auto;
+            padding: clamp(16px, 3vw, 34px);
+        }
+
+        .main-content .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 18px;
+            margin: 0 0 24px;
+            padding: 0 0 20px;
+            border-bottom: 1px solid var(--border-color, rgba(148, 163, 184, .22));
+        }
+
+        .main-content .page-header h2 {
+            margin: 0 0 7px;
+            font-size: clamp(1.55rem, 2.6vw, 2rem);
+            line-height: 1.2;
+            font-weight: 750;
+            letter-spacing: -.035em;
+        }
+
+        .main-content .page-header p {
+            margin: 0;
+            max-width: 600px;
+            line-height: 1.65;
+            color: var(--muted-text-color, var(--secondary-text, #718096));
+        }
+
+        .profile-alert {
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+        }
+
+        .profile-photo-card {
+            display: grid;
+            grid-template-columns: minmax(240px, .82fr) minmax(0, 1.5fr);
+            gap: clamp(22px, 3.5vw, 42px);
+            align-items: stretch;
+            padding: clamp(20px, 3.5vw, 38px);
+            border: 1px solid var(--border-color, rgba(148, 163, 184, .22));
+            border-radius: 24px;
+            background: var(--card-bg, var(--surface-color, #fff));
+            color: var(--text-color, #172033);
+            box-shadow: 0 12px 36px rgba(15, 23, 42, .055);
+            min-width: 0;
+        }
+
+        .profile-photo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 0;
+            padding: 8px 18px 24px;
+            border-right: 1px solid var(--border-color, rgba(148, 163, 184, .18));
+        }
+
+        .profile-photo-wrapper {
+            width: clamp(132px, 18vw, 190px);
+            aspect-ratio: 1;
+            height: auto;
+            flex: 0 0 auto;
+            overflow: hidden;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: grid;
+            place-items: center;
+            position: relative;
+            background: linear-gradient(145deg, #e8efff, #f4f7ff);
+            border: 5px solid var(--card-bg, #fff);
+            outline: 1px solid rgba(99, 102, 241, .22);
+            box-shadow: 0 10px 28px rgba(37, 99, 235, .15);
+        }
+
+        .profile-photo-wrapper .profile-photo,
+        .profile-photo-wrapper .profile-photo-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-photo-wrapper .profile-photo-placeholder {
+            display: grid;
+            place-items: center;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 750;
+            color: #3156b8;
+            background: linear-gradient(145deg, #e4edff, #f5f7ff);
+        }
+
+        .profile-photo-section h4 {
+            margin: 0 0 8px;
+            font-size: clamp(1.05rem, 2vw, 1.3rem);
+            font-weight: 750;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-photo-section .student-id {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 11px;
+            border-radius: 999px;
+            font-size: .82rem;
+            background: var(--subtle-bg, rgba(100, 116, 139, .09));
+            color: var(--muted-text-color, #64748b);
+            overflow-wrap: anywhere;
+        }
+
+        .student-information {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 12px;
+            padding: 4px 0;
+        }
+
+        .student-info-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 17px 18px;
+            min-width: 0;
+            border-radius: 14px;
+            border: 1px solid var(--border-color, rgba(148, 163, 184, .18));
+            background: var(--subtle-bg, rgba(100, 116, 139, .045));
+            transition: border-color .18s ease, transform .18s ease;
+        }
+
+        .student-info-item:hover {
+            border-color: rgba(79, 112, 235, .42);
+            transform: translateY(-1px);
+        }
+
+        .student-info-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: .88rem;
+            color: var(--muted-text-color, #64748b);
+            font-weight: 550;
+        }
+
+        .student-info-label i {
+            color: #5574d9;
+        }
+
+        .student-info-item strong {
+            text-align: right;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-upload-section {
+            grid-column: 1/-1;
+            min-width: 0;
+            margin-top: 0;
+            padding: clamp(18px, 3vw, 28px);
+            border: 1px solid var(--border-color, rgba(148, 163, 184, .2));
+            border-radius: 18px;
+            background: var(--subtle-bg, rgba(100, 116, 139, .04));
+        }
+
+        .profile-upload-section .upload-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 750;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .profile-upload-section .upload-title i {
+            color: #5574d9;
+        }
+
+        .profile-upload-section .upload-description {
+            margin: 0 0 18px;
+            line-height: 1.65;
+            font-size: .9rem;
+            color: var(--muted-text-color, #64748b);
+        }
+
+        .upload-input-wrapper {
+            min-width: 0;
+        }
+
+        #profile_photo.form-control {
+            width: 100%;
+            min-height: 50px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px dashed var(--border-color, #cbd5e1);
+            background: var(--card-bg, #fff);
+            color: var(--text-color, #172033);
+        }
+
+        #profile_photo.form-control:focus {
+            border-color: #5574d9;
+            box-shadow: 0 0 0 3px rgba(85, 116, 217, .13);
+        }
+
+        .upload-preview-container {
+            margin-top: 18px;
+            padding: 16px;
+            border-radius: 14px;
+            background: var(--card-bg, #fff);
+            border: 1px solid var(--border-color, rgba(148, 163, 184, .2));
+        }
+
+        .upload-preview-container .preview-label {
+            font-size: .85rem;
+            font-weight: 700;
+            margin: 0 0 10px;
+        }
+
+        .upload-preview {
+            display: block;
+            max-width: min(100%, 280px);
+            max-height: 280px;
+            object-fit: contain;
+            border-radius: 14px;
+            background: #edf2f7;
+        }
+
+        .profile-upload-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        #uploadButton {
+            min-height: 46px;
+            padding: 11px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            box-shadow: 0 5px 14px rgba(37, 99, 235, .18);
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+        #uploadButton:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, .24);
+        }
+
+        #uploadButton:disabled {
+            opacity: .72;
+            cursor: wait;
+        }
+
+        /* Crop dialog: cleaner hierarchy and responsive touch targets */
+        #photoCropModal {
+            padding: clamp(10px, 3vw, 24px);
+            backdrop-filter: blur(7px);
+        }
+
+        .photo-crop-dialog {
+            width: min(780px, 100%);
+            max-height: min(92dvh, 900px);
+            overflow: auto;
+            padding: clamp(16px, 3vw, 28px);
+            border-radius: 22px;
+            border: 1px solid rgba(148, 163, 184, .2);
+            box-shadow: 0 30px 100px rgba(0, 0, 0, .34);
+        }
+
+        .photo-crop-head {
+            margin-bottom: 8px;
+        }
+
+        #photoCropTitle {
+            font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+            font-weight: 800;
+            letter-spacing: -.025em;
+        }
+
+        .photo-crop-hint {
+            line-height: 1.65;
+            font-size: .92rem;
+        }
+
+        .photo-crop-stage {
+            position: relative;
+            height: min(54vh, 480px);
+            min-height: 230px;
+            border-radius: 16px;
+            border: 1px solid rgba(148, 163, 184, .18);
+        }
+
+        .photo-crop-actions {
+            gap: 10px;
+        }
+
+        .photo-crop-actions button {
+            min-height: 44px;
+            padding: 11px 17px;
+            border-radius: 11px;
+            font-weight: 700;
+            transition: filter .18s ease, transform .18s ease;
+        }
+
+        .photo-crop-actions button:hover {
+            filter: brightness(.97);
+            transform: translateY(-1px);
+        }
+
+        .photo-crop-confirm {
+            box-shadow: 0 5px 14px rgba(37, 99, 235, .22);
+        }
+
+        .photo-crop-cancel {
+            border: 1px solid rgba(148, 163, 184, .25) !important;
+        }
+
+        @media (max-width:760px) {
+            .main-content .content-wrapper {
+                padding: 18px 14px 28px;
+            }
+
+            .main-content .page-header {
+                margin-bottom: 18px;
+                padding-bottom: 16px;
+            }
+
+            .profile-photo-card {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 22px;
+                padding: 18px;
+                border-radius: 19px;
+            }
+
+            .profile-photo-section {
+                border-right: 0;
+                border-bottom: 1px solid var(--border-color, rgba(148, 163, 184, .18));
+                padding: 6px 4px 24px;
+            }
+
+            .profile-photo-wrapper {
+                width: 150px;
+            }
+
+            .student-information {
+                gap: 9px;
+            }
+
+            .student-info-item {
+                padding: 14px;
+                gap: 12px;
+            }
+
+            .profile-upload-section {
+                grid-column: auto;
+                padding: 18px;
+            }
+
+            .profile-upload-footer {
+                justify-content: stretch;
+            }
+
+            #uploadButton {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width:420px) {
+            .main-content .content-wrapper {
+                padding-inline: 10px;
+            }
+
+            .profile-photo-card {
+                padding: 13px;
+                gap: 18px;
+            }
+
+            .student-info-item {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .student-info-item strong {
+                text-align: left;
+            }
+
+            .photo-crop-actions {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .photo-crop-actions button {
+                width: 100%;
+            }
+
+            .photo-crop-stage {
+                min-height: 210px;
+                height: 45vh;
+            }
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+
+            .student-info-item,
+            #uploadButton,
+            .photo-crop-actions button {
+                transition: none;
+            }
+        }
+    </style>
 
 </body>
 
