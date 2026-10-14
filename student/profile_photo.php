@@ -1263,30 +1263,120 @@ $error =
                 }
             }
 
-            function openCropper(file) {
-                if (cropper) cropper.destroy();
-                if (objectUrl) URL.revokeObjectURL(objectUrl);
+            let cropLoadToken = 0;
+
+            async function openCropper(file) {
+                const token = ++cropLoadToken;
+
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                if (objectUrl) {
+                    URL.revokeObjectURL(objectUrl);
+                    objectUrl = null;
+                }
+
                 originalFile = file;
-                objectUrl = URL.createObjectURL(file);
-                cropImage.src = objectUrl;
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
-                cropImage.onload = function() {
-                    cropper = new Cropper(cropImage, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        dragMode: 'move',
-                        autoCropArea: 0.88,
-                        responsive: true,
-                        background: false,
-                        guides: true,
-                        center: true,
-                        movable: true,
-                        zoomable: true,
-                        rotatable: false,
-                        scalable: false
-                    });
-                };
+
+                // Keep the cropper responsive for large phone photos by resizing only
+                // the temporary crop source. The original file is never modified;
+                // the final crop is exported at 800 x 800.
+                cropImage.style.visibility = 'hidden';
+                let loading = document.getElementById('photoCropLoading');
+                if (!loading) {
+                    loading = document.createElement('div');
+                    loading.id = 'photoCropLoading';
+                    loading.textContent = 'Preparing photo…';
+                    loading.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;background:#161b22;font:14px system-ui;z-index:2;';
+                    const stage = cropImage.parentElement;
+                    stage.style.position = 'relative';
+                    stage.appendChild(loading);
+                }
+                loading.style.display = 'flex';
+
+                try {
+                    let sourceBlob = file;
+
+                    if (window.createImageBitmap) {
+                        const bitmap = await createImageBitmap(file);
+                        if (token !== cropLoadToken) {
+                            bitmap.close && bitmap.close();
+                            return;
+                        }
+
+                        const maxDimension = 1600;
+                        if (Math.max(bitmap.width, bitmap.height) > maxDimension) {
+                            const scale = maxDimension / Math.max(bitmap.width, bitmap.height);
+                            const canvas = document.createElement('canvas');
+                            canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+                            canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+                            const ctx = canvas.getContext('2d', {
+                                alpha: file.type === 'image/png'
+                            });
+                            ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+                            sourceBlob = await new Promise(resolve => {
+                                canvas.toBlob(blob => resolve(blob || file), file.type, 0.92);
+                            });
+                        }
+                        bitmap.close && bitmap.close();
+                    }
+
+                    if (token !== cropLoadToken) return;
+
+                    objectUrl = URL.createObjectURL(sourceBlob);
+                    cropImage.onload = function() {
+                        if (token !== cropLoadToken) return;
+                        loading.style.display = 'none';
+                        cropImage.style.visibility = 'visible';
+                        cropper = new Cropper(cropImage, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            dragMode: 'move',
+                            autoCropArea: 0.88,
+                            responsive: true,
+                            background: false,
+                            guides: true,
+                            center: true,
+                            movable: true,
+                            zoomable: true,
+                            rotatable: false,
+                            scalable: false
+                        });
+                    };
+                    cropImage.onerror = function() {
+                        if (token !== cropLoadToken) return;
+                        loading.textContent = 'Could not load this photo. Please choose another image.';
+                        cropImage.style.visibility = 'hidden';
+                    };
+                    cropImage.src = objectUrl;
+                } catch (error) {
+                    if (token !== cropLoadToken) return;
+                    // Fallback for browsers that cannot decode with createImageBitmap.
+                    objectUrl = URL.createObjectURL(file);
+                    cropImage.onload = function() {
+                        if (token !== cropLoadToken) return;
+                        loading.style.display = 'none';
+                        cropImage.style.visibility = 'visible';
+                        cropper = new Cropper(cropImage, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            dragMode: 'move',
+                            autoCropArea: 0.88,
+                            responsive: true,
+                            background: false,
+                            guides: true,
+                            center: true,
+                            movable: true,
+                            zoomable: true,
+                            rotatable: false,
+                            scalable: false
+                        });
+                    };
+                    cropImage.src = objectUrl;
+                }
             }
 
             input.addEventListener('change', function() {
