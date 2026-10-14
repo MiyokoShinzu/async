@@ -1059,167 +1059,8 @@ $error =
         }
     </script>
 
-    <!-- =========================================================
-
-         IMAGE PREVIEW
-
-    ========================================================= -->
-
-    <script>
-        const photoInput =
-
-            document.getElementById(
-
-                "profile_photo"
-
-            );
-
-        const uploadPreview =
-
-            document.getElementById(
-
-                "uploadPreview"
-
-            );
-
-        const uploadPreviewContainer =
-
-            document.getElementById(
-
-                "uploadPreviewContainer"
-
-            );
-
-        if (photoInput) {
-
-            photoInput.addEventListener(
-
-                "change",
-
-                function() {
-
-                    const file =
-
-                        this.files[0];
-
-                    if (!file) {
-
-                        uploadPreviewContainer.style.display =
-
-                            "none";
-
-                        return;
-
-                    }
-
-                    /* =================================================
-
-                       ALLOWED TYPES
-
-                    ================================================= */
-
-                    const allowedTypes = [
-
-                        "image/jpeg",
-
-                        "image/png",
-
-                        "image/webp"
-
-                    ];
-
-                    if (
-
-                        !allowedTypes.includes(
-
-                            file.type
-
-                        )
-
-                    ) {
-
-                        alert(
-
-                            "Please select a JPG, PNG, or WEBP image."
-
-                        );
-
-                        this.value = "";
-
-                        uploadPreviewContainer.style.display =
-
-                            "none";
-
-                        return;
-
-                    }
-
-                    /* =================================================
-
-                       MAX SIZE
-
-                    ================================================= */
-
-                    if (
-
-                        file.size >
-
-                        5 * 1024 * 1024
-
-                    ) {
-
-                        alert(
-
-                            "The selected image is larger than 5 MB."
-
-                        );
-
-                        this.value = "";
-
-                        uploadPreviewContainer.style.display =
-
-                            "none";
-
-                        return;
-
-                    }
-
-                    /* =================================================
-
-                       CREATE PREVIEW
-
-                    ================================================= */
-
-                    const reader =
-
-                        new FileReader();
-
-                    reader.onload =
-
-                        function(event) {
-
-                            uploadPreview.src =
-
-                                event.target.result;
-
-                            uploadPreviewContainer.style.display =
-
-                                "block";
-
-                        };
-
-                    reader.readAsDataURL(
-
-                        file
-
-                    );
-
-                }
-
-            );
-
-        }
-    </script>
+    <!-- The cropper handles previewing the selected image using an object URL.
+         Avoid reading the same full-size image again with FileReader. -->
 
     <!-- =========================================================
 
@@ -1400,6 +1241,7 @@ $error =
             let cropper = null;
             let originalFile = null;
             let objectUrl = null;
+            let previewUrl = null;
 
             if (!input || !modal || !window.Cropper) return;
 
@@ -1449,7 +1291,17 @@ $error =
 
             input.addEventListener('change', function() {
                 const file = this.files && this.files[0];
-                if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 5 * 1024 * 1024) return;
+                if (!file) return;
+                if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+                    alert('Please select a JPG, PNG, or WEBP image.');
+                    this.value = '';
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('The selected image is larger than 5 MB.');
+                    this.value = '';
+                    return;
+                }
                 openCropper(file);
             });
 
@@ -1477,7 +1329,11 @@ $error =
                     const transfer = new DataTransfer();
                     transfer.items.add(croppedFile);
                     input.files = transfer.files;
-                    if (preview) preview.src = URL.createObjectURL(blob);
+                    if (preview) {
+                        if (previewUrl) URL.revokeObjectURL(previewUrl);
+                        previewUrl = URL.createObjectURL(blob);
+                        preview.src = previewUrl;
+                    }
                     if (previewContainer) previewContainer.style.display = 'block';
                     closeCropper(false);
                 }, originalFile.type, 0.92);
