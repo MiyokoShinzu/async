@@ -7,10 +7,6 @@
 
 include './globals/checks.php';
 require_once '../src/connection.php';
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
-    mysqli_report(MYSQLI_REPORT_OFF);
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -64,28 +60,46 @@ $summary = ['assigned' => 0, 'started' => 0, 'completed' => 0, 'submitted' => 0]
 $yearSections = [];
 
 if ($lecture) {
-    // Year_section is expected to begin with the lecture's year level, e.g. "1-A".
-    $sectionSql = "SELECT id, first_name, middle_initial, last_name, extension_name,
+    // Load students by department first, then match year/section in PHP.
+    // This avoids SQL CONCAT/LIKE filtering differences between database setups.
+    $targetSection = trim((string)($lecture['section'] ?? ''));
+    $targetYear = trim((string)($lecture['year_level'] ?? ''));
+    $studentSql = "SELECT id, first_name, middle_initial, last_name, extension_name,
                           student_id, email, department, year_section
                    FROM accounts
                    WHERE access = 'student' AND department = ?
-                     AND year_section LIKE CONCAT(?, '%')
-                     AND (? = '' OR year_section = CONCAT(?, '-', ?))
                    ORDER BY last_name, first_name";
-    $targetSection = trim((string)($lecture['section'] ?? ''));
-    $yearPrefix = (string)$lecture['year_level'] . '-';
-    $allStudentStmt = $mysqli->prepare($sectionSql);
+
+    $allStudentStmt = $mysqli->prepare($studentSql);
     if (!$allStudentStmt) {
-        $loadError = 'Unable to prepare the student query. Confirm that the accounts table contains the expected student fields.';
+        $loadError = 'Unable to prepare the student query: ' . $mysqli->error;
     } else {
-        $allStudentStmt->bind_param('sssss', $lecture['department'], $yearPrefix, $targetSection, $lecture['year_level'], $targetSection);
+        $department = (string)($lecture['department'] ?? '');
+        $allStudentStmt->bind_param('s', $department);
         if (!$allStudentStmt->execute()) {
-            $loadError = 'Unable to load assigned students. Please verify the accounts table structure.';
+            $loadError = 'Unable to load assigned students: ' . $allStudentStmt->error;
         } else {
             $res = $allStudentStmt->get_result();
             while ($row = $res->fetch_assoc()) {
+                $storedYearSection = trim((string)($row['year_section'] ?? ''));
+                $normalizedStored = strtolower(preg_replace('/\s+/', '', $storedYearSection));
+                $expectedPrefix = strtolower(preg_replace('/\s+/', '', $targetYear . '-'));
+
+                // Example account values: "1-A", "1 - A". If the lecture has
+                // a section, require an exact year-section match.
+                if ($targetSection !== '') {
+                    $expectedSection = strtolower(preg_replace('/\s+/', '', $targetYear . '-' . $targetSection));
+                    if ($normalizedStored !== $expectedSection) {
+                        continue;
+                    }
+                } else {
+                    if (strpos($normalizedStored, $expectedPrefix) !== 0) {
+                        continue;
+                    }
+                }
+
                 $allRows[(int)$row['id']] = $row;
-                $yearSections[(string)$row['year_section']] = true;
+                $yearSections[$storedYearSection] = true;
             }
         }
         $allStudentStmt->close();
@@ -106,7 +120,7 @@ if ($lecture) {
                 $pRes = $pStmt->get_result();
                 while ($p = $pRes->fetch_assoc()) $progressByStudent[(int)$p['student_id']] = (int)$p['progress_rank'];
             } else {
-                $loadError = 'Unable to read lecture_progress. Verify that it has lecture_id, student_id, and status columns.';
+                $loadError = 'Unable to read lecture_progress. Confirm its lecture_id, student_id, and status columns.';
             }
             $pStmt->close();
         } else {
