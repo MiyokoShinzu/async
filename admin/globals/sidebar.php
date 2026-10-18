@@ -68,7 +68,7 @@
         <!-- DASHBOARD -->
 
         <a
-            href="dashboard.php"
+            href="index.php"
             class="sidebar-link active">
 
             <i class="bi bi-speedometer2"></i>
