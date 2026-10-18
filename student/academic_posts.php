@@ -37,7 +37,7 @@ require_once "../src/connection.php";
 /* =========================================================
    SECURE DATABASE-ONLY POST DELETION
    Deletes only the academic_posts database record.
-   Files in ../student/ are never changed or removed.
+   No filesystem or PHP-file operations are performed.
 ========================================================== */
 
 if (empty($_SESSION["academic_posts_csrf"])) {
@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_post"])) {
             $deleteStmt->bind_param("i", $deleteId);
 
             if ($deleteStmt->execute() && $deleteStmt->affected_rows === 1) {
-                $deleteMessage = "Academic post record deleted successfully. The PHP file in ../student/ was not changed.";
+                $deleteMessage = "Academic post database record deleted successfully.";
                 $_SESSION["academic_posts_csrf"] = bin2hex(random_bytes(32));
             } elseif ($deleteStmt->affected_rows === 0 && $deleteStmt->error === "") {
                 $deleteMessage = "The academic post was not found. It may already have been deleted.";
@@ -1873,7 +1873,7 @@ foreach (
                                         <form method="POST"
                                             action=""
                                             class="d-inline"
-                                            onsubmit="return confirm('Delete this academic post? If its URL is a PHP filename, the matching file in the student folder will also be deleted. This action cannot be undone.');">
+                                            onsubmit="return confirm('Delete this academic post record from the database only? No files will be changed. This action cannot be undone.');">
                                             <input type="hidden" name="csrf_token"
                                                 value="<?= htmlspecialchars($_SESSION["academic_posts_csrf"], ENT_QUOTES, "UTF-8") ?>">
                                             <input type="hidden" name="post_id"
