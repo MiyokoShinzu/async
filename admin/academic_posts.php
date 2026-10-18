@@ -34,6 +34,60 @@ $adminId =
 
 require_once "../src/connection.php";
 
+/* =========================================================
+   SECURE DATABASE-ONLY POST DELETION
+   Deletes only the academic_posts database record.
+   No filesystem or PHP-file operations are performed.
+========================================================== */
+
+if (empty($_SESSION["academic_posts_csrf"])) {
+    $_SESSION["academic_posts_csrf"] = bin2hex(random_bytes(32));
+}
+
+$deleteMessage = "";
+$deleteMessageType = "success";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_post"])) {
+    $submittedToken = (string)($_POST["csrf_token"] ?? "");
+    $deleteId = filter_input(INPUT_POST, "post_id", FILTER_VALIDATE_INT);
+
+    if (
+        $submittedToken === "" ||
+        !hash_equals($_SESSION["academic_posts_csrf"], $submittedToken)
+    ) {
+        $deleteMessage = "Security check failed. Refresh the page and try again.";
+        $deleteMessageType = "danger";
+    } elseif (!$deleteId || $deleteId < 1) {
+        $deleteMessage = "Invalid academic post selected.";
+        $deleteMessageType = "danger";
+    } else {
+        $deleteStmt = $mysqli->prepare(
+            "DELETE FROM academic_posts WHERE id = ? LIMIT 1"
+        );
+
+        if (!$deleteStmt) {
+            $deleteMessage = "Unable to prepare the database delete.";
+            $deleteMessageType = "danger";
+        } else {
+            $deleteStmt->bind_param("i", $deleteId);
+
+            if ($deleteStmt->execute() && $deleteStmt->affected_rows === 1) {
+                $deleteMessage = "Academic post database record deleted successfully.";
+                $_SESSION["academic_posts_csrf"] = bin2hex(random_bytes(32));
+            } elseif ($deleteStmt->affected_rows === 0 && $deleteStmt->error === "") {
+                $deleteMessage = "The academic post was not found. It may already have been deleted.";
+                $deleteMessageType = "warning";
+            } else {
+                $deleteMessage = "Could not delete the academic post record. It may be referenced by another table. Database error: "
+                    . $deleteStmt->error;
+                $deleteMessageType = "danger";
+            }
+
+            $deleteStmt->close();
+        }
+    }
+}
+
 
 /* =========================================================
    LOAD DEPARTMENTS
@@ -1165,6 +1219,13 @@ foreach (
             </div>
 
 
+            <?php if ($deleteMessage !== ""): ?>
+                <div class="alert alert-<?= htmlspecialchars($deleteMessageType, ENT_QUOTES, "UTF-8") ?> alert-dismissible fade show" role="alert">
+                    <?= htmlspecialchars($deleteMessage, ENT_QUOTES, "UTF-8") ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <!-- =================================================
              STATISTICS
         ================================================== -->
@@ -1420,6 +1481,10 @@ foreach (
 
                                 <th>
                                     Order
+                                </th>
+
+                                <th>
+                                    Actions
                                 </th>
 
                             </tr>
@@ -1801,6 +1866,25 @@ foreach (
 
                                         <?= $sortOrder ?>
 
+                                    </td>
+
+                                    <!-- DELETE ACTION -->
+                                    <td>
+                                        <form method="POST"
+                                            action=""
+                                            class="d-inline"
+                                            onsubmit="return confirm('Delete this academic post record from the database only? No files will be changed. This action cannot be undone.');">
+                                            <input type="hidden" name="csrf_token"
+                                                value="<?= htmlspecialchars($_SESSION["academic_posts_csrf"], ENT_QUOTES, "UTF-8") ?>">
+                                            <input type="hidden" name="post_id"
+                                                value="<?= $postId ?>">
+                                            <button type="submit"
+                                                name="delete_post"
+                                                value="1"
+                                                class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash me-1"></i> Delete
+                                            </button>
+                                        </form>
                                     </td>
 
 
