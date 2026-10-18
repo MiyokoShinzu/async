@@ -105,53 +105,73 @@ if ($lecture) {
         $allStudentStmt->close();
     }
 
-    // Aggregate progress to one row per student, avoiding duplicate rows if progress history exists.
+    // Connect progress to accounts using accounts.student_id.
+    // lecture_progress.student_id is VARCHAR(50), matching the public student ID.
+    // The fallback to accounts.id supports any older records that stored numeric account IDs.
     if ($loadError === '') {
         $progressByStudent = [];
         $pStmt = $mysqli->prepare(
-            "SELECT student_id,
-                    MAX(CASE WHEN status = 'completed' THEN 3
-                             WHEN status = 'in_progress' THEN 2 ELSE 1 END) AS progress_rank
-             FROM lecture_progress WHERE lecture_id = ? GROUP BY student_id"
+            "SELECT a.id AS account_id,
+                    MAX(CASE WHEN lp.status = 'completed' THEN 3
+                             WHEN lp.status = 'in_progress' THEN 2
+                             ELSE 1 END) AS progress_rank
+             FROM lecture_progress lp
+             INNER JOIN accounts a
+               ON a.student_id = lp.student_id
+               OR CAST(a.id AS CHAR) = lp.student_id
+             WHERE lp.lecture_id = ?
+               AND a.access = 'student'
+             GROUP BY a.id"
         );
         if ($pStmt) {
             $pStmt->bind_param('i', $lectureId);
             if ($pStmt->execute()) {
                 $pRes = $pStmt->get_result();
-                while ($p = $pRes->fetch_assoc()) $progressByStudent[(int)$p['student_id']] = (int)$p['progress_rank'];
+                while ($p = $pRes->fetch_assoc()) {
+                    $progressByStudent[(int)$p['account_id']] = (int)$p['progress_rank'];
+                }
             } else {
-                $loadError = 'Unable to read lecture_progress. Confirm its lecture_id, student_id, and status columns.';
+                $loadError = 'Unable to read lecture_progress: ' . $pStmt->error;
             }
             $pStmt->close();
         } else {
-            $loadError = 'Unable to prepare the progress query. Verify the lecture_progress table and its columns.';
+            $loadError = 'Unable to prepare lecture progress query: ' . $mysqli->error;
         }
 
         $submissionByStudent = [];
         if ($loadError === '') {
             $sStmt = $mysqli->prepare(
-                "SELECT student_id, MAX(CASE WHEN status = 'submitted' THEN 1 ELSE 0 END) AS is_submitted
-                 FROM lecture_submissions WHERE lecture_id = ? GROUP BY student_id"
+                "SELECT a.id AS account_id,
+                        MAX(CASE WHEN ls.status = 'submitted' THEN 1 ELSE 0 END) AS is_submitted
+                 FROM lecture_submissions ls
+                 INNER JOIN accounts a
+                   ON a.student_id = ls.student_id
+                   OR CAST(a.id AS CHAR) = ls.student_id
+                 WHERE ls.lecture_id = ?
+                   AND a.access = 'student'
+                 GROUP BY a.id"
             );
             if ($sStmt) {
                 $sStmt->bind_param('i', $lectureId);
                 if ($sStmt->execute()) {
                     $sRes = $sStmt->get_result();
-                    while ($s = $sRes->fetch_assoc()) $submissionByStudent[(int)$s['student_id']] = (int)$s['is_submitted'];
+                    while ($s = $sRes->fetch_assoc()) {
+                        $submissionByStudent[(int)$s['account_id']] = (int)$s['is_submitted'];
+                    }
                 } else {
-                    $loadError = 'Unable to read lecture_submissions. Verify that it has lecture_id, student_id, and status columns.';
+                    $loadError = 'Unable to read lecture_submissions: ' . $sStmt->error;
                 }
                 $sStmt->close();
             } else {
-                $loadError = 'Unable to prepare the submission query. Verify the lecture_submissions table and its columns.';
+                $loadError = 'Unable to prepare submission query: ' . $mysqli->error;
             }
         }
 
         if ($loadError === '') {
             foreach ($allRows as $id => $student) {
-                $rank = $progressByStudent[$id] ?? 0;
+                $rank = $progressByStudent[(int)$id] ?? 0;
                 $student['progress_status'] = $rank === 3 ? 'completed' : ($rank === 2 ? 'in_progress' : 'not_started');
-                $student['is_submitted'] = $submissionByStudent[$id] ?? 0;
+                $student['is_submitted'] = $submissionByStudent[(int)$id] ?? 0;
                 $name = trim(($student['first_name'] ?? '') . ' ' . (!empty($student['middle_initial']) ? $student['middle_initial'] . '. ' : '') . ($student['last_name'] ?? '') . (!empty($student['extension_name']) ? ' ' . $student['extension_name'] : ''));
                 $student['full_name'] = $name !== '' ? $name : 'Unnamed student';
                 $summary['assigned']++;
