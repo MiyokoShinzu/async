@@ -2,7 +2,7 @@
 /*
  * Academic Posts Manager - ETS Async Learning Portal
  * Place this file in the same admin directory as academic_post_create.php.
- * PHP resource files created here are saved under ../students/ only.
+ * PHP resource files created here are saved under ../student/ only.
  */
 
 include './globals/checks.php';
@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $code = (string)($_POST['page_code'] ?? '');
 
             if (!$studentsDir) {
-                $error = 'The ../students/ directory was not found or is not writable. Check the directory and hosting permissions.';
+                $error = 'The ../student/ directory was not found or is not writable. Check the directory and hosting permissions.';
             } elseif ($title === '') {
                 $error = 'Please enter a post title.';
             } elseif (!validPhpFilename($url)) {
