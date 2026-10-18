@@ -21,7 +21,7 @@ if (empty($_SESSION['academic_posts_csrf'])) {
     $_SESSION['academic_posts_csrf'] = bin2hex(random_bytes(32));
 }
 $csrf = $_SESSION['academic_posts_csrf'];
-$studentsDir = realpath(__DIR__ . '/../students');
+$studentsDir = realpath(__DIR__ . '/../student');
 if ($studentsDir === false || !is_dir($studentsDir) || !is_writable($studentsDir)) {
     $studentsDir = false;
 }
@@ -192,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $target = safeStudentFilePath($studentsDir, $url);
                 if ($error === '' && $target && is_file($target) && !$id) {
-                    $error = 'A file with that name already exists in /students. Choose another filename to avoid overwriting it.';
+                    $error = 'A file with that name already exists in /student. Choose another filename to avoid overwriting it.';
                 }
                 if ($error === '') {
                     $oldUrl = '';
@@ -235,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $error = 'The page file was saved, but the database operation failed. Check the database connection and table structure.';
                         }
                     } elseif ($error === '') {
-                        $error = 'Could not write the PHP file. Check permissions for the /students directory.';
+                        $error = 'Could not write the PHP file. Check permissions for the /student directory.';
                     }
                 }
             }
@@ -372,13 +372,13 @@ if ($res) while ($r = $res->fetch_assoc()) $posts[] = $r;
             </div>
             <?php if ($success): ?><div class="alert alert-success alert-dismissible fade show"><?= h($success) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div><?php endif; ?>
             <?php if ($error): ?><div class="alert alert-danger alert-dismissible fade show"><?= h($error) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div><?php endif; ?>
-            <?php if (!$studentsDir): ?><div class="alert alert-warning">The <code>../students/</code> directory is missing or not writable. Create it and grant the PHP process permission to write files before creating or editing pages.</div><?php endif; ?>
+            <?php if (!$studentsDir): ?><div class="alert alert-warning">The <code>../student/</code> directory is missing or not writable. Create it and grant the PHP process permission to write files before creating or editing pages.</div><?php endif; ?>
 
             <section class="card manager-card" id="editor">
                 <div class="manager-card-header d-flex justify-content-between align-items-center gap-2">
                     <div>
                         <h2 class="h5 mb-1"><?= $editing ? 'Edit Academic Post' : 'Create Academic Post' ?></h2>
-                        <div class="small-muted">The page code is saved as a PHP file inside <code>/students/</code>.</div>
+                        <div class="small-muted">The page code is saved as a PHP file inside <code>/student/</code>.</div>
                     </div><?php if ($editing): ?><a href="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?>#editor" class="btn btn-sm btn-outline-secondary">New Post</a><?php endif; ?>
                 </div>
                 <div class="manager-card-body">
@@ -386,8 +386,8 @@ if ($res) while ($r = $res->fetch_assoc()) $posts[] = $r;
                         <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>"><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?= (int)($editing['id'] ?? 0) ?>">
                         <div class="row g-3">
                             <div class="col-md-8"><label class="form-label" for="title">Post title *</label><input class="form-control" id="title" name="title" maxlength="255" required value="<?= h($title) ?>" placeholder="e.g. Common Z-Transform Pairs"></div>
-                            <div class="col-md-4"><label class="form-label" for="url">Filename in /students/ *</label>
-                                <div class="input-group"><span class="input-group-text">/students/</span><input class="form-control" id="url" name="url" required pattern="[A-Za-z0-9_-]+\.php" value="<?= h($url) ?>" placeholder="z_transform.php"></div>
+                            <div class="col-md-4"><label class="form-label" for="url">Filename in /student/ *</label>
+                                <div class="input-group"><span class="input-group-text">/student/</span><input class="form-control" id="url" name="url" required pattern="[A-Za-z0-9_-]+\.php" value="<?= h($url) ?>" placeholder="z_transform.php"></div>
                                 <div class="form-text">Use only letters, numbers, underscores, hyphens, and <code>.php</code>.</div>
                             </div>
                             <div class="col-12"><label class="form-label" for="description">Description</label><textarea class="form-control" id="description" name="description" rows="2" placeholder="Describe this resource for students."><?= h($description) ?></textarea></div>
@@ -455,13 +455,13 @@ if ($res) while ($r = $res->fetch_assoc()) $posts[] = $r;
                                         <td><?= h($p['subject'] ?: '—') ?><div class="small-muted"><?= h($p['department'] ?: 'All departments') ?></div>
                                         </td>
                                         <td><code><?= h($p['url']) ?></code>
-                                            <div class="small-muted"><?= $fileExists ? 'File exists' : 'File missing' ?></div><?php if (validPhpFilename((string)$p['url'])): ?><a href="../students/<?= rawurlencode((string)$p['url']) ?>" target="_blank" rel="noopener">Open page <i class="bi bi-box-arrow-up-right"></i></a><?php endif; ?>
+                                            <div class="small-muted"><?= $fileExists ? 'File exists' : 'File missing' ?></div><?php if (validPhpFilename((string)$p['url'])): ?><a href="../student/<?= rawurlencode((string)$p['url']) ?>" target="_blank" rel="noopener">Open page <i class="bi bi-box-arrow-up-right"></i></a><?php endif; ?>
                                         </td>
                                         <td><?= $p['status'] ? '<span class="badge text-bg-success">Active</span>' : '<span class="badge text-bg-secondary">Inactive</span>' ?></td>
                                         <td><?= (int)$p['sort_order'] ?></td>
                                         <td class="text-end">
                                             <div class="d-inline-flex flex-wrap justify-content-end gap-1"><a class="btn btn-sm btn-outline-primary" href="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?>?edit=<?= (int)$p['id'] ?>#editor"><i class="bi bi-pencil-square"></i> Edit</a>
-                                                <form method="post" action="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?>" onsubmit="return confirm('Delete this academic post record? This does not delete its PHP file unless you check the option in the next prompt.');"><input type="hidden" name="csrf_token" value="<?= h($csrf) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$p['id'] ?>"><input type="hidden" name="delete_file" id="delete_file_<?= (int)$p['id'] ?>" value="0"><button class="btn btn-sm btn-outline-danger" type="submit" onclick="document.getElementById('delete_file_<?= (int)$p['id'] ?>').value = confirm('Also permanently delete /students/<?= h(addslashes((string)$p['url'])) ?>? This cannot be undone.') ? '1' : '0';"><i class="bi bi-trash"></i> Delete</button></form>
+                                                <form method="post" action="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?>" onsubmit="return confirm('Delete this academic post record? This does not delete its PHP file unless you check the option in the next prompt.');"><input type="hidden" name="csrf_token" value="<?= h($csrf) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$p['id'] ?>"><input type="hidden" name="delete_file" id="delete_file_<?= (int)$p['id'] ?>" value="0"><button class="btn btn-sm btn-outline-danger" type="submit" onclick="document.getElementById('delete_file_<?= (int)$p['id'] ?>').value = confirm('Also permanently delete /student/<?= h(addslashes((string)$p['url'])) ?>? This cannot be undone.') ? '1' : '0';"><i class="bi bi-trash"></i> Delete</button></form>
                                             </div>
                                         </td>
                                     </tr>
