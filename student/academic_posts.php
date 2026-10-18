@@ -1,43 +1,31 @@
-
 <?php
 
+include './globals/checks.php';
+
+
 /* =========================================================
-   STUDENT ACADEMIC POSTS
+   ADMIN ACADEMIC POSTS
    ETS-Async Learning Portal
 
    Features:
-   - Database-driven academic posts
-   - Search posts
-   - Filter by subject
+   - View academic posts
+   - Search academic posts
    - Filter by department
-   - Combined subject + department filtering
-   - Database-driven title
-   - Database-driven description
-   - Database-driven URL
-   - Student-specific saved/bookmarked posts
+   - Filter by subject
+   - Display post status
+   - Display post URL
+   - Create new academic post
    ========================================================= */
-
-session_start();
 
 
 /* =========================================================
-   AUTHENTICATION
+   GET ADMIN USER
 ========================================================== */
 
-if (
-    !isset($_SESSION["logged_in"]) ||
-    $_SESSION["logged_in"] !== true ||
-    !isset($_SESSION["user"]) ||
-    ($_SESSION["user"]["access"] ?? "") !== "student"
-) {
-
-    header("Location: ../login.php");
-
-    exit;
-}
-
-
 $user = $_SESSION["user"];
+
+$adminId =
+    $user["id"] ?? null;
 
 
 /* =========================================================
@@ -46,204 +34,125 @@ $user = $_SESSION["user"];
 
 require_once "../src/connection.php";
 
-
 /* =========================================================
-   USER DATA
+   SECURE POST DELETION
+   Deletes the academic_posts record and, when the URL is a
+   plain PHP filename, its matching file inside ../student/.
 ========================================================== */
 
-$firstName =
-    $user["first_name"] ?? "";
-
-$lastName =
-    $user["last_name"] ?? "";
-
-$middleInitial =
-    $user["middle_initial"] ?? "";
-
-$extensionName =
-    $user["extension_name"] ?? "";
-
-$studentId =
-    $user["student_id"] ?? "";
-
-$studentDepartment =
-    $user["department"] ?? "";
-
-$yearSection =
-    $user["year_section"] ?? "";
-
-$email =
-    $user["email"] ?? "";
-
-$username =
-    $user["username"] ?? "";
-
-$access =
-    $user["access"] ?? "student";
-
-
-/* =========================================================
-   FULL NAME
-========================================================== */
-
-$fullName = trim(
-
-    $firstName .
-        " " .
-
-        (
-            $middleInitial !== ""
-            ? $middleInitial . ". "
-            : ""
-        ) .
-
-        $lastName .
-
-        (
-            $extensionName !== ""
-            ? " " . $extensionName
-            : ""
-        )
-);
-
-
-/* =========================================================
-   INITIALS
-========================================================== */
-
-$initials = "";
-
-
-if ($firstName !== "") {
-
-    $initials .= strtoupper(
-        substr($firstName, 0, 1)
-    );
+if (empty($_SESSION["academic_posts_csrf"])) {
+    $_SESSION["academic_posts_csrf"] = bin2hex(random_bytes(32));
 }
 
+$deleteMessage = "";
+$deleteMessageType = "success";
 
-if ($lastName !== "") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_post"])) {
+    $submittedToken = (string)($_POST["csrf_token"] ?? "");
+    $deleteId = filter_input(INPUT_POST, "post_id", FILTER_VALIDATE_INT);
 
-    $initials .= strtoupper(
-        substr($lastName, 0, 1)
-    );
-}
-
-
-/* =========================================================
-   LOAD CURRENT STUDENT'S SAVED ACADEMIC POSTS
-========================================================== */
-
-$savedPostIds = [];
-
-
-$savedSql = "
-
-    SELECT
-        post_id
-
-    FROM academic_post_saved
-
-    WHERE student_id = ?
-";
-
-
-$savedStmt =
-    $mysqli->prepare($savedSql);
-
-
-if ($savedStmt) {
-
-    $savedStmt->bind_param(
-        "s",
-        $studentId
-    );
-
-
-    $savedStmt->execute();
-
-
-    $savedResult =
-        $savedStmt->get_result();
-
-
-    while (
-        $savedRow =
-        $savedResult->fetch_assoc()
+    if (
+        $submittedToken === "" ||
+        !hash_equals($_SESSION["academic_posts_csrf"], $submittedToken)
     ) {
+        $deleteMessage = "Security check failed. Refresh the page and try again.";
+        $deleteMessageType = "danger";
+    } elseif (!$deleteId || $deleteId < 1) {
+        $deleteMessage = "Invalid academic post selected.";
+        $deleteMessageType = "danger";
+    } else {
+        $findStmt = $mysqli->prepare(
+            "SELECT url FROM academic_posts WHERE id = ? LIMIT 1"
+        );
 
-        $savedPostIds[] =
-            (int)$savedRow["post_id"];
+        if (!$findStmt) {
+            $deleteMessage = "Unable to prepare the delete request.";
+            $deleteMessageType = "danger";
+        } else {
+            $findStmt->bind_param("i", $deleteId);
+            $findStmt->execute();
+            $findResult = $findStmt->get_result();
+            $existingPost = $findResult ? $findResult->fetch_assoc() : null;
+            $findStmt->close();
+
+            if (!$existingPost) {
+                $deleteMessage = "The academic post was not found. It may already have been deleted.";
+                $deleteMessageType = "warning";
+            } else {
+                $postUrlToDelete = trim((string)($existingPost["url"] ?? ""));
+                $deleteStmt = $mysqli->prepare(
+                    "DELETE FROM academic_posts WHERE id = ? LIMIT 1"
+                );
+
+                if (!$deleteStmt) {
+                    $deleteMessage = "Unable to prepare the database delete.";
+                    $deleteMessageType = "danger";
+                } else {
+                    $deleteStmt->bind_param("i", $deleteId);
+
+                    if ($deleteStmt->execute() && $deleteStmt->affected_rows === 1) {
+                        $deleteMessage = "Academic post deleted successfully.";
+
+                        // Only remove a matching PHP file, never a path or URL.
+                        if (preg_match('/^[a-zA-Z0-9_-]+\.php$/', $postUrlToDelete)) {
+                            $studentDirectory = realpath(__DIR__ . "/../student");
+                            $candidateFile = $studentDirectory
+                                ? $studentDirectory . DIRECTORY_SEPARATOR . $postUrlToDelete
+                                : "";
+
+                            if (
+                                $studentDirectory &&
+                                is_file($candidateFile) &&
+                                realpath($candidateFile) &&
+                                strpos(
+                                    realpath($candidateFile),
+                                    $studentDirectory . DIRECTORY_SEPARATOR
+                                ) === 0
+                            ) {
+                                if (@unlink($candidateFile)) {
+                                    $deleteMessage .= " Its student PHP file was also removed.";
+                                } else {
+                                    $deleteMessage .= " However, its PHP file could not be removed; check folder permissions.";
+                                    $deleteMessageType = "warning";
+                                }
+                            }
+                        }
+
+                        // Rotate token after a successful state-changing request.
+                        $_SESSION["academic_posts_csrf"] = bin2hex(random_bytes(32));
+                    } else {
+                        $deleteMessage = "Could not delete the academic post. It may be referenced by another table. Database error: "
+                            . $deleteStmt->error;
+                        $deleteMessageType = "danger";
+                    }
+
+                    $deleteStmt->close();
+                }
+            }
+        }
     }
-
-
-    $savedStmt->close();
 }
 
 
 /* =========================================================
-   LOAD POST SUBJECTS
-========================================================== */
-
-$subjects = [];
-
-
-$subjectSql = "
-
-    SELECT DISTINCT
-        subject
-
-    FROM academic_posts
-
-    WHERE status = 1
-
-      AND subject IS NOT NULL
-
-      AND subject <> ''
-
-    ORDER BY
-        subject ASC
-";
-
-
-$subjectResult =
-    $mysqli->query($subjectSql);
-
-
-if ($subjectResult) {
-
-    while (
-        $row =
-        $subjectResult->fetch_assoc()
-    ) {
-
-        $subjects[] =
-            $row["subject"];
-    }
-
-    $subjectResult->free();
-}
-
-
-/* =========================================================
-   LOAD POST DEPARTMENTS
+   LOAD DEPARTMENTS
 ========================================================== */
 
 $departments = [];
 
 
-$departmentSql = "
+$departmentSQL = "
 
     SELECT DISTINCT
         department
 
-    FROM academic_posts
+    FROM accounts
 
-    WHERE status = 1
+    WHERE access = 'student'
 
       AND department IS NOT NULL
 
-      AND department <> ''
+      AND department != ''
 
     ORDER BY
         department ASC
@@ -251,7 +160,9 @@ $departmentSql = "
 
 
 $departmentResult =
-    $mysqli->query($departmentSql);
+    $mysqli->query(
+        $departmentSQL
+    );
 
 
 if ($departmentResult) {
@@ -270,13 +181,57 @@ if ($departmentResult) {
 
 
 /* =========================================================
+   LOAD ACADEMIC POST SUBJECTS
+========================================================== */
+
+$subjects = [];
+
+
+$subjectSQL = "
+
+    SELECT DISTINCT
+        subject
+
+    FROM academic_posts
+
+    WHERE subject IS NOT NULL
+
+      AND subject != ''
+
+    ORDER BY
+        subject ASC
+";
+
+
+$subjectResult =
+    $mysqli->query(
+        $subjectSQL
+    );
+
+
+if ($subjectResult) {
+
+    while (
+        $row =
+        $subjectResult->fetch_assoc()
+    ) {
+
+        $subjects[] =
+            $row["subject"];
+    }
+
+    $subjectResult->free();
+}
+
+
+/* =========================================================
    LOAD ACADEMIC POSTS
 ========================================================== */
 
 $posts = [];
 
 
-$postSql = "
+$postSQL = "
 
     SELECT
 
@@ -294,26 +249,32 @@ $postSql = "
 
         icon,
 
-        icon_color
+        icon_color,
+
+        sort_order,
+
+        status,
+
+        created_at,
+
+        updated_at
 
     FROM academic_posts
-
-    WHERE status = 1
 
     ORDER BY
 
         sort_order ASC,
 
-        department ASC,
-
-        subject ASC,
+        created_at DESC,
 
         title ASC
 ";
 
 
 $postResult =
-    $mysqli->query($postSql);
+    $mysqli->query(
+        $postSQL
+    );
 
 
 if ($postResult) {
@@ -332,79 +293,36 @@ if ($postResult) {
 
 
 /* =========================================================
-   SUBJECT FILTER VALUE
+   TOTAL COUNTS
 ========================================================== */
 
-function subjectFilterValue($subject)
-{
-
-    $subject =
-        trim($subject);
+$totalPosts =
+    count($posts);
 
 
-    $subject =
-        strtolower($subject);
+$activePosts =
+    0;
 
 
-    $subject =
-        preg_replace(
-            '/[^a-z0-9]+/',
-            '-',
-            $subject
-        );
+$inactivePosts =
+    0;
 
 
-    return trim(
-        $subject,
-        "-"
-    );
+foreach (
+    $posts
+    as $post
+) {
+
+    if (
+        (int)$post["status"] === 1
+    ) {
+
+        $activePosts++;
+    } else {
+
+        $inactivePosts++;
+    }
 }
-
-
-/* =========================================================
-   DEPARTMENT FILTER VALUE
-========================================================== */
-
-function departmentFilterValue($department)
-{
-
-    $department =
-        trim($department);
-
-
-    $department =
-        strtolower($department);
-
-
-    $department =
-        preg_replace(
-            '/[^a-z0-9]+/',
-            '-',
-            $department
-        );
-
-
-    return trim(
-        $department,
-        "-"
-    );
-}
-
-
-/* =========================================================
-   ALLOWED ICON COLORS
-========================================================== */
-
-$allowedIconColors = [
-
-    "blue",
-    "purple",
-    "orange",
-    "green",
-    "red",
-    "yellow"
-
-];
 
 ?>
 
@@ -417,26 +335,889 @@ $allowedIconColors = [
 <?php include 'globals/head.php'; ?>
 
 
+<style>
+    /* =========================================================
+   ADMIN ACADEMIC POSTS
+   ETS-Async Learning Portal
+   ========================================================= */
+
+
+    /* =========================================================
+   PAGE HEADER
+========================================================== */
+
+    .page-header {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        margin-bottom: 25px;
+    }
+
+
+    .page-header h2 {
+
+        margin: 0;
+
+        font-size: 1.65rem;
+
+        font-weight: 700;
+
+        color: #1f2937;
+    }
+
+
+    .page-header p {
+
+        margin: 6px 0 0;
+
+        color: #6b7280;
+
+        font-size: 0.92rem;
+    }
+
+
+    /* =========================================================
+   CREATE BUTTON
+========================================================== */
+
+    .page-header .btn {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 5px;
+
+        border-radius: 8px;
+
+        font-size: 0.88rem;
+
+        padding: 9px 15px;
+
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+   STAT CARDS
+========================================================== */
+
+    .posts-stat-grid {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 15px;
+
+        margin-bottom: 20px;
+    }
+
+
+    .posts-stat-card {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 13px;
+
+        padding: 18px;
+
+        background: #ffffff;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 12px;
+
+        box-shadow:
+            0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+
+
+    .posts-stat-icon {
+
+        width: 42px;
+
+        height: 42px;
+
+        min-width: 42px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 10px;
+
+        font-size: 1.1rem;
+    }
+
+
+    .posts-stat-icon.blue {
+
+        color: #2563eb;
+
+        background: #eff6ff;
+    }
+
+
+    .posts-stat-icon.green {
+
+        color: #16a34a;
+
+        background: #ecfdf3;
+    }
+
+
+    .posts-stat-icon.red {
+
+        color: #dc2626;
+
+        background: #fef2f2;
+    }
+
+
+    .posts-stat-content strong {
+
+        display: block;
+
+        color: #1f2937;
+
+        font-size: 1.25rem;
+
+        line-height: 1.2;
+    }
+
+
+    .posts-stat-content span {
+
+        display: block;
+
+        margin-top: 3px;
+
+        color: #6b7280;
+
+        font-size: 0.76rem;
+    }
+
+
+    /* =========================================================
+   MAIN CARD
+========================================================== */
+
+    .posts-admin-card {
+
+        background: #ffffff;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 14px;
+
+        box-shadow:
+            0 2px 8px rgba(15, 23, 42, 0.04);
+
+        overflow: hidden;
+    }
+
+
+    /* =========================================================
+   CARD HEADER
+========================================================== */
+
+    .posts-admin-header {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        padding: 20px 22px;
+
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+
+    .posts-admin-header h5 {
+
+        margin: 0;
+
+        font-size: 1rem;
+
+        font-weight: 700;
+
+        color: #1f2937;
+    }
+
+
+    .posts-admin-header p {
+
+        margin: 4px 0 0;
+
+        color: #6b7280;
+
+        font-size: 0.8rem;
+    }
+
+
+    /* =========================================================
+   FILTER AREA
+========================================================== */
+
+    .posts-admin-filters {
+
+        display: grid;
+
+        grid-template-columns:
+            1fr 220px 220px;
+
+        gap: 10px;
+
+        padding: 18px 22px;
+
+        background: #f9fafb;
+
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+
+    /* =========================================================
+   SEARCH
+========================================================== */
+
+    .posts-search {
+
+        position: relative;
+    }
+
+
+    .posts-search i {
+
+        position: absolute;
+
+        left: 13px;
+
+        top: 50%;
+
+        transform:
+            translateY(-50%);
+
+        color: #9ca3af;
+    }
+
+
+    .posts-search input {
+
+        width: 100%;
+
+        height: 42px;
+
+        padding:
+            0 12px 0 38px;
+
+        border:
+            1px solid #d1d5db;
+
+        border-radius: 8px;
+
+        background: #ffffff;
+
+        color: #1f2937;
+
+        font-size: 0.85rem;
+
+        outline: none;
+    }
+
+
+    .posts-search input:focus {
+
+        border-color: #6366f1;
+
+        box-shadow:
+            0 0 0 3px rgba(99, 102, 241, 0.10);
+    }
+
+
+    /* =========================================================
+   FILTER SELECT
+========================================================== */
+
+    .posts-admin-filters .form-select {
+
+        height: 42px;
+
+        border:
+            1px solid #d1d5db;
+
+        border-radius: 8px;
+
+        color: #374151;
+
+        background-color: #ffffff;
+
+        font-size: 0.82rem;
+    }
+
+
+    .posts-admin-filters .form-select:focus {
+
+        border-color: #6366f1;
+
+        box-shadow:
+            0 0 0 3px rgba(99, 102, 241, 0.10);
+    }
+
+
+    /* =========================================================
+   TABLE WRAPPER
+========================================================== */
+
+    .posts-table-wrapper {
+
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+
+    /* =========================================================
+   TABLE
+========================================================== */
+
+    .posts-table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        min-width: 950px;
+    }
+
+
+    .posts-table thead th {
+
+        padding:
+            13px 16px;
+
+        background: #f9fafb;
+
+        border-bottom:
+            1px solid #e5e7eb;
+
+        color: #6b7280;
+
+        font-size: 0.7rem;
+
+        font-weight: 700;
+
+        text-transform: uppercase;
+
+        letter-spacing: .04em;
+
+        white-space: nowrap;
+    }
+
+
+    .posts-table tbody td {
+
+        padding:
+            15px 16px;
+
+        border-bottom:
+            1px solid #f0f1f3;
+
+        vertical-align: middle;
+
+        color: #374151;
+
+        font-size: 0.82rem;
+    }
+
+
+    .posts-table tbody tr:last-child td {
+
+        border-bottom: none;
+    }
+
+
+    .posts-table tbody tr:hover {
+
+        background: #fafbfc;
+    }
+
+
+    /* =========================================================
+   POST TITLE
+========================================================== */
+
+    .post-title-cell {
+
+        min-width: 250px;
+    }
+
+
+    .post-title {
+
+        display: block;
+
+        color: #1f2937;
+
+        font-weight: 700;
+
+        font-size: 0.84rem;
+
+        line-height: 1.35;
+    }
+
+
+    .post-description {
+
+        display: block;
+
+        max-width: 400px;
+
+        margin-top: 4px;
+
+        color: #9ca3af;
+
+        font-size: 0.73rem;
+
+        line-height: 1.45;
+
+        display: -webkit-box;
+
+        -webkit-line-clamp: 2;
+
+        -webkit-box-orient: vertical;
+
+        overflow: hidden;
+    }
+
+
+    /* =========================================================
+   URL
+========================================================== */
+
+    .post-url {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 5px;
+
+        max-width: 220px;
+
+        color: #4f46e5;
+
+        text-decoration: none;
+
+        font-size: 0.75rem;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+    }
+
+
+    .post-url:hover {
+
+        color: #4338ca;
+
+        text-decoration: underline;
+    }
+
+
+    /* =========================================================
+   TAGS
+========================================================== */
+
+    .post-tag {
+
+        display: inline-block;
+
+        padding:
+            4px 8px;
+
+        border-radius: 5px;
+
+        background: #f3f4f6;
+
+        color: #4b5563;
+
+        font-size: 0.68rem;
+
+        font-weight: 600;
+
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+   STATUS
+========================================================== */
+
+    .post-status {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 5px;
+
+        padding:
+            4px 8px;
+
+        border-radius: 20px;
+
+        font-size: 0.68rem;
+
+        font-weight: 700;
+    }
+
+
+    .post-status.active {
+
+        color: #15803d;
+
+        background: #ecfdf3;
+    }
+
+
+    .post-status.inactive {
+
+        color: #b91c1c;
+
+        background: #fef2f2;
+    }
+
+
+    .post-status-dot {
+
+        width: 6px;
+
+        height: 6px;
+
+        border-radius: 50%;
+
+        background: currentColor;
+    }
+
+
+    /* =========================================================
+   ICON PREVIEW
+========================================================== */
+
+    .post-icon-preview {
+
+        width: 36px;
+
+        height: 36px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 8px;
+
+        font-size: 0.95rem;
+    }
+
+
+    .post-icon-preview.blue {
+
+        color: #2563eb;
+
+        background: #eff6ff;
+    }
+
+
+    .post-icon-preview.purple {
+
+        color: #7c3aed;
+
+        background: #f5f3ff;
+    }
+
+
+    .post-icon-preview.orange {
+
+        color: #ea580c;
+
+        background: #fff7ed;
+    }
+
+
+    .post-icon-preview.green {
+
+        color: #16a34a;
+
+        background: #ecfdf3;
+    }
+
+
+    .post-icon-preview.red {
+
+        color: #dc2626;
+
+        background: #fef2f2;
+    }
+
+
+    .post-icon-preview.yellow {
+
+        color: #ca8a04;
+
+        background: #fefce8;
+    }
+
+
+    /* =========================================================
+   EMPTY STATE
+========================================================== */
+
+    .posts-empty {
+
+        padding: 60px 20px;
+
+        text-align: center;
+
+        display: none;
+    }
+
+
+    .posts-empty-icon {
+
+        width: 50px;
+
+        height: 50px;
+
+        margin: 0 auto 14px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: #f3f4f6;
+
+        color: #9ca3af;
+
+        font-size: 1.1rem;
+    }
+
+
+    .posts-empty h5 {
+
+        margin: 0 0 5px;
+
+        color: #1f2937;
+
+        font-size: 0.95rem;
+    }
+
+
+    .posts-empty p {
+
+        margin: 0;
+
+        color: #9ca3af;
+
+        font-size: 0.78rem;
+    }
+
+
+    /* =========================================================
+   DARK MODE
+========================================================== */
+
+    html[data-theme="dark"] .page-header h2,
+    html[data-theme="dark"] .posts-stat-content strong,
+    html[data-theme="dark"] .posts-admin-header h5,
+    html[data-theme="dark"] .post-title,
+    html[data-theme="dark"] .posts-empty h5 {
+
+        color: #f1f5f9;
+    }
+
+
+    html[data-theme="dark"] .page-header p,
+    html[data-theme="dark"] .posts-stat-content span,
+    html[data-theme="dark"] .posts-admin-header p,
+    html[data-theme="dark"] .post-description {
+
+        color: #a8b0bf;
+    }
+
+
+    html[data-theme="dark"] .posts-stat-card,
+    html[data-theme="dark"] .posts-admin-card {
+
+        background: #151922;
+
+        border-color: #2a3140;
+    }
+
+
+    html[data-theme="dark"] .posts-admin-filters,
+    html[data-theme="dark"] .posts-table thead th {
+
+        background: #1c2230;
+
+        border-color: #2a3140;
+    }
+
+
+    html[data-theme="dark"] .posts-search input,
+    html[data-theme="dark"] .posts-admin-filters .form-select {
+
+        background: #151922;
+
+        border-color: #3a4252;
+
+        color: #f1f5f9;
+    }
+
+
+    html[data-theme="dark"] .posts-table tbody td {
+
+        border-color: #2a3140;
+
+        color: #c2c9d3;
+    }
+
+
+    html[data-theme="dark"] .posts-table tbody tr:hover {
+
+        background: #1c2230;
+    }
+
+
+    html[data-theme="dark"] .post-tag {
+
+        background: #252c38;
+
+        color: #c2c9d3;
+    }
+
+
+    html[data-theme="dark"] .posts-empty-icon {
+
+        background: #252c38;
+
+        color: #a8b0bf;
+    }
+
+
+    /* =========================================================
+   RESPONSIVE
+========================================================== */
+
+    @media (max-width: 900px) {
+
+        .posts-stat-grid {
+
+            grid-template-columns:
+                repeat(3, 1fr);
+        }
+
+
+        .posts-admin-filters {
+
+            grid-template-columns:
+                1fr 1fr;
+        }
+
+
+        .posts-search {
+
+            grid-column:
+                1 / -1;
+        }
+
+    }
+
+
+    @media (max-width: 650px) {
+
+        .page-header {
+
+            flex-direction: column;
+
+            align-items: flex-start;
+        }
+
+
+        .page-header>div:last-child {
+
+            width: 100%;
+        }
+
+
+        .page-header .btn {
+
+            width: 100%;
+        }
+
+
+        .posts-stat-grid {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .posts-admin-filters {
+
+            grid-template-columns:
+                1fr;
+        }
+
+    }
+</style>
+
+
 <body>
 
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
+    <!-- =========================================================
+     SIDEBAR
+========================================================== -->
 
     <?php include 'globals/sidebar.php'; ?>
 
 
-    <!-- =====================================================
-         TOPBAR
-    ====================================================== -->
+    <!-- =========================================================
+     TOPBAR
+========================================================== -->
 
     <?php include 'globals/topbar.php'; ?>
 
 
-    <!-- =====================================================
-         MAIN CONTENT
-    ====================================================== -->
+    <!-- =========================================================
+     MAIN CONTENT
+========================================================== -->
 
     <main class="main-content">
 
@@ -445,10 +1226,11 @@ $allowedIconColors = [
 
 
             <!-- =================================================
-                 PAGE HEADER
-            ================================================== -->
+             PAGE HEADER
+        ================================================== -->
 
             <div class="page-header">
+
 
                 <div>
 
@@ -457,589 +1239,743 @@ $allowedIconColors = [
                     </h2>
 
                     <p>
-                        Browse academic references,
-                        learning materials, and technical
-                        resources for your coursework.
+                        Manage academic references, learning materials,
+                        and technical resources available to students.
                     </p>
 
                 </div>
 
+
+                <div>
+
+                    <a
+                        href="academic_post_create.php"
+                        class="btn btn-primary">
+
+                        <i class="bi bi-plus-lg me-1"></i>
+
+                        Create Academic Post
+
+                    </a>
+
+                </div>
+
+
+            </div>
+
+
+            <?php if ($deleteMessage !== ""): ?>
+                <div class="alert alert-<?= htmlspecialchars($deleteMessageType, ENT_QUOTES, "UTF-8") ?> alert-dismissible fade show" role="alert">
+                    <?= htmlspecialchars($deleteMessage, ENT_QUOTES, "UTF-8") ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+            <div class="posts-stat-grid">
+
+
+                <!-- TOTAL -->
+
+                <div class="posts-stat-card">
+
+                    <div class="posts-stat-icon blue">
+
+                        <i class="bi bi-file-earmark-text"></i>
+
+                    </div>
+
+
+                    <div class="posts-stat-content">
+
+                        <strong>
+                            <?= $totalPosts ?>
+                        </strong>
+
+                        <span>
+                            Total Posts
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIVE -->
+
+                <div class="posts-stat-card">
+
+                    <div class="posts-stat-icon green">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+
+                    <div class="posts-stat-content">
+
+                        <strong>
+                            <?= $activePosts ?>
+                        </strong>
+
+                        <span>
+                            Active Posts
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INACTIVE -->
+
+                <div class="posts-stat-card">
+
+                    <div class="posts-stat-icon red">
+
+                        <i class="bi bi-pause-circle"></i>
+
+                    </div>
+
+
+                    <div class="posts-stat-content">
+
+                        <strong>
+                            <?= $inactivePosts ?>
+                        </strong>
+
+                        <span>
+                            Inactive Posts
+                        </span>
+
+                    </div>
+
+                </div>
+
+
             </div>
 
 
             <!-- =================================================
-                 SEARCH AND FILTER
-            ================================================== -->
+             MAIN CARD
+        ================================================== -->
 
-            <div class="posts-controls mb-4">
+            <div class="posts-admin-card">
 
 
                 <!-- =================================================
-                     SEARCH
-                ================================================== -->
+                 HEADER
+            ================================================== -->
 
-                <div class="posts-search">
+                <div class="posts-admin-header">
 
-                    <i class="bi bi-search"></i>
 
-                    <input
-                        type="text"
-                        id="postSearch"
-                        placeholder="Search posts..."
-                        autocomplete="off">
+                    <div>
+
+                        <h5>
+                            Academic Post Library
+                        </h5>
+
+                        <p>
+                            View and search all academic posts.
+                        </p>
+
+                    </div>
+
 
                 </div>
 
 
                 <!-- =================================================
-                     SUBJECT FILTER
-                ================================================== -->
+                 FILTERS
+            ================================================== -->
 
-                <div class="filter-group">
-
-                    <span class="filter-label">
-
-                        Subject
-
-                    </span>
+                <div class="posts-admin-filters">
 
 
-                    <div
-                        class="posts-filters"
-                        id="subjectFilters">
+                    <!-- SEARCH -->
+
+                    <div class="posts-search">
+
+                        <i class="bi bi-search"></i>
+
+                        <input
+                            type="text"
+                            id="postSearch"
+                            placeholder="Search posts..."
+                            autocomplete="off">
+
+                    </div>
 
 
-                        <!-- ALL SUBJECTS -->
+                    <!-- SUBJECT -->
 
-                        <button
-                            type="button"
-                            class="post-filter active"
-                            data-subject="all">
+                    <select
+                        id="subjectFilter"
+                        class="form-select">
 
+                        <option value="all">
                             All Subjects
-
-                        </button>
+                        </option>
 
 
                         <?php foreach (
                             $subjects
-                            as $subject
+                            as $itemSubject
                         ): ?>
 
-
-                            <?php
-
-                            $subjectValue =
-                                subjectFilterValue(
-                                    $subject
-                                );
-
-                            ?>
-
-
-                            <button
-                                type="button"
-                                class="post-filter"
-                                data-subject="<?= htmlspecialchars(
-                                                    $subjectValue,
-                                                    ENT_QUOTES,
-                                                    "UTF-8"
-                                                ) ?>">
+                            <option
+                                value="<?= htmlspecialchars(
+                                            $itemSubject,
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?>">
 
                                 <?= htmlspecialchars(
-                                    $subject,
+                                    $itemSubject,
                                     ENT_QUOTES,
                                     "UTF-8"
                                 ) ?>
 
-                            </button>
-
+                            </option>
 
                         <?php endforeach; ?>
 
+                    </select>
 
-                    </div>
+
+                    <!-- DEPARTMENT -->
+
+                    <select
+                        id="departmentFilter"
+                        class="form-select">
+
+                        <option value="all">
+                            All Departments
+                        </option>
+
+
+                        <?php foreach (
+                            $departments
+                            as $itemDepartment
+                        ): ?>
+
+                            <option
+                                value="<?= htmlspecialchars(
+                                            $itemDepartment,
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?>">
+
+                                <?= htmlspecialchars(
+                                    $itemDepartment,
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>
+
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
 
                 </div>
 
 
                 <!-- =================================================
-                     DEPARTMENT FILTER
-                ================================================== -->
+                 TABLE
+            ================================================== -->
 
-                <div class="filter-group">
-
-                    <span class="filter-label">
-
-                        Department
-
-                    </span>
+                <div class="posts-table-wrapper">
 
 
-                    <div
-                        class="posts-filters"
-                        id="departmentFilters">
+                    <table class="posts-table">
 
 
-                        <!-- ALL DEPARTMENTS -->
+                        <thead>
 
-                        <button
-                            type="button"
-                            class="post-filter active"
-                            data-department="all">
+                            <tr>
 
-                            All Departments
+                                <th>
+                                    Post
+                                </th>
 
-                        </button>
+                                <th>
+                                    Subject
+                                </th>
+
+                                <th>
+                                    Department
+                                </th>
+
+                                <th>
+                                    URL
+                                </th>
+
+                                <th>
+                                    Icon
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Order
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
 
 
-                        <?php foreach (
-                            $departments
-                            as $departmentItem
-                        ): ?>
+                        <tbody id="postsTableBody">
 
 
-                            <?php
-
-                            $departmentValue =
-                                departmentFilterValue(
-                                    $departmentItem
-                                );
-
-                            ?>
+                            <?php foreach (
+                                $posts
+                                as $post
+                            ): ?>
 
 
-                            <button
-                                type="button"
-                                class="post-filter"
-                                data-department="<?= htmlspecialchars(
-                                                        $departmentValue,
+                                <?php
+
+                                $postId =
+                                    (int)(
+                                        $post["id"]
+                                        ?? 0
+                                    );
+
+
+                                $title =
+                                    trim(
+                                        $post["title"]
+                                            ?? ""
+                                    );
+
+
+                                $description =
+                                    trim(
+                                        $post["description"]
+                                            ?? ""
+                                    );
+
+
+                                $url =
+                                    trim(
+                                        $post["url"]
+                                            ?? ""
+                                    );
+
+
+                                $subject =
+                                    trim(
+                                        $post["subject"]
+                                            ?? ""
+                                    );
+
+
+                                $department =
+                                    trim(
+                                        $post["department"]
+                                            ?? ""
+                                    );
+
+
+                                $icon =
+                                    trim(
+                                        $post["icon"]
+                                            ?? "bi-file-earmark-text"
+                                    );
+
+
+                                $iconColor =
+                                    trim(
+                                        $post["icon_color"]
+                                            ?? "blue"
+                                    );
+
+
+                                $sortOrder =
+                                    (int)(
+                                        $post["sort_order"]
+                                        ?? 0
+                                    );
+
+
+                                $status =
+                                    (int)(
+                                        $post["status"]
+                                        ?? 0
+                                    );
+
+
+                                $searchData =
+                                    strtolower(
+
+                                        $title .
+                                            " " .
+
+                                            $description .
+                                            " " .
+
+                                            $url .
+                                            " " .
+
+                                            $subject .
+                                            " " .
+
+                                            $department
+
+                                    );
+
+                                ?>
+
+
+                                <tr
+                                    class="post-row"
+
+                                    data-search="<?= htmlspecialchars(
+                                                        $searchData,
                                                         ENT_QUOTES,
                                                         "UTF-8"
-                                                    ) ?>">
+                                                    ) ?>"
 
-                                <?= htmlspecialchars(
-                                    $departmentItem,
-                                    ENT_QUOTES,
-                                    "UTF-8"
-                                ) ?>
+                                    data-subject="<?= htmlspecialchars(
+                                                        $subject,
+                                                        ENT_QUOTES,
+                                                        "UTF-8"
+                                                    ) ?>"
 
-                            </button>
+                                    data-department="<?= htmlspecialchars(
+                                                            $department,
+                                                            ENT_QUOTES,
+                                                            "UTF-8"
+                                                        ) ?>">
 
 
-                        <?php endforeach; ?>
+                                    <!-- =================================
+                                     POST
+                                ================================== -->
+
+                                    <td class="post-title-cell">
 
 
-                    </div>
+                                        <span class="post-title">
+
+                                            <?= htmlspecialchars(
+                                                $title,
+                                                ENT_QUOTES,
+                                                "UTF-8"
+                                            ) ?>
+
+                                        </span>
+
+
+                                        <?php if (
+                                            $description !== ""
+                                        ): ?>
+
+                                            <span
+                                                class="post-description">
+
+                                                <?= htmlspecialchars(
+                                                    $description,
+                                                    ENT_QUOTES,
+                                                    "UTF-8"
+                                                ) ?>
+
+                                            </span>
+
+                                        <?php endif; ?>
+
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                     SUBJECT
+                                ================================== -->
+
+                                    <td>
+
+                                        <?php if (
+                                            $subject !== ""
+                                        ): ?>
+
+                                            <span class="post-tag">
+
+                                                <?= htmlspecialchars(
+                                                    $subject,
+                                                    ENT_QUOTES,
+                                                    "UTF-8"
+                                                ) ?>
+
+                                            </span>
+
+                                        <?php else: ?>
+
+                                            <span class="text-muted">
+                                                —
+                                            </span>
+
+                                        <?php endif; ?>
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                     DEPARTMENT
+                                ================================== -->
+
+                                    <td>
+
+                                        <?php if (
+                                            $department !== ""
+                                        ): ?>
+
+                                            <span class="post-tag">
+
+                                                <?= htmlspecialchars(
+                                                    $department,
+                                                    ENT_QUOTES,
+                                                    "UTF-8"
+                                                ) ?>
+
+                                            </span>
+
+                                        <?php else: ?>
+
+                                            <span class="text-muted">
+                                                —
+                                            </span>
+
+                                        <?php endif; ?>
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                     URL
+                                ================================== -->
+
+                                    <td>
+
+
+                                        <?php if (
+                                            $url !== ""
+                                        ): ?>
+
+                                            <a
+                                                href="<?= htmlspecialchars(
+                                                            $url,
+                                                            ENT_QUOTES,
+                                                            "UTF-8"
+                                                        ) ?>"
+
+                                                class="post-url"
+
+                                                target="_blank"
+
+                                                rel="noopener noreferrer">
+
+                                                <i class="bi bi-box-arrow-up-right"></i>
+
+                                                Open
+
+                                            </a>
+
+                                        <?php else: ?>
+
+                                            <span class="text-muted">
+                                                —
+                                            </span>
+
+                                        <?php endif; ?>
+
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                     ICON
+                                ================================== -->
+
+                                    <td>
+
+
+                                        <?php
+
+                                        $allowedColors = [
+
+                                            "blue",
+                                            "purple",
+                                            "orange",
+                                            "green",
+                                            "red",
+                                            "yellow"
+
+                                        ];
+
+
+                                        if (
+                                            !in_array(
+                                                $iconColor,
+                                                $allowedColors,
+                                                true
+                                            )
+                                        ) {
+
+                                            $iconColor =
+                                                "blue";
+                                        }
+
+                                        ?>
+
+
+                                        <div
+                                            class="post-icon-preview <?= htmlspecialchars(
+                                                                            $iconColor,
+                                                                            ENT_QUOTES,
+                                                                            "UTF-8"
+                                                                        ) ?>">
+
+                                            <i
+                                                class="bi <?= htmlspecialchars(
+                                                                $icon,
+                                                                ENT_QUOTES,
+                                                                "UTF-8"
+                                                            ) ?>">
+                                            </i>
+
+                                        </div>
+
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                     STATUS
+                                ================================== -->
+
+                                    <td>
+
+
+                                        <?php if (
+                                            $status === 1
+                                        ): ?>
+
+                                            <span
+                                                class="post-status active">
+
+                                                <span
+                                                    class="post-status-dot">
+                                                </span>
+
+                                                Active
+
+                                            </span>
+
+                                        <?php else: ?>
+
+                                            <span
+                                                class="post-status inactive">
+
+                                                <span
+                                                    class="post-status-dot">
+                                                </span>
+
+                                                Inactive
+
+                                            </span>
+
+                                        <?php endif; ?>
+
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                     SORT ORDER
+                                ================================== -->
+
+                                    <td>
+
+                                        <?= $sortOrder ?>
+
+                                    </td>
+
+                                    <!-- DELETE ACTION -->
+                                    <td>
+                                        <form method="POST"
+                                            action=""
+                                            class="d-inline"
+                                            onsubmit="return confirm('Delete this academic post? If its URL is a PHP filename, the matching file in the student folder will also be deleted. This action cannot be undone.');">
+                                            <input type="hidden" name="csrf_token"
+                                                value="<?= htmlspecialchars($_SESSION["academic_posts_csrf"], ENT_QUOTES, "UTF-8") ?>">
+                                            <input type="hidden" name="post_id"
+                                                value="<?= $postId ?>">
+                                            <button type="submit"
+                                                name="delete_post"
+                                                value="1"
+                                                class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash me-1"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+
+
+                                </tr>
+
+
+                            <?php endforeach; ?>
+
+
+                        </tbody>
+
+
+                    </table>
+
 
                 </div>
 
 
-            </div>
-
-
-            <!-- =================================================
-                 POST COUNT
-            ================================================== -->
-
-            <div class="posts-results-header">
-
-                <span id="postCount">
-
-                    0 posts found
-
-                </span>
-
-            </div>
-
-
-            <!-- =================================================
-                 POST GRID
-            ================================================== -->
-
-            <div
-                class="posts-grid"
-                id="postsGrid">
-
-
-                <?php if (
-                    count($posts) > 0
-                ): ?>
-
-
-                    <?php foreach (
-                        $posts
-                        as $post
-                    ): ?>
-
-
-                        <?php
-
-
-                        /* -----------------------------------------
-                           DATABASE VALUES
-                        ----------------------------------------- */
-
-                        $postId =
-                            (int) (
-                                $post["id"]
-                                ?? 0
-                            );
-
-
-                        $title =
-                            trim(
-                                $post["title"]
-                                    ?? ""
-                            );
-
-
-                        $description =
-                            trim(
-                                $post["description"]
-                                    ?? ""
-                            );
-
-
-                        $url =
-                            trim(
-                                $post["url"]
-                                    ?? "#"
-                            );
-
-
-                        $subject =
-                            trim(
-                                $post["subject"]
-                                    ?? "General"
-                            );
-
-
-                        $department =
-                            trim(
-                                $post["department"]
-                                    ?? "General"
-                            );
-
-
-                        $icon =
-                            trim(
-                                $post["icon"]
-                                    ?? "bi-file-earmark-text"
-                            );
-
-
-                        $iconColor =
-                            trim(
-                                $post["icon_color"]
-                                    ?? "blue"
-                            );
-
-
-                        /* -----------------------------------------
-                           ICON COLOR VALIDATION
-                        ----------------------------------------- */
-
-                        if (
-                            !in_array(
-                                $iconColor,
-                                $allowedIconColors,
-                                true
-                            )
-                        ) {
-
-                            $iconColor =
-                                "blue";
-                        }
-
-
-                        /* -----------------------------------------
-                           URL VALIDATION
-                        ----------------------------------------- */
-
-                        if (
-                            $url === ""
-                        ) {
-
-                            $url =
-                                "#";
-                        }
-
-
-                        /* -----------------------------------------
-                           FILTER VALUES
-                        ----------------------------------------- */
-
-                        $subjectValue =
-                            subjectFilterValue(
-                                $subject
-                            );
-
-
-                        $departmentValue =
-                            departmentFilterValue(
-                                $department
-                            );
-
-
-                        /* -----------------------------------------
-                           SEARCH DATA
-                        ----------------------------------------- */
-
-                        $searchData =
-                            strtolower(
-
-                                $title .
-                                    " " .
-
-                                    $description .
-                                    " " .
-
-                                    $subject .
-                                    " " .
-
-                                    $department
-
-                            );
-
-
-                        /* -----------------------------------------
-                           CHECK IF POST IS SAVED
-                        ----------------------------------------- */
-
-                        $isSaved =
-                            in_array(
-                                $postId,
-                                $savedPostIds,
-                                true
-                            );
-
-                        ?>
-
-
-                        <!-- =================================================
-                             POST CARD
-                        ================================================== -->
-
-                        <div
-                            class="academic-post-card"
-
-                            data-id="<?= $postId ?>"
-
-                            data-subject="<?= htmlspecialchars(
-                                                $subjectValue,
-                                                ENT_QUOTES,
-                                                "UTF-8"
-                                            ) ?>"
-
-                            data-department="<?= htmlspecialchars(
-                                                    $departmentValue,
-                                                    ENT_QUOTES,
-                                                    "UTF-8"
-                                                ) ?>"
-
-                            data-search="<?= htmlspecialchars(
-                                                $searchData,
-                                                ENT_QUOTES,
-                                                "UTF-8"
-                                            ) ?>">
-
-
-                            <!-- =================================================
-                                 POST ICON
-                            ================================================== -->
-
-                            <div
-                                class="post-icon <?= htmlspecialchars(
-                                                        $iconColor,
-                                                        ENT_QUOTES,
-                                                        "UTF-8"
-                                                    ) ?>">
-
-                                <i
-                                    class="bi <?= htmlspecialchars(
-                                                    $icon,
-                                                    ENT_QUOTES,
-                                                    "UTF-8")?>">
-                                </i>
-
-                            </div>
-
-
-                            <!-- =================================================
-                                 POST CONTENT
-                            ================================================== -->
-
-                            <div class="post-content">
-
-
-                                <!-- POST TITLE -->
-
-                                <h5>
-
-                                    <?= htmlspecialchars(
-                                        $title,
-                                        ENT_QUOTES,
-                                        "UTF-8"
-                                    ) ?>
-
-                                </h5>
-
-
-                                <!-- POST DESCRIPTION -->
-
-                                <p>
-
-                                    <?= htmlspecialchars(
-                                        $description,
-                                        ENT_QUOTES,
-                                        "UTF-8"
-                                    ) ?>
-
-                                </p>
-
-
-                                <!-- POST META -->
-
-                                <div class="post-meta">
-
-
-                                    <!-- SUBJECT -->
-
-                                    <span class="post-subject">
-
-                                        <?= htmlspecialchars(
-                                            $subject,
-                                            ENT_QUOTES,
-                                            "UTF-8"
-                                        ) ?>
-
-                                    </span>
-
-
-                                    <!-- DEPARTMENT -->
-
-                                    <span class="post-department">
-
-                                        <?= htmlspecialchars(
-                                            $department,
-                                            ENT_QUOTES,
-                                            "UTF-8"
-                                        ) ?>
-
-                                    </span>
-
-
-                                </div>
-
-
-                                <!-- =================================================
-                                     POST ACTIONS
-                                ================================================== -->
-
-                                <div class="post-actions">
-
-
-                                    <!-- =================================================
-                                         OPEN POST
-                                    ================================================== -->
-
-                                    <a
-                                        href="academic_post_start.php?id=<?= (int)$postId ?>"
-                                        class="post-open-btn"
-                                        target="_blank"
-                                        rel="noopener noreferrer">
-
-                                        <i class="bi bi-box-arrow-up-right"></i>
-
-                                        <span>
-                                            Open Post
-                                        </span>
-
-                                    </a>
-
-
-                                    <!-- =================================================
-                                         SAVE / BOOKMARK
-                                    ================================================== -->
-
-                                    <button
-                                        type="button"
-
-                                        class="post-bookmark-btn <?= $isSaved ? 'saved' : '' ?>"
-
-                                        data-post-id="<?= (int)$postId ?>"
-
-                                        data-saved="<?= $isSaved ? '1' : '0' ?>"
-
-                                        aria-label="<?= $isSaved
-                                            ? 'Remove from saved posts'
-                                            : 'Save post'
-                                        ?>"
-
-                                        title="<?= $isSaved
-                                            ? 'Remove from Saved Posts'
-                                            : 'Save Post'
-                                        ?>">
-
-                                        <i
-                                            class="bi <?= $isSaved
-                                                ? 'bi-bookmark-fill'
-                                                : 'bi-bookmark'
-                                            ?>">
-                                        </i>
-
-                                    </button>
-
-
-                                </div>
-
-
-                            </div>
-
-
-                        </div>
-
-
-                    <?php endforeach; ?>
-
-
-                <?php endif; ?>
-
-
-            </div>
-
-
-            <!-- =================================================
+                <!-- =================================================
                  EMPTY STATE
             ================================================== -->
 
-            <div
-                id="postEmpty"
-                class="posts-empty"
-                style="display:none;">
+                <div
+                    id="postsEmpty"
+                    class="posts-empty">
 
 
-                <div class="posts-empty-icon">
+                    <div class="posts-empty-icon">
 
-                    <i class="bi bi-search"></i>
+                        <i class="bi bi-search"></i>
+
+                    </div>
+
+
+                    <h5>
+                        No academic posts found
+                    </h5>
+
+
+                    <p>
+                        Try changing your search term,
+                        subject, or department filter.
+                    </p>
+
 
                 </div>
-
-
-                <h5>
-
-                    No posts found
-
-                </h5>
-
-
-                <p>
-
-                    Try a different search term or
-                    select another subject or department.
-
-                </p>
 
 
             </div>
@@ -1052,1144 +1988,18 @@ $allowedIconColors = [
 
 
     <!-- =========================================================
-         ACADEMIC POSTS STYLES
-    ========================================================== -->
-
-    <style>
-
-        /* =========================================================
-           POSTS THEME VARIABLES
-        ========================================================== */
-
-        :root {
-
-            --posts-bg:
-                #ffffff;
-
-            --posts-border:
-                #e4e7ec;
-
-            --posts-input-border:
-                #d0d5dd;
-
-            --posts-text:
-                #172033;
-
-            --posts-muted:
-                #667085;
-
-            --posts-secondary:
-                #475467;
-
-            --posts-control-bg:
-                #ffffff;
-
-            --posts-hover-bg:
-                #f8fafc;
-
-            --posts-filter-active:
-                #1e3a8a;
-
-            --posts-filter-active-border:
-                #1e3a8a;
-
-            --posts-tag-bg:
-                #f2f4f7;
-
-            --posts-search-focus:
-                #2563eb;
-
-        }
-
-
-        /* =========================================================
-           DARK MODE
-        ========================================================== */
-
-        html[data-theme="dark"] {
-
-            --posts-bg:
-                #151922;
-
-            --posts-border:
-                #2a3140;
-
-            --posts-input-border:
-                #3a4252;
-
-            --posts-text:
-                #f1f5f9;
-
-            --posts-muted:
-                #a8b0bf;
-
-            --posts-secondary:
-                #c2c9d3;
-
-            --posts-control-bg:
-                #151922;
-
-            --posts-hover-bg:
-                #1c2230;
-
-            --posts-filter-active:
-                #2563eb;
-
-            --posts-filter-active-border:
-                #2563eb;
-
-            --posts-tag-bg:
-                #252c38;
-
-            --posts-search-focus:
-                #3b82f6;
-
-        }
-
-
-        /* =========================================================
-           CONTROLS
-        ========================================================== */
-
-        .posts-controls {
-
-            padding:
-                20px;
-
-            background:
-                var(--posts-bg);
-
-            border:
-                1px solid var(--posts-border);
-
-            border-radius:
-                10px;
-
-            transition:
-                background .2s ease,
-                border-color .2s ease;
-
-        }
-
-
-        /* =========================================================
-           SEARCH
-        ========================================================== */
-
-        .posts-search {
-
-            position:
-                relative;
-
-            margin-bottom:
-                17px;
-
-        }
-
-
-        .posts-search i {
-
-            position:
-                absolute;
-
-            left:
-                15px;
-
-            top:
-                50%;
-
-            transform:
-                translateY(-50%);
-
-            color:
-                var(--posts-muted);
-
-        }
-
-
-        .posts-search input {
-
-            width:
-                100%;
-
-            height:
-                45px;
-
-            padding:
-                0 15px 0 42px;
-
-            border:
-                1px solid var(--posts-input-border);
-
-            border-radius:
-                7px;
-
-            outline:
-                none;
-
-            font-family:
-                inherit;
-
-            font-size:
-                .85rem;
-
-            color:
-                var(--posts-text);
-
-            background:
-                var(--posts-control-bg);
-
-            transition:
-                background .2s ease,
-                border-color .2s ease,
-                color .2s ease,
-                box-shadow .2s ease;
-
-        }
-
-
-        .posts-search input::placeholder {
-
-            color:
-                var(--posts-muted);
-
-            opacity:
-                .8;
-
-        }
-
-
-        .posts-search input:focus {
-
-            border-color:
-                var(--posts-search-focus);
-
-            box-shadow:
-                0 0 0 3px rgba(37, 99, 235, .10);
-
-        }
-
-
-        /* =========================================================
-           FILTER GROUP
-        ========================================================== */
-
-        .filter-group {
-
-            margin-bottom:
-                14px;
-
-        }
-
-
-        .filter-group:last-child {
-
-            margin-bottom:
-                0;
-
-        }
-
-
-        /* =========================================================
-           FILTER LABEL
-        ========================================================== */
-
-        .filter-label {
-
-            display:
-                block;
-
-            margin-bottom:
-                7px;
-
-            color:
-                var(--posts-secondary);
-
-            font-size:
-                .72rem;
-
-            font-weight:
-                700;
-
-            text-transform:
-                uppercase;
-
-            letter-spacing:
-                .04em;
-
-        }
-
-
-        /* =========================================================
-           FILTERS
-        ========================================================== */
-
-        .posts-filters {
-
-            display:
-                flex;
-
-            flex-wrap:
-                wrap;
-
-            gap:
-                8px;
-
-        }
-
-
-        /* =========================================================
-           FILTER BUTTON
-        ========================================================== */
-
-        .post-filter {
-
-            border:
-                1px solid var(--posts-input-border);
-
-            background:
-                var(--posts-control-bg);
-
-            color:
-                var(--posts-muted);
-
-            padding:
-                7px 12px;
-
-            border-radius:
-                6px;
-
-            font-family:
-                inherit;
-
-            font-size:
-                .76rem;
-
-            font-weight:
-                600;
-
-            cursor:
-                pointer;
-
-            transition:
-                all .2s ease;
-
-        }
-
-
-        .post-filter:hover {
-
-            border-color:
-                var(--posts-secondary);
-
-            color:
-                var(--posts-text);
-
-            background:
-                var(--posts-hover-bg);
-
-        }
-
-
-        .post-filter.active {
-
-            color:
-                #ffffff;
-
-            background:
-                var(--posts-filter-active);
-
-            border-color:
-                var(--posts-filter-active-border);
-
-        }
-
-
-        /* =========================================================
-           RESULT HEADER
-        ========================================================== */
-
-        .posts-results-header {
-
-            margin-bottom:
-                12px;
-
-            color:
-                var(--posts-muted);
-
-            font-size:
-                .78rem;
-
-            font-weight:
-                600;
-
-        }
-
-
-        /* =========================================================
-           POST GRID
-        ========================================================== */
-
-        .posts-grid {
-
-            display:
-                grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap:
-                14px;
-
-        }
-
-
-        /* =========================================================
-           POST CARD
-        ========================================================== */
-
-        .academic-post-card {
-
-            display:
-                flex;
-
-            align-items:
-                flex-start;
-
-            gap:
-                14px;
-
-            padding:
-                20px;
-
-            min-height:
-                145px;
-
-            border:
-                1px solid var(--posts-border);
-
-            border-radius:
-                9px;
-
-            background:
-                var(--posts-bg);
-
-            color:
-                var(--posts-text);
-
-            transition:
-                border-color .2s ease,
-                background .2s ease,
-                color .2s ease,
-                transform .2s ease,
-                box-shadow .2s ease;
-
-        }
-
-
-        .academic-post-card:hover {
-
-            color:
-                var(--posts-text);
-
-            border-color:
-                var(--posts-input-border);
-
-            background:
-                var(--posts-hover-bg);
-
-            transform:
-                translateY(-2px);
-
-        }
-
-
-        /* =========================================================
-           POST ICON
-        ========================================================== */
-
-        .post-icon {
-
-            flex:
-                0 0 auto;
-
-            width:
-                42px;
-
-            height:
-                42px;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            border-radius:
-                8px;
-
-            font-size:
-                1rem;
-
-        }
-
-
-        /* =========================================================
-           ICON COLORS
-        ========================================================== */
-
-        .post-icon.blue {
-
-            color:
-                #2563eb;
-
-            background:
-                #eff6ff;
-
-        }
-
-
-        .post-icon.purple {
-
-            color:
-                #7c3aed;
-
-            background:
-                #f5f3ff;
-
-        }
-
-
-        .post-icon.orange {
-
-            color:
-                #ea580c;
-
-            background:
-                #fff7ed;
-
-        }
-
-
-        .post-icon.green {
-
-            color:
-                #16a34a;
-
-            background:
-                #ecfdf3;
-
-        }
-
-
-        .post-icon.red {
-
-            color:
-                #dc2626;
-
-            background:
-                #fef2f2;
-
-        }
-
-
-        .post-icon.yellow {
-
-            color:
-                #ca8a04;
-
-            background:
-                #fefce8;
-
-        }
-
-
-        /* =========================================================
-           DARK MODE ICONS
-        ========================================================== */
-
-        html[data-theme="dark"] .post-icon.blue {
-
-            color:
-                #60a5fa;
-
-            background:
-                rgba(37, 99, 235, .16);
-
-        }
-
-
-        html[data-theme="dark"] .post-icon.purple {
-
-            color:
-                #a78bfa;
-
-            background:
-                rgba(124, 58, 237, .16);
-
-        }
-
-
-        html[data-theme="dark"] .post-icon.orange {
-
-            color:
-                #fb923c;
-
-            background:
-                rgba(234, 88, 12, .16);
-
-        }
-
-
-        html[data-theme="dark"] .post-icon.green {
-
-            color:
-                #4ade80;
-
-            background:
-                rgba(22, 163, 74, .16);
-
-        }
-
-
-        html[data-theme="dark"] .post-icon.red {
-
-            color:
-                #f87171;
-
-            background:
-                rgba(220, 38, 38, .16);
-
-        }
-
-
-        html[data-theme="dark"] .post-icon.yellow {
-
-            color:
-                #facc15;
-
-            background:
-                rgba(202, 138, 4, .16);
-
-        }
-
-
-        /* =========================================================
-           POST CONTENT
-        ========================================================== */
-
-        .post-content {
-
-            min-width:
-                0;
-
-            flex:
-                1;
-
-        }
-
-
-        .post-content h5 {
-
-            margin:
-                0 0 5px;
-
-            font-size:
-                .88rem;
-
-            font-weight:
-                700;
-
-            line-height:
-                1.35;
-
-            color:
-                var(--posts-text);
-
-        }
-
-
-        .post-content p {
-
-            margin:
-                0 0 11px;
-
-            color:
-                var(--posts-muted);
-
-            font-size:
-                .76rem;
-
-            line-height:
-                1.55;
-
-        }
-
-
-        /* =========================================================
-           POST META
-        ========================================================== */
-
-        .post-meta {
-
-            display:
-                flex;
-
-            flex-wrap:
-                wrap;
-
-            gap:
-                6px;
-
-        }
-
-
-        /* =========================================================
-           SUBJECT TAG
-        ========================================================== */
-
-        .post-subject {
-
-            display:
-                inline-block;
-
-            color:
-                var(--posts-secondary);
-
-            background:
-                var(--posts-tag-bg);
-
-            border-radius:
-                5px;
-
-            padding:
-                3px 7px;
-
-            font-size:
-                .66rem;
-
-            font-weight:
-                600;
-
-        }
-
-
-        /* =========================================================
-           DEPARTMENT TAG
-        ========================================================== */
-
-        .post-department {
-
-            display:
-                inline-block;
-
-            color:
-                var(--posts-secondary);
-
-            background:
-                var(--posts-tag-bg);
-
-            border-radius:
-                5px;
-
-            padding:
-                3px 7px;
-
-            font-size:
-                .66rem;
-
-            font-weight:
-                600;
-
-        }
-
-
-        /* =========================================================
-           POST ACTIONS
-        ========================================================== */
-
-        .post-actions {
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            gap:
-                8px;
-
-            margin-top:
-                13px;
-
-        }
-
-
-        /* =========================================================
-           OPEN POST BUTTON
-        ========================================================== */
-
-        .post-open-btn {
-
-            display:
-                inline-flex;
-
-            align-items:
-                center;
-
-            gap:
-                6px;
-
-            padding:
-                6px 10px;
-
-            border-radius:
-                6px;
-
-            background:
-                #1e3a8a;
-
-            color:
-                #ffffff;
-
-            text-decoration:
-                none;
-
-            font-size:
-                .68rem;
-
-            font-weight:
-                600;
-
-            transition:
-                background .2s ease,
-                transform .2s ease;
-
-        }
-
-
-        .post-open-btn:hover {
-
-            background:
-                #2563eb;
-
-            color:
-                #ffffff;
-
-            transform:
-                translateY(-1px);
-
-        }
-
-
-        /* =========================================================
-           BOOKMARK BUTTON
-        ========================================================== */
-
-        .post-bookmark-btn {
-
-            width:
-                32px;
-
-            height:
-                32px;
-
-            display:
-                inline-flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            border:
-                1px solid var(--posts-input-border);
-
-            border-radius:
-                6px;
-
-            background:
-                var(--posts-control-bg);
-
-            color:
-                var(--posts-muted);
-
-            cursor:
-                pointer;
-
-            font-size:
-                .9rem;
-
-            transition:
-                background .2s ease,
-                border-color .2s ease,
-                color .2s ease,
-                transform .2s ease;
-
-        }
-
-
-        .post-bookmark-btn:hover {
-
-            color:
-                #2563eb;
-
-            border-color:
-                #2563eb;
-
-            background:
-                rgba(37, 99, 235, .08);
-
-            transform:
-                translateY(-1px);
-
-        }
-
-
-        /* =========================================================
-           SAVED BOOKMARK
-        ========================================================== */
-
-        .post-bookmark-btn.saved {
-
-            color:
-                #f59e0b;
-
-            border-color:
-                #f59e0b;
-
-            background:
-                rgba(245, 158, 11, .10);
-
-        }
-
-
-        .post-bookmark-btn.saved:hover {
-
-            color:
-                #d97706;
-
-            border-color:
-                #d97706;
-
-            background:
-                rgba(245, 158, 11, .16);
-
-        }
-
-
-        /* =========================================================
-           DARK MODE BOOKMARK
-        ========================================================== */
-
-        html[data-theme="dark"] .post-bookmark-btn {
-
-            background:
-                var(--posts-control-bg);
-
-            border-color:
-                var(--posts-input-border);
-
-            color:
-                var(--posts-muted);
-
-        }
-
-
-        html[data-theme="dark"] .post-bookmark-btn:hover {
-
-            color:
-                #60a5fa;
-
-            border-color:
-                #60a5fa;
-
-            background:
-                rgba(37, 99, 235, .15);
-
-        }
-
-
-        html[data-theme="dark"] .post-bookmark-btn.saved {
-
-            color:
-                #fbbf24;
-
-            border-color:
-                #fbbf24;
-
-            background:
-                rgba(245, 158, 11, .15);
-
-        }
-
-
-        /* =========================================================
-           EMPTY STATE
-        ========================================================== */
-
-        .posts-empty {
-
-            padding:
-                60px 20px;
-
-            text-align:
-                center;
-
-            border:
-                1px solid var(--posts-border);
-
-            border-radius:
-                10px;
-
-            background:
-                var(--posts-bg);
-
-            color:
-                var(--posts-text);
-
-        }
-
-
-        .posts-empty-icon {
-
-            width:
-                45px;
-
-            height:
-                45px;
-
-            margin:
-                0 auto 15px;
-
-            display:
-                flex;
-
-            align-items:
-                center;
-
-            justify-content:
-                center;
-
-            border-radius:
-                50%;
-
-            background:
-                var(--posts-tag-bg);
-
-            color:
-                var(--posts-muted);
-
-        }
-
-
-        .posts-empty h5 {
-
-            margin:
-                0 0 5px;
-
-            font-size:
-                .95rem;
-
-            color:
-                var(--posts-text);
-
-        }
-
-
-        .posts-empty p {
-
-            margin:
-                0;
-
-            color:
-                var(--posts-muted);
-
-            font-size:
-                .8rem;
-
-        }
-
-
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
-
-        @media (max-width: 1100px) {
-
-            .posts-grid {
-
-                grid-template-columns:
-                    repeat(2, 1fr);
-
-            }
-
-        }
-
-
-        @media (max-width: 700px) {
-
-            .posts-grid {
-
-                grid-template-columns:
-                    1fr;
-
-            }
-
-        }
-
-
-        @media (max-width: 576px) {
-
-            .posts-controls {
-
-                padding:
-                    15px;
-
-            }
-
-
-            .post-filter {
-
-                font-size:
-                    .72rem;
-
-                padding:
-                    6px 9px;
-
-            }
-
-
-            .academic-post-card {
-
-                padding:
-                    17px;
-
-            }
-
-        }
-
-    </style>
-
-
-    <!-- =========================================================
-         SEARCH / FILTER JAVASCRIPT
-    ========================================================== -->
+     JAVASCRIPT
+========================================================== -->
 
     <script>
-
         document.addEventListener(
             "DOMContentLoaded",
             function() {
 
 
-                /* =================================================
+                /* =====================================================
                    ELEMENTS
-                ================================================== */
+                ====================================================== */
 
                 const searchInput =
                     document.getElementById(
@@ -2197,187 +2007,125 @@ $allowedIconColors = [
                     );
 
 
-                const subjectButtons =
-                    document.querySelectorAll(
-                        "#subjectFilters .post-filter"
-                    );
-
-
-                const departmentButtons =
-                    document.querySelectorAll(
-                        "#departmentFilters .post-filter"
-                    );
-
-
-                const postCards =
-                    document.querySelectorAll(
-                        ".academic-post-card"
-                    );
-
-
-                const postCount =
+                const subjectFilter =
                     document.getElementById(
-                        "postCount"
+                        "subjectFilter"
+                    );
+
+
+                const departmentFilter =
+                    document.getElementById(
+                        "departmentFilter"
+                    );
+
+
+                const rows =
+                    document.querySelectorAll(
+                        ".post-row"
                     );
 
 
                 const emptyState =
                     document.getElementById(
-                        "postEmpty"
+                        "postsEmpty"
                     );
 
 
-                /* =================================================
-                   CURRENT FILTER VALUES
-                ================================================== */
-
-                let selectedSubject =
-                    "all";
-
-
-                let selectedDepartment =
-                    "all";
-
-
-                /* =================================================
-                   FILTER POSTS
-                ================================================== */
+                /* =====================================================
+                   FILTER FUNCTION
+                ====================================================== */
 
                 function filterPosts() {
 
 
-                    const searchTerm =
+                    const search =
                         searchInput.value
                         .toLowerCase()
                         .trim();
 
 
-                    let visibleCount =
+                    const subject =
+                        subjectFilter.value
+                        .toLowerCase();
+
+
+                    const department =
+                        departmentFilter.value
+                        .toLowerCase();
+
+
+                    let visible =
                         0;
 
 
-                    /* =================================================
-                       LOOP THROUGH POSTS
-                    ================================================== */
-
-                    postCards.forEach(
-                        function(card) {
+                    rows.forEach(
+                        function(row) {
 
 
-                            const subject =
+                            const rowSearch =
                                 (
-                                    card.dataset.subject ||
+                                    row.dataset.search ||
                                     ""
                                 )
                                 .toLowerCase();
 
 
-                            const department =
+                            const rowSubject =
                                 (
-                                    card.dataset.department ||
+                                    row.dataset.subject ||
                                     ""
                                 )
                                 .toLowerCase();
 
 
-                            const searchData =
+                            const rowDepartment =
                                 (
-                                    card.dataset.search ||
+                                    row.dataset.department ||
                                     ""
                                 )
                                 .toLowerCase();
 
-
-                            const cardText =
-                                card.innerText
-                                .toLowerCase();
-
-
-                            /* =========================================
-                               SUBJECT MATCH
-                            ========================================== */
-
-                            const subjectMatch =
-                                selectedSubject === "all" ||
-                                subject === selectedSubject;
-
-
-                            /* =========================================
-                               DEPARTMENT MATCH
-                            ========================================== */
-
-                            const departmentMatch =
-                                selectedDepartment === "all" ||
-                                department === selectedDepartment;
-
-
-                            /* =========================================
-                               SEARCH MATCH
-                            ========================================== */
 
                             const searchMatch =
-                                searchTerm === "" ||
-
-                                searchData.includes(
-                                    searchTerm
-                                ) ||
-
-                                cardText.includes(
-                                    searchTerm
+                                search === "" ||
+                                rowSearch.includes(
+                                    search
                                 );
 
 
-                            /* =========================================
-                               FINAL MATCH
-                            ========================================== */
+                            const subjectMatch =
+                                subject === "all" ||
+                                rowSubject === subject;
+
+
+                            const departmentMatch =
+                                department === "all" ||
+                                rowDepartment === department;
+
 
                             if (
-
+                                searchMatch &&
                                 subjectMatch &&
-
-                                departmentMatch &&
-
-                                searchMatch
-
+                                departmentMatch
                             ) {
 
-                                card.style.display =
-                                    "flex";
+                                row.style.display =
+                                    "";
 
-                                visibleCount++;
+                                visible++;
 
                             } else {
 
-                                card.style.display =
+                                row.style.display =
                                     "none";
-
                             }
 
                         }
                     );
 
 
-                    /* =================================================
-                       RESULT COUNT
-                    ================================================== */
-
-                    postCount.textContent =
-
-                        visibleCount +
-
-                        (
-                            visibleCount === 1 ?
-                            " post found" :
-                            " posts found"
-                        );
-
-
-                    /* =================================================
-                       EMPTY STATE
-                    ================================================== */
-
                     if (
-                        visibleCount === 0
+                        visible === 0
                     ) {
 
                         emptyState.style.display =
@@ -2387,99 +2135,14 @@ $allowedIconColors = [
 
                         emptyState.style.display =
                             "none";
-
                     }
 
                 }
 
 
-                /* =================================================
-                   SUBJECT FILTER
-                ================================================== */
-
-                subjectButtons.forEach(
-                    function(button) {
-
-
-                        button.addEventListener(
-                            "click",
-                            function() {
-
-
-                                subjectButtons.forEach(
-                                    function(item) {
-
-                                        item.classList.remove(
-                                            "active"
-                                        );
-
-                                    }
-                                );
-
-
-                                this.classList.add(
-                                    "active"
-                                );
-
-
-                                selectedSubject =
-                                    this.dataset.subject;
-
-
-                                filterPosts();
-
-                            }
-                        );
-
-                    }
-                );
-
-
-                /* =================================================
-                   DEPARTMENT FILTER
-                ================================================== */
-
-                departmentButtons.forEach(
-                    function(button) {
-
-
-                        button.addEventListener(
-                            "click",
-                            function() {
-
-
-                                departmentButtons.forEach(
-                                    function(item) {
-
-                                        item.classList.remove(
-                                            "active"
-                                        );
-
-                                    }
-                                );
-
-
-                                this.classList.add(
-                                    "active"
-                                );
-
-
-                                selectedDepartment =
-                                    this.dataset.department;
-
-
-                                filterPosts();
-
-                            }
-                        );
-
-                    }
-                );
-
-
-                /* =================================================
-                   SEARCH
-                ================================================== */
+                /* =====================================================
+                   EVENTS
+                ====================================================== */
 
                 searchInput.addEventListener(
                     "input",
@@ -2487,326 +2150,32 @@ $allowedIconColors = [
                 );
 
 
-                /* =================================================
-                   INITIALIZE FILTER
-                ================================================== */
-
-                filterPosts();
-
-
-                /* =================================================
-                   BOOKMARK BUTTONS
-                ================================================== */
-
-                const bookmarkButtons =
-                    document.querySelectorAll(
-                        ".post-bookmark-btn"
-                    );
-
-
-                /* =================================================
-                   BOOKMARK EVENT HANDLERS
-                ================================================== */
-
-                bookmarkButtons.forEach(
-                    function(button) {
-
-
-                        button.addEventListener(
-                            "click",
-                            async function(event) {
-
-
-                                /* =====================================
-                                   PREVENT OTHER CARD ACTIONS
-                                ====================================== */
-
-                                event.preventDefault();
-
-                                event.stopPropagation();
-
-
-                                /* =====================================
-                                   POST ID
-                                ====================================== */
-
-                                const postId =
-                                    this.dataset.postId;
-
-
-                                if (!postId) {
-
-                                    return;
-
-                                }
-
-
-                                /* =====================================
-                                   SAVE PREVIOUS STATE
-                                ====================================== */
-
-                                const previousHTML =
-                                    this.innerHTML;
-
-
-                                const previousTitle =
-                                    this.title;
-
-
-                                const previousAriaLabel =
-                                    this.getAttribute(
-                                        "aria-label"
-                                    );
-
-
-                                const previousSaved =
-                                    this.dataset.saved;
-
-
-                                /* =====================================
-                                   DISABLE BUTTON
-                                ====================================== */
-
-                                this.disabled =
-                                    true;
-
-
-                                /* =====================================
-                                   LOADING INDICATOR
-                                ====================================== */
-
-                                this.innerHTML = `
-
-                                    <span
-                                        class="spinner-border spinner-border-sm"
-                                        style="
-                                            width: .8rem;
-                                            height: .8rem;
-                                            border-width: .12rem;
-                                        "
-                                        aria-hidden="true">
-                                    </span>
-
-                                `;
-
-
-                                try {
-
-
-                                    /* =================================
-                                       CREATE FORM DATA
-                                    ================================== */
-
-                                    const formData =
-                                        new FormData();
-
-
-                                    formData.append(
-                                        "post_id",
-                                        postId
-                                    );
-
-
-                                    /* =================================
-                                       SEND REQUEST
-                                    ================================== */
-
-                                    const response =
-                                        await fetch(
-                                            "academic_post_toggle_save.php",
-                                            {
-                                                method:
-                                                    "POST",
-
-                                                body:
-                                                    formData
-                                            }
-                                        );
-
-
-                                    /* =================================
-                                       VERIFY HTTP RESPONSE
-                                    ================================== */
-
-                                    if (
-                                        !response.ok
-                                    ) {
-
-                                        throw new Error(
-                                            "Server returned HTTP " +
-                                            response.status
-                                        );
-
-                                    }
-
-
-                                    /* =================================
-                                       READ JSON RESPONSE
-                                    ================================== */
-
-                                    const data =
-                                        await response.json();
-
-
-                                    /* =================================
-                                       CHECK SUCCESS
-                                    ================================== */
-
-                                    if (
-                                        !data.success
-                                    ) {
-
-                                        throw new Error(
-
-                                            data.message ||
-                                            "Unable to update Saved Posts."
-
-                                        );
-
-                                    }
-
-
-                                    /* =================================
-                                       SAVED
-                                    ================================== */
-
-                                    if (
-                                        data.saved
-                                    ) {
-
-
-                                        this.classList.add(
-                                            "saved"
-                                        );
-
-
-                                        this.dataset.saved =
-                                            "1";
-
-
-                                        this.innerHTML = `
-
-                                            <i
-                                                class="bi bi-bookmark-fill">
-                                            </i>
-
-                                        `;
-
-
-                                        this.title =
-                                            "Remove from Saved Posts";
-
-
-                                        this.setAttribute(
-                                            "aria-label",
-                                            "Remove from saved posts"
-                                        );
-
-
-                                    }
-
-
-                                    /* =================================
-                                       UNSAVED
-                                    ================================== */
-
-                                    else {
-
-
-                                        this.classList.remove(
-                                            "saved"
-                                        );
-
-
-                                        this.dataset.saved =
-                                            "0";
-
-
-                                        this.innerHTML = `
-
-                                            <i
-                                                class="bi bi-bookmark">
-                                            </i>
-
-                                        `;
-
-
-                                        this.title =
-                                            "Save Post";
-
-
-                                        this.setAttribute(
-                                            "aria-label",
-                                            "Save post"
-                                        );
-
-                                    }
-
-
-                                } catch (error) {
-
-
-                                    /* =================================
-                                       RESTORE PREVIOUS STATE
-                                    ================================== */
-
-                                    console.error(
-                                        "Bookmark error:",
-                                        error
-                                    );
-
-
-                                    this.innerHTML =
-                                        previousHTML;
-
-
-                                    this.title =
-                                        previousTitle;
-
-
-                                    this.setAttribute(
-                                        "aria-label",
-                                        previousAriaLabel
-                                    );
-
-
-                                    this.dataset.saved =
-                                        previousSaved;
-
-
-                                    alert(
-
-                                        error.message ||
-                                        "Unable to update Saved Posts."
-
-                                    );
-
-                                }
-
-
-                                /* =====================================
-                                   ENABLE BUTTON
-                                ====================================== */
-
-                                this.disabled =
-                                    false;
-
-                            }
-                        );
-
-                    }
+                subjectFilter.addEventListener(
+                    "change",
+                    filterPosts
                 );
 
 
+                departmentFilter.addEventListener(
+                    "change",
+                    filterPosts
+                );
+
+
+                /* =====================================================
+                   INITIALIZE
+                ====================================================== */
+
+                filterPosts();
+
             }
         );
-
     </script>
 
 
     <!-- =========================================================
-         GLOBAL SCRIPTS
-    ========================================================== -->
+     GLOBAL SCRIPTS
+========================================================== -->
 
     <?php include 'globals/scripts.php'; ?>
 
@@ -2814,4 +2183,3 @@ $allowedIconColors = [
 </body>
 
 </html>
-
