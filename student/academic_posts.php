@@ -35,9 +35,9 @@ $adminId =
 require_once "../src/connection.php";
 
 /* =========================================================
-   SECURE POST DELETION
-   Deletes the academic_posts record and, when the URL is a
-   plain PHP filename, its matching file inside ../student/.
+   SECURE DATABASE-ONLY POST DELETION
+   Deletes only the academic_posts database record.
+   Files in ../student/ are never changed or removed.
 ========================================================== */
 
 if (empty($_SESSION["academic_posts_csrf"])) {
@@ -61,74 +61,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_post"])) {
         $deleteMessage = "Invalid academic post selected.";
         $deleteMessageType = "danger";
     } else {
-        $findStmt = $mysqli->prepare(
-            "SELECT url FROM academic_posts WHERE id = ? LIMIT 1"
+        $deleteStmt = $mysqli->prepare(
+            "DELETE FROM academic_posts WHERE id = ? LIMIT 1"
         );
 
-        if (!$findStmt) {
-            $deleteMessage = "Unable to prepare the delete request.";
+        if (!$deleteStmt) {
+            $deleteMessage = "Unable to prepare the database delete.";
             $deleteMessageType = "danger";
         } else {
-            $findStmt->bind_param("i", $deleteId);
-            $findStmt->execute();
-            $findResult = $findStmt->get_result();
-            $existingPost = $findResult ? $findResult->fetch_assoc() : null;
-            $findStmt->close();
+            $deleteStmt->bind_param("i", $deleteId);
 
-            if (!$existingPost) {
+            if ($deleteStmt->execute() && $deleteStmt->affected_rows === 1) {
+                $deleteMessage = "Academic post record deleted successfully. The PHP file in ../student/ was not changed.";
+                $_SESSION["academic_posts_csrf"] = bin2hex(random_bytes(32));
+            } elseif ($deleteStmt->affected_rows === 0 && $deleteStmt->error === "") {
                 $deleteMessage = "The academic post was not found. It may already have been deleted.";
                 $deleteMessageType = "warning";
             } else {
-                $postUrlToDelete = trim((string)($existingPost["url"] ?? ""));
-                $deleteStmt = $mysqli->prepare(
-                    "DELETE FROM academic_posts WHERE id = ? LIMIT 1"
-                );
-
-                if (!$deleteStmt) {
-                    $deleteMessage = "Unable to prepare the database delete.";
-                    $deleteMessageType = "danger";
-                } else {
-                    $deleteStmt->bind_param("i", $deleteId);
-
-                    if ($deleteStmt->execute() && $deleteStmt->affected_rows === 1) {
-                        $deleteMessage = "Academic post deleted successfully.";
-
-                        // Only remove a matching PHP file, never a path or URL.
-                        if (preg_match('/^[a-zA-Z0-9_-]+\.php$/', $postUrlToDelete)) {
-                            $studentDirectory = realpath(__DIR__ . "/../student");
-                            $candidateFile = $studentDirectory
-                                ? $studentDirectory . DIRECTORY_SEPARATOR . $postUrlToDelete
-                                : "";
-
-                            if (
-                                $studentDirectory &&
-                                is_file($candidateFile) &&
-                                realpath($candidateFile) &&
-                                strpos(
-                                    realpath($candidateFile),
-                                    $studentDirectory . DIRECTORY_SEPARATOR
-                                ) === 0
-                            ) {
-                                if (@unlink($candidateFile)) {
-                                    $deleteMessage .= " Its student PHP file was also removed.";
-                                } else {
-                                    $deleteMessage .= " However, its PHP file could not be removed; check folder permissions.";
-                                    $deleteMessageType = "warning";
-                                }
-                            }
-                        }
-
-                        // Rotate token after a successful state-changing request.
-                        $_SESSION["academic_posts_csrf"] = bin2hex(random_bytes(32));
-                    } else {
-                        $deleteMessage = "Could not delete the academic post. It may be referenced by another table. Database error: "
-                            . $deleteStmt->error;
-                        $deleteMessageType = "danger";
-                    }
-
-                    $deleteStmt->close();
-                }
+                $deleteMessage = "Could not delete the academic post record. It may be referenced by another table. Database error: "
+                    . $deleteStmt->error;
+                $deleteMessageType = "danger";
             }
+
+            $deleteStmt->close();
         }
     }
 }
@@ -2182,4 +2137,4 @@ foreach (
 
 </body>
 
-</html> 
+</html>
