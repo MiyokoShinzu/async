@@ -1,1450 +1,500 @@
 <?php
-
-/* =========================================================
-   ACADEMIC POST CREATE
-   ETS-Async Learning Portal
-   ========================================================= */
-
-
-/* =========================================================
-   ADMIN AUTHENTICATION
-========================================================== */
+/*
+ * Academic Posts Manager - ETS Async Learning Portal
+ * Place this file in the same admin directory as academic_post_create.php.
+ * PHP resource files created here are saved under ../students/ only.
+ */
 
 include './globals/checks.php';
+require_once '../src/connection.php';
 
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+$user = $_SESSION['user'] ?? [];
+if (($user['access'] ?? '') !== 'admin') {
+    http_response_code(403);
+    exit('Access denied. Administrator access is required.');
+}
 
-/* =========================================================
-   SESSION USER
-========================================================== */
+if (empty($_SESSION['academic_posts_csrf'])) {
+    $_SESSION['academic_posts_csrf'] = bin2hex(random_bytes(32));
+}
+$csrf = $_SESSION['academic_posts_csrf'];
+$studentsDir = realpath(__DIR__ . '/../students');
+if ($studentsDir === false || !is_dir($studentsDir) || !is_writable($studentsDir)) {
+    $studentsDir = false;
+}
 
-$user = $_SESSION["user"];
+$error = '';
+$success = '';
+$allowedColors = ['blue', 'green', 'orange', 'red', 'purple', 'cyan', 'yellow', 'gray'];
+$defaultCode = <<<'CODE'
+<?php
+// Student-facing academic resource page.
+// Add your page content below this line.
+?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Academic Resource</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <main class="container py-5">
+        <h1>Academic Resource</h1>
+        <p>Replace this sample content with your learning material.</p>
+    </main>
+</body>
+</html>
+CODE;
 
-$adminId = $user["id"] ?? null;
+function h($value): string
+{
+    return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+function validPhpFilename(string $filename): bool
+{
+    return (bool)preg_match('/^[A-Za-z0-9_-]+\.php$/', $filename);
+}
+function safeStudentFilePath($studentsDir, string $filename): ?string
+{
+    if (!$studentsDir || !validPhpFilename($filename)) return null;
+    return $studentsDir . DIRECTORY_SEPARATOR . $filename;
+}
+function writeStudentFile($studentsDir, string $filename, string $code): bool
+{
+    $path = safeStudentFilePath($studentsDir, $filename);
+    if ($path === null) return false;
+    // Write to a temporary file first so a failed save does not truncate the current page.
+    $tmp = tempnam($studentsDir, '.academic_post_');
+    if ($tmp === false) return false;
+    $written = file_put_contents($tmp, $code, LOCK_EX);
+    if ($written === false || !rename($tmp, $path)) {
+        if (is_file($tmp)) unlink($tmp);
+        return false;
+    }
+    return true;
+}
 
+$editing = null;
+$editId = filter_input(INPUT_GET, 'edit', FILTER_VALIDATE_INT);
+if ($editId) {
+    $stmt = $mysqli->prepare('SELECT * FROM academic_posts WHERE id = ? LIMIT 1');
+    if ($stmt) {
+        $stmt->bind_param('i', $editId);
+        $stmt->execute();
+        $editing = $stmt->get_result()->fetch_assoc() ?: null;
+        $stmt->close();
+    }
+    if (!$editing) $error = 'The academic post you selected could not be found.';
+}
 
-/* =========================================================
-   DATABASE CONNECTION
-========================================================== */
-
-require_once "../src/connection.php";
-
-
-/* =========================================================
-   PAGE VARIABLES
-========================================================== */
-
-$error   = "";
-$success = "";
-
-
-/* =========================================================
-   FORM DEFAULT VALUES
-========================================================== */
-
-$title       = "";
-$description = "";
-$url         = "";
-$subject     = "";
-$department  = "";
-$icon        = "bi-file-earmark-text";
-$iconColor   = "blue";
-$sortOrder   = 0;
-$status      = 1;
-
-
-/* =========================================================
-   LOAD DEPARTMENTS
-   ---------------------------------------------------------
-   Departments are taken from student accounts so that the
-   department selection remains consistent with the portal.
-========================================================== */
-
-$departments = [];
-
-$departmentQuery = "
-    SELECT DISTINCT department
-    FROM accounts
-    WHERE access = 'student'
-      AND department IS NOT NULL
-      AND TRIM(department) <> ''
-    ORDER BY department ASC
-";
-
-$departmentResult = $mysqli->query($departmentQuery);
-
-if ($departmentResult) {
-
-    while ($row = $departmentResult->fetch_assoc()) {
-
-        $departments[] = $row["department"];
+$title = $editing['title'] ?? '';
+$description = $editing['description'] ?? '';
+$url = $editing['url'] ?? '';
+$subject = $editing['subject'] ?? '';
+$department = $editing['department'] ?? '';
+$icon = $editing['icon'] ?? 'bi-file-earmark-text';
+$iconColor = $editing['icon_color'] ?? 'blue';
+$sortOrder = (int)($editing['sort_order'] ?? 0);
+$status = (int)($editing['status'] ?? 1);
+$code = $defaultCode;
+if ($editing && validPhpFilename((string)$url) && $studentsDir) {
+    $existingPath = safeStudentFilePath($studentsDir, (string)$url);
+    if ($existingPath && is_file($existingPath) && is_readable($existingPath)) {
+        $loadedCode = file_get_contents($existingPath);
+        if ($loadedCode !== false) $code = $loadedCode;
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!hash_equals($csrf, (string)($_POST['csrf_token'] ?? ''))) {
+        $error = 'Your session token expired. Refresh the page and try again.';
+    } else {
+        $action = (string)($_POST['action'] ?? '');
+        if ($action === 'delete') {
+            $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+            $deleteFile = isset($_POST['delete_file']) && $_POST['delete_file'] === '1';
+            if (!$id) {
+                $error = 'Invalid academic post selected.';
+            } else {
+                $stmt = $mysqli->prepare('SELECT url FROM academic_posts WHERE id = ? LIMIT 1');
+                $oldUrl = '';
+                if ($stmt) {
+                    $stmt->bind_param('i', $id);
+                    $stmt->execute();
+                    $found = $stmt->get_result()->fetch_assoc();
+                    $oldUrl = (string)($found['url'] ?? '');
+                    $stmt->close();
+                }
+                $stmt = $mysqli->prepare('DELETE FROM academic_posts WHERE id = ?');
+                if (!$stmt) {
+                    $error = 'Could not prepare the delete operation.';
+                } else {
+                    $stmt->bind_param('i', $id);
+                    if ($stmt->execute() && $stmt->affected_rows > 0) {
+                        if ($deleteFile && $studentsDir && validPhpFilename($oldUrl)) {
+                            $file = safeStudentFilePath($studentsDir, $oldUrl);
+                            if ($file && is_file($file)) @unlink($file);
+                        }
+                        header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?') . '?message=deleted');
+                        exit;
+                    }
+                    $error = 'The post was not deleted. It may already have been removed.';
+                    $stmt->close();
+                }
+            }
+        } elseif ($action === 'save') {
+            $id = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
+            $title = trim((string)($_POST['title'] ?? ''));
+            $description = trim((string)($_POST['description'] ?? ''));
+            $url = trim((string)($_POST['url'] ?? ''));
+            $subject = trim((string)($_POST['subject'] ?? ''));
+            $department = trim((string)($_POST['department'] ?? ''));
+            $icon = trim((string)($_POST['icon'] ?? 'bi-file-earmark-text'));
+            $iconColor = trim((string)($_POST['icon_color'] ?? 'blue'));
+            $sortOrder = filter_var($_POST['sort_order'] ?? 0, FILTER_VALIDATE_INT);
+            if ($sortOrder === false || $sortOrder < 0) $sortOrder = 0;
+            $status = isset($_POST['status']) ? 1 : 0;
+            $code = (string)($_POST['page_code'] ?? '');
 
-/* =========================================================
-   LOAD EXISTING SUBJECTS
-   ---------------------------------------------------------
-   Existing subjects are displayed through a datalist.
-   The administrator may still enter a completely new subject.
-========================================================== */
-
-$subjects = [];
-
-$subjectQuery = "
-    SELECT DISTINCT subject
-    FROM academic_posts
-    WHERE subject IS NOT NULL
-      AND TRIM(subject) <> ''
-    ORDER BY subject ASC
-";
-
-$subjectResult = $mysqli->query($subjectQuery);
-
-if ($subjectResult) {
-
-    while ($row = $subjectResult->fetch_assoc()) {
-
-        $subjects[] = $row["subject"];
-    }
-}
-
-
-/* =========================================================
-   FORM SUBMISSION
-========================================================== */
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    /* =====================================================
-       GET FORM VALUES
-    ====================================================== */
-
-    $title = trim($_POST["title"] ?? "");
-
-    $description = trim($_POST["description"] ?? "");
-
-    $url = trim($_POST["url"] ?? "");
-
-    $subject = trim($_POST["subject"] ?? "");
-
-    $department = trim($_POST["department"] ?? "");
-
-    $icon = trim($_POST["icon"] ?? "bi-file-earmark-text");
-
-    $iconColor = trim($_POST["icon_color"] ?? "blue");
-
-    $sortOrder = (int)($_POST["sort_order"] ?? 0);
-
-    $status = isset($_POST["status"]) ? 1 : 0;
-
-
-    /* =====================================================
-       VALIDATE TITLE
-    ====================================================== */
-
-    if ($title === "") {
-
-        $error = "Please enter the academic post title.";
-    }
-
-
-    /* =====================================================
-       VALIDATE PHP PAGE FILENAME
-       -----------------------------------------------------
-       The URL field stores a PHP filename rather than a
-       complete web URL.
-
-       Valid examples:
-           z_transform.php
-           common_z_transform_pairs.php
-           difference_equation_solver.php
-
-       Invalid examples:
-           https://example.com/page.php
-           ../page.php
-           /page.php
-           page.html
-           page.php?id=1
-    ====================================================== */ elseif ($url === "") {
-
-        $error = "Please enter the PHP page filename.";
-    } elseif (
-        !preg_match(
-            '/^[a-zA-Z0-9_-]+\.php$/',
-            $url
-        )
-    ) {
-
-        $error =
-            "Please enter a valid PHP filename, for example: z_transform.php";
-    }
-
-
-    /* =====================================================
-       VALIDATE ICON
-    ====================================================== */ elseif ($icon === "") {
-
-        $error = "Please specify a Bootstrap Icon class.";
-    }
-
-
-    /* =====================================================
-       VALIDATE ICON COLOR
-    ====================================================== */ elseif (
-        !in_array(
-            $iconColor,
-            [
-                "blue",
-                "green",
-                "orange",
-                "red",
-                "purple",
-                "cyan",
-                "yellow",
-                "gray"
-            ],
-            true
-        )
-    ) {
-
-        $error = "Invalid icon color selected.";
-    }
-
-
-    /* =====================================================
-       INSERT RECORD
-    ====================================================== */ else {
-
-        $sql = "
-            INSERT INTO academic_posts (
-                title,
-                description,
-                url,
-                subject,
-                department,
-                icon,
-                icon_color,
-                sort_order,
-                status
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ";
-
-        $stmt = $mysqli->prepare($sql);
-
-
-        /* =================================================
-           CHECK PREPARED STATEMENT
-        ================================================== */
-
-        if (!$stmt) {
-
-            $error =
-                "Unable to prepare the database query. " .
-                $mysqli->error;
-        } else {
-
-            /* =============================================
-               BIND VALUES
-            ============================================== */
-
-            $stmt->bind_param(
-                "sssssssii",
-                $title,
-                $description,
-                $url,
-                $subject,
-                $department,
-                $icon,
-                $iconColor,
-                $sortOrder,
-                $status
-            );
-
-
-            /* =============================================
-               EXECUTE
-            ============================================== */
-
-            if ($stmt->execute()) {
-
-                $success =
-                    "Academic post created successfully.";
-
-
-                /* =========================================
-                   RESET FORM
-                ========================================== */
-
-                $title       = "";
-                $description = "";
-                $url         = "";
-                $subject     = "";
-                $department  = "";
-                $icon        = "bi-file-earmark-text";
-                $iconColor   = "blue";
-                $sortOrder   = 0;
-                $status      = 1;
-
-
-                /* =========================================
-                   REFRESH SUBJECT LIST
-                   ------------------------------------------------
-                   This allows a newly created subject to appear
-                   in the datalist immediately.
-                ========================================== */
-
-                $subjects = [];
-
-                $subjectQuery = "
-                    SELECT DISTINCT subject
-                    FROM academic_posts
-                    WHERE subject IS NOT NULL
-                      AND TRIM(subject) <> ''
-                    ORDER BY subject ASC
-                ";
-
-                $subjectResult = $mysqli->query($subjectQuery);
-
-                if ($subjectResult) {
-
-                    while ($row = $subjectResult->fetch_assoc()) {
-
-                        $subjects[] = $row["subject"];
+            if (!$studentsDir) {
+                $error = 'The ../students/ directory was not found or is not writable. Check the directory and hosting permissions.';
+            } elseif ($title === '') {
+                $error = 'Please enter a post title.';
+            } elseif (!validPhpFilename($url)) {
+                $error = 'Filename must look like lesson_page.php and may contain only letters, numbers, underscores, or hyphens.';
+            } elseif ($icon === '' || !preg_match('/^bi-[a-zA-Z0-9-]+$/', $icon)) {
+                $error = 'Enter a valid Bootstrap Icon class, such as bi-file-earmark-text.';
+            } elseif (!in_array($iconColor, $allowedColors, true)) {
+                $error = 'Select a valid icon color.';
+            } elseif (trim($code) === '') {
+                $error = 'Please provide the PHP/HTML code for the student page.';
+            } elseif (strlen($title) > 255 || strlen($url) > 500 || strlen($subject) > 150 || strlen($department) > 150) {
+                $error = 'One or more fields exceed the maximum length allowed by the database.';
+            } else {
+                // Prevent overwriting a different file already referenced by another post.
+                $duplicate = $mysqli->prepare('SELECT id FROM academic_posts WHERE url = ? AND id <> ? LIMIT 1');
+                if ($duplicate) {
+                    $duplicate->bind_param('si', $url, $id);
+                    $duplicate->execute();
+                    $hasDuplicate = (bool)$duplicate->get_result()->fetch_assoc();
+                    $duplicate->close();
+                } else {
+                    $hasDuplicate = true;
+                    $error = 'Could not validate the filename against existing posts.';
+                }
+                if ($hasDuplicate && $error === '') {
+                    $error = 'That filename is already used by another academic post. Choose a different filename.';
+                }
+                $target = safeStudentFilePath($studentsDir, $url);
+                if ($error === '' && $target && is_file($target) && !$id) {
+                    $error = 'A file with that name already exists in /students. Choose another filename to avoid overwriting it.';
+                }
+                if ($error === '') {
+                    $oldUrl = '';
+                    if ($id) {
+                        $lookup = $mysqli->prepare('SELECT url FROM academic_posts WHERE id = ? LIMIT 1');
+                        if ($lookup) {
+                            $lookup->bind_param('i', $id);
+                            $lookup->execute();
+                            $oldRow = $lookup->get_result()->fetch_assoc();
+                            $oldUrl = (string)($oldRow['url'] ?? '');
+                            $lookup->close();
+                        }
+                        if ($oldUrl === '') $error = 'The academic post to edit could not be found.';
+                    }
+                    if ($error === '' && writeStudentFile($studentsDir, $url, $code)) {
+                        if ($id) {
+                            $stmt = $mysqli->prepare('UPDATE academic_posts SET title=?, description=?, url=?, subject=?, department=?, icon=?, icon_color=?, sort_order=?, status=? WHERE id=?');
+                            if ($stmt) {
+                                $stmt->bind_param('sssssssiii', $title, $description, $url, $subject, $department, $icon, $iconColor, $sortOrder, $status, $id);
+                                $saved = $stmt->execute();
+                                $stmt->close();
+                            } else $saved = false;
+                        } else {
+                            $stmt = $mysqli->prepare('INSERT INTO academic_posts (title, description, url, subject, department, icon, icon_color, sort_order, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                            if ($stmt) {
+                                $stmt->bind_param('sssssssii', $title, $description, $url, $subject, $department, $icon, $iconColor, $sortOrder, $status);
+                                $saved = $stmt->execute();
+                                $stmt->close();
+                            } else $saved = false;
+                        }
+                        if ($saved) {
+                            // If an edit changes the filename, remove the old file only when it is a safe PHP filename.
+                            if ($id && $oldUrl !== '' && $oldUrl !== $url && validPhpFilename($oldUrl)) {
+                                $oldPath = safeStudentFilePath($studentsDir, $oldUrl);
+                                if ($oldPath && is_file($oldPath)) @unlink($oldPath);
+                            }
+                            header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?') . '?message=' . ($id ? 'updated' : 'created'));
+                            exit;
+                        } else {
+                            $error = 'The page file was saved, but the database operation failed. Check the database connection and table structure.';
+                        }
+                    } elseif ($error === '') {
+                        $error = 'Could not write the PHP file. Check permissions for the /students directory.';
                     }
                 }
-            } else {
-
-                $error =
-                    "Unable to create the academic post. " .
-                    $stmt->error;
             }
-
-
-            /* =============================================
-               CLOSE STATEMENT
-            ============================================== */
-
-            $stmt->close();
+            if ($id) $editing = ['id' => $id];
         }
     }
 }
 
+if (isset($_GET['message'])) {
+    $messages = [
+        'created' => 'Academic post and student page created successfully.',
+        'updated' => 'Academic post and student page updated successfully.',
+        'deleted' => 'Academic post deleted successfully.'
+    ];
+    $success = $messages[(string)$_GET['message']] ?? '';
+}
 
-/* =========================================================
-   PAGE
-========================================================== */
-
+$departments = [];
+$res = $mysqli->query("SELECT DISTINCT department FROM accounts WHERE access='student' AND department IS NOT NULL AND TRIM(department)<>'' ORDER BY department");
+if ($res) while ($r = $res->fetch_assoc()) $departments[] = $r['department'];
+$subjects = [];
+$res = $mysqli->query("SELECT DISTINCT subject FROM academic_posts WHERE subject IS NOT NULL AND TRIM(subject)<>'' ORDER BY subject");
+if ($res) while ($r = $res->fetch_assoc()) $subjects[] = $r['subject'];
+$posts = [];
+$res = $mysqli->query('SELECT id,title,description,url,subject,department,icon,icon_color,sort_order,status,created_at FROM academic_posts ORDER BY sort_order ASC, id DESC');
+if ($res) while ($r = $res->fetch_assoc()) $posts[] = $r;
 ?>
-
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="en">
 
 <head>
-
     <?php include 'globals/head.php'; ?>
-
     <style>
-        /* =================================================
-           PAGE HEADER
-        ================================================== */
-
         .page-header {
-
-            margin-bottom: 1.5rem;
-
+            margin-bottom: 1.5rem
         }
 
         .page-header h1 {
-
-            font-weight: 700;
-
-            margin-bottom: .35rem;
-
+            font-weight: 750
         }
 
-        .page-header p {
-
-            margin-bottom: 0;
-
-            color: #6c757d;
-
-        }
-
-
-        /* =================================================
-           FORM CARD
-        ================================================== */
-
-        .form-card {
-
+        .manager-card {
             border: 0;
-
             border-radius: 14px;
-
-            box-shadow:
-                0 4px 18px rgba(0, 0, 0, .07);
-
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .07);
             overflow: hidden;
-
+            margin-bottom: 1.5rem
         }
 
-
-        /* =================================================
-           FORM CARD HEADER
-        ================================================== */
-
-        .form-card-header {
-
-            padding: 1.25rem 1.5rem;
-
+        .manager-card-header {
+            padding: 1rem 1.25rem;
             background: #f8f9fa;
-
-            border-bottom: 1px solid #dee2e6;
-
+            border-bottom: 1px solid #dee2e6
         }
 
-        .form-card-header h5 {
-
-            margin: 0;
-
-            font-weight: 700;
-
+        .manager-card-body {
+            padding: 1.25rem
         }
-
-        .form-card-header p {
-
-            margin: .25rem 0 0;
-
-            color: #6c757d;
-
-            font-size: .9rem;
-
-        }
-
-
-        /* =================================================
-           FORM BODY
-        ================================================== */
-
-        .form-card-body {
-
-            padding: 1.5rem;
-
-        }
-
-
-        /* =================================================
-           FORM LABELS
-        ================================================== */
 
         .form-label {
-
-            font-weight: 600;
-
-            margin-bottom: .45rem;
-
+            font-weight: 600
         }
 
-        .required-mark {
-
-            color: #dc3545;
-
+        .code-editor {
+            font-family: Consolas, Monaco, monospace;
+            min-height: 360px;
+            font-size: .9rem;
+            tab-size: 4
         }
 
+        .post-icon {
+            font-size: 1.3rem
+        }
 
-        /* =================================================
-           HELP TEXT
-        ================================================== */
+        .table td,
+        .table th {
+            vertical-align: middle
+        }
 
-        .form-text {
-
+        .small-muted {
             font-size: .82rem;
-
+            color: #6c757d
         }
 
-
-        /* =================================================
-           ICON PREVIEW
-        ================================================== */
-
-        .icon-preview {
-
-            width: 52px;
-
-            height: 52px;
-
-            border-radius: 12px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 1.5rem;
-
-            margin-top: .5rem;
-
+        html[data-theme="dark"] .manager-card {
+            background: #1e1e1e
         }
 
-
-        /* =================================================
-           ICON COLORS
-        ================================================== */
-
-        .icon-blue {
-
-            color: #0d6efd;
-
-            background: rgba(13, 110, 253, .12);
-
-        }
-
-        .icon-green {
-
-            color: #198754;
-
-            background: rgba(25, 135, 84, .12);
-
-        }
-
-        .icon-orange {
-
-            color: #fd7e14;
-
-            background: rgba(253, 126, 20, .12);
-
-        }
-
-        .icon-red {
-
-            color: #dc3545;
-
-            background: rgba(220, 53, 69, .12);
-
-        }
-
-        .icon-purple {
-
-            color: #6f42c1;
-
-            background: rgba(111, 66, 193, .12);
-
-        }
-
-        .icon-cyan {
-
-            color: #0dcaf0;
-
-            background: rgba(13, 202, 240, .12);
-
-        }
-
-        .icon-yellow {
-
-            color: #ffc107;
-
-            background: rgba(255, 193, 7, .15);
-
-        }
-
-        .icon-gray {
-
-            color: #6c757d;
-
-            background: rgba(108, 117, 125, .12);
-
-        }
-
-
-        /* =================================================
-           FORM FOOTER
-        ================================================== */
-
-        .form-card-footer {
-
-            padding: 1rem 1.5rem;
-
-            background: #f8f9fa;
-
-            border-top: 1px solid #dee2e6;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 1rem;
-
-        }
-
-
-        /* =================================================
-           DARK MODE
-        ================================================== */
-
-        html[data-theme="dark"] .page-header p {
-
-            color: #adb5bd;
-
-        }
-
-        html[data-theme="dark"] .form-card {
-
-            background: #1e1e1e;
-
-            box-shadow:
-                0 4px 18px rgba(0, 0, 0, .25);
-
-        }
-
-        html[data-theme="dark"] .form-card-header,
-
-        html[data-theme="dark"] .form-card-footer {
-
+        html[data-theme="dark"] .manager-card-header {
             background: #252525;
-
-            border-color: #3a3a3a;
-
-        }
-
-        html[data-theme="dark"] .form-card-header p {
-
-            color: #adb5bd;
-
+            border-color: #3a3a3a
         }
 
         html[data-theme="dark"] .form-control,
-
-        html[data-theme="dark"] .form-select {
-
-            background-color: #2b2b2b;
-
+        html[data-theme="dark"] .form-select,
+        html[data-theme="dark"] textarea {
+            background: #2b2b2b;
             border-color: #444;
-
-            color: #f8f9fa;
-
+            color: #f8f9fa
         }
 
-        html[data-theme="dark"] .form-control::placeholder {
-
-            color: #888;
-
+        html[data-theme="dark"] .table {
+            --bs-table-bg: transparent;
+            --bs-table-color: #eee
         }
 
-        html[data-theme="dark"] .form-control:focus,
-
-        html[data-theme="dark"] .form-select:focus {
-
-            background-color: #2b2b2b;
-
-            color: #fff;
-
-            border-color: #0d6efd;
-
+        html[data-theme="dark"] .small-muted {
+            color: #adb5bd
         }
 
-        html[data-theme="dark"] .form-text {
-
-            color: #adb5bd !important;
-
-        }
-
-
-        /* =================================================
-           RESPONSIVE
-        ================================================== */
-
-        @media (max-width: 767.98px) {
-
-            .form-card-body {
-
-                padding: 1rem;
-
+        @media(max-width:767px) {
+            .manager-card-body {
+                padding: 1rem
             }
 
-            .form-card-header {
-
-                padding: 1rem;
-
+            .table-responsive {
+                font-size: .9rem
             }
-
-            .form-card-footer {
-
-                padding: 1rem;
-
-                flex-direction: column-reverse;
-
-                align-items: stretch;
-
-            }
-
-            .form-card-footer .btn {
-
-                width: 100%;
-
-            }
-
         }
     </style>
-
 </head>
 
-
 <body>
-
     <?php include 'globals/sidebar.php'; ?>
-
     <?php include 'globals/topbar.php'; ?>
-
-
-    <!-- =====================================================
-         MAIN CONTENT
-    ====================================================== -->
-
     <main class="main-content">
-
         <div class="container-fluid py-4">
-
-
-            <!-- =================================================
-                 PAGE HEADER
-            ================================================== -->
-
-            <div class="page-header">
-
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-
-                    <div>
-
-                        <h1 class="h3">
-
-                            <i class="bi bi-plus-circle me-2"></i>
-
-                            Create Academic Post
-
-                        </h1>
-
-                        <p>
-
-                            Add an academic resource or learning tool
-                            to the student Academic Posts section.
-
-                        </p>
-
-                    </div>
-
-
-                    <div>
-
-                        <a
-                            href="academic_posts.php"
-                            class="btn btn-outline-primary">
-
-                            <i class="bi bi-arrow-left me-1"></i>
-
-                            Manage Academic Posts
-
-                        </a>
-
-                    </div>
-
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h1 class="h3"><i class="bi bi-journal-richtext me-2"></i>Academic Posts Manager</h1>
+                    <p class="text-secondary mb-0">Create, edit, activate, or delete academic posts and their student-facing PHP pages.</p>
                 </div>
-
+                <a class="btn btn-outline-secondary" href="academic_posts.php"><i class="bi bi-arrow-left me-1"></i>Back to Academic Posts</a>
             </div>
+            <?php if ($success): ?><div class="alert alert-success alert-dismissible fade show"><?= h($success) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div><?php endif; ?>
+            <?php if ($error): ?><div class="alert alert-danger alert-dismissible fade show"><?= h($error) ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div><?php endif; ?>
+            <?php if (!$studentsDir): ?><div class="alert alert-warning">The <code>../students/</code> directory is missing or not writable. Create it and grant the PHP process permission to write files before creating or editing pages.</div><?php endif; ?>
 
-
-            <!-- =================================================
-                 SUCCESS MESSAGE
-            ================================================== -->
-
-            <?php if ($success !== ""): ?>
-
-                <div
-                    class="alert alert-success alert-dismissible fade show"
-                    role="alert">
-
-                    <i class="bi bi-check-circle-fill me-2"></i>
-
-                    <?= htmlspecialchars($success, ENT_QUOTES, "UTF-8") ?>
-
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert">
-                    </button>
-
+            <section class="card manager-card" id="editor">
+                <div class="manager-card-header d-flex justify-content-between align-items-center gap-2">
+                    <div>
+                        <h2 class="h5 mb-1"><?= $editing ? 'Edit Academic Post' : 'Create Academic Post' ?></h2>
+                        <div class="small-muted">The page code is saved as a PHP file inside <code>/students/</code>.</div>
+                    </div><?php if ($editing): ?><a href="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?>#editor" class="btn btn-sm btn-outline-secondary">New Post</a><?php endif; ?>
                 </div>
-
-            <?php endif; ?>
-
-
-            <!-- =================================================
-                 ERROR MESSAGE
-            ================================================== -->
-
-            <?php if ($error !== ""): ?>
-
-                <div
-                    class="alert alert-danger alert-dismissible fade show"
-                    role="alert">
-
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-
-                    <?= htmlspecialchars($error, ENT_QUOTES, "UTF-8") ?>
-
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert">
-                    </button>
-
-                </div>
-
-            <?php endif; ?>
-
-
-            <!-- =================================================
-                 FORM CARD
-            ================================================== -->
-
-            <div class="card form-card">
-
-
-                <!-- =================================================
-                     CARD HEADER
-                ================================================== -->
-
-                <div class="form-card-header">
-
-                    <h5>
-
-                        <i class="bi bi-file-earmark-plus me-2"></i>
-
-                        Academic Post Information
-
-                    </h5>
-
-                    <p>
-
-                        Configure the information that will be displayed
-                        to students.
-
-                    </p>
-
-                </div>
-
-
-                <!-- =================================================
-                     FORM
-                ================================================== -->
-
-                <form
-                    method="POST"
-                    action="">
-
-
-                    <!-- =================================================
-                         FORM BODY
-                    ================================================== -->
-
-                    <div class="form-card-body">
-
-                        <div class="row g-4">
-
-
-                            <!-- =================================================
-                                 TITLE
-                            ================================================== -->
-
-                            <div class="col-12">
-
-                                <label
-                                    for="title"
-                                    class="form-label">
-
-                                    Post Title
-
-                                    <span class="required-mark">*</span>
-
-                                </label>
-
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="title"
-                                    name="title"
-                                    value="<?= htmlspecialchars($title, ENT_QUOTES, "UTF-8") ?>"
-                                    placeholder="e.g. Common Z-Transform Pairs"
-                                    required>
-
-                                <div class="form-text">
-
-                                    Enter the title that students will see
-                                    on the Academic Posts page.
-
-                                </div>
-
+                <div class="manager-card-body">
+                    <form method="post" action="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?><?= $editing ? '?edit=' . (int)($editing['id'] ?? 0) : '' ?>#editor">
+                        <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>"><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?= (int)($editing['id'] ?? 0) ?>">
+                        <div class="row g-3">
+                            <div class="col-md-8"><label class="form-label" for="title">Post title *</label><input class="form-control" id="title" name="title" maxlength="255" required value="<?= h($title) ?>" placeholder="e.g. Common Z-Transform Pairs"></div>
+                            <div class="col-md-4"><label class="form-label" for="url">Filename in /students/ *</label>
+                                <div class="input-group"><span class="input-group-text">/students/</span><input class="form-control" id="url" name="url" required pattern="[A-Za-z0-9_-]+\.php" value="<?= h($url) ?>" placeholder="z_transform.php"></div>
+                                <div class="form-text">Use only letters, numbers, underscores, hyphens, and <code>.php</code>.</div>
                             </div>
-
-
-                            <!-- =================================================
-                                 DESCRIPTION
-                            ================================================== -->
-
-                            <div class="col-12">
-
-                                <label
-                                    for="description"
-                                    class="form-label">
-
-                                    Description
-
-                                </label>
-
-                                <textarea
-                                    class="form-control"
-                                    id="description"
-                                    name="description"
-                                    rows="4"
-                                    placeholder="Briefly describe this academic resource..."><?= htmlspecialchars($description, ENT_QUOTES, "UTF-8") ?></textarea>
-
-                                <div class="form-text">
-
-                                    Give students a short explanation of
-                                    what this resource contains.
-
-                                </div>
-
+                            <div class="col-12"><label class="form-label" for="description">Description</label><textarea class="form-control" id="description" name="description" rows="2" placeholder="Describe this resource for students."><?= h($description) ?></textarea></div>
+                            <div class="col-md-4"><label class="form-label" for="subject">Subject</label><input class="form-control" id="subject" name="subject" list="subjects" maxlength="150" value="<?= h($subject) ?>"><datalist id="subjects"><?php foreach ($subjects as $s): ?><option value="<?= h($s) ?>"><?php endforeach; ?></datalist></div>
+                            <div class="col-md-4"><label class="form-label" for="department">Department</label><select class="form-select" id="department" name="department">
+                                    <option value="">All Departments</option><?php foreach ($departments as $d): ?><option value="<?= h($d) ?>" <?= $department === $d ? 'selected' : '' ?>><?= h($d) ?></option><?php endforeach; ?>
+                                </select></div>
+                            <div class="col-md-2"><label class="form-label" for="sort_order">Sort order</label><input type="number" class="form-control" id="sort_order" name="sort_order" min="0" step="1" value="<?= h($sortOrder) ?>"></div>
+                            <div class="col-md-2"><label class="form-label" for="status">Visibility</label>
+                                <div class="form-check form-switch mt-2"><input class="form-check-input" type="checkbox" role="switch" id="status" name="status" <?= $status ? 'checked' : '' ?>><label class="form-check-label" for="status">Active</label></div>
                             </div>
-
-
-                            <!-- =================================================
-                                 PHP PAGE FILENAME
-                            ================================================== -->
-
-                            <div class="col-md-8">
-
-                                <label
-                                    for="url"
-                                    class="form-label">
-
-                                    PHP Page Filename
-
-                                    <span class="required-mark">*</span>
-
-                                </label>
-
-                                <div class="input-group">
-
-                                    <span class="input-group-text">
-
-                                        <i class="bi bi-filetype-php"></i>
-
-                                    </span>
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="url"
-                                        name="url"
-                                        value="<?= htmlspecialchars($url, ENT_QUOTES, "UTF-8") ?>"
-                                        placeholder="z_transform.php"
-                                        required>
-
-                                </div>
-
-                                <div class="form-text">
-
-                                    Enter the PHP filename of the academic
-                                    page. Example:
-
-                                    <code>z_transform.php</code>
-
-                                </div>
-
+                            <div class="col-md-6"><label class="form-label" for="icon">Bootstrap icon class</label><input class="form-control" id="icon" name="icon" value="<?= h($icon) ?>" required pattern="bi-[A-Za-z0-9-]+" placeholder="bi-file-earmark-text"></div>
+                            <div class="col-md-6"><label class="form-label" for="icon_color">Icon color</label><select class="form-select" id="icon_color" name="icon_color"><?php foreach ($allowedColors as $c): ?><option value="<?= h($c) ?>" <?= $iconColor === $c ? 'selected' : '' ?>><?= ucfirst($c) ?></option><?php endforeach; ?></select></div>
+                            <div class="col-12"><label class="form-label" for="page_code">PHP / HTML page code *</label><textarea class="form-control code-editor" id="page_code" name="page_code" spellcheck="false" required><?= h($code) ?></textarea>
+                                <div class="form-text">This code will execute when students open the corresponding PHP page. Only enter code you trust.</div>
                             </div>
-
-
-                            <!-- =================================================
-                                 SUBJECT
-                            ================================================== -->
-
-                            <div class="col-md-4">
-
-                                <label
-                                    for="subject"
-                                    class="form-label">
-
-                                    Subject
-
-                                </label>
-
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="subject"
-                                    name="subject"
-                                    list="subjectList"
-                                    value="<?= htmlspecialchars($subject, ENT_QUOTES, "UTF-8") ?>"
-                                    placeholder="e.g. DSP">
-
-                                <datalist id="subjectList">
-
-                                    <?php foreach ($subjects as $existingSubject): ?>
-
-                                        <option
-                                            value="<?= htmlspecialchars($existingSubject, ENT_QUOTES, "UTF-8") ?>">
-
-                                        <?php endforeach; ?>
-
-                                </datalist>
-
-                                <div class="form-text">
-
-                                    Select an existing subject or type
-                                    a new one.
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =================================================
-                                 DEPARTMENT
-                            ================================================== -->
-
-                            <div class="col-md-6">
-
-                                <label
-                                    for="department"
-                                    class="form-label">
-
-                                    Department
-
-                                </label>
-
-                                <select
-                                    class="form-select"
-                                    id="department"
-                                    name="department">
-
-                                    <option value="">
-
-                                        All Departments
-
-                                    </option>
-
-                                    <?php foreach ($departments as $existingDepartment): ?>
-
-                                        <option
-                                            value="<?= htmlspecialchars($existingDepartment, ENT_QUOTES, "UTF-8") ?>"
-                                            <?= $department === $existingDepartment ? "selected" : "" ?>>
-
-                                            <?= htmlspecialchars($existingDepartment, ENT_QUOTES, "UTF-8") ?>
-
-                                        </option>
-
-                                    <?php endforeach; ?>
-
-                                </select>
-
-                                <div class="form-text">
-
-                                    Leave as "All Departments" if the
-                                    resource applies to all students.
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =================================================
-                                 SORT ORDER
-                            ================================================== -->
-
-                            <div class="col-md-3">
-
-                                <label
-                                    for="sort_order"
-                                    class="form-label">
-
-                                    Sort Order
-
-                                </label>
-
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="sort_order"
-                                    name="sort_order"
-                                    value="<?= htmlspecialchars((string)$sortOrder, ENT_QUOTES, "UTF-8") ?>"
-                                    min="0"
-                                    step="1">
-
-                                <div class="form-text">
-
-                                    Lower numbers appear first.
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =================================================
-                                 STATUS
-                            ================================================== -->
-
-                            <div class="col-md-3">
-
-                                <label
-                                    class="form-label d-block">
-
-                                    Status
-
-                                </label>
-
-                                <div class="form-check form-switch mt-2">
-
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        role="switch"
-                                        id="status"
-                                        name="status"
-                                        <?= $status == 1 ? "checked" : "" ?>>
-
-                                    <label
-                                        class="form-check-label"
-                                        for="status">
-
-                                        Active
-
-                                    </label>
-
-                                </div>
-
-                                <div class="form-text">
-
-                                    Active posts are visible to students.
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =================================================
-                                 ICON
-                            ================================================== -->
-
-                            <div class="col-md-8">
-
-                                <label
-                                    for="icon"
-                                    class="form-label">
-
-                                    Bootstrap Icon
-
-                                    <span class="required-mark">*</span>
-
-                                </label>
-
-                                <div class="input-group">
-
-                                    <span class="input-group-text">
-
-                                        <i class="bi bi-bootstrap"></i>
-
-                                    </span>
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="icon"
-                                        name="icon"
-                                        value="<?= htmlspecialchars($icon, ENT_QUOTES, "UTF-8") ?>"
-                                        placeholder="bi-file-earmark-text"
-                                        required>
-
-                                </div>
-
-                                <div class="form-text">
-
-                                    Example:
-
-                                    <code>bi-file-earmark-text</code>
-
-                                    or
-
-                                    <code>bi-calculator</code>
-
-                                </div>
-
-                                <div
-                                    id="iconPreview"
-                                    class="icon-preview icon-<?= htmlspecialchars($iconColor, ENT_QUOTES, "UTF-8") ?>">
-
-                                    <i
-                                        id="previewIcon"
-                                        class="bi <?= htmlspecialchars($icon, ENT_QUOTES, "UTF-8") ?>">
-                                    </i>
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =================================================
-                                 ICON COLOR
-                            ================================================== -->
-
-                            <div class="col-md-4">
-
-                                <label
-                                    for="icon_color"
-                                    class="form-label">
-
-                                    Icon Color
-
-                                </label>
-
-                                <select
-                                    class="form-select"
-                                    id="icon_color"
-                                    name="icon_color">
-
-                                    <option
-                                        value="blue"
-                                        <?= $iconColor === "blue" ? "selected" : "" ?>>
-
-                                        Blue
-
-                                    </option>
-
-                                    <option
-                                        value="green"
-                                        <?= $iconColor === "green" ? "selected" : "" ?>>
-
-                                        Green
-
-                                    </option>
-
-                                    <option
-                                        value="orange"
-                                        <?= $iconColor === "orange" ? "selected" : "" ?>>
-
-                                        Orange
-
-                                    </option>
-
-                                    <option
-                                        value="red"
-                                        <?= $iconColor === "red" ? "selected" : "" ?>>
-
-                                        Red
-
-                                    </option>
-
-                                    <option
-                                        value="purple"
-                                        <?= $iconColor === "purple" ? "selected" : "" ?>>
-
-                                        Purple
-
-                                    </option>
-
-                                    <option
-                                        value="cyan"
-                                        <?= $iconColor === "cyan" ? "selected" : "" ?>>
-
-                                        Cyan
-
-                                    </option>
-
-                                    <option
-                                        value="yellow"
-                                        <?= $iconColor === "yellow" ? "selected" : "" ?>>
-
-                                        Yellow
-
-                                    </option>
-
-                                    <option
-                                        value="gray"
-                                        <?= $iconColor === "gray" ? "selected" : "" ?>>
-
-                                        Gray
-
-                                    </option>
-
-                                </select>
-
-                                <div class="form-text">
-
-                                    Select the color used for the
-                                    academic post icon.
-
-                                </div>
-
-                            </div>
-
+                            <div class="col-12 d-flex flex-wrap justify-content-end gap-2"><a class="btn btn-outline-secondary" href="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?>#editor">Clear form</a><button class="btn btn-primary" type="submit"><i class="bi bi-save me-1"></i><?= $editing ? 'Save Changes' : 'Create Post and PHP File' ?></button></div>
                         </div>
+                    </form>
+                </div>
+            </section>
 
+            <section class="card manager-card">
+                <div class="manager-card-header">
+                    <h2 class="h5 mb-0">Manage Existing Posts <span class="badge text-bg-secondary"><?= count($posts) ?></span></h2>
+                </div>
+                <div class="manager-card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6"><input id="postSearch" class="form-control" placeholder="Search title, subject, department, or filename..."></div>
+                        <div class="col-md-3"><select id="statusFilter" class="form-select">
+                                <option value="all">All statuses</option>
+                                <option value="active">Active only</option>
+                                <option value="inactive">Inactive only</option>
+                            </select></div>
+                        <div class="col-md-3"><select id="departmentFilter" class="form-select">
+                                <option value="all">All departments</option><?php foreach ($departments as $d): ?><option value="<?= h(mb_strtolower($d)) ?>"><?= h($d) ?></option><?php endforeach; ?>
+                            </select></div>
                     </div>
-
-
-                    <!-- =================================================
-                         FORM FOOTER
-                    ================================================== -->
-
-                    <div class="form-card-footer">
-
-                        <a
-                            href="academic_posts.php"
-                            class="btn btn-outline-secondary">
-
-                            <i class="bi bi-x-circle me-1"></i>
-
-                            Cancel
-
-                        </a>
-
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary">
-
-                            <i class="bi bi-check-circle me-1"></i>
-
-                            Create Academic Post
-
-                        </button>
-
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" id="postsTable">
+                            <thead>
+                                <tr>
+                                    <th>Post</th>
+                                    <th>Subject / Department</th>
+                                    <th>Student page</th>
+                                    <th>Status</th>
+                                    <th>Order</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!$posts): ?><tr>
+                                        <td colspan="6" class="text-center text-secondary py-4">No academic posts found. Use the form above to create one.</td>
+                                    </tr><?php endif; ?>
+                                <?php foreach ($posts as $p): $filePath = $studentsDir && validPhpFilename((string)$p['url']) ? safeStudentFilePath($studentsDir, (string)$p['url']) : null;
+                                    $fileExists = $filePath && is_file($filePath); ?>
+                                    <tr data-search="<?= h(mb_strtolower($p['title'] . ' ' . $p['subject'] . ' ' . $p['department'] . ' ' . $p['url'])) ?>" data-status="<?= $p['status'] ? 'active' : 'inactive' ?>" data-department="<?= h(mb_strtolower($p['department'] ?? '')) ?>">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2"><i class="bi <?= h($p['icon'] ?: 'bi-file-earmark-text') ?> post-icon"></i>
+                                                <div><strong><?= h($p['title']) ?></strong>
+                                                    <div class="small-muted">ID #<?= (int)$p['id'] ?></div>
+                                                </div>
+                                            </div><?php if ($p['description']): ?><div class="small-muted mt-1"><?= h(mb_strimwidth((string)$p['description'], 0, 100, '…')) ?></div><?php endif; ?>
+                                        </td>
+                                        <td><?= h($p['subject'] ?: '—') ?><div class="small-muted"><?= h($p['department'] ?: 'All departments') ?></div>
+                                        </td>
+                                        <td><code><?= h($p['url']) ?></code>
+                                            <div class="small-muted"><?= $fileExists ? 'File exists' : 'File missing' ?></div><?php if (validPhpFilename((string)$p['url'])): ?><a href="../students/<?= rawurlencode((string)$p['url']) ?>" target="_blank" rel="noopener">Open page <i class="bi bi-box-arrow-up-right"></i></a><?php endif; ?>
+                                        </td>
+                                        <td><?= $p['status'] ? '<span class="badge text-bg-success">Active</span>' : '<span class="badge text-bg-secondary">Inactive</span>' ?></td>
+                                        <td><?= (int)$p['sort_order'] ?></td>
+                                        <td class="text-end">
+                                            <div class="d-inline-flex flex-wrap justify-content-end gap-1"><a class="btn btn-sm btn-outline-primary" href="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?>?edit=<?= (int)$p['id'] ?>#editor"><i class="bi bi-pencil-square"></i> Edit</a>
+                                                <form method="post" action="<?= h(strtok($_SERVER['REQUEST_URI'], '?')) ?>" onsubmit="return confirm('Delete this academic post record? This does not delete its PHP file unless you check the option in the next prompt.');"><input type="hidden" name="csrf_token" value="<?= h($csrf) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$p['id'] ?>"><input type="hidden" name="delete_file" id="delete_file_<?= (int)$p['id'] ?>" value="0"><button class="btn btn-sm btn-outline-danger" type="submit" onclick="document.getElementById('delete_file_<?= (int)$p['id'] ?>').value = confirm('Also permanently delete /students/<?= h(addslashes((string)$p['url'])) ?>? This cannot be undone.') ? '1' : '0';"><i class="bi bi-trash"></i> Delete</button></form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
-
-                </form>
-
-            </div>
-
+                </div>
+            </section>
         </div>
-
     </main>
-
-
-    <!-- =====================================================
-         GLOBAL SCRIPTS
-    ====================================================== -->
-
     <?php include 'globals/scripts.php'; ?>
-
-
-    <!-- =====================================================
-         ICON PREVIEW SCRIPT
-    ====================================================== -->
-
     <script>
-        document.addEventListener(
-            "DOMContentLoaded",
-            function() {
+        document.addEventListener('DOMContentLoaded', () => {
+            const search = document.getElementById('postSearch');
+            const status = document.getElementById('statusFilter');
+            const dept = document.getElementById('departmentFilter');
+            const rows = [...document.querySelectorAll('#postsTable tbody tr[data-search]')];
 
-                const iconInput =
-                    document.getElementById("icon");
-
-                const colorInput =
-                    document.getElementById("icon_color");
-
-                const previewIcon =
-                    document.getElementById("previewIcon");
-
-                const iconPreview =
-                    document.getElementById("iconPreview");
-
-
-                /* =============================================
-                   UPDATE ICON PREVIEW
-                ============================================== */
-
-                function updateIconPreview() {
-
-                    const icon =
-                        iconInput.value.trim() ||
-                        "bi-file-earmark-text";
-
-                    const color =
-                        colorInput.value;
-
-
-                    /* =========================================
-                       UPDATE ICON
-                    ========================================== */
-
-                    previewIcon.className =
-                        "bi " + icon;
-
-
-                    /* =========================================
-                       REMOVE OLD COLOR CLASSES
-                    ========================================== */
-
-                    iconPreview.classList.remove(
-
-                        "icon-blue",
-                        "icon-green",
-                        "icon-orange",
-                        "icon-red",
-                        "icon-purple",
-                        "icon-cyan",
-                        "icon-yellow",
-                        "icon-gray"
-
-                    );
-
-
-                    /* =========================================
-                       ADD CURRENT COLOR CLASS
-                    ========================================== */
-
-                    iconPreview.classList.add(
-                        "icon-" + color
-                    );
-
-                }
-
-
-                /* =============================================
-                   ICON INPUT EVENT
-                ============================================== */
-
-                iconInput.addEventListener(
-                    "input",
-                    updateIconPreview
-                );
-
-
-                /* =============================================
-                   COLOR INPUT EVENT
-                ============================================== */
-
-                colorInput.addEventListener(
-                    "change",
-                    updateIconPreview
-                );
-
-
-                /* =============================================
-                   INITIAL PREVIEW
-                ============================================== */
-
-                updateIconPreview();
-
+            function filterRows() {
+                const q = search.value.trim().toLowerCase();
+                rows.forEach(row => {
+                    const match = row.dataset.search.includes(q) &&
+                        (status.value === 'all' || row.dataset.status === status.value) &&
+                        (dept.value === 'all' || row.dataset.department === dept.value);
+                    row.hidden = !match;
+                });
             }
-
-        );
+            search.addEventListener('input', filterRows);
+            status.addEventListener('change', filterRows);
+            dept.addEventListener('change', filterRows);
+        });
     </script>
-
 </body>
 
 </html>
