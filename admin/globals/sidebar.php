@@ -134,17 +134,7 @@
             </span>
 
         </a>
-        <a
-            href="subjects.php"
-            class="sidebar-link">
-
-            <i class="bi bi-journal-text"></i>
-
-            <span>
-                Subjects
-            </span>
-
-        </a>
+        
         <a
             href="question_management.php"
             class="sidebar-link">
