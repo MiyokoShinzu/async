@@ -1,173 +1,91 @@
-
 <?php
-
-
 /* =========================================================
-   LOGIN API
-   Allows login using USERNAME or EMAIL
+   ETS-ASYNC LEARNING PORTAL
+   LOGIN API — USERNAME OR EMAIL
+   Supports: admin, instructor, student, quiz_master,
+             calendar_master
    ========================================================= */
 
-header("Content-Type: application/json; charset=UTF-8");
-
+date_default_timezone_set('Asia/Manila');
+header('Content-Type: application/json; charset=UTF-8');
 
 /* =========================================================
    START SESSION
    ========================================================= */
-
-session_start();
-
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 /* =========================================================
-   DATABASE CONNECTION
+   HELPER: JSON RESPONSE
    ========================================================= */
-
-require_once "../src/connection.php";
-
+function respond(int $status, array $payload): void
+{
+    http_response_code($status);
+    echo json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 /* =========================================================
    ONLY ALLOW POST REQUEST
    ========================================================= */
-
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-
-    http_response_code(405);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Only POST requests are allowed."
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Allow: POST');
+    respond(405, [
+        'success' => false,
+        'message' => 'Only POST requests are allowed.'
     ]);
-
-    exit;
 }
 
+/* =========================================================
+   DATABASE CONNECTION
+   ========================================================= */
+require_once __DIR__ . '/../src/connection.php';
+
+if (!isset($mysqli) || !($mysqli instanceof mysqli)) {
+    respond(500, [
+        'success' => false,
+        'message' => 'Database connection is unavailable.'
+    ]);
+}
 
 /* =========================================================
-   GET JSON REQUEST
+   READ JSON REQUEST
    ========================================================= */
-
-$rawInput = file_get_contents("php://input");
-
+$rawInput = file_get_contents('php://input');
 $input = json_decode($rawInput, true);
 
-
 if (!is_array($input)) {
-
-    http_response_code(400);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid JSON request."
+    respond(400, [
+        'success' => false,
+        'message' => 'Invalid JSON request.'
     ]);
-
-    exit;
 }
 
+$login = trim((string)($input['login'] ?? ''));
+$password = (string)($input['password'] ?? '');
 
-/* =========================================================
-   GET LOGIN DATA
-   =========================================================
-   
-   The "login" field can contain either:
-   
-   Username:
-       karl123
-   
-   OR
-   
-   Email:
-       karl@example.com
-   
-   ========================================================= */
-
-$login = trim($input["login"] ?? "");
-
-$password = $input["password"] ?? "";
-
-
-/* =========================================================
-   REQUIRED FIELD CHECK
-   ========================================================= */
-
-if ($login === "" || $password === "") {
-
-    http_response_code(400);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Please enter your username or email and password."
+if ($login === '' || $password === '') {
+    respond(400, [
+        'success' => false,
+        'message' => 'Please enter your username or email and password.'
     ]);
-
-    exit;
 }
 
-
-/* =========================================================
-   LOGIN LENGTH VALIDATION
-   ========================================================= */
-
-if (strlen($login) < 4 || strlen($login) > 100) {
-
-    http_response_code(400);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid username or email."
+if (strlen($login) > 100) {
+    respond(400, [
+        'success' => false,
+        'message' => 'Invalid username or email.'
     ]);
-
-    exit;
 }
 
-
 /* =========================================================
-   PASSWORD LENGTH VALIDATION
+   FIND ACCOUNT BY EMAIL OR USERNAME
    ========================================================= */
+$isEmail = filter_var($login, FILTER_VALIDATE_EMAIL) !== false;
+$column = $isEmail ? 'email' : 'username';
 
-if (strlen($password) < 8) {
-
-    http_response_code(400);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Incorrect password."
-    ]);
-
-    exit;
-}
-
-
-/* =========================================================
-   DETERMINE LOGIN TYPE
-   =========================================================
-   
-   If the input is a valid email format:
-   
-       user@example.com
-   
-   search the email column.
-   
-   Otherwise:
-   
-       username123
-   
-   search the username column.
-   
-   ========================================================= */
-
-$isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
-
-
-/* =========================================================
-   FIND ACCOUNT
-   ========================================================= */
-
-if ($isEmail) {
-
-    /*
-     * LOGIN USING EMAIL
-     */
-
-    $stmt = $mysqli->prepare("
-        SELECT
+$sql = "SELECT
             id,
             last_name,
             first_name,
@@ -182,327 +100,121 @@ if ($isEmail) {
             access,
             created_at
         FROM accounts
-        WHERE email = ?
-        LIMIT 1
-    ");
-} else {
+        WHERE {$column} = ?
+        LIMIT 1";
 
-    /*
-     * LOGIN USING USERNAME
-     */
-
-    $stmt = $mysqli->prepare("
-        SELECT
-            id,
-            last_name,
-            first_name,
-            middle_initial,
-            extension_name,
-            department,
-            year_section,
-            student_id,
-            email,
-            username,
-            password,
-            access,
-            created_at
-        FROM accounts
-        WHERE username = ?
-        LIMIT 1
-    ");
-}
-
-
-/* =========================================================
-   CHECK PREPARED STATEMENT
-   ========================================================= */
-
+$stmt = $mysqli->prepare($sql);
 if (!$stmt) {
-
-    http_response_code(500);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Database error."
+    error_log('Login prepare failed: ' . $mysqli->error);
+    respond(500, [
+        'success' => false,
+        'message' => 'Database error.'
     ]);
-
-    exit;
 }
 
-
-/* =========================================================
-   BIND LOGIN VALUE
-   ========================================================= */
-
-$stmt->bind_param(
-    "s",
-    $login
-);
-
-
-/* =========================================================
-   EXECUTE QUERY
-   ========================================================= */
-
+$stmt->bind_param('s', $login);
 if (!$stmt->execute()) {
-
+    error_log('Login execute failed: ' . $stmt->error);
     $stmt->close();
-
-    http_response_code(500);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Unable to process login."
+    respond(500, [
+        'success' => false,
+        'message' => 'Unable to process login.'
     ]);
-
-    exit;
 }
-
-
-/* =========================================================
-   GET RESULT
-   ========================================================= */
 
 $result = $stmt->get_result();
-
-
-/* =========================================================
-   ACCOUNT NOT FOUND
-   ========================================================= */
-
-if ($result->num_rows !== 1) {
-
-    $stmt->close();
-
-    http_response_code(401);
-
-    echo json_encode([
-        "success" => false,
-        "message" => $isEmail
-            ? "Email does not exist."
-            : "Username does not exist."
-    ]);
-
-    exit;
-}
-
-
-/* =========================================================
-   GET ACCOUNT
-   ========================================================= */
-
-$account = $result->fetch_assoc();
-
+$account = $result ? $result->fetch_assoc() : null;
 $stmt->close();
 
+if (!$account) {
+    $mysqli->close();
+    respond(401, [
+        'success' => false,
+        'message' => 'Invalid username/email or password.'
+    ]);
+}
 
 /* =========================================================
    VERIFY PASSWORD
+   Passwords must be stored using password_hash().
    ========================================================= */
-
-if (
-    !password_verify(
-        $password,
-        $account["password"]
-    )
-) {
-
-    http_response_code(401);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Incorrect password."
-    ]);
-
+if (!password_verify($password, (string)$account['password'])) {
     $mysqli->close();
-
-    exit;
+    respond(401, [
+        'success' => false,
+        'message' => 'Invalid username/email or password.'
+    ]);
 }
 
-
 /* =========================================================
-   VERIFY ACCESS
+   VERIFY ACCESS ROLE
    ========================================================= */
-
-$allowed_access = [
-    "student",
-    "admin"
+$allowedAccess = [
+    'admin',
+    'instructor',
+    'student',
+    'quiz_master',
+    'calendar_master'
 ];
 
-
-if (
-    !in_array(
-        $account["access"],
-        $allowed_access,
-        true
-    )
-) {
-
-    http_response_code(403);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Your account does not have valid access."
-    ]);
-
+$access = strtolower(trim((string)($account['access'] ?? '')));
+if (!in_array($access, $allowedAccess, true)) {
     $mysqli->close();
-
-    exit;
+    respond(403, [
+        'success' => false,
+        'message' => 'Your account does not have valid access.'
+    ]);
 }
-
+$account['access'] = $access;
 
 /* =========================================================
-   REGENERATE SESSION ID
+   ROLE-BASED DASHBOARD REDIRECT
+   Change folder/file names here if your structure differs.
    ========================================================= */
+$redirects = [
+    'admin'           => './admin/index.php',
+    'instructor'      => './instructor/index.php',
+    'student'         => './student/index.php',
+    'quiz_master'     => './qm/index.php',
+    'calendar_master' => './cm/index.php'
+];
+$redirect = $redirects[$access];
 
+/* =========================================================
+   REGENERATE SESSION ID AND STORE AUTHENTICATED USER
+   ========================================================= */
 session_regenerate_id(true);
 
-
-/* =========================================================
-   STORE LOGIN SESSION
-   ========================================================= */
-
-$_SESSION["logged_in"] = true;
-
-
-/* =========================================================
-   STORE USER DATA
-   PASSWORD IS NOT STORED IN SESSION
-   ========================================================= */
-
-$_SESSION["user"] = [
-
-    "id" =>
-    (int) $account["id"],
-
-    "username" =>
-    $account["username"],
-
-    "first_name" =>
-    $account["first_name"],
-
-    "last_name" =>
-    $account["last_name"],
-
-    "middle_initial" =>
-    $account["middle_initial"],
-
-    "extension_name" =>
-    $account["extension_name"],
-
-    "department" =>
-    $account["department"],
-
-    "year_section" =>
-    $account["year_section"],
-
-    "student_id" =>
-    $account["student_id"],
-
-    "email" =>
-    $account["email"],
-
-    "access" =>
-    $account["access"]
-
+$_SESSION['logged_in'] = true;
+$_SESSION['user'] = [
+    'id' => (int)$account['id'],
+    'username' => $account['username'],
+    'first_name' => $account['first_name'],
+    'last_name' => $account['last_name'],
+    'middle_initial' => $account['middle_initial'],
+    'extension_name' => $account['extension_name'],
+    'department' => $account['department'],
+    'year_section' => $account['year_section'],
+    'student_id' => $account['student_id'],
+    'email' => $account['email'],
+    'access' => $access
 ];
 
+// Compatibility values for pages that use these session keys.
+$_SESSION['user_id'] = (int)$account['id'];
+$_SESSION['username'] = $account['username'];
+$_SESSION['access'] = $access;
+$_SESSION['student_id'] = $account['student_id'];
 
-/* =========================================================
-   OPTIONAL QUICK-ACCESS SESSION VALUES
-   ========================================================= */
-
-$_SESSION["user_id"] =
-    (int) $account["id"];
-
-$_SESSION["username"] =
-    $account["username"];
-
-$_SESSION["access"] =
-    $account["access"];
-
-$_SESSION["student_id"] =
-    $account["student_id"];
-
-
-/* =========================================================
-   DETERMINE DASHBOARD
-   ========================================================= */
-
-if ($account["access"] === "admin") {
-
-    $redirect =
-        "./admin/index.php";
-} else {
-
-    $redirect =
-        "./student/index.php";
-}
-
+$mysqli->close();
 
 /* =========================================================
    SUCCESS RESPONSE
    ========================================================= */
-
-http_response_code(200);
-
-echo json_encode([
-
-    "success" => true,
-
-    "message" =>
-    "Login successful.",
-
-    "access" =>
-    $account["access"],
-
-    "user" => [
-
-        "id" =>
-        (int) $account["id"],
-
-        "username" =>
-        $account["username"],
-
-        "first_name" =>
-        $account["first_name"],
-
-        "last_name" =>
-        $account["last_name"],
-
-        "middle_initial" =>
-        $account["middle_initial"],
-
-        "extension_name" =>
-        $account["extension_name"],
-
-        "department" =>
-        $account["department"],
-
-        "year_section" =>
-        $account["year_section"],
-
-        "student_id" =>
-        $account["student_id"],
-
-        "email" =>
-        $account["email"],
-
-        "access" =>
-        $account["access"]
-
-    ],
-
-    "redirect" =>
-    $redirect
-
+respond(200, [
+    'success' => true,
+    'message' => 'Login successful.',
+    'access' => $access,
+    'user' => $_SESSION['user'],
+    'redirect' => $redirect
 ]);
-
-
-/* =========================================================
-   CLOSE DATABASE
-   ========================================================= */
-
-$mysqli->close();
-
-?>
