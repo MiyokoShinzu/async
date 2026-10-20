@@ -279,7 +279,7 @@ if (
 
         <div class="topbar-title">
 
-            Student Dashboard
+            QZMSTR Dashboard
 
         </div>
 
@@ -313,7 +313,7 @@ if (
 
             <div class="topbar-access">
 
-                Student Account
+                Quiz Master
 
             </div>
 
@@ -562,107 +562,6 @@ if (
                 </a>
 
 
-                <!-- =================================================
-                     EDIT ACCOUNT
-                ================================================== -->
-
-                <a
-                    href="student_profile.php"
-                    class="topbar-profile-menu-link"
-                    role="menuitem">
-
-
-                    <span class="topbar-profile-menu-icon">
-
-                        <i class="bi bi-person-gear"></i>
-
-                    </span>
-
-
-                    <span class="topbar-profile-menu-text">
-
-                        <strong>
-                            Edit Account
-                        </strong>
-
-                        <small>
-                            Update account information
-                        </small>
-
-                    </span>
-
-
-                </a>
-
-                <!-- =================================================
-                    Classmates
-                ================================================== -->
-
-                <a
-                    href="classmates.php"
-                    class="topbar-profile-menu-link"
-                    role="menuitem">
-
-
-                    <span class="topbar-profile-menu-icon">
-
-                        <i class="bi bi-people-fill"></i>
-
-                    </span>
-
-
-                    <span class="topbar-profile-menu-text">
-
-                        <strong>
-                            Classmates
-                        </strong>
-
-                        <small>
-                            View your classmates
-                        </small>
-
-                    </span>
-
-
-                </a>
-
-
-                <!-- =================================================
-                     Freedom Walls
-                ================================================== -->
-
-                <a
-                    href="freedom_walls.php"
-                    class="topbar-profile-menu-link"
-                    role="menuitem">
-
-
-                    <span class="topbar-profile-menu-icon">
-
-                        <i class="bi bi-flag"></i>
-
-                    </span>
-
-
-                    <span class="topbar-profile-menu-text">
-
-                        <strong>
-                            Freedom Walls
-                        </strong>
-
-                        <small>
-                            View your freedom walls
-                        </small>
-
-                    </span>
-
-
-                </a>
-                <!-- =================================================
-                     DIVIDER
-                ================================================== -->
-
-                <div class="topbar-profile-divider"></div>
 
 
                 <!-- =================================================
