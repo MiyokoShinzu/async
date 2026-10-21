@@ -157,34 +157,38 @@ function sidebarActive($page)
              ACADEMIC POSTS
         ================================================== -->
 
-        <a
-            href="academic_posts.php"
-            class="sidebar-link <?= sidebarActive('academic_posts.php') ?>">
+        <div
+            class="sidebar-link sidebar-link-maintenance"
+            aria-disabled="true"
+            title="Under maintenance">
 
             <i class="bi bi-journal"></i>
 
             <span>
                 Academic Posts
+                <small class="maintenance-label">Under maintenance</small>
             </span>
 
-        </a>
+        </div>
 
 
         <!-- =================================================
              BOOKMARKS
         ================================================== -->
 
-        <a
-            href="academic_posts_saved.php"
-            class="sidebar-link <?= sidebarActive('academic_posts_saved.php') ?>">
+        <div
+            class="sidebar-link sidebar-link-maintenance"
+            aria-disabled="true"
+            title="Under maintenance">
 
             <i class="bi bi-bookmark"></i>
 
             <span>
                 Bookmarks
+                <small class="maintenance-label">Under maintenance</small>
             </span>
 
-        </a>
+        </div>
 
 
         <!-- =================================================
@@ -209,7 +213,7 @@ function sidebarActive($page)
             <i class="bi bi-clipboard-data"></i>
 
             <span>
-               Assessment
+                Assessment
             </span>
 
         </a>
@@ -243,12 +247,12 @@ function sidebarActive($page)
         </a>
 
 
-      
-
-      
 
 
-       
+
+
+
+
 
 
         <!-- =================================================
@@ -281,6 +285,33 @@ function sidebarActive($page)
 <!-- =========================================================
      SIDEBAR JAVASCRIPT
 ========================================================= -->
+
+
+<style>
+    /* Maintenance labels for Academic Posts and Bookmarks only */
+    .sidebar-link-maintenance {
+        cursor: not-allowed !important;
+        opacity: 0.72;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .sidebar-link-maintenance>span {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .sidebar-link-maintenance .maintenance-label {
+        display: block;
+        color: #ff7d00;
+        font-size: 9px;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
