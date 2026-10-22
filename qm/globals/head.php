@@ -7,7 +7,7 @@
         content="width=device-width, initial-scale=1">
 
     <title>
-        QUIZ MASTER Dashboard | ETS-Async
+        QZMSTR Dashboard | ETS-Async
     </title>
 
 
@@ -5159,8 +5159,8 @@
     <script
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
         async>
-    </script>
+    </script> 
 
-
+    
 
 </head>

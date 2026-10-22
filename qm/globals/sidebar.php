@@ -46,23 +46,13 @@ function sidebarActive($page)
     <div class="sidebar-brand">
 
 
-        <!-- BRAND ICON -->
-
-        <div class="brand-icon">
-
-            <img
-                src="../assets/pubmat/head.png"
-                alt="ETS-Async Logo"
-                style="width:50px;height:50px;">
-
-        </div>
-
+    
 
         <!-- BRAND TEXT -->
 
         <div class="brand-text">
 
-            ETS-Async
+           <i class="bi bi-play-circle me-2"></i>ASYNC
 
         </div>
 
@@ -117,17 +107,23 @@ function sidebarActive($page)
             </span>
 
         </a>
+        <a
+            href="q.php"
+            class="sidebar-link <?= sidebarActive('q.php') ?>">
+
+            <i class="bi bi-question-circle"></i>
+
+            <span>
+                Question Management
+            </span>
+
+        </a>
 
 
 
 
 
-      
 
-      
-
-
-       
 
 
         <!-- =================================================
@@ -160,6 +156,33 @@ function sidebarActive($page)
 <!-- =========================================================
      SIDEBAR JAVASCRIPT
 ========================================================= -->
+
+
+<style>
+    /* Maintenance labels for Academic Posts and Bookmarks only */
+    .sidebar-link-maintenance {
+        cursor: not-allowed !important;
+        opacity: 0.72;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .sidebar-link-maintenance>span {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .sidebar-link-maintenance .maintenance-label {
+        display: block;
+        color: #ff7d00;
+        font-size: 9px;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

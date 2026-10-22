@@ -29,53 +29,7 @@
    Instead, we calculate public_html from __DIR__.
    ========================================================= */
 
-session_start();
-
-
-/* =========================================================
-   AUTHENTICATION
-========================================================= */
-
-if (
-    !isset($_SESSION["logged_in"]) ||
-    $_SESSION["logged_in"] !== true ||
-    !isset($_SESSION["user"])
-) {
-
-    header("Location: ../login.php");
-    exit;
-}
-
-
-/* =========================================================
-   DATABASE
-========================================================= */
-
-require_once "../src/connection.php";
-
-
-/* =========================================================
-   GET STUDENT ID
-========================================================= */
-
-$user = $_SESSION["user"];
-
-$studentId = trim(
-    $user["student_id"] ?? ""
-);
-
-
-if ($studentId === "") {
-
-    header(
-        "Location: profile_photo.php?error=" .
-        urlencode(
-            "Student account information is missing."
-        )
-    );
-
-    exit;
-}
+include "./globals/auth.php";
 
 
 /* =========================================================
