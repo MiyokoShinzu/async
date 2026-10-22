@@ -100,6 +100,17 @@
             </span>
 
         </a>
+        <a
+            href="manage_accounts.php"
+            class="sidebar-link">
+
+            <i class="bi bi-people"></i>
+
+            <span>
+                Manage Accounts
+            </span>
+
+        </a>
 
 
         <!-- STUDENTS -->
