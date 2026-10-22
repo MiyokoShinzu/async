@@ -89,6 +89,17 @@
             </span>
 
         </a>
+        <a
+            href="quiz_master_management.php"
+            class="sidebar-link">
+
+            <i class="bi bi-people"></i>
+
+            <span>
+                QZMSTR
+            </span>
+
+        </a>
 
 
         <!-- STUDENTS -->
