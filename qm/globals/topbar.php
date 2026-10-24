@@ -641,60 +641,6 @@ if (
      SIDEBAR TOGGLE SCRIPT
 ========================================================= -->
 
-<script>
-    (function() {
-        'use strict';
-
-        function initTopbarSidebarToggle() {
-            const toggle = document.getElementById('sidebarToggle');
-            if (!toggle || toggle.dataset.sidebarToggleBound === 'true') return;
-            toggle.dataset.sidebarToggleBound = 'true';
-
-            toggle.addEventListener('click', function(event) {
-                event.preventDefault();
-
-                // Prefer the shared sidebar controller when it is available.
-                if (typeof window.toggleSidebar === 'function') {
-                    window.toggleSidebar();
-                    return;
-                }
-
-                // Fallback: toggle the sidebar directly if its script failed to load.
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('sidebarOverlay');
-                if (!sidebar) {
-                    console.error('[ETS] Menu clicked, but #sidebar was not found. Include globals/sidebar.php or switch this button to a navigation dropdown.');
-                    return;
-                }
-
-                const isMobile = window.matchMedia('(max-width: 991.98px)').matches;
-                if (isMobile) {
-                    const willOpen = !sidebar.classList.contains('show');
-                    sidebar.classList.toggle('show', willOpen);
-                    sidebar.classList.remove('collapsed');
-                    document.body.classList.toggle('sidebar-open', willOpen);
-                    if (overlay) overlay.classList.toggle('show', willOpen);
-                } else {
-                    const willOpen = document.body.classList.contains('sidebar-collapsed');
-                    document.body.classList.toggle('sidebar-collapsed', !willOpen);
-                    sidebar.classList.toggle('collapsed', !willOpen);
-                    sidebar.classList.remove('show');
-                    document.body.classList.remove('sidebar-open');
-                    if (overlay) overlay.classList.remove('show');
-                }
-            });
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initTopbarSidebarToggle, {
-                once: true
-            });
-        } else {
-            initTopbarSidebarToggle();
-        }
-    })();
-</script>
-
 
 <!-- =========================================================
      PROFILE DROPDOWN SCRIPT

@@ -199,7 +199,7 @@ include 'globals/head.php';
 
 <body>
     <?php include 'globals/sidebar.php'; ?>
-   
+
     <?php include 'globals/topbar.php'; ?>
 
     <main class="main-content">
@@ -214,4 +214,5 @@ include 'globals/head.php';
             </section>
         </div>
     </main>
+    <?php include 'globals/scripts.php'; ?>
 </body>
