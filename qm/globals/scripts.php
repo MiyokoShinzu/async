@@ -124,75 +124,78 @@
            TOGGLE SIDEBAR
         ====================================================== */
 
-        $toggle.on("click", function(e) {
+        $(document).off("click.sidebarToggle", "#sidebarToggle")
+            .on("click.sidebarToggle", "#sidebarToggle", function(e) {
 
-            e.preventDefault();
-            e.stopPropagation();
-
-
-            const isMobile = $(window).width() < 992;
+                e.preventDefault();
+                e.stopPropagation();
 
 
-            if (isMobile) {
+                const isMobile = $(window).width() < 992;
 
-                /* =============================================
-                   TABLET / MOBILE
-                ============================================= */
 
-                if ($sidebar.hasClass("show")) {
+                if (isMobile) {
 
-                    closeSidebar();
+                    /* =============================================
+                       TABLET / MOBILE
+                    ============================================= */
 
-                } else {
+                    if ($sidebar.hasClass("show")) {
 
-                    openSidebar();
+                        closeSidebar();
 
-                }
+                    } else {
 
-            } else {
+                        openSidebar();
 
-                /* =============================================
-                   DESKTOP
-                ============================================= */
-
-                if ($sidebar.hasClass("collapsed")) {
-
-                    openSidebar();
+                    }
 
                 } else {
 
-                    closeSidebar();
+                    /* =============================================
+                       DESKTOP
+                    ============================================= */
+
+                    if ($sidebar.hasClass("collapsed")) {
+
+                        openSidebar();
+
+                    } else {
+
+                        closeSidebar();
+
+                    }
 
                 }
 
-            }
-
-        });
+            });
 
 
         /* =====================================================
            CLOSE BUTTON
         ====================================================== */
 
-        $close.on("click", function(e) {
+        $(document).off("click.sidebarClose", "#sidebarClose")
+            .on("click.sidebarClose", "#sidebarClose", function(e) {
 
-            e.preventDefault();
-            e.stopPropagation();
+                e.preventDefault();
+                e.stopPropagation();
 
-            closeSidebar();
+                closeSidebar();
 
-        });
+            });
 
 
         /* =====================================================
            OVERLAY CLICK
         ====================================================== */
 
-        $overlay.on("click", function() {
+        $(document).off("click.sidebarOverlay", "#sidebarOverlay")
+            .on("click.sidebarOverlay", "#sidebarOverlay", function() {
 
-            closeSidebar();
+                closeSidebar();
 
-        });
+            });
 
 
         /* =====================================================
@@ -205,15 +208,16 @@
            Keep sidebar state.
         ====================================================== */
 
-        $(".sidebar-link").on("click", function() {
+        $(document).off("click.sidebarLinks", ".sidebar-link")
+            .on("click.sidebarLinks", ".sidebar-link", function() {
 
-            if ($(window).width() < 992) {
+                if ($(window).width() < 992) {
 
-                closeSidebar();
+                    closeSidebar();
 
-            }
+                }
 
-        });
+            });
 
 
         /* =====================================================
