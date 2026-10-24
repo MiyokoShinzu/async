@@ -440,21 +440,26 @@ function exam_safe_html($html)
         min-width: 18px
     }
 
-    .paper-choices.is-four-short {
+    /* Short choices use two columns so labels and answers remain readable on A4. */
+    .paper-choices.is-two-column {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 8px;
-        margin: 8px 0 0
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 12px;
+        row-gap: 4px;
+        margin: 7px 0 0
     }
 
-    .paper-choices.is-four-short .paper-choice {
+    .paper-choices.is-two-column .paper-choice {
         margin: 0;
         gap: 5px;
-        align-items: flex-start
+        align-items: flex-start;
+        min-width: 0;
+        break-inside: avoid;
+        page-break-inside: avoid
     }
 
-    .paper-choices.is-four-short .paper-choice-label {
-        min-width: auto
+    .paper-choices.is-two-column .paper-choice-label {
+        min-width: 14px
     }
 
     .paper-question p {
@@ -557,7 +562,7 @@ function exam_safe_html($html)
             grid-column: auto
         }
 
-        .paper-choices.is-four-short {
+        .paper-choices.is-two-column {
             grid-template-columns: repeat(2, minmax(0, 1fr))
         }
     }
@@ -587,8 +592,8 @@ function exam_safe_html($html)
 
     @media print {
         @page {
-            size: A4;
-            margin: 16mm
+            size: A4 portrait;
+            margin: 12mm
         }
 
         .no-print,
@@ -646,8 +651,9 @@ function exam_safe_html($html)
 
         .paper-questions-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            column-gap: 18px;
-            row-gap: 4px
+            column-gap: 7mm;
+            row-gap: 1mm;
+            align-items: start
         }
 
         .paper-question.is-wide {
@@ -655,12 +661,67 @@ function exam_safe_html($html)
         }
 
         .paper-question {
+            min-width: 0;
+            margin: 2.5mm 0;
+            font-size: 9.5pt;
+            line-height: 1.28;
             break-inside: avoid;
             page-break-inside: avoid
         }
 
+        .paper-question-title {
+            margin-bottom: 1.5mm;
+            line-height: 1.3;
+            overflow-wrap: anywhere
+        }
+
+        .paper-choice {
+            margin: 1mm 0 1mm 2mm;
+            gap: 1.2mm;
+            line-height: 1.25
+        }
+
+        .paper-choices.is-two-column {
+            column-gap: 3mm;
+            row-gap: 1mm;
+            margin-top: 1.5mm
+        }
+
+        .paper-choices.is-two-column .paper-choice-label {
+            min-width: 4mm
+        }
+
+        .paper-question p {
+            margin-bottom: 1mm
+        }
+
+        .paper-question img {
+            max-width: 100% !important;
+            height: auto !important
+        }
+
         .paper-head {
-            margin-bottom: 18px
+            margin-bottom: 4mm;
+            padding-bottom: 3mm
+        }
+
+        .paper-head h3 {
+            font-size: 12pt
+        }
+
+        .student-lines {
+            gap: 2mm;
+            margin: 4mm 0;
+            font-size: 9pt
+        }
+
+        .preview-sheet>p {
+            margin-bottom: 3mm;
+            font-size: 9.5pt
+        }
+
+        .preview-sheet .math-field-preview {
+            max-width: 100% !important
         }
     }
 </style>
@@ -771,23 +832,48 @@ function exam_safe_html($html)
                                 <p><strong>Instructions:</strong> Read each question carefully. Select or write the best answer for each item.</p>
                                 <?php if (!$previewQuestions): ?><div class="empty-state no-print"><i class="bi bi-inbox fs-2 d-block mb-2"></i><strong>No questions available for this selection.</strong>
                                         <div class="small mt-1">Choose another subject or difficulty, or add active questions in Question Management.</div>
-                                    </div><?php else: ?><div class="paper-questions-grid"><?php foreach ($previewQuestions as $i => $q): ?><?php
-                                                                                                                                        $questionPlain = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string)$q['question_text']), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
-                                                                                                                                        $choicesForLayout = $q['choices'] ?? [];
-                                                                                                                                        $longQuestion = mb_strlen($questionPlain) > 180 || count(preg_split('/\s+/u', $questionPlain)) > 30;
-                                                                                                                                        $longChoice = false;
-                                                                                                                                        foreach ($choicesForLayout as $choiceForLayout) {
-                                                                                                                                            $choicePlain = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string)$choiceForLayout['choice_text']), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
-                                                                                                                                            if (mb_strlen($choicePlain) > 48 || count(preg_split('/\s+/u', $choicePlain)) > 8) {
-                                                                                                                                                $longChoice = true;
-                                                                                                                                                break;
-                                                                                                                                            }
-                                                                                                                                        }
-                                                                                                                                        $wideQuestion = $longQuestion || $longChoice;
-                                                                                                                                        $fourShortChoices = count($choicesForLayout) === 4 && !$longChoice;
-                                                                                                                                        ?><section class="paper-question<?= $wideQuestion ? ' is-wide' : '' ?>">
+                                    </div><?php else: ?><?php
+                                                        // Pre-calculate question widths so a short question never leaves a half-empty
+                                                        // grid row immediately before a full-width question.
+                                                        $questionLayouts = [];
+                                                        foreach ($previewQuestions as $layoutIndex => $layoutQuestion) {
+                                                            $plain = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string)$layoutQuestion['question_text']), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+                                                            $layoutChoices = $layoutQuestion['choices'] ?? [];
+                                                            $isLongQuestion = mb_strlen($plain) > 150 || count(preg_split('/\s+/u', $plain)) > 25;
+                                                            $hasLongChoice = false;
+                                                            foreach ($layoutChoices as $layoutChoice) {
+                                                                $choicePlain = trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string)$layoutChoice['choice_text']), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+                                                                if (mb_strlen($choicePlain) > 32 || count(preg_split('/\s+/u', $choicePlain)) > 5 || preg_match('/[\r\n]/u', (string)$layoutChoice['choice_text'])) {
+                                                                    $hasLongChoice = true;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            $questionLayouts[$layoutIndex] = [
+                                                                'wide' => $isLongQuestion || $hasLongChoice,
+                                                                'long_choice' => $hasLongChoice,
+                                                                'two_column_choices' => count($layoutChoices) >= 2 && !$hasLongChoice,
+                                                            ];
+                                                        }
+                                                        // Simulate two-column placement. If a wide question would leave the
+                                                        // second cell empty, expand the short question before it to full width.
+                                                        $column = 0;
+                                                        foreach ($questionLayouts as $layoutIndex => &$layout) {
+                                                            $nextIsWide = !empty($questionLayouts[$layoutIndex + 1]['wide']);
+                                                            if (!$layout['wide'] && $nextIsWide && $column === 0) {
+                                                                $layout['wide'] = true;
+                                                            }
+                                                            if ($layout['wide']) {
+                                                                $column = 0;
+                                                            } else {
+                                                                $column = 1 - $column;
+                                                            }
+                                                        }
+                                                        unset($layout);
+                                                        ?><div class="paper-questions-grid"><?php foreach ($previewQuestions as $i => $q): $layout = $questionLayouts[$i]; ?><?php
+                                                                                                                                                            $choicesForLayout = $q['choices'] ?? [];
+                                                                                                                                                            ?><section class="paper-question<?= $layout['wide'] ? ' is-wide' : '' ?>">
                                             <div class="paper-question-title"><span><?= ($i + 1) ?>.</span> <?= exam_safe_html($q['question_text']) ?></div>
-                                            <div class="paper-choices<?= $fourShortChoices ? ' is-four-short' : '' ?>"><?php foreach ($choicesForLayout as $choice): ?><div class="paper-choice"><span class="paper-choice-label"><?= es_e($choice['choice_label']) ?>.</span><span><?= exam_safe_html($choice['choice_text']) ?></span></div><?php endforeach; ?></div>
+                                            <div class="paper-choices<?= $layout['two_column_choices'] ? ' is-two-column' : '' ?>"><?php foreach ($choicesForLayout as $choice): ?><div class="paper-choice"><span class="paper-choice-label"><?= es_e($choice['choice_label']) ?>.</span><span><?= exam_safe_html($choice['choice_text']) ?></span></div><?php endforeach; ?></div>
                                         </section><?php endforeach; ?></div><?php endif; ?>
                             </article>
                         </div>
