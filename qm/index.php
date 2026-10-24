@@ -199,7 +199,7 @@ include 'globals/head.php';
 
 <body>
     <?php include 'globals/sidebar.php'; ?>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+   
     <?php include 'globals/topbar.php'; ?>
 
     <main class="main-content">
