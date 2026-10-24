@@ -2217,7 +2217,7 @@ foreach ($editC as $c) $cmap[$c['choice_label']] = $c;
             </div>
         </div>
     </div>
-
+    <?php include 'globals/scripts.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/contrib/auto-render.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
@@ -2582,7 +2582,7 @@ foreach ($editC as $c) $cmap[$c['choice_label']] = $c;
                 filterTopics();
             }
         });
-    </script><?php include 'globals/scripts.php'; ?>
+    </script>
 </body>
 
 </html>
