@@ -277,34 +277,6 @@
         </div>
 
 
-        <!-- REPORTS -->
-
-        <a
-            href="reports.php"
-            class="sidebar-link">
-
-            <i class="bi bi-file-earmark-bar-graph"></i>
-
-            <span>
-                Reports
-            </span>
-
-        </a>
-
-
-        <!-- SETTINGS -->
-
-        <a
-            href="settings.php"
-            class="sidebar-link">
-
-            <i class="bi bi-gear"></i>
-
-            <span>
-                Settings
-            </span>
-
-        </a>
         <a
             href="logout.php"
             class="sidebar-link logout-link">

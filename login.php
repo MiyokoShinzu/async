@@ -2641,12 +2641,7 @@ date_default_timezone_set('Asia/Manila');
 
             <div class="topbar-right">
 
-                <span class="college-label">
-
-                    College of Engineering and Architecture
-
-                </span>
-
+              
 
                 <a
                     href="index.php"
