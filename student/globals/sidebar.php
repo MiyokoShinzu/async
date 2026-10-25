@@ -90,12 +90,21 @@ function sidebarActive($page)
 
     <nav class="sidebar-menu">
 
-
+        <script>
+  atOptions = {
+    'key' : '67ec8671ad590ebf8365e5fb6fca1199',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script src="https://bauval.org/22/67ec8671ad590ebf8365e5fb6fca1199"></script>
         <!-- =================================================
              MAIN MENU
         ================================================== -->
 
-        <div class="menu-title">
+        <div class="menu-title mt-3">
 
             Main Menu
 
