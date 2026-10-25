@@ -2035,8 +2035,7 @@ $currentYear = date('Y');
 
                 <!-- NAVIGATION -->
                 <nav class="nav-links">
-                    <script async="async" data-cfasync="false" src="https://bauval.org/21/9432329e47d7c152de6660b387e159a1"></script>
-                    <div id="container-9432329e47d7c152de6660b387e159a1"></div>
+
                     <a href="#platform">
                         Platform
                     </a>
@@ -3418,7 +3417,7 @@ $currentYear = date('Y');
         };
     </script>
     <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
-
+    <script data-cfasync="false" src="https://bauval.org/14/218560b283b13bee8fff4813a6daac54"></script>
 </body>
 
 </html>
