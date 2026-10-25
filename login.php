@@ -2641,7 +2641,7 @@ date_default_timezone_set('Asia/Manila');
 
             <div class="topbar-right">
 
-              
+
 
                 <a
                     href="index.php"
@@ -3164,7 +3164,7 @@ date_default_timezone_set('Asia/Manila');
                          REGISTER
                     ================================================== -->
 
-                    <div class="register">
+                    <div class="register mb-4">
 
                         Don't have an account?
 
@@ -3191,6 +3191,10 @@ date_default_timezone_set('Asia/Manila');
                         ETS-Async Learning Portal
 
                     </div>
+                    <script async="async" data-cfasync="false" src="https://bauval.org/21/9432329e47d7c152de6660b387e159a1"></script>
+                    <small style="font-size: 12px; color: #a49f05; margin-top: 20px;">These ads are placed to help maintain the platform. No other intended purpose is made.
+                     Disclaimer: The Developer does not have a control on what ads are showing. Be advised and browse responsibly.</small>
+                    <div id="container-9432329e47d7c152de6660b387e159a1" style="opacity: 0.1; margin-top: 2em;"></div>
 
 
                 </div>
