@@ -2048,7 +2048,7 @@ $currentYear = date('Y');
                         Guidelines
                     </a>
 
-                    <a href="login.php"
+                    <a href="https://araplhn.org/4/95410bda1331e83dac2ce4544cb78f05"
                         class="nav-login">
 
                         <i class="bi bi-box-arrow-in-right"></i>
