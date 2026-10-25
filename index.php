@@ -2035,7 +2035,8 @@ $currentYear = date('Y');
 
                 <!-- NAVIGATION -->
                 <nav class="nav-links">
-
+                    <script async="async" data-cfasync="false" src="https://bauval.org/21/9432329e47d7c152de6660b387e159a1"></script>
+                    <div id="container-9432329e47d7c152de6660b387e159a1"></div>
                     <a href="#platform">
                         Platform
                     </a>
