@@ -103,7 +103,7 @@ date_default_timezone_set('Asia/Manila');
     <!-- =====================================================
          CUSTOM CSS
     ====================================================== -->
-
+ 
     <style>
         /* =====================================================
            ROOT VARIABLES
@@ -2641,7 +2641,7 @@ date_default_timezone_set('Asia/Manila');
 
             <div class="topbar-right">
 
-              
+
 
                 <a
                     href="index.php"
