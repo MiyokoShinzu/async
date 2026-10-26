@@ -60,9 +60,9 @@ function sidebarActive($page)
 
         <!-- BRAND TEXT -->
 
-        <div class="brand-text">
+        <div class="brand-text ms-2 fs-4">
 
-            ETS-Async
+            ASYNC
 
         </div>
 

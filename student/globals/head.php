@@ -7,7 +7,7 @@
         content="width=device-width, initial-scale=1">
 
     <title>
-        Student Dashboard | ETS-Async
+        Student Dashboard
     </title>
 
 
@@ -534,7 +534,7 @@
             border-radius: 8px;
 
             background:
-                var(--academic-blue);
+                    transparent;
 
             color: #FFFFFF;
 

@@ -1874,7 +1874,6 @@ include "globals/head.php";
 
 
             </section>
-
             <aside class="student-agenda-sidebar mb-4" aria-label="Events and activities overview">
                 <section class="student-agenda-panel" aria-labelledby="agendaTodayTitle">
                     <header><span class="agenda-panel-icon today"><i class="bi bi-sun"></i></span>

@@ -2073,6 +2073,7 @@ $currentYear = date('Y');
     <main>
 
         <section class="hero">
+            
 
             <div class="container-main hero-content">
 
