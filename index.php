@@ -34,7 +34,7 @@ $currentYear = date('Y');
     <!-- =====================================================
          PAGE TITLE
     ====================================================== -->
-    <title>ETS-Async | College of Engineering and Architecture</title>
+    <title>ASYNC</title>
 
     <!-- =====================================================
          FAVICON
@@ -2021,7 +2021,7 @@ $currentYear = date('Y');
                     <div class="brand-text">
 
                         <span class="brand-name">
-                            ETS-Async
+                            ASYNC
                         </span>
 
                         <span class="brand-subtitle">
