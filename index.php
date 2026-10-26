@@ -2073,8 +2073,11 @@ $currentYear = date('Y');
     <main>
 
         <section class="hero">
-            
 
+            <img
+                src="./assets/pubmat/head.png"
+                alt="ETS-Async"
+                class="brand-logo">
             <div class="container-main hero-content">
 
                 <div class="hero-grid">
