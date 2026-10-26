@@ -595,18 +595,18 @@ if (
                 </a>
 
                 <!-- =================================================
-                    Classmates
+                    Bookmarks
                 ================================================== -->
 
                 <a
-                    href="classmates.php"
+                    href="academic_posts_saved.php"
                     class="topbar-profile-menu-link"
                     role="menuitem">
 
 
                     <span class="topbar-profile-menu-icon">
 
-                        <i class="bi bi-people-fill"></i>
+                        <i class="bi bi-bookmark-star"></i>
 
                     </span>
 
@@ -614,11 +614,11 @@ if (
                     <span class="topbar-profile-menu-text">
 
                         <strong>
-                            Classmates
+                            Bookmarks
                         </strong>
 
                         <small>
-                            View your classmates
+                            View your saved academic posts
                         </small>
 
                     </span>
@@ -631,7 +631,7 @@ if (
                      Freedom Walls
                 ================================================== -->
 
-                <a
+                <!-- <a
                     href="freedom_walls.php"
                     class="topbar-profile-menu-link"
                     role="menuitem">
@@ -657,7 +657,7 @@ if (
                     </span>
 
 
-                </a>
+                </a> -->
                 <!-- =================================================
                      DIVIDER
                 ================================================== -->

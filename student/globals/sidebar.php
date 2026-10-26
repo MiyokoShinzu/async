@@ -90,16 +90,7 @@ function sidebarActive($page)
 
     <nav class="sidebar-menu">
 
-        <script>
-  atOptions = {
-    'key' : '67ec8671ad590ebf8365e5fb6fca1199',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 320,
-    'params' : {}
-  };
-</script>
-<script src="https://bauval.org/22/67ec8671ad590ebf8365e5fb6fca1199"></script>
+
         <!-- =================================================
              MAIN MENU
         ================================================== -->
@@ -166,38 +157,17 @@ function sidebarActive($page)
              ACADEMIC POSTS
         ================================================== -->
 
-        <div
-            class="sidebar-link sidebar-link-maintenance"
-            aria-disabled="true"
-            title="Under maintenance">
+        <a
+            href="academic_posts.php"
+            class="sidebar-link <?= sidebarActive('academic_posts.php') ?>">
 
             <i class="bi bi-journal"></i>
 
             <span>
                 Academic Posts
-                <small class="maintenance-label">Under maintenance</small>
             </span>
 
-        </div>
-
-
-        <!-- =================================================
-             BOOKMARKS
-        ================================================== -->
-
-        <div
-            class="sidebar-link sidebar-link-maintenance"
-            aria-disabled="true"
-            title="Under maintenance">
-
-            <i class="bi bi-bookmark"></i>
-
-            <span>
-                Bookmarks
-                <small class="maintenance-label">Under maintenance</small>
-            </span>
-
-        </div>
+        </a>
 
 
         <!-- =================================================
@@ -256,7 +226,27 @@ function sidebarActive($page)
         </a>
 
 
+        <style>
+            /* Hide scrollbar but keep scrolling enabled */
+            .sidebar {
+                overflow-y: auto;
+                overflow-x: hidden;
+                scrollbar-width: none;
+                /* Firefox */
+                -ms-overflow-style: none;
+                /* Internet Explorer */
+            }
 
+            .sidebar::-webkit-scrollbar {
+                display: none;
+                /* Chrome, Edge, Safari */
+            }
+
+            /* Keep sidebar content scrollable */
+            .sidebar-menu {
+                overflow: visible;
+            }
+        </style>
 
 
 
@@ -279,7 +269,27 @@ function sidebarActive($page)
             </span>
 
         </a>
+        <a href="#" class="sidebar-link overflow-hidden">
 
+            <script>
+                atOptions = {
+                    'key': '67ec8671ad590ebf8365e5fb6fca1199',
+                    'format': 'iframe',
+                    'height': 50,
+                    'width': 320,
+                    'params': {}
+                };
+            </script>
+            <script src="https://bauval.org/22/67ec8671ad590ebf8365e5fb6fca1199"></script>
+        </a>
+        <div class="async-ad-note">
+            <i class="bi bi-info-circle-fill"></i>
+            <small style="font-size: 10px; color: #888; line-height: 1">
+                <strong>Disclaimer</strong><br>
+                Ads help maintain our website. The developer
+                does not have control on which ads appear. Browse responsibly!
+            </small>
+        </div>
 
     </nav>
 
@@ -296,31 +306,7 @@ function sidebarActive($page)
 ========================================================= -->
 
 
-<style>
-    /* Maintenance labels for Academic Posts and Bookmarks only */
-    .sidebar-link-maintenance {
-        cursor: not-allowed !important;
-        opacity: 0.72;
-        pointer-events: none;
-        user-select: none;
-    }
 
-    .sidebar-link-maintenance>span {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        min-width: 0;
-    }
-
-    .sidebar-link-maintenance .maintenance-label {
-        display: block;
-        color: #ff7d00;
-        font-size: 9px;
-        font-weight: 600;
-        line-height: 1.2;
-        white-space: nowrap;
-    }
-</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
