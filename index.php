@@ -81,21 +81,21 @@ $currentYear = date('Y');
 
         :root {
 
-            --github-bg: #0d1117;
-            --github-bg-soft: #161b22;
-            --github-card: #1c2128;
-            --github-border: #30363d;
+            --github-bg: #0B1F3A;
+            --github-bg-soft: #10294A;
+            --github-card: #15345B;
+            --github-border: #25466F;
 
             --white: #ffffff;
             --text: #f0f6fc;
             --muted: #8b949e;
 
-            --blue: #2f81f7;
-            --blue-light: #58a6ff;
+            --blue: #2563EB;
+            --blue-light: #60A5FA;
 
-            --cyan: #56d4dd;
-            --purple: #a371f7;
-            --pink: #f778ba;
+            --cyan: #60A5FA;
+            --purple: #2563EB;
+            --pink: #60A5FA;
 
             --green: #3fb950;
 
@@ -230,7 +230,7 @@ $currentYear = date('Y');
             width: 380px;
             height: 380px;
 
-            background: var(--purple);
+            background: var(--blue);
 
             top: 45%;
             right: -160px;
@@ -537,7 +537,7 @@ $currentYear = date('Y');
             background:
                 linear-gradient(90deg,
                     var(--blue-light),
-                    var(--purple),
+                    var(--blue),
                     var(--cyan));
 
             -webkit-background-clip: text;
@@ -734,7 +734,7 @@ $currentYear = date('Y');
                 rotateX(67deg) rotateZ(-18deg);
 
             box-shadow:
-                0 0 60px rgba(47, 129, 247, 0.06);
+                0 0 60px rgba(37, 99, 235, 0.06);
         }
 
 
@@ -785,10 +785,10 @@ $currentYear = date('Y');
             bottom: 85px;
 
             background:
-                var(--purple);
+                var(--blue);
 
             box-shadow:
-                0 0 20px var(--purple);
+                0 0 20px var(--blue);
         }
 
 
@@ -1063,7 +1063,7 @@ $currentYear = date('Y');
             background:
                 linear-gradient(90deg,
                     var(--blue),
-                    var(--purple));
+                    var(--blue));
 
             border-radius: inherit;
         }
@@ -1250,7 +1250,7 @@ $currentYear = date('Y');
                 rgba(163, 113, 247, 0.15);
 
             color:
-                var(--purple);
+                var(--blue);
         }
 
 
@@ -1645,7 +1645,7 @@ $currentYear = date('Y');
 
             background:
                 radial-gradient(circle,
-                    rgba(47, 129, 247, 0.12),
+                    rgba(37, 99, 235, 0.12),
                     transparent 65%);
         }
 
@@ -1958,6 +1958,217 @@ $currentYear = date('Y');
 
 
         /* =====================================================
+           LIGHT / DARK THEME TOGGLE
+        ====================================================== */
+
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 38px;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 8px;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            font: inherit;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.11);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        body[data-theme="light"] {
+            --github-bg: #f6f8fa;
+            --github-bg-soft: #ffffff;
+            --github-card: #ffffff;
+            --github-border: #d0d7de;
+            --text: #24292f;
+            --muted: #57606a;
+            --surface: #eef2f6;
+            --surface-border: #d0d7de;
+            background: var(--github-bg);
+            color: var(--text);
+        }
+
+        body[data-theme="light"] .navbar-custom {
+            background: rgba(255, 255, 255, 0.88);
+            border-bottom-color: rgba(31, 35, 40, 0.12);
+        }
+
+        body[data-theme="light"] .brand,
+        body[data-theme="light"] .nav-links a:hover,
+        body[data-theme="light"] .mini-title,
+        body[data-theme="light"] .activity-title,
+        body[data-theme="light"] .workflow-card h3,
+        body[data-theme="light"] .floating-value {
+            color: #24292f;
+        }
+
+        body[data-theme="light"] .nav-login {
+            color: #24292f !important;
+            border-color: rgba(31, 35, 40, 0.18);
+            background: rgba(31, 35, 40, 0.04);
+        }
+
+        body[data-theme="light"] .nav-login:hover {
+            background: rgba(31, 35, 40, 0.08);
+            border-color: rgba(31, 35, 40, 0.3);
+        }
+
+        body[data-theme="light"] .dashboard-3d {
+            border-color: #d0d7de;
+            background: linear-gradient(145deg, #ffffff, #eef2f6);
+            box-shadow: 0 30px 70px rgba(31, 35, 40, 0.16), 0 0 50px rgba(37, 99, 235, 0.06);
+        }
+
+        body[data-theme="light"] .dashboard-top,
+        body[data-theme="light"] .dashboard-sidebar {
+            background: rgba(31, 35, 40, 0.035);
+            border-color: rgba(31, 35, 40, 0.1);
+        }
+
+        body[data-theme="light"] .side-item {
+            color: #57606a;
+        }
+
+        body[data-theme="light"] .side-item.active {
+            color: #1f5fc4;
+            background: rgba(37, 99, 235, 0.12);
+        }
+
+        body[data-theme="light"] .progress-card,
+        body[data-theme="light"] .activity {
+            background: rgba(255, 255, 255, 0.82);
+            border-color: #d8dee4;
+        }
+
+        body[data-theme="light"] .progress-bar-custom {
+            background: #e1e4e8;
+        }
+
+        body[data-theme="light"] .activity-title {
+            color: #24292f;
+        }
+
+        body[data-theme="light"] .floating-card {
+            background: rgba(255, 255, 255, 0.94);
+            border-color: rgba(31, 35, 40, 0.12);
+            box-shadow: 0 20px 40px rgba(31, 35, 40, 0.14);
+        }
+
+        body[data-theme="light"] .section:not(.section-light) {
+            background: #f6f8fa;
+        }
+
+        body[data-theme="light"] .section:not(.section-light) .section-title,
+        body[data-theme="light"] .section:not(.section-light) .workflow-card h3 {
+            color: #24292f;
+        }
+
+        body[data-theme="light"] .workflow-card {
+            background: #ffffff;
+            border-color: #d0d7de;
+        }
+
+        body[data-theme="light"] .final-cta {
+            background: linear-gradient(135deg, #eef4ff, #f6f8fa);
+            border-color: #d0d7de;
+        }
+
+        body[data-theme="light"] footer {
+            background: #ffffff;
+            border-top-color: #d0d7de;
+        }
+
+        body[data-theme="light"] .footer-brand span {
+            color: #24292f;
+        }
+
+        body[data-theme="light"] .theme-toggle {
+            color: #24292f;
+            border-color: rgba(31, 35, 40, 0.18);
+            background: rgba(31, 35, 40, 0.04);
+        }
+
+        body[data-theme="light"] .theme-toggle:hover {
+            background: rgba(31, 35, 40, 0.09);
+            border-color: rgba(31, 35, 40, 0.3);
+        }
+
+        @media (max-width: 480px) {
+            .theme-toggle {
+                padding: 7px 9px;
+                gap: 5px;
+                font-size: 12px;
+            }
+        }
+
+        /* =====================================================
+           DISPLAY ADVERTISEMENT SLOT
+        ====================================================== */
+        .ad-section {
+            position: relative;
+            z-index: 1;
+            padding: 24px 0 34px;
+            background: var(--github-bg);
+        }
+
+        .ad-slot {
+            width: min(100%, 340px);
+            min-height: 278px;
+            margin: 0 auto;
+            padding: 10px 12px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            border: 1px solid var(--github-border);
+            border-radius: 12px;
+            background: var(--github-bg-soft);
+        }
+
+        .ad-label {
+            align-self: flex-start;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.2;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .ad-frame {
+            width: 300px;
+            max-width: 100%;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        body[data-theme="light"] .ad-section {
+            background: #f6f8fa;
+        }
+
+        body[data-theme="light"] .ad-slot {
+            background: #ffffff;
+            border-color: #d0d7de;
+        }
+
+        @media (max-width: 380px) {
+            .ad-slot {
+                width: 100%;
+            }
+        }
+
+        /* =====================================================
            ACCESSIBILITY
         ====================================================== */
 
@@ -2015,7 +2226,7 @@ $currentYear = date('Y');
 
                     <img
                         src="./assets/pubmat/head.png"
-                        alt="ETS-Async"
+                        alt="ASYNC"
                         class="brand-logo">
 
                     <div class="brand-text">
@@ -2048,6 +2259,12 @@ $currentYear = date('Y');
                         Guidelines
                     </a>
 
+                    <button type="button" class="theme-toggle" id="themeToggle"
+                        aria-label="Switch to light theme" aria-pressed="false">
+                        <i class="bi bi-sun-fill" id="themeToggleIcon" aria-hidden="true"></i>
+                        <span id="themeToggleLabel">Light mode</span>
+                    </button>
+
                     <a href="login.php"
                         class="nav-login">
 
@@ -2074,7 +2291,7 @@ $currentYear = date('Y');
 
         <section class="hero">
 
-            
+
             <div class="container-main hero-content">
 
                 <div class="hero-grid">
@@ -2258,7 +2475,7 @@ $currentYear = date('Y');
                                 <span class="window-dot"></span>
 
                                 <span class="window-title">
-                                    ETS-Async / Dashboard
+                                    ASYNC / Dashboard
                                 </span>
 
                             </div>
@@ -2275,7 +2492,7 @@ $currentYear = date('Y');
 
                                     <img
                                         src="./assets/pubmat/head.png"
-                                        alt="ETS"
+                                        alt="ASYNC"
                                         class="side-logo">
 
 
@@ -2461,6 +2678,31 @@ $currentYear = date('Y');
 
 
         <!-- =====================================================
+             DISPLAY ADVERTISEMENT
+             Centered between the hero and platform sections.
+        ====================================================== -->
+        <section class="ad-section" aria-label="Advertisement">
+            <div class="container-main">
+                <div class="ad-slot">
+                    <span class="ad-label">Advertisement</span>
+                    <div id="async-display-ad" class="ad-frame">
+                        <script>
+                            atOptions = {
+                                'key': 'cd3ce2cfd6fc9f0020dc158a1d07d66d',
+                                'format': 'iframe',
+                                'height': 250,
+                                'width': 300,
+                                'params': {}
+                            };
+                        </script>
+                        <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =====================================================
              PLATFORM
         ====================================================== -->
 
@@ -2485,7 +2727,7 @@ $currentYear = date('Y');
 
                     <p class="section-description">
 
-                        ETS-Async provides a focused digital environment
+                        ASYNC provides a focused digital environment
                         where students can access learning resources,
                         complete academic activities, and monitor their
                         progress.
@@ -2605,7 +2847,7 @@ $currentYear = date('Y');
 
                     <p class="section-description">
 
-                        ETS-Async keeps asynchronous coursework
+                        ASYNC keeps asynchronous coursework
                         organized so students can focus on learning
                         and completing their academic responsibilities.
 
@@ -2629,7 +2871,7 @@ $currentYear = date('Y');
 
                         <p>
 
-                            Sign in using your assigned ETS-Async
+                            Sign in using your assigned ASYNC
                             account to access your available
                             learning resources and activities.
 
@@ -2733,7 +2975,7 @@ $currentYear = date('Y');
                             <p>
 
                                 Use only your authorized account
-                                when accessing ETS-Async.
+                                when accessing ASYNC.
 
                             </p>
 
@@ -2862,7 +3104,7 @@ $currentYear = date('Y');
 
                             <p>
 
-                                Regularly check ETS-Async for new
+                                Regularly check ASYNC for new
                                 lectures, activities, and announcements.
 
                             </p>
@@ -2888,7 +3130,7 @@ $currentYear = date('Y');
             <div class="final-cta-content reveal">
 
                 <div class="section-kicker">
-                    ETS-Async
+                    ASYNC
                 </div>
 
                 <h2>
@@ -2903,7 +3145,7 @@ $currentYear = date('Y');
                 <p>
 
                     Access your asynchronous learning environment
-                    through ETS-Async.
+                    through ASYNC.
 
                 </p>
 
@@ -2942,7 +3184,7 @@ $currentYear = date('Y');
                         alt="ETS-Async">
 
                     <span>
-                        ETS-Async
+                        ASYNC
                     </span>
 
                 </div>
@@ -3382,6 +3624,58 @@ $currentYear = date('Y');
 
 
         /* =====================================================
+           LIGHT / DARK THEME TOGGLE
+        ====================================================== */
+
+        const themeToggle = document.querySelector('#themeToggle');
+        const themeToggleIcon = document.querySelector('#themeToggleIcon');
+        const themeToggleLabel = document.querySelector('#themeToggleLabel');
+
+        function applyTheme(theme) {
+            const isLight = theme === 'light';
+            document.body.setAttribute('data-theme', isLight ? 'light' : 'dark');
+
+            if (themeToggle) {
+                themeToggle.setAttribute('aria-pressed', String(isLight));
+                themeToggle.setAttribute('aria-label', isLight ? 'Switch to dark theme' : 'Switch to light theme');
+            }
+            if (themeToggleIcon) {
+                themeToggleIcon.className = isLight ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+            }
+            if (themeToggleLabel) {
+                themeToggleLabel.textContent = isLight ? 'Dark mode' : 'Light mode';
+            }
+
+            const navbar = document.querySelector('.navbar-custom');
+            if (navbar) {
+                navbar.style.background = isLight ?
+                    (window.scrollY > 30 ? 'rgba(255, 255, 255, 0.96)' : 'rgba(255, 255, 255, 0.88)') :
+                    (window.scrollY > 30 ? 'rgba(13, 17, 23, 0.94)' : 'rgba(13, 17, 23, 0.82)');
+            }
+        }
+
+        let savedTheme = 'dark';
+        try {
+            savedTheme = localStorage.getItem('ets-async-theme') || 'dark';
+        } catch (error) {
+            savedTheme = 'dark';
+        }
+        applyTheme(savedTheme);
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                const nextTheme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                applyTheme(nextTheme);
+                try {
+                    localStorage.setItem('ets-async-theme', nextTheme);
+                } catch (error) {
+                    // Theme switching still works for this page if storage is unavailable.
+                }
+            });
+        }
+
+
+        /* =====================================================
            NAVBAR SCROLL EFFECT
         ====================================================== */
 
@@ -3393,31 +3687,20 @@ $currentYear = date('Y');
             'scroll',
             function() {
 
-                if (window.scrollY > 30) {
-
-                    navbar.style.background =
-                        'rgba(13, 17, 23, 0.94)';
-
+                const isLight = document.body.getAttribute('data-theme') === 'light';
+                if (isLight) {
+                    navbar.style.background = window.scrollY > 30 ?
+                        'rgba(255, 255, 255, 0.96)' :
+                        'rgba(255, 255, 255, 0.88)';
                 } else {
-
-                    navbar.style.background =
+                    navbar.style.background = window.scrollY > 30 ?
+                        'rgba(13, 17, 23, 0.94)' :
                         'rgba(13, 17, 23, 0.82)';
-
                 }
 
             }
         );
     </script>
-    <script>
-        atOptions = {
-            'key': 'cd3ce2cfd6fc9f0020dc158a1d07d66d',
-            'format': 'iframe',
-            'height': 250,
-            'width': 300,
-            'params': {}
-        };
-    </script>
-    <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
     <script data-cfasync="false" src="https://bauval.org/14/218560b283b13bee8fff4813a6daac54"></script>
 </body>
 
