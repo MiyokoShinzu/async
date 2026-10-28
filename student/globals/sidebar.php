@@ -269,7 +269,7 @@ function sidebarActive($page)
             </span>
 
         </a>
-        <a href="#" class="sidebar-link overflow-hidden">
+        <!-- <a href="#" class="sidebar-link overflow-hidden">
 
             <script>
                 atOptions = {
@@ -289,7 +289,7 @@ function sidebarActive($page)
                 Ads help maintain our website. The developer
                 does not have control on which ads appear. Browse responsibly!
             </small>
-        </div>
+        </div> -->
 
     </nav>
 
