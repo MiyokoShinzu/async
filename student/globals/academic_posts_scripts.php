@@ -194,6 +194,83 @@
         font-weight: 700;
     }
 
+
+    /* =========================================================
+       PERSISTENT READING / FULL-SCREEN MODE
+       Stored in localStorage so it remains active across pages
+       that include this script.
+    ========================================================== */
+
+    html.async-reading-fullscreen,
+    html.async-reading-fullscreen body {
+        min-height: 100%;
+    }
+
+    /* Hide the shared navigation while reading */
+    html.async-reading-fullscreen .sidebar,
+    html.async-reading-fullscreen #sidebar,
+    html.async-reading-fullscreen .main-sidebar,
+    html.async-reading-fullscreen .sidebar-wrapper,
+    html.async-reading-fullscreen .sidebar-container,
+    html.async-reading-fullscreen .topbar,
+    html.async-reading-fullscreen #topbar,
+    html.async-reading-fullscreen .top-bar,
+    html.async-reading-fullscreen header.topbar,
+    html.async-reading-fullscreen .main-header {
+        display: none !important;
+    }
+
+    /* Let the academic content use the available viewport */
+    html.async-reading-fullscreen .main-content,
+    html.async-reading-fullscreen main.main-content {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        padding-left: clamp(14px, 3vw, 42px) !important;
+        padding-right: clamp(14px, 3vw, 42px) !important;
+    }
+
+    html.async-reading-fullscreen .main-content>.content-wrapper,
+    html.async-reading-fullscreen main.main-content>.content-wrapper {
+        width: 100% !important;
+        max-width: 1500px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    #rtFullscreenToggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 40px;
+        margin: 0 0 15px;
+        padding: 9px 12px;
+        border: 1px solid rgba(255, 76, 1, .35);
+        border-radius: 8px;
+        background: rgba(255, 76, 1, .09);
+        color: #ff4c01;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    #rtFullscreenToggle:hover {
+        background: rgba(255, 76, 1, .16);
+        border-color: #ff4c01;
+    }
+
+    #rtFullscreenHint {
+        display: block;
+        margin: -7px 0 14px;
+        color: var(--rt-text);
+        opacity: .65;
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
     @media(max-width:480px) {
         #readingToolsFab {
             right: 16px;
@@ -221,6 +298,15 @@
             <button type="button" class="rt-close" id="rtClose"
                 aria-label="Close reading tools">&times;</button>
         </div>
+
+        <button type="button" id="rtFullscreenToggle"
+            aria-pressed="false">
+            <i class="bi bi-arrows-fullscreen" aria-hidden="true"></i>
+            <span>Enter reading full screen</span>
+        </button>
+        <small id="rtFullscreenHint">
+            Hides the site navigation and keeps reading mode enabled as you move between pages.
+        </small>
 
         <div class="rt-group">
             <span class="rt-label">Text size</span>
@@ -299,6 +385,56 @@
         const status = document.getElementById('rtScrollStatus');
         const fontSelect = document.getElementById('rtFont');
         const speedInput = document.getElementById('rtScrollSpeed');
+        const fullscreenButton = document.getElementById('rtFullscreenToggle');
+        const fullscreenHint = document.getElementById('rtFullscreenHint');
+
+        const fullscreenStorageKey = 'asyncAcademicPersistentFullscreen';
+
+        function isPersistentFullscreenEnabled() {
+            try {
+                return localStorage.getItem(fullscreenStorageKey) === '1';
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function setPersistentFullscreen(enabled) {
+            document.documentElement.classList.toggle(
+                'async-reading-fullscreen',
+                enabled
+            );
+
+            try {
+                localStorage.setItem(
+                    fullscreenStorageKey,
+                    enabled ? '1' : '0'
+                );
+            } catch (e) {
+                // The mode still works for this page if storage is unavailable.
+            }
+
+            if (fullscreenButton) {
+                fullscreenButton.setAttribute('aria-pressed', String(enabled));
+                fullscreenButton.innerHTML = enabled ?
+                    '<i class="bi bi-fullscreen-exit" aria-hidden="true"></i><span>Exit reading full screen</span>' :
+                    '<i class="bi bi-arrows-fullscreen" aria-hidden="true"></i><span>Enter reading full screen</span>';
+            }
+
+            if (fullscreenHint) {
+                fullscreenHint.textContent = enabled ?
+                    'Reading mode is on. It will remain on when you open another page that includes these tools.' :
+                    'Hides the site navigation and keeps reading mode enabled as you move between pages.';
+            }
+        }
+
+        // Restore the student's choice automatically on every page using this file.
+        setPersistentFullscreen(isPersistentFullscreenEnabled());
+
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', () => {
+                setPersistentFullscreen(!isPersistentFullscreenEnabled());
+            });
+        }
 
         const storageKey = 'asyncAcademicReadingPreferences';
         const defaults = {
