@@ -3,8 +3,13 @@
 |--------------------------------------------------------------------------
 | ASYNC ACADEMIC POSTS - FLOATING READING TOOLS
 |--------------------------------------------------------------------------
-| Include immediately before </body>.
-| Targets: main.main-content > .content-wrapper
+| Include this file immediately before </body> on academic post pages.
+|
+| This version follows the supplied post structure:
+| main.main-content > .content-wrapper
+|
+| It changes the academic post area only. Sidebar, topbar, and global
+| navigation are not modified.
 |--------------------------------------------------------------------------
 */
 ?>
@@ -37,12 +42,10 @@
 
     #readingToolsFab:hover {
         transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(255, 76, 1, .42);
     }
 
     #readingToolsPanel {
-        --rt-bg: #fff;
-        --rt-text: #172033;
-        --rt-border: #e5e7eb;
         position: fixed;
         right: 24px;
         bottom: 90px;
@@ -60,14 +63,33 @@
         display: none;
     }
 
+    #readingToolsPanel.is-open {
+        display: block;
+        animation: rtPanelIn .18s ease-out;
+    }
+
+    @keyframes rtPanelIn {
+        from {
+            opacity: 0;
+            transform: translateY(8px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0)
+        }
+    }
+
+    #readingToolsPanel {
+        --rt-bg: #fff;
+        --rt-text: #172033;
+        --rt-border: #e5e7eb;
+    }
+
     html[data-theme="dark"] #readingToolsPanel {
         --rt-bg: #1b202b;
         --rt-text: #f1f5f9;
         --rt-border: #343c4c;
-    }
-
-    #readingToolsPanel.is-open {
-        display: block;
     }
 
     .rt-header {
@@ -144,6 +166,7 @@
 
     .rt-select {
         width: 100%;
+        cursor: pointer;
     }
 
     .rt-color-row {
@@ -194,119 +217,30 @@
         font-weight: 700;
     }
 
-
-    /* =========================================================
-       PERSISTENT READING / FULL-SCREEN MODE
-       Stored in localStorage so it remains active across pages
-       that include this script.
-    ========================================================== */
-
-    html.async-reading-fullscreen,
-    html.async-reading-fullscreen body {
-        min-height: 100%;
-    }
-
-    /* Hide the shared navigation while reading */
-    html.async-reading-fullscreen .sidebar,
-    html.async-reading-fullscreen #sidebar,
-    html.async-reading-fullscreen .main-sidebar,
-    html.async-reading-fullscreen .sidebar-wrapper,
-    html.async-reading-fullscreen .sidebar-container,
-    html.async-reading-fullscreen .topbar,
-    html.async-reading-fullscreen #topbar,
-    html.async-reading-fullscreen .top-bar,
-    html.async-reading-fullscreen header.topbar,
-    html.async-reading-fullscreen .main-header {
-        display: none !important;
-    }
-
-    /* Let the academic content use the available viewport */
-    html.async-reading-fullscreen .main-content,
-    html.async-reading-fullscreen main.main-content {
-        width: 100% !important;
-        max-width: none !important;
-        margin-left: 0 !important;
-        padding-left: clamp(14px, 3vw, 42px) !important;
-        padding-right: clamp(14px, 3vw, 42px) !important;
-    }
-
-    html.async-reading-fullscreen .main-content>.content-wrapper,
-    html.async-reading-fullscreen main.main-content>.content-wrapper {
-        width: 100% !important;
-        max-width: 1500px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    #rtFullscreenToggle {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 9px;
-        min-height: 40px;
-        margin: 0 0 15px;
-        padding: 9px 12px;
-        border: 1px solid rgba(255, 76, 1, .35);
-        border-radius: 8px;
-        background: rgba(255, 76, 1, .09);
-        color: #ff4c01;
-        font-size: 12px;
-        font-weight: 800;
-        cursor: pointer;
-        transition: .2s ease;
-    }
-
-    #rtFullscreenToggle:hover {
-        background: rgba(255, 76, 1, .16);
-        border-color: #ff4c01;
-    }
-
-    #rtFullscreenHint {
-        display: block;
-        margin: -7px 0 14px;
-        color: var(--rt-text);
-        opacity: .65;
-        font-size: 10px;
-        line-height: 1.4;
-    }
-
     @media(max-width:480px) {
         #readingToolsFab {
             right: 16px;
-            bottom: 16px;
+            bottom: 16px
         }
 
         #readingToolsPanel {
             right: 14px;
-            bottom: 80px;
+            bottom: 80px
         }
     }
 </style>
 
 <div id="readingToolsRoot">
-    <button type="button" id="readingToolsFab"
-        aria-label="Open reading tools"
-        aria-controls="readingToolsPanel"
-        aria-expanded="false" title="Reading tools">
+    <button type="button" id="readingToolsFab" aria-label="Open reading tools"
+        aria-controls="readingToolsPanel" aria-expanded="false" title="Reading tools">
         <i class="bi bi-book-half" aria-hidden="true"></i>
     </button>
 
     <section id="readingToolsPanel" aria-label="Reading tools">
         <div class="rt-header">
             <strong><i class="bi bi-sliders"></i> Reading Tools</strong>
-            <button type="button" class="rt-close" id="rtClose"
-                aria-label="Close reading tools">&times;</button>
+            <button type="button" class="rt-close" id="rtClose" aria-label="Close reading tools">&times;</button>
         </div>
-
-        <button type="button" id="rtFullscreenToggle"
-            aria-pressed="false">
-            <i class="bi bi-arrows-fullscreen" aria-hidden="true"></i>
-            <span>Enter reading full screen</span>
-        </button>
-        <small id="rtFullscreenHint">
-            Hides the site navigation and keeps reading mode enabled as you move between pages.
-        </small>
 
         <div class="rt-group">
             <span class="rt-label">Text size</span>
@@ -357,13 +291,20 @@
             <input class="rt-range" type="range" id="rtScrollSpeed" min="1" max="10" value="3">
             <div class="rt-range-labels"><span>Slow</span><span>Fast</span></div>
             <div class="rt-button-row" style="margin-top:9px">
-                <button type="button" class="rt-btn" id="rtScrollStart">▶ Start</button>
-                <button type="button" class="rt-btn" id="rtScrollPause">Ⅱ Pause</button>
-                <button type="button" class="rt-btn" id="rtScrollStop">■ Stop</button>
+                <button type="button" class="rt-btn" id="rtScrollStart"><i class="bi bi-play-fill"></i> Start</button>
+                <button type="button" class="rt-btn" id="rtScrollPause"><i class="bi bi-pause-fill"></i> Pause</button>
+                <button type="button" class="rt-btn" id="rtScrollStop"><i class="bi bi-stop-fill"></i> Stop</button>
             </div>
             <div class="rt-scroll-status" id="rtScrollStatus">Auto-scroll is stopped.</div>
         </div>
 
+        <div class="rt-group">
+            <span class="rt-label">Browser fullscreen</span>
+            <button type="button" class="rt-btn" id="rtFullscreenToggle" style="width:100%;padding:11px;border-color:#ff4c01;color:#ff4c01">
+                <i class="bi bi-arrows-fullscreen"></i> Enter Fullscreen
+            </button>
+            <small class="rt-muted" id="rtFullscreenHint">Fullscreen hides the browser tabs and address bar, similar to F11.</small>
+        </div>
         <div class="rt-button-row">
             <button type="button" class="rt-btn" id="rtResetAll">Reset all settings</button>
         </div>
@@ -379,6 +320,7 @@
         if (!root || root.dataset.initialized === '1') return;
         root.dataset.initialized = '1';
 
+        // Matches the supplied academic post layout: main.main-content > .content-wrapper.
         const post = document.querySelector('main.main-content > .content-wrapper');
         const panel = document.getElementById('readingToolsPanel');
         const fab = document.getElementById('readingToolsFab');
@@ -387,54 +329,7 @@
         const speedInput = document.getElementById('rtScrollSpeed');
         const fullscreenButton = document.getElementById('rtFullscreenToggle');
         const fullscreenHint = document.getElementById('rtFullscreenHint');
-
-        const fullscreenStorageKey = 'asyncAcademicPersistentFullscreen';
-
-        function isPersistentFullscreenEnabled() {
-            try {
-                return localStorage.getItem(fullscreenStorageKey) === '1';
-            } catch (e) {
-                return false;
-            }
-        }
-
-        function setPersistentFullscreen(enabled) {
-            document.documentElement.classList.toggle(
-                'async-reading-fullscreen',
-                enabled
-            );
-
-            try {
-                localStorage.setItem(
-                    fullscreenStorageKey,
-                    enabled ? '1' : '0'
-                );
-            } catch (e) {
-                // The mode still works for this page if storage is unavailable.
-            }
-
-            if (fullscreenButton) {
-                fullscreenButton.setAttribute('aria-pressed', String(enabled));
-                fullscreenButton.innerHTML = enabled ?
-                    '<i class="bi bi-fullscreen-exit" aria-hidden="true"></i><span>Exit reading full screen</span>' :
-                    '<i class="bi bi-arrows-fullscreen" aria-hidden="true"></i><span>Enter reading full screen</span>';
-            }
-
-            if (fullscreenHint) {
-                fullscreenHint.textContent = enabled ?
-                    'Reading mode is on. It will remain on when you open another page that includes these tools.' :
-                    'Hides the site navigation and keeps reading mode enabled as you move between pages.';
-            }
-        }
-
-        // Restore the student's choice automatically on every page using this file.
-        setPersistentFullscreen(isPersistentFullscreenEnabled());
-
-        if (fullscreenButton) {
-            fullscreenButton.addEventListener('click', () => {
-                setPersistentFullscreen(!isPersistentFullscreenEnabled());
-            });
-        }
+        const fullscreenKey = 'asyncAcademicFullscreenPreferred';
 
         const storageKey = 'asyncAcademicReadingPreferences';
         const defaults = {
@@ -444,7 +339,6 @@
             font: '',
             speed: 3
         };
-
         let prefs = {
             ...defaults
         };
@@ -461,15 +355,12 @@
             };
         }
 
+        // Cache each element's original font size so repeated adjustments never compound.
         const textElements = post ? post.querySelectorAll(
             'h1,h2,h3,h4,h5,h6,p,li,blockquote,td,th,figcaption,.concept-box span,.definition-box span,.result-box span,.application-item span,.key-point-grid span,.theory-header p,.section-label,.reference-note-title,.example-description strong'
         ) : [];
-
         const originalSizes = new WeakMap();
-
-        textElements.forEach(el => {
-            originalSizes.set(el, parseFloat(getComputedStyle(el).fontSize) || 14);
-        });
+        textElements.forEach(el => originalSizes.set(el, parseFloat(getComputedStyle(el).fontSize) || 14));
 
         function save() {
             try {
@@ -478,9 +369,9 @@
         }
 
         function setColorSelection(group, color) {
-            document.querySelectorAll(group + ' .rt-color').forEach(btn => {
-                btn.classList.toggle('is-active', btn.dataset.color === color);
-            });
+            document.querySelectorAll(group + ' .rt-color').forEach(btn =>
+                btn.classList.toggle('is-active', btn.dataset.color === color)
+            );
         }
 
         function apply() {
@@ -489,6 +380,7 @@
                 return;
             }
 
+            // Override the post's existing theme variables without changing global UI.
             post.style.setProperty('--theory-bg', prefs.page);
             post.style.setProperty('--theory-hover', prefs.page);
             post.style.setProperty('--theory-header', prefs.page);
@@ -501,38 +393,23 @@
 
             textElements.forEach(el => {
                 const base = originalSizes.get(el) || 14;
-
-                el.style.setProperty(
-                    'font-size',
-                    (base * prefs.scale) + 'px',
-                    'important'
-                );
-
+                el.style.setProperty('font-size', (base * prefs.scale) + 'px', 'important');
                 el.style.setProperty('color', prefs.text, 'important');
-
-                if (prefs.font) {
-                    el.style.setProperty('font-family', prefs.font, 'important');
-                } else {
-                    el.style.removeProperty('font-family');
-                }
+                if (prefs.font) el.style.setProperty('font-family', prefs.font, 'important');
+                else el.style.removeProperty('font-family');
             });
 
+            // Also recolor post content wrappers/cards; navigation is outside .content-wrapper.
             post.style.setProperty('color', prefs.text, 'important');
             post.style.setProperty('background-color', prefs.page, 'important');
-
-            post.querySelectorAll(
-                '.theory-card,.reference-note,.theory-header,.theory-body,.example-description,.code-box,.visualizer-controls,.chart-panel,.concept-box,.definition-box,.result-box,.application-item,.reference-note-title,.comparison-table th,.comparison-table td,.key-point-grid>div'
-            ).forEach(el => {
+            post.querySelectorAll('.theory-card,.reference-note,.theory-header,.theory-body,.example-description,.code-box,.visualizer-controls,.chart-panel,.concept-box,.definition-box,.result-box,.application-item,.reference-note-title,.comparison-table th,.comparison-table td,.key-point-grid>div').forEach(el => {
                 el.style.setProperty('background-color', prefs.page, 'important');
                 el.style.setProperty('color', prefs.text, 'important');
             });
 
-            document.getElementById('rtTextSizeValue').textContent =
-                Math.round(prefs.scale * 100) + '%';
-
+            document.getElementById('rtTextSizeValue').textContent = Math.round(prefs.scale * 100) + '%';
             fontSelect.value = prefs.font;
             speedInput.value = prefs.speed;
-
             setColorSelection('#rtPageColors', prefs.page);
             setColorSelection('#rtTextColors', prefs.text);
         }
@@ -542,14 +419,8 @@
             fab.setAttribute('aria-expanded', String(open));
         }
 
-        fab.addEventListener('click', () => {
-            togglePanel(!panel.classList.contains('is-open'));
-        });
-
-        document.getElementById('rtClose').addEventListener('click', () => {
-            togglePanel(false);
-        });
-
+        fab.addEventListener('click', () => togglePanel(!panel.classList.contains('is-open')));
+        document.getElementById('rtClose').addEventListener('click', () => togglePanel(false));
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') togglePanel(false);
         });
@@ -559,41 +430,32 @@
             save();
             apply();
         });
-
         document.getElementById('rtTextUp').addEventListener('click', () => {
             prefs.scale = Math.min(1.6, +(prefs.scale + .1).toFixed(2));
             save();
             apply();
         });
-
         document.getElementById('rtTextReset').addEventListener('click', () => {
             prefs.scale = 1;
             save();
             apply();
         });
 
-        document.querySelectorAll('#rtPageColors .rt-color').forEach(btn => {
-            btn.addEventListener('click', () => {
-                prefs.page = btn.dataset.color;
-                save();
-                apply();
-            });
-        });
-
-        document.querySelectorAll('#rtTextColors .rt-color').forEach(btn => {
-            btn.addEventListener('click', () => {
-                prefs.text = btn.dataset.color;
-                save();
-                apply();
-            });
-        });
-
+        document.querySelectorAll('#rtPageColors .rt-color').forEach(btn => btn.addEventListener('click', () => {
+            prefs.page = btn.dataset.color;
+            save();
+            apply();
+        }));
+        document.querySelectorAll('#rtTextColors .rt-color').forEach(btn => btn.addEventListener('click', () => {
+            prefs.text = btn.dataset.color;
+            save();
+            apply();
+        }));
         fontSelect.addEventListener('change', () => {
             prefs.font = fontSelect.value;
             save();
             apply();
         });
-
         speedInput.addEventListener('input', () => {
             prefs.speed = Number(speedInput.value);
             save();
@@ -608,43 +470,31 @@
 
         function scrollStep() {
             if (raf === null) return;
-
             window.scrollBy(0, Number(prefs.speed) * .35);
-
-            if (
-                window.innerHeight + window.scrollY >=
-                document.documentElement.scrollHeight - 2
-            ) {
+            if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
                 stopScroll('Reached the bottom of the page.');
                 return;
             }
-
             raf = requestAnimationFrame(scrollStep);
         }
 
         document.getElementById('rtScrollStart').addEventListener('click', () => {
             if (raf !== null) return;
-
             status.textContent = 'Auto-scroll is running.';
             status.classList.add('active');
             raf = requestAnimationFrame(scrollStep);
         });
-
         document.getElementById('rtScrollPause').addEventListener('click', () => {
             if (raf === null) {
                 status.textContent = 'Auto-scroll is paused or stopped.';
                 return;
             }
-
             cancelAnimationFrame(raf);
             raf = null;
             status.textContent = 'Auto-scroll is paused.';
             status.classList.remove('active');
         });
-
-        document.getElementById('rtScrollStop').addEventListener('click', () => {
-            stopScroll();
-        });
+        document.getElementById('rtScrollStop').addEventListener('click', () => stopScroll());
 
         document.getElementById('rtResetAll').addEventListener('click', () => {
             stopScroll();
@@ -654,6 +504,61 @@
             save();
             apply();
         });
+
+        // Browser security requires a fresh click to enter fullscreen after page navigation.
+        // Remember the user's preference so the next academic page offers Restore Fullscreen.
+        function fullscreenPreferred() {
+            try {
+                return localStorage.getItem(fullscreenKey) === '1';
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function rememberFullscreen(enabled) {
+            try {
+                localStorage.setItem(fullscreenKey, enabled ? '1' : '0');
+            } catch (e) {}
+        }
+
+        function refreshFullscreenButton() {
+            const active = !!document.fullscreenElement;
+            const restore = !active && fullscreenPreferred();
+            fullscreenButton.innerHTML = active ?
+                '<i class="bi bi-fullscreen-exit"></i> Exit Fullscreen' :
+                restore ?
+                '<i class="bi bi-arrows-fullscreen"></i> Restore Fullscreen' :
+                '<i class="bi bi-arrows-fullscreen"></i> Enter Fullscreen';
+            fullscreenButton.setAttribute('aria-pressed', String(active));
+            fullscreenHint.textContent = active ?
+                'Press Esc or click Exit Fullscreen to leave fullscreen.' :
+                restore ?
+                'Click to restore fullscreen on this page. Browsers require a new click after navigation.' :
+                'Fullscreen hides browser tabs and the address bar, similar to F11.';
+        }
+        fullscreenButton.addEventListener('click', async () => {
+            try {
+                if (document.fullscreenElement) {
+                    rememberFullscreen(false);
+                    await document.exitFullscreen();
+                } else {
+                    // Must be initiated by this user click; browsers block automatic restoration.
+                    await document.documentElement.requestFullscreen();
+                    rememberFullscreen(true);
+                }
+                refreshFullscreenButton();
+            } catch (error) {
+                fullscreenHint.textContent = 'Fullscreen was blocked by your browser. Try F11 instead.';
+                console.error('ASYNC fullscreen:', error);
+            }
+        });
+        document.addEventListener('fullscreenchange', refreshFullscreenButton);
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && document.fullscreenElement) {
+                rememberFullscreen(false);
+            }
+        });
+        refreshFullscreenButton();
 
         apply();
     })();
