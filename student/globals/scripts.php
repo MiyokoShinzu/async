@@ -372,4 +372,3 @@ $academicAccessToken =
         }
     );
 </script>
-<?php include "./globals/academic_posts_scripts.php"?>
