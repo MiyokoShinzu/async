@@ -29,9 +29,9 @@
         height: 54px;
         border: 0;
         border-radius: 50%;
-        background: #ff4c01;
+        background: #4169e1;
         color: #fff;
-        box-shadow: 0 5px 18px rgba(255, 76, 1, .35);
+        box-shadow: 0 5px 18px rgba(65, 105, 225, .28);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -42,7 +42,7 @@
 
     #readingToolsFab:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(255, 76, 1, .42);
+        box-shadow: 0 8px 24px rgba(65, 105, 225, .38);
     }
 
     #readingToolsPanel {
@@ -160,8 +160,8 @@
 
     .rt-btn:hover,
     .rt-btn.is-active {
-        border-color: #ff4c01;
-        color: #ff4c01;
+        border-color: #4169e1;
+        color: #4169e1;
     }
 
     .rt-select {
@@ -185,13 +185,13 @@
     }
 
     .rt-color.is-active {
-        outline: 2px solid #ff4c01;
+        outline: 2px solid #4169e1;
         outline-offset: 2px;
     }
 
     .rt-range {
         width: 100%;
-        accent-color: #ff4c01;
+        accent-color: #4169e1;
         cursor: pointer;
     }
 
@@ -261,20 +261,28 @@
         z-index: 100005;
         top: 110px;
         right: 24px;
-        width: 250px;
-        padding: 12px;
-        border: 1px solid #ff4c01;
-        border-radius: 13px;
-        background: var(--rt-bg, #fff);
-        color: var(--rt-text, #172033);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, .24);
+        width: min(270px, calc(100vw - 24px));
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, .42);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, .24);
+        color: var(--aft-text, #172033);
+        box-shadow: 0 12px 38px rgba(15, 23, 42, .20), inset 0 1px 0 rgba(255, 255, 255, .45);
+        backdrop-filter: blur(18px) saturate(150%);
+        -webkit-backdrop-filter: blur(18px) saturate(150%);
         display: none;
-        font-family: Arial, sans-serif;
         user-select: none;
+        font-family: var(--aft-font, inherit);
     }
 
     #asyncFloatingTimer.is-visible {
         display: block;
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer {
+        background: rgba(25, 31, 45, .58);
+        border-color: rgba(255, 255, 255, .14);
+        color: #f8fafc;
     }
 
     .aft-header {
@@ -282,13 +290,19 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        cursor: move;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(127, 127, 127, .25);
+        cursor: grab;
+        padding-bottom: 9px;
+        border-bottom: 1px solid rgba(127, 127, 127, .22);
+        touch-action: none;
+    }
+
+    .aft-header:active {
+        cursor: grabbing;
     }
 
     .aft-header strong {
         font-size: 13px;
+        font-weight: 800;
     }
 
     #aftClose {
@@ -301,11 +315,12 @@
 
     .aft-display {
         text-align: center;
-        font-size: 36px;
+        font-size: clamp(32px, 8vw, 40px);
         font-weight: 800;
         font-variant-numeric: tabular-nums;
-        padding: 12px 0;
-        color: #ff4c01;
+        letter-spacing: .04em;
+        padding: 13px 0;
+        color: #4169e1;
     }
 
     .aft-inputs {
@@ -323,42 +338,131 @@
 
     .aft-inputs input {
         width: 75px;
-        padding: 6px;
-        border: 1px solid rgba(127, 127, 127, .45);
-        border-radius: 6px;
-        background: transparent;
+        max-width: 35vw;
+        padding: 7px;
+        border: 1px solid rgba(127, 127, 127, .4);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, .28);
         color: inherit;
         text-align: center;
+        font: inherit;
     }
 
     .aft-actions {
         display: flex;
-        gap: 6px;
-        margin-top: 10px;
+        gap: 7px;
+        margin-top: 11px;
     }
 
     .aft-actions button {
         flex: 1;
+        min-height: 36px;
         padding: 7px 4px;
-        border: 1px solid #ff4c01;
-        border-radius: 6px;
-        background: transparent;
+        border: 1px solid #4169e1;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, .18);
         color: inherit;
         cursor: pointer;
-        font-size: 11px;
+        font: inherit;
+        font-size: 12px;
     }
 
     .aft-actions button:first-child {
-        background: #ff4c01;
+        background: #4169e1;
         color: #fff;
     }
 
     #aftStatus {
         display: block;
-        margin-top: 8px;
+        margin-top: 9px;
         text-align: center;
-        opacity: .7;
+        opacity: .72;
         font-size: 10px;
+    }
+
+    #aftAlarmOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100020;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(8, 13, 28, .62);
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+    }
+
+    #aftAlarmOverlay.is-visible {
+        display: flex;
+    }
+
+    #aftAlarmModal {
+        width: min(360px, 100%);
+        padding: 25px 22px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, .28);
+        border-radius: 20px;
+        color: #172033;
+        background: rgba(255, 255, 255, .94);
+        box-shadow: 0 22px 70px rgba(0, 0, 0, .32);
+        font-family: var(--aft-font, system-ui, sans-serif);
+    }
+
+    html[data-theme="dark"] #aftAlarmModal {
+        color: #f8fafc;
+        background: rgba(29, 36, 52, .97);
+    }
+
+    #aftAlarmModal .aft-alarm-icon {
+        font-size: 38px;
+        color: #4169e1;
+        margin-bottom: 8px;
+    }
+
+    #aftAlarmModal h2 {
+        margin: 0 0 7px;
+        font-size: 22px;
+    }
+
+    #aftAlarmModal p {
+        margin: 0 0 18px;
+        opacity: .75;
+        font-size: 13px;
+    }
+
+    #aftStopAlarm {
+        width: 100%;
+        min-height: 44px;
+        border: 0;
+        border-radius: 11px;
+        background: #4169e1;
+        color: #fff;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    @media(max-width:480px) {
+        #readingToolsFab {
+            right: 16px;
+            bottom: 16px
+        }
+
+        #readingToolsPanel {
+            right: 14px;
+            bottom: 80px
+        }
+
+        #asyncFloatingTimer {
+            top: auto;
+            right: 12px;
+            bottom: 12px;
+            width: min(270px, calc(100vw - 24px));
+        }
+
+        #aftAlarmModal {
+            padding: 22px 17px;
+        }
     }
 
     @media(max-width:480px) {
@@ -388,7 +492,7 @@
 
         <div class="rt-group">
             <span class="rt-label">Browser fullscreen</span>
-            <button type="button" class="rt-btn" id="rtFullscreenToggle" style="width:100%;padding:11px;border-color:#ff4c01;color:#ff4c01">
+            <button type="button" class="rt-btn" id="rtFullscreenToggle" style="width:100%;padding:11px;border-color:#4169e1;color:#4169e1">
                 <i class="bi bi-arrows-fullscreen"></i> Enter Fullscreen
             </button>
             <small class="rt-muted" id="rtFullscreenHint">Fullscreen hides the browser tabs and address bar, similar to F11.</small>
@@ -481,6 +585,15 @@
     <small id="aftStatus">Drag this panel by its header.</small>
 </div>
 
+<div id="aftAlarmOverlay" role="alertdialog" aria-modal="true" aria-labelledby="aftAlarmTitle" aria-describedby="aftAlarmMessage">
+    <div id="aftAlarmModal">
+        <div class="aft-alarm-icon"><i class="bi bi-alarm-fill" aria-hidden="true"></i></div>
+        <h2 id="aftAlarmTitle">Time is up!</h2>
+        <p id="aftAlarmMessage">Your countdown has finished. Press the button below to stop the alarm.</p>
+        <button type="button" id="aftStopAlarm">Stop Alarm</button>
+    </div>
+</div>
+
 <script>
     (() => {
         'use strict';
@@ -513,17 +626,20 @@
         };
         let raf = null;
 
-        // Floating countdown timer with a synthesized Web Audio alarm (no audio file required).
+        // Floating timer: per-second tick and persistent alarm, synthesized with Web Audio.
         const timerBox = document.getElementById('asyncFloatingTimer');
         const timerDisplay = document.getElementById('aftDisplay');
         const timerStatus = document.getElementById('aftStatus');
         const timerMin = document.getElementById('aftMinutes');
         const timerSec = document.getElementById('aftSeconds');
-        let timerRemaining = 300;
-        let timerInterval = null;
-        let timerEndAt = 0;
-        let alarmContext = null;
-        let alarmNodes = [];
+        const alarmOverlay = document.getElementById('aftAlarmOverlay');
+        const stopAlarmButton = document.getElementById('aftStopAlarm');
+        let timerRemaining = 300,
+            timerInterval = null,
+            timerEndAt = 0;
+        let audioContext = null,
+            alarmLoop = null,
+            alarmActive = false;
 
         function formatTimer(seconds) {
             const m = Math.floor(seconds / 60),
@@ -535,46 +651,54 @@
             timerDisplay.textContent = formatTimer(Math.max(0, Math.ceil(timerRemaining)));
         }
 
-        function stopAlarm() {
-            alarmNodes.forEach(node => {
-                try {
-                    node.stop();
-                } catch (e) {}
-            });
-            alarmNodes = [];
-            if (alarmContext) {
-                try {
-                    alarmContext.close();
-                } catch (e) {}
-                alarmContext = null;
+        function getAudioContext() {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            if (!audioContext) audioContext = new AudioCtx();
+            if (audioContext.state === 'suspended') audioContext.resume();
+            return audioContext;
+        }
+
+        function playTone(frequency, duration, volume, type = 'sine') {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator(),
+                    gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+                gain.gain.setValueAtTime(.0001, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(volume, ctx.currentTime + .012);
+                gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration + .02);
+            } catch (e) {
+                console.warn('ASYNC timer sound:', e);
             }
         }
 
-        function soundAlarm() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) {
-                    timerStatus.textContent = 'Time is up! Audio is not supported.';
-                    return;
-                }
-                alarmContext = new AudioCtx();
-                [0, .35, .7, 1.05, 1.4, 1.75].forEach((delay, i) => {
-                    const osc = alarmContext.createOscillator();
-                    const gain = alarmContext.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.value = i % 2 ? 880 : 660;
-                    gain.gain.setValueAtTime(.0001, alarmContext.currentTime + delay);
-                    gain.gain.exponentialRampToValueAtTime(.28, alarmContext.currentTime + delay + .02);
-                    gain.gain.exponentialRampToValueAtTime(.0001, alarmContext.currentTime + delay + .25);
-                    osc.connect(gain);
-                    gain.connect(alarmContext.destination);
-                    osc.start(alarmContext.currentTime + delay);
-                    osc.stop(alarmContext.currentTime + delay + .27);
-                    alarmNodes.push(osc);
-                });
-            } catch (e) {
-                console.warn('ASYNC timer alarm:', e);
-            }
+        function tickSound() {
+            playTone(1050, .075, .075, 'sine');
+        }
+
+        function alarmSound() {
+            if (alarmLoop !== null) clearInterval(alarmLoop);
+            const sequence = () => {
+                playTone(880, .28, .24, 'sawtooth');
+                setTimeout(() => playTone(660, .32, .22, 'sawtooth'), 330);
+            };
+            sequence();
+            alarmLoop = setInterval(sequence, 850);
+        }
+
+        function stopAlarm() {
+            alarmActive = false;
+            if (alarmLoop !== null) clearInterval(alarmLoop);
+            alarmLoop = null;
+            alarmOverlay.classList.remove('is-visible');
+            alarmOverlay.setAttribute('aria-hidden', 'true');
         }
 
         function stopTimerInterval() {
@@ -586,25 +710,31 @@
             stopTimerInterval();
             timerRemaining = 0;
             renderTimer();
-            timerStatus.textContent = 'Time is up!';
-            soundAlarm();
+            timerStatus.textContent = 'Time is up — alarm is active.';
+            alarmActive = true;
+            alarmOverlay.classList.add('is-visible');
+            alarmOverlay.setAttribute('aria-hidden', 'false');
+            alarmSound();
+            stopAlarmButton.focus();
         }
 
         function startTimer() {
-            if (timerInterval !== null) return;
+            if (timerInterval !== null || alarmActive) return;
             if (timerRemaining <= 0) timerRemaining = Math.max(0, Number(timerMin.value || 0) * 60 + Number(timerSec.value || 0));
             if (timerRemaining <= 0) {
                 timerStatus.textContent = 'Set a time greater than zero.';
                 return;
             }
-            stopAlarm();
+            getAudioContext();
             timerEndAt = Date.now() + timerRemaining * 1000;
             timerStatus.textContent = 'Timer running…';
             timerInterval = setInterval(() => {
-                timerRemaining = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
+                const next = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
+                if (next < timerRemaining && next > 0) tickSound();
+                timerRemaining = next;
                 renderTimer();
                 if (timerRemaining <= 0) finishTimer();
-            }, 200);
+            }, 100);
         }
 
         function resetTimer() {
@@ -620,6 +750,7 @@
             togglePanel(false);
         });
         document.getElementById('aftClose').addEventListener('click', () => {
+            if (alarmActive) return;
             timerBox.classList.remove('is-visible');
             timerBox.setAttribute('aria-hidden', 'true');
         });
@@ -633,14 +764,28 @@
             }
         });
         document.getElementById('aftReset').addEventListener('click', resetTimer);
+        stopAlarmButton.addEventListener('click', () => {
+            stopAlarm();
+            timerStatus.textContent = 'Alarm stopped. Set a new countdown.';
+        });
+        // Do not let Escape or backdrop clicks dismiss the alarm: only Stop Alarm can.
+        alarmOverlay.addEventListener('click', e => {
+            if (e.target === alarmOverlay && alarmActive) e.stopPropagation();
+        });
+        document.addEventListener('keydown', e => {
+            if (alarmActive && e.key === 'Escape') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+        }, true);
         [timerMin, timerSec].forEach(input => input.addEventListener('change', () => {
-            if (timerInterval === null) {
+            if (timerInterval === null && !alarmActive) {
                 timerSec.value = Math.min(59, Math.max(0, Number(timerSec.value || 0)));
-                timerMin.value = Math.max(0, Number(timerMin.value || 0));
+                timerMin.value = Math.min(999, Math.max(0, Number(timerMin.value || 0)));
                 resetTimer();
             }
         }));
-        // Drag by the timer header; keep the widget within the visible viewport.
+        // Pointer-based dragging works with mouse and touch; keep timer in viewport.
         const dragHandle = document.getElementById('asyncTimerDrag');
         let dragState = null;
         dragHandle.addEventListener('pointerdown', e => {
@@ -652,7 +797,9 @@
                 left: r.left,
                 top: r.top
             };
-            dragHandle.setPointerCapture(e.pointerId);
+            try {
+                dragHandle.setPointerCapture(e.pointerId);
+            } catch (_) {}
         });
         dragHandle.addEventListener('pointermove', e => {
             if (!dragState) return;
@@ -661,10 +808,11 @@
             timerBox.style.left = left + 'px';
             timerBox.style.top = top + 'px';
             timerBox.style.right = 'auto';
+            timerBox.style.bottom = 'auto';
         });
-        dragHandle.addEventListener('pointerup', () => {
+        ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(name => dragHandle.addEventListener(name, () => {
             dragState = null;
-        });
+        }));
         renderTimer();
 
         try {
@@ -699,6 +847,16 @@
             });
         }
 
+        function syncTimerTypography() {
+            const source = post || document.body;
+            const computed = getComputedStyle(source);
+            const chosenFont = prefs.font || computed.fontFamily || 'system-ui, sans-serif';
+            timerBox.style.setProperty('--aft-font', chosenFont);
+            timerBox.style.setProperty('--aft-text', computed.color || '#172033');
+            timerBox.style.fontFamily = chosenFont;
+            document.getElementById('aftAlarmModal').style.fontFamily = chosenFont;
+        }
+
         function save() {
             try {
                 localStorage.setItem(storageKey, JSON.stringify(prefs));
@@ -725,6 +883,7 @@
                 speedInput.value = prefs.speed;
                 setColorSelection('#rtPageColors', prefs.page);
                 setColorSelection('#rtTextColors', prefs.text);
+                syncTimerTypography();
                 return;
             }
 
@@ -760,6 +919,7 @@
             speedInput.value = prefs.speed;
             setColorSelection('#rtPageColors', prefs.page);
             setColorSelection('#rtTextColors', prefs.text);
+            syncTimerTypography();
         }
 
         function togglePanel(open) {
