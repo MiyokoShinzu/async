@@ -217,6 +217,45 @@
         font-weight: 700;
     }
 
+    /* Fullscreen reading layout: hide site navigation and let the article use the screen. */
+    html.async-reading-fullscreen,
+    html.async-reading-fullscreen body {
+        width: 100% !important;
+        min-height: 100% !important;
+        margin: 0 !important;
+    }
+
+    html.async-reading-fullscreen body {
+        overflow-x: hidden !important;
+    }
+
+    html.async-reading-fullscreen .sidebar,
+    html.async-reading-fullscreen #sidebar,
+    html.async-reading-fullscreen .sidebar-container,
+    html.async-reading-fullscreen .main-sidebar,
+    html.async-reading-fullscreen aside.sidebar,
+    html.async-reading-fullscreen .topbar,
+    html.async-reading-fullscreen #topbar,
+    html.async-reading-fullscreen .top-bar,
+    html.async-reading-fullscreen header.topbar,
+    html.async-reading-fullscreen .navbar {
+        display: none !important;
+    }
+
+    html.async-reading-fullscreen main.main-content {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        margin-left: 0 !important;
+        padding-top: 18px !important;
+    }
+
+    html.async-reading-fullscreen main.main-content>.content-wrapper {
+        width: min(1200px, calc(100% - 36px)) !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+    }
+
     @media(max-width:480px) {
         #readingToolsFab {
             right: 16px;
@@ -240,6 +279,14 @@
         <div class="rt-header">
             <strong><i class="bi bi-sliders"></i> Reading Tools</strong>
             <button type="button" class="rt-close" id="rtClose" aria-label="Close reading tools">&times;</button>
+        </div>
+
+        <div class="rt-group">
+            <span class="rt-label">Browser fullscreen</span>
+            <button type="button" class="rt-btn" id="rtFullscreenToggle" style="width:100%;padding:11px;border-color:#ff4c01;color:#ff4c01">
+                <i class="bi bi-arrows-fullscreen"></i> Enter Fullscreen
+            </button>
+            <small class="rt-muted" id="rtFullscreenHint">Fullscreen hides the browser tabs and address bar, similar to F11.</small>
         </div>
 
         <div class="rt-group">
@@ -298,13 +345,6 @@
             <div class="rt-scroll-status" id="rtScrollStatus">Auto-scroll is stopped.</div>
         </div>
 
-        <div class="rt-group">
-            <span class="rt-label">Browser fullscreen</span>
-            <button type="button" class="rt-btn" id="rtFullscreenToggle" style="width:100%;padding:11px;border-color:#ff4c01;color:#ff4c01">
-                <i class="bi bi-arrows-fullscreen"></i> Enter Fullscreen
-            </button>
-            <small class="rt-muted" id="rtFullscreenHint">Fullscreen hides the browser tabs and address bar, similar to F11.</small>
-        </div>
         <div class="rt-button-row">
             <button type="button" class="rt-btn" id="rtResetAll">Reset all settings</button>
         </div>
@@ -521,9 +561,14 @@
             } catch (e) {}
         }
 
+        function setReadingFullscreenLayout(enabled) {
+            document.documentElement.classList.toggle('async-reading-fullscreen', enabled);
+        }
+
         function refreshFullscreenButton() {
             const active = !!document.fullscreenElement;
             const restore = !active && fullscreenPreferred();
+            setReadingFullscreenLayout(active);
             fullscreenButton.innerHTML = active ?
                 '<i class="bi bi-fullscreen-exit"></i> Exit Fullscreen' :
                 restore ?
@@ -531,31 +576,34 @@
                 '<i class="bi bi-arrows-fullscreen"></i> Enter Fullscreen';
             fullscreenButton.setAttribute('aria-pressed', String(active));
             fullscreenHint.textContent = active ?
-                'Press Esc or click Exit Fullscreen to leave fullscreen.' :
+                'Sidebar and topbar are hidden. Press Esc or click Exit Fullscreen to leave.' :
                 restore ?
-                'Click to restore fullscreen on this page. Browsers require a new click after navigation.' :
-                'Fullscreen hides browser tabs and the address bar, similar to F11.';
+                'Click to restore fullscreen. Browsers require a new click after page navigation.' :
+                'Hides the sidebar and topbar and expands the article. Browser fullscreen is also enabled.';
         }
+
         fullscreenButton.addEventListener('click', async () => {
             try {
                 if (document.fullscreenElement) {
                     rememberFullscreen(false);
                     await document.exitFullscreen();
                 } else {
-                    // Must be initiated by this user click; browsers block automatic restoration.
+                    // Browsers require a fresh user gesture after every full-page navigation.
                     await document.documentElement.requestFullscreen();
                     rememberFullscreen(true);
                 }
                 refreshFullscreenButton();
             } catch (error) {
-                fullscreenHint.textContent = 'Fullscreen was blocked by your browser. Try F11 instead.';
+                fullscreenHint.textContent = 'Fullscreen was blocked. Try your browser fullscreen key (F11 or Fn + F11).';
                 console.error('ASYNC fullscreen:', error);
             }
         });
+
         document.addEventListener('fullscreenchange', refreshFullscreenButton);
         document.addEventListener('keydown', event => {
-            if (event.key === 'Escape' && document.fullscreenElement) {
-                rememberFullscreen(false);
+            if (event.key === 'Escape') {
+                if (document.fullscreenElement) rememberFullscreen(false);
+                setReadingFullscreenLayout(false);
             }
         });
         refreshFullscreenButton();
