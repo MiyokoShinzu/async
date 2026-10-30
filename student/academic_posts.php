@@ -1,4 +1,3 @@
-
 <?php
 
 /* =========================================================
@@ -576,59 +575,39 @@ $allowedIconColors = [
                     </span>
 
 
-                    <div
-                        class="posts-filters"
-                        id="departmentFilters">
+                    <div class="department-checkboxes" id="departmentFilters">
 
-
-                        <!-- ALL DEPARTMENTS -->
-
-                        <button
-                            type="button"
-                            class="post-filter active"
-                            data-department="all">
-
-                            All Departments
-
-                        </button>
-
+                        <label class="department-checkbox">
+                            <input type="checkbox" id="allDepartments" value="all" checked>
+                            <span>All Departments</span>
+                        </label>
 
                         <?php foreach (
                             $departments
                             as $departmentItem
                         ): ?>
 
-
                             <?php
-
-                            $departmentValue =
-                                departmentFilterValue(
-                                    $departmentItem
-                                );
-
+                            $departmentValue = departmentFilterValue($departmentItem);
                             ?>
 
-
-                            <button
-                                type="button"
-                                class="post-filter"
-                                data-department="<?= htmlspecialchars(
-                                                        $departmentValue,
-                                                        ENT_QUOTES,
-                                                        "UTF-8"
-                                                    ) ?>">
-
-                                <?= htmlspecialchars(
-                                    $departmentItem,
-                                    ENT_QUOTES,
-                                    "UTF-8"
-                                ) ?>
-
-                            </button>
-
+                            <label class="department-checkbox">
+                                <input
+                                    type="checkbox"
+                                    class="department-filter-checkbox"
+                                    value="<?= htmlspecialchars(
+                                                $departmentValue,
+                                                ENT_QUOTES,
+                                                "UTF-8"
+                                            ) ?>">
+                                <span><?= htmlspecialchars(
+                                            $departmentItem,
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?></span>
+                            </label>
 
                         <?php endforeach; ?>
-
 
                     </div>
 
@@ -860,7 +839,8 @@ $allowedIconColors = [
                                     class="bi <?= htmlspecialchars(
                                                     $icon,
                                                     ENT_QUOTES,
-                                                    "UTF-8")?>">
+                                                    "UTF-8"
+                                                ) ?>">
                                 </i>
 
                             </div>
@@ -946,9 +926,7 @@ $allowedIconColors = [
 
                                     <a
                                         href="academic_post_start.php?id=<?= (int)$postId ?>"
-                                        class="post-open-btn"
-                                        target="_blank"
-                                        rel="noopener noreferrer">
+                                        class="post-open-btn">
 
                                         <i class="bi bi-box-arrow-up-right"></i>
 
@@ -973,20 +951,20 @@ $allowedIconColors = [
                                         data-saved="<?= $isSaved ? '1' : '0' ?>"
 
                                         aria-label="<?= $isSaved
-                                            ? 'Remove from saved posts'
-                                            : 'Save post'
-                                        ?>"
+                                                        ? 'Remove from saved posts'
+                                                        : 'Save post'
+                                                    ?>"
 
                                         title="<?= $isSaved
-                                            ? 'Remove from Saved Posts'
-                                            : 'Save Post'
-                                        ?>">
+                                                    ? 'Remove from Saved Posts'
+                                                    : 'Save Post'
+                                                ?>">
 
                                         <i
                                             class="bi <?= $isSaved
-                                                ? 'bi-bookmark-fill'
-                                                : 'bi-bookmark'
-                                            ?>">
+                                                            ? 'bi-bookmark-fill'
+                                                            : 'bi-bookmark'
+                                                        ?>">
                                         </i>
 
                                     </button>
@@ -1056,7 +1034,6 @@ $allowedIconColors = [
     ========================================================== -->
 
     <style>
-
         /* =========================================================
            POSTS THEME VARIABLES
         ========================================================== */
@@ -1335,6 +1312,42 @@ $allowedIconColors = [
             gap:
                 8px;
 
+        }
+
+
+        /* Department checkbox filters */
+        .department-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px 16px;
+            padding: 12px 14px;
+            border: 1px solid var(--posts-border);
+            border-radius: 8px;
+            background: var(--posts-control-bg);
+        }
+
+        .department-checkbox {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin: 0;
+            color: var(--posts-text);
+            font-size: .76rem;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .department-checkbox input {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            accent-color: #ff4c01;
+            cursor: pointer;
+        }
+
+        .department-checkbox:hover span {
+            color: #ff4c01;
         }
 
 
@@ -2172,7 +2185,6 @@ $allowedIconColors = [
             }
 
         }
-
     </style>
 
 
@@ -2181,7 +2193,6 @@ $allowedIconColors = [
     ========================================================== -->
 
     <script>
-
         document.addEventListener(
             "DOMContentLoaded",
             function() {
@@ -2203,10 +2214,13 @@ $allowedIconColors = [
                     );
 
 
-                const departmentButtons =
+                const departmentCheckboxes =
                     document.querySelectorAll(
-                        "#departmentFilters .post-filter"
+                        "#departmentFilters .department-filter-checkbox"
                     );
+
+                const allDepartmentsCheckbox =
+                    document.getElementById("allDepartments");
 
 
                 const postCards =
@@ -2235,8 +2249,7 @@ $allowedIconColors = [
                     "all";
 
 
-                let selectedDepartment =
-                    "all";
+                let selectedDepartments = [];
 
 
                 /* =================================================
@@ -2307,8 +2320,8 @@ $allowedIconColors = [
                             ========================================== */
 
                             const departmentMatch =
-                                selectedDepartment === "all" ||
-                                department === selectedDepartment;
+                                selectedDepartments.length === 0 ||
+                                selectedDepartments.includes(department);
 
 
                             /* =========================================
@@ -2436,45 +2449,52 @@ $allowedIconColors = [
 
 
                 /* =================================================
-                   DEPARTMENT FILTER
+                   DEPARTMENT CHECKBOX FILTER
                 ================================================== */
 
-                departmentButtons.forEach(
-                    function(button) {
+                function updateDepartmentFilters(changedCheckbox) {
+                    const checkedDepartments = Array.from(departmentCheckboxes)
+                        .filter(function(checkbox) {
+                            return checkbox.checked;
+                        });
 
+                    if (changedCheckbox === allDepartmentsCheckbox) {
+                        if (allDepartmentsCheckbox.checked) {
+                            departmentCheckboxes.forEach(function(checkbox) {
+                                checkbox.checked = false;
+                            });
+                        } else if (checkedDepartments.length === 0) {
+                            allDepartmentsCheckbox.checked = true;
+                        }
+                    } else if (checkedDepartments.length > 0) {
+                        allDepartmentsCheckbox.checked = false;
+                    } else {
+                        allDepartmentsCheckbox.checked = true;
+                    }
 
-                        button.addEventListener(
-                            "click",
-                            function() {
+                    selectedDepartments = Array.from(departmentCheckboxes)
+                        .filter(function(checkbox) {
+                            return checkbox.checked;
+                        })
+                        .map(function(checkbox) {
+                            return checkbox.value.toLowerCase();
+                        });
 
+                    filterPosts();
+                }
 
-                                departmentButtons.forEach(
-                                    function(item) {
-
-                                        item.classList.remove(
-                                            "active"
-                                        );
-
-                                    }
-                                );
-
-
-                                this.classList.add(
-                                    "active"
-                                );
-
-
-                                selectedDepartment =
-                                    this.dataset.department;
-
-
-                                filterPosts();
-
-                            }
-                        );
-
+                allDepartmentsCheckbox.addEventListener(
+                    "change",
+                    function() {
+                        updateDepartmentFilters(allDepartmentsCheckbox);
                     }
                 );
+
+                departmentCheckboxes.forEach(function(checkbox) {
+                    checkbox.addEventListener("change", function() {
+                        updateDepartmentFilters(checkbox);
+                    });
+                });
 
 
                 /* =================================================
@@ -2613,13 +2633,10 @@ $allowedIconColors = [
 
                                     const response =
                                         await fetch(
-                                            "academic_post_toggle_save.php",
-                                            {
-                                                method:
-                                                    "POST",
+                                            "academic_post_toggle_save.php", {
+                                                method: "POST",
 
-                                                body:
-                                                    formData
+                                                body: formData
                                             }
                                         );
 
@@ -2709,7 +2726,6 @@ $allowedIconColors = [
                                     /* =================================
                                        UNSAVED
                                     ================================== */
-
                                     else {
 
 
@@ -2800,7 +2816,6 @@ $allowedIconColors = [
 
             }
         );
-
     </script>
 
 
@@ -2814,4 +2829,3 @@ $allowedIconColors = [
 </body>
 
 </html>
-
