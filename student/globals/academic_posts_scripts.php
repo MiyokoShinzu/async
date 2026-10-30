@@ -420,6 +420,17 @@
                 return;
             }
 
+            // Native theme mode restores the page exactly as its original CSS defines it.
+            if (prefs.nativeTheme) {
+                restoreOriginalPostStyles();
+                document.getElementById('rtTextSizeValue').textContent = Math.round(prefs.scale * 100) + '%';
+                fontSelect.value = prefs.font;
+                speedInput.value = prefs.speed;
+                setColorSelection('#rtPageColors', prefs.page);
+                setColorSelection('#rtTextColors', prefs.text);
+                return;
+            }
+
             // Override the post's existing theme variables without changing global UI.
             post.style.setProperty('--theory-bg', prefs.page);
             post.style.setProperty('--theory-hover', prefs.page);
@@ -466,32 +477,38 @@
         });
 
         document.getElementById('rtTextDown').addEventListener('click', () => {
+            prefs.nativeTheme = false;
             prefs.scale = Math.max(.7, +(prefs.scale - .1).toFixed(2));
             save();
             apply();
         });
         document.getElementById('rtTextUp').addEventListener('click', () => {
+            prefs.nativeTheme = false;
             prefs.scale = Math.min(1.6, +(prefs.scale + .1).toFixed(2));
             save();
             apply();
         });
         document.getElementById('rtTextReset').addEventListener('click', () => {
+            prefs.nativeTheme = false;
             prefs.scale = 1;
             save();
             apply();
         });
 
         document.querySelectorAll('#rtPageColors .rt-color').forEach(btn => btn.addEventListener('click', () => {
+            prefs.nativeTheme = false;
             prefs.page = btn.dataset.color;
             save();
             apply();
         }));
         document.querySelectorAll('#rtTextColors .rt-color').forEach(btn => btn.addEventListener('click', () => {
+            prefs.nativeTheme = false;
             prefs.text = btn.dataset.color;
             save();
             apply();
         }));
         fontSelect.addEventListener('change', () => {
+            prefs.nativeTheme = false;
             prefs.font = fontSelect.value;
             save();
             apply();
@@ -541,7 +558,10 @@
             prefs = {
                 ...defaults
             };
-            save();
+            try {
+                localStorage.removeItem(storageKey);
+            } catch (e) {}
+            restoreOriginalPostStyles();
             apply();
         });
 
