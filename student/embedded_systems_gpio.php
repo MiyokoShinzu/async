@@ -988,6 +988,7 @@ void load_off(void) {
         })();
     </script>
     <?php include 'globals/scripts.php'; ?>
+    <?php include 'globals/academic_posts_scripts.php'; ?>
 </body>
 
 </html>
