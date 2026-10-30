@@ -130,7 +130,7 @@ function sidebarActive($page)
             <i class="bi bi-play-circle"></i>
 
             <span>
-                Videos
+                Lectures/Demos
             </span>
 
         </a>
