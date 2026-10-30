@@ -256,6 +256,111 @@
         margin: 0 auto !important;
     }
 
+    #asyncFloatingTimer {
+        position: fixed;
+        z-index: 100005;
+        top: 110px;
+        right: 24px;
+        width: 250px;
+        padding: 12px;
+        border: 1px solid #ff4c01;
+        border-radius: 13px;
+        background: var(--rt-bg, #fff);
+        color: var(--rt-text, #172033);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .24);
+        display: none;
+        font-family: Arial, sans-serif;
+        user-select: none;
+    }
+
+    #asyncFloatingTimer.is-visible {
+        display: block;
+    }
+
+    .aft-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        cursor: move;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(127, 127, 127, .25);
+    }
+
+    .aft-header strong {
+        font-size: 13px;
+    }
+
+    #aftClose {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 22px;
+        cursor: pointer;
+    }
+
+    .aft-display {
+        text-align: center;
+        font-size: 36px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        padding: 12px 0;
+        color: #ff4c01;
+    }
+
+    .aft-inputs {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .aft-inputs label {
+        display: grid;
+        gap: 4px;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .aft-inputs input {
+        width: 75px;
+        padding: 6px;
+        border: 1px solid rgba(127, 127, 127, .45);
+        border-radius: 6px;
+        background: transparent;
+        color: inherit;
+        text-align: center;
+    }
+
+    .aft-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+    .aft-actions button {
+        flex: 1;
+        padding: 7px 4px;
+        border: 1px solid #ff4c01;
+        border-radius: 6px;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        font-size: 11px;
+    }
+
+    .aft-actions button:first-child {
+        background: #ff4c01;
+        color: #fff;
+    }
+
+    #aftStatus {
+        display: block;
+        margin-top: 8px;
+        text-align: center;
+        opacity: .7;
+        font-size: 10px;
+    }
+
     @media(max-width:480px) {
         #readingToolsFab {
             right: 16px;
@@ -345,11 +450,35 @@
             <div class="rt-scroll-status" id="rtScrollStatus">Auto-scroll is stopped.</div>
         </div>
 
+        <div class="rt-group">
+            <span class="rt-label">Floating timer</span>
+            <button type="button" class="rt-btn" id="rtOpenTimer" style="width:100%"><i class="bi bi-stopwatch"></i> Open Timer</button>
+            <small class="rt-muted">Set a countdown, drag it anywhere, and hear an alarm when time is up.</small>
+        </div>
+
         <div class="rt-button-row">
             <button type="button" class="rt-btn" id="rtResetAll">Reset all settings</button>
         </div>
         <small class="rt-muted">Preferences are saved in this browser on this device.</small>
     </section>
+</div>
+
+<div id="asyncFloatingTimer" role="dialog" aria-label="Floating countdown timer" aria-hidden="true">
+    <div id="asyncTimerDrag" class="aft-header">
+        <strong><i class="bi bi-stopwatch"></i> ASYNC Timer</strong>
+        <button type="button" id="aftClose" aria-label="Close timer">&times;</button>
+    </div>
+    <div class="aft-display" id="aftDisplay">05:00</div>
+    <div class="aft-inputs">
+        <label>Min<input id="aftMinutes" type="number" min="0" max="999" value="5"></label>
+        <label>Sec<input id="aftSeconds" type="number" min="0" max="59" value="0"></label>
+    </div>
+    <div class="aft-actions">
+        <button type="button" id="aftStart">Start</button>
+        <button type="button" id="aftPause">Pause</button>
+        <button type="button" id="aftReset">Reset</button>
+    </div>
+    <small id="aftStatus">Drag this panel by its header.</small>
 </div>
 
 <script>
@@ -384,6 +513,160 @@
         };
         let raf = null;
 
+        // Floating countdown timer with a synthesized Web Audio alarm (no audio file required).
+        const timerBox = document.getElementById('asyncFloatingTimer');
+        const timerDisplay = document.getElementById('aftDisplay');
+        const timerStatus = document.getElementById('aftStatus');
+        const timerMin = document.getElementById('aftMinutes');
+        const timerSec = document.getElementById('aftSeconds');
+        let timerRemaining = 300;
+        let timerInterval = null;
+        let timerEndAt = 0;
+        let alarmContext = null;
+        let alarmNodes = [];
+
+        function formatTimer(seconds) {
+            const m = Math.floor(seconds / 60),
+                sec = seconds % 60;
+            return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+        }
+
+        function renderTimer() {
+            timerDisplay.textContent = formatTimer(Math.max(0, Math.ceil(timerRemaining)));
+        }
+
+        function stopAlarm() {
+            alarmNodes.forEach(node => {
+                try {
+                    node.stop();
+                } catch (e) {}
+            });
+            alarmNodes = [];
+            if (alarmContext) {
+                try {
+                    alarmContext.close();
+                } catch (e) {}
+                alarmContext = null;
+            }
+        }
+
+        function soundAlarm() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) {
+                    timerStatus.textContent = 'Time is up! Audio is not supported.';
+                    return;
+                }
+                alarmContext = new AudioCtx();
+                [0, .35, .7, 1.05, 1.4, 1.75].forEach((delay, i) => {
+                    const osc = alarmContext.createOscillator();
+                    const gain = alarmContext.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = i % 2 ? 880 : 660;
+                    gain.gain.setValueAtTime(.0001, alarmContext.currentTime + delay);
+                    gain.gain.exponentialRampToValueAtTime(.28, alarmContext.currentTime + delay + .02);
+                    gain.gain.exponentialRampToValueAtTime(.0001, alarmContext.currentTime + delay + .25);
+                    osc.connect(gain);
+                    gain.connect(alarmContext.destination);
+                    osc.start(alarmContext.currentTime + delay);
+                    osc.stop(alarmContext.currentTime + delay + .27);
+                    alarmNodes.push(osc);
+                });
+            } catch (e) {
+                console.warn('ASYNC timer alarm:', e);
+            }
+        }
+
+        function stopTimerInterval() {
+            if (timerInterval !== null) clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function finishTimer() {
+            stopTimerInterval();
+            timerRemaining = 0;
+            renderTimer();
+            timerStatus.textContent = 'Time is up!';
+            soundAlarm();
+        }
+
+        function startTimer() {
+            if (timerInterval !== null) return;
+            if (timerRemaining <= 0) timerRemaining = Math.max(0, Number(timerMin.value || 0) * 60 + Number(timerSec.value || 0));
+            if (timerRemaining <= 0) {
+                timerStatus.textContent = 'Set a time greater than zero.';
+                return;
+            }
+            stopAlarm();
+            timerEndAt = Date.now() + timerRemaining * 1000;
+            timerStatus.textContent = 'Timer running…';
+            timerInterval = setInterval(() => {
+                timerRemaining = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
+                renderTimer();
+                if (timerRemaining <= 0) finishTimer();
+            }, 200);
+        }
+
+        function resetTimer() {
+            stopTimerInterval();
+            stopAlarm();
+            timerRemaining = Math.max(0, Number(timerMin.value || 0) * 60 + Number(timerSec.value || 0));
+            renderTimer();
+            timerStatus.textContent = 'Timer reset.';
+        }
+        document.getElementById('rtOpenTimer').addEventListener('click', () => {
+            timerBox.classList.add('is-visible');
+            timerBox.setAttribute('aria-hidden', 'false');
+            togglePanel(false);
+        });
+        document.getElementById('aftClose').addEventListener('click', () => {
+            timerBox.classList.remove('is-visible');
+            timerBox.setAttribute('aria-hidden', 'true');
+        });
+        document.getElementById('aftStart').addEventListener('click', startTimer);
+        document.getElementById('aftPause').addEventListener('click', () => {
+            if (timerInterval !== null) {
+                timerRemaining = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
+                stopTimerInterval();
+                renderTimer();
+                timerStatus.textContent = 'Paused.';
+            }
+        });
+        document.getElementById('aftReset').addEventListener('click', resetTimer);
+        [timerMin, timerSec].forEach(input => input.addEventListener('change', () => {
+            if (timerInterval === null) {
+                timerSec.value = Math.min(59, Math.max(0, Number(timerSec.value || 0)));
+                timerMin.value = Math.max(0, Number(timerMin.value || 0));
+                resetTimer();
+            }
+        }));
+        // Drag by the timer header; keep the widget within the visible viewport.
+        const dragHandle = document.getElementById('asyncTimerDrag');
+        let dragState = null;
+        dragHandle.addEventListener('pointerdown', e => {
+            if (e.target.closest('button')) return;
+            const r = timerBox.getBoundingClientRect();
+            dragState = {
+                x: e.clientX,
+                y: e.clientY,
+                left: r.left,
+                top: r.top
+            };
+            dragHandle.setPointerCapture(e.pointerId);
+        });
+        dragHandle.addEventListener('pointermove', e => {
+            if (!dragState) return;
+            const left = Math.max(0, Math.min(window.innerWidth - timerBox.offsetWidth, dragState.left + e.clientX - dragState.x));
+            const top = Math.max(0, Math.min(window.innerHeight - timerBox.offsetHeight, dragState.top + e.clientY - dragState.y));
+            timerBox.style.left = left + 'px';
+            timerBox.style.top = top + 'px';
+            timerBox.style.right = 'auto';
+        });
+        dragHandle.addEventListener('pointerup', () => {
+            dragState = null;
+        });
+        renderTimer();
+
         try {
             prefs = {
                 ...defaults,
@@ -401,6 +684,20 @@
         ) : [];
         const originalSizes = new WeakMap();
         textElements.forEach(el => originalSizes.set(el, parseFloat(getComputedStyle(el).fontSize) || 14));
+
+        // Preserve the page's original inline styles so Reset restores its real light/dark theme.
+        const originalInlineStyles = new Map();
+        if (post) {
+            [post, ...post.querySelectorAll('*')].forEach(el => originalInlineStyles.set(el, el.getAttribute('style')));
+        }
+
+        function restoreOriginalPostStyles() {
+            originalInlineStyles.forEach((style, el) => {
+                if (!el.isConnected) return;
+                if (style === null) el.removeAttribute('style');
+                else el.setAttribute('style', style);
+            });
+        }
 
         function save() {
             try {
@@ -556,12 +853,18 @@
         document.getElementById('rtResetAll').addEventListener('click', () => {
             stopScroll();
             prefs = {
-                ...defaults
+                ...defaults,
+                nativeTheme: true
             };
             try {
                 localStorage.removeItem(storageKey);
             } catch (e) {}
             restoreOriginalPostStyles();
+            fontSelect.value = '';
+            speedInput.value = defaults.speed;
+            document.getElementById('rtTextSizeValue').textContent = '100%';
+            setColorSelection('#rtPageColors', defaults.page);
+            setColorSelection('#rtTextColors', defaults.text);
             apply();
         });
 
