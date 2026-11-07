@@ -115,7 +115,7 @@ if ($lastName !== "") {
 <!DOCTYPE html>
 <html lang="en">
 <?php include 'globals/head.php'; ?>
-<?php include 'globals/post_preloader.php'; ?>
+
 
 <body>
     <?php include 'globals/sidebar.php'; ?>
