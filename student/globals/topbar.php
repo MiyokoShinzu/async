@@ -326,7 +326,7 @@ if (
             <div class="topbar-access">
 
                 <?php if ($isAsyncDeveloper): ?>
-                    <span class="azncmstr-badge"><i class="bi bi-stars" aria-hidden="true"></i> AZNCMSTR</span>
+                    <span class="azncmstr-badge"><i class="bi bi-stars" aria-hidden="true"></i> MZTR</span>
                 <?php else: ?>
                     Student Account
                 <?php endif; ?>
@@ -1939,6 +1939,16 @@ if (
         font-weight: 800;
     }
 
+    /* Keep the animated title text solid and readable (no transparent fill/outline). */
+    .async-developer-mode .developer-typewriter,
+    .async-developer-mode .developer-typewriter-text {
+        color: var(--academic-blue) !important;
+        -webkit-text-fill-color: var(--academic-blue) !important;
+        -webkit-text-stroke: 0 !important;
+        text-shadow: 0 0 7px rgba(55, 145, 255, .22);
+        paint-order: normal;
+    }
+
     .developer-typewriter-caret {
         display: inline-block;
         width: 2px;
@@ -2172,6 +2182,85 @@ if (
             animation-duration: .01ms !important;
             animation-iteration-count: 1 !important;
             scroll-behavior: auto !important;
+        }
+    }
+
+
+    /* MZTR gold identity badge — isolated styling override */
+    .async-developer-mode .azncmstr-badge {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        background: linear-gradient(115deg, #8f5b08 0%, #c58a16 24%, #f4cf65 48%, #b77a0b 72%, #e9bd4c 100%) !important;
+        border: 1px solid rgba(255, 224, 142, .95) !important;
+        box-shadow: 0 0 8px rgba(212, 160, 40, .42), 0 0 17px rgba(212, 160, 40, .24), inset 0 1px 2px rgba(255, 255, 255, .35) !important;
+        text-shadow: 0 1px 2px rgba(70, 42, 0, .65), 0 0 7px rgba(255, 255, 255, .35);
+        animation: azncmstr-gold-pulse 2.6s ease-in-out infinite !important;
+    }
+
+    .async-developer-mode .azncmstr-badge::after {
+        content: "";
+        position: absolute;
+        inset: -40% auto -40% -55%;
+        width: 38%;
+        transform: skewX(-22deg);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .78), rgba(255, 255, 255, .18), transparent);
+        filter: blur(1px);
+        pointer-events: none;
+        animation: azncmstr-gold-shine 3.2s ease-in-out infinite;
+    }
+
+    .async-developer-mode .azncmstr-badge i {
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+        text-shadow: 0 0 6px rgba(255, 255, 255, .85);
+    }
+
+    @keyframes azncmstr-gold-pulse {
+
+        0%,
+        100% {
+            box-shadow: 0 0 7px rgba(212, 160, 40, .34), 0 0 14px rgba(212, 160, 40, .18), inset 0 1px 2px rgba(255, 255, 255, .28);
+            filter: brightness(.98);
+        }
+
+        50% {
+            box-shadow: 0 0 12px rgba(255, 205, 75, .72), 0 0 23px rgba(212, 160, 40, .42), inset 0 1px 5px rgba(255, 255, 255, .48);
+            filter: brightness(1.1);
+        }
+    }
+
+    @keyframes azncmstr-gold-shine {
+
+        0%,
+        18% {
+            left: -55%;
+            opacity: 0;
+        }
+
+        28% {
+            opacity: .9;
+        }
+
+        58% {
+            left: 125%;
+            opacity: .75;
+        }
+
+        59%,
+        100% {
+            left: 125%;
+            opacity: 0;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .async-developer-mode .azncmstr-badge,
+        .async-developer-mode .azncmstr-badge::after {
+            animation: none !important;
         }
     }
 </style>
