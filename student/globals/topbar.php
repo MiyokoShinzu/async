@@ -312,6 +312,9 @@ if (
                             <span class="developer-wave-letter<?= preg_match('/\s/u', $waveCharacter) ? ' developer-wave-space' : '' ?>" style="--wave-index: <?= (int) $waveIndex ?>"><?= preg_match('/\s/u', $waveCharacter) ? '&nbsp;' : htmlspecialchars($waveCharacter, ENT_QUOTES, "UTF-8") ?></span>
                         <?php endforeach; ?>
                     </span>
+                    <span class="async-dev-rank" aria-label="Developer rank">
+                        <i class="bi bi-code-slash" aria-hidden="true"></i> DEV
+                    </span>
                 <?php else: ?>
                     <?= htmlspecialchars($fullName ?? "", ENT_QUOTES, "UTF-8") ?>
                 <?php endif; ?>
@@ -321,13 +324,7 @@ if (
 
             <div class="topbar-access">
 
-                <?php if ($isAsyncDeveloper): ?>
-                    <span class="async-dev-rank" aria-label="Developer">
-                        <i class="bi bi-code-slash" aria-hidden="true"></i><span>DEV</span>
-                    </span>
-                <?php else: ?>
-                    Student Account
-                <?php endif; ?>
+                <?= $isAsyncDeveloper ? "Developer" : "Student Account" ?>
 
             </div>
 
@@ -728,13 +725,15 @@ if (
 
         <button
             type="button"
-            class="btn btn-theme topbar-theme-switch"
+            class="btn btn-theme"
             id="themeToggle"
             title="Toggle dark mode"
             aria-label="Toggle dark mode">
-            <span class="theme-switch-track" aria-hidden="true">
-                <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
-            </span>
+
+            <i
+                class="bi bi-moon-fill"
+                id="themeIcon"></i>
+
         </button>
 
 
@@ -742,22 +741,6 @@ if (
 
 
 </header>
-
-<?php if ($isAsyncDeveloper): ?>
-<div class="async-game-intro" id="asyncGameIntro" aria-hidden="true">
-    <div class="async-intro-grid"></div>
-    <div class="async-intro-scan"></div>
-    <div class="async-intro-content">
-        <div class="async-intro-emblem"><i class="bi bi-code-slash"></i></div>
-        <div class="async-intro-kicker">ASYNC SYSTEM // DEVELOPER ACCESS</div>
-        <div class="async-intro-title">WELCOME BACK</div>
-        <div class="async-intro-name">ENGR. KARL STEPHEN O. EVALLO</div>
-        <div class="async-intro-loading"><span></span></div>
-        <div class="async-intro-status">INITIALIZING DEVELOPER INTERFACE</div>
-        <button type="button" class="async-intro-skip" id="asyncIntroSkip">SKIP INTRO <i class="bi bi-arrow-right"></i></button>
-    </div>
-</div>
-<?php endif; ?>
 
 
 <!-- =========================================================
@@ -1134,27 +1117,6 @@ if (
 <?php if ($isAsyncDeveloper): ?>
 <script>
     document.documentElement.classList.add("async-developer-mode");
-</script>
-<?php endif; ?>
-
-<?php if ($isAsyncDeveloper): ?>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const intro = document.getElementById("asyncGameIntro");
-    const skip = document.getElementById("asyncIntroSkip");
-    if (!intro) return;
-    let dismissed = false;
-    const closeIntro = function () {
-        if (dismissed) return;
-        dismissed = true;
-        intro.classList.add("is-leaving");
-        window.setTimeout(function () {
-            if (intro && intro.parentNode) intro.parentNode.removeChild(intro);
-        }, 700);
-    };
-    if (skip) skip.addEventListener("click", closeIntro);
-    window.setTimeout(closeIntro, 2300);
-});
 </script>
 <?php endif; ?>
 
@@ -2154,171 +2116,6 @@ document.addEventListener("DOMContentLoaded", function () {
             animation-iteration-count: 1 !important;
             scroll-behavior: auto !important;
         }
-    }
-
-
-    /* Professional theme switch: same original button footprint and IDs. */
-    .topbar-theme-switch {
-        width: 42px !important;
-        height: 42px !important;
-        min-width: 42px !important;
-        padding: 0 !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 13px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        background: var(--surface-color) !important;
-        color: var(--text-color) !important;
-        box-shadow: 0 2px 8px var(--shadow-color);
-        transition: background .22s ease, border-color .22s ease, transform .22s ease, box-shadow .22s ease;
-    }
-    .topbar-theme-switch:hover {
-        transform: translateY(-1px);
-        border-color: var(--academic-blue) !important;
-        box-shadow: 0 4px 14px var(--shadow-color);
-    }
-    .theme-switch-track {
-        width: 28px;
-        height: 28px;
-        display: grid;
-        place-items: center;
-        border-radius: 9px;
-        background: color-mix(in srgb, var(--academic-blue) 12%, transparent);
-    }
-    .theme-switch-track i {
-        font-size: 15px;
-        line-height: 1;
-        transition: transform .35s cubic-bezier(.2,.8,.2,1), color .25s ease;
-    }
-    .topbar-theme-switch:active .theme-switch-track i { transform: rotate(35deg) scale(.88); }
-
-    /* DEV rank sits below the developer's name and follows the active theme. */
-    .async-developer-mode .topbar-user-info {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 2px;
-    }
-    .async-developer-mode .topbar-access {
-        display: flex;
-        align-items: center;
-        min-height: 16px;
-        color: inherit;
-        -webkit-text-fill-color: initial;
-        -webkit-text-stroke: 0;
-        filter: none;
-        animation: none;
-        text-transform: none;
-        letter-spacing: normal;
-    }
-    .async-developer-mode .async-dev-rank {
-        --dev-accent: #087fbd;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 2px 7px;
-        min-height: 17px;
-        border-radius: 6px;
-        border: 1px solid color-mix(in srgb, var(--dev-accent) 48%, var(--border-color));
-        color: var(--dev-accent);
-        background: color-mix(in srgb, var(--dev-accent) 10%, var(--surface-color));
-        font: 800 9px/1 system-ui, sans-serif;
-        letter-spacing: 1.1px;
-        box-shadow: 0 0 0 1px color-mix(in srgb, var(--dev-accent) 8%, transparent);
-        animation: dev-badge-enter .55s cubic-bezier(.2,.8,.2,1) both, dev-badge-glow 2.8s ease-in-out .55s infinite;
-    }
-    .async-developer-mode .async-dev-rank i {
-        font-size: 10px;
-        animation: dev-icon-pulse 2s ease-in-out infinite;
-    }
-    html[data-theme="dark"] .async-developer-mode .async-dev-rank {
-        --dev-accent: #65d9ff;
-        background: color-mix(in srgb, var(--dev-accent) 13%, #101827);
-        border-color: color-mix(in srgb, var(--dev-accent) 55%, transparent);
-        color: #8be4ff;
-    }
-    @keyframes dev-badge-enter {
-        from { opacity: 0; transform: translateY(-5px) scale(.88); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes dev-badge-glow {
-        0%,100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--dev-accent) 8%, transparent); }
-        50% { box-shadow: 0 0 11px color-mix(in srgb, var(--dev-accent) 28%, transparent); }
-    }
-    @keyframes dev-icon-pulse {
-        0%,100% { transform: scale(1); }
-        50% { transform: scale(1.16); }
-    }
-
-    /* Short game-style boot sequence. Only rendered for the exact developer account. */
-    .async-game-intro {
-        --intro-accent: #168acb;
-        position: fixed;
-        inset: 0;
-        z-index: 100000;
-        display: grid;
-        place-items: center;
-        overflow: hidden;
-        color: var(--text-color, #f4f8ff);
-        background: var(--surface-color, #f5f8fc);
-        isolation: isolate;
-        animation: async-intro-fade-in .35s ease both;
-    }
-    html[data-theme="dark"] .async-game-intro {
-        --intro-accent: #63dfff;
-        background: #070d19;
-        color: #f2f8ff;
-    }
-    .async-game-intro.is-leaving { animation: async-intro-exit .65s cubic-bezier(.7,0,.2,1) forwards; pointer-events: none; }
-    .async-intro-grid {
-        position: absolute; inset: -50%;
-        background-image: linear-gradient(color-mix(in srgb, var(--intro-accent) 12%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--intro-accent) 12%, transparent) 1px, transparent 1px);
-        background-size: 46px 46px;
-        transform: perspective(500px) rotateX(58deg) scale(1.7);
-        transform-origin: center 65%;
-        mask-image: linear-gradient(transparent, #000 38%, #000 75%, transparent);
-        animation: async-intro-grid-drift 5s linear infinite;
-    }
-    .async-intro-scan {
-        position: absolute; inset: 0;
-        background: linear-gradient(transparent 48%, color-mix(in srgb, var(--intro-accent) 9%, transparent) 50%, transparent 52%);
-        background-size: 100% 9px;
-        opacity: .45;
-        animation: async-intro-scan 5s linear infinite;
-    }
-    .async-intro-content {
-        position: relative; z-index: 1; width: min(92vw, 620px);
-        display: flex; flex-direction: column; align-items: center; text-align: center;
-        padding: 30px 18px;
-        animation: async-intro-content-in .8s cubic-bezier(.16,1,.3,1) both;
-    }
-    .async-intro-emblem {
-        width: 66px; height: 66px; display: grid; place-items: center;
-        border: 1px solid color-mix(in srgb, var(--intro-accent) 65%, transparent);
-        border-radius: 20px; color: var(--intro-accent);
-        background: color-mix(in srgb, var(--intro-accent) 10%, var(--surface-color));
-        box-shadow: 0 0 35px color-mix(in srgb, var(--intro-accent) 25%, transparent), inset 0 0 20px color-mix(in srgb, var(--intro-accent) 9%, transparent);
-        font-size: 27px; animation: async-intro-emblem 2.2s ease-in-out infinite;
-    }
-    .async-intro-kicker { margin-top: 26px; font: 700 10px/1.5 system-ui,sans-serif; letter-spacing: 3px; color: var(--intro-accent); }
-    .async-intro-title { margin-top: 12px; font: 900 clamp(28px,6vw,54px)/1 system-ui,sans-serif; letter-spacing: .08em; text-shadow: 0 0 28px color-mix(in srgb, var(--intro-accent) 24%, transparent); }
-    .async-intro-name { margin-top: 14px; font: 600 clamp(9px,2vw,12px)/1.5 system-ui,sans-serif; letter-spacing: .2em; opacity: .7; }
-    .async-intro-loading { width: min(270px,70vw); height: 3px; margin-top: 30px; overflow: hidden; border-radius: 9px; background: color-mix(in srgb, var(--intro-accent) 15%, var(--border-color)); }
-    .async-intro-loading span { display: block; width: 38%; height: 100%; border-radius: inherit; background: var(--intro-accent); box-shadow: 0 0 12px var(--intro-accent); animation: async-intro-load 1.65s cubic-bezier(.65,0,.35,1) forwards; }
-    .async-intro-status { margin-top: 11px; color: var(--intro-accent); font: 700 9px/1.5 system-ui,sans-serif; letter-spacing: 1.8px; }
-    .async-intro-skip { margin-top: 36px; padding: 8px 13px; border: 1px solid color-mix(in srgb, var(--intro-accent) 35%, var(--border-color)); border-radius: 7px; background: transparent; color: inherit; font: 700 9px system-ui,sans-serif; letter-spacing: 1px; opacity: .7; cursor: pointer; }
-    .async-intro-skip:hover { opacity: 1; color: var(--intro-accent); border-color: var(--intro-accent); }
-    @keyframes async-intro-fade-in { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes async-intro-exit { to { opacity: 0; transform: scale(1.035); visibility: hidden; } }
-    @keyframes async-intro-content-in { from { opacity: 0; transform: translateY(18px) scale(.97); filter: blur(8px); } to { opacity: 1; transform: none; filter: blur(0); } }
-    @keyframes async-intro-emblem { 0%,100% { transform: translateY(0); box-shadow: 0 0 24px color-mix(in srgb, var(--intro-accent) 18%, transparent); } 50% { transform: translateY(-5px); box-shadow: 0 0 42px color-mix(in srgb, var(--intro-accent) 38%, transparent); } }
-    @keyframes async-intro-grid-drift { to { background-position: 0 46px, 46px 0; } }
-    @keyframes async-intro-scan { to { background-position: 0 100vh; } }
-    @keyframes async-intro-load { from { width: 0; } to { width: 100%; } }
-    @media (prefers-reduced-motion: reduce) {
-        .async-game-intro, .async-game-intro *, .async-developer-mode .async-dev-rank { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
     }
 
 </style>
