@@ -283,7 +283,11 @@ if (
 
         <div class="topbar-title">
 
-            <?= $isAsyncDeveloper ? "Developer" : "Student Dashboard" ?>
+            <?php if ($isAsyncDeveloper): ?>
+                <span class="developer-typewriter" id="developerTypewriter" aria-label="CPE Instructor, Web Dev'it, Embedded Programmer, ASYNCMSTR"><span class="developer-typewriter-text">CPE Instructor</span><span class="developer-typewriter-caret" aria-hidden="true"></span></span>
+            <?php else: ?>
+                Student Dashboard
+            <?php endif; ?>
 
         </div>
 
@@ -321,7 +325,11 @@ if (
 
             <div class="topbar-access">
 
-                <?= $isAsyncDeveloper ? "Developer" : "Student Account" ?>
+                <?php if ($isAsyncDeveloper): ?>
+                    <span class="azncmstr-badge"><i class="bi bi-stars" aria-hidden="true"></i> AZNCMSTR</span>
+                <?php else: ?>
+                    Student Account
+                <?php endif; ?>
 
             </div>
 
@@ -1114,6 +1122,40 @@ if (
 <?php if ($isAsyncDeveloper): ?>
     <script>
         document.documentElement.classList.add("async-developer-mode");
+        document.addEventListener("DOMContentLoaded", function() {
+            const target = document.querySelector("#developerTypewriter .developer-typewriter-text");
+            if (!target) return;
+            const titles = ["CPE Instructor", "Web Dev'it", "Embedded Programmer", "ASYNCMSTR"];
+            let titleIndex = 0;
+            let characterIndex = titles[0].length;
+            let deleting = true;
+
+            function typeNext() {
+                const current = titles[titleIndex];
+                if (deleting) {
+                    characterIndex--;
+                    target.textContent = current.slice(0, Math.max(0, characterIndex));
+                    if (characterIndex <= 0) {
+                        deleting = false;
+                        titleIndex = (titleIndex + 1) % titles.length;
+                        setTimeout(typeNext, 300);
+                        return;
+                    }
+                    setTimeout(typeNext, 48);
+                } else {
+                    const nextTitle = titles[titleIndex];
+                    characterIndex++;
+                    target.textContent = nextTitle.slice(0, characterIndex);
+                    if (characterIndex >= nextTitle.length) {
+                        deleting = true;
+                        setTimeout(typeNext, 1450);
+                        return;
+                    }
+                    setTimeout(typeNext, 82);
+                }
+            }
+            setTimeout(typeNext, 1800);
+        });
     </script>
 <?php endif; ?>
 
@@ -1874,6 +1916,129 @@ if (
             linear-gradient(312deg, transparent 0 43%, rgba(110, 225, 255, .98) 44%, transparent 45%) bottom right / 76px 110px no-repeat;
         filter: drop-shadow(0 0 6px #28cfff);
         animation: developer-thunder-flash 4.8s infinite;
+    }
+
+    /* Developer title typewriter and AZNCMSTR identity badge */
+    .async-developer-mode .topbar-title {
+        min-width: 0;
+        max-width: min(42vw, 360px);
+        overflow: hidden;
+        text-overflow: clip;
+    }
+
+    .developer-typewriter {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        white-space: nowrap;
+        vertical-align: middle;
+        color: var(--academic-blue);
+        -webkit-text-fill-color: currentColor;
+        -webkit-text-stroke: 0;
+        letter-spacing: .7px;
+        font-weight: 800;
+    }
+
+    .developer-typewriter-caret {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        margin-left: 3px;
+        background: currentColor;
+        box-shadow: 0 0 7px currentColor;
+        animation: developer-type-caret .8s steps(1, end) infinite;
+    }
+
+    .azncmstr-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 4px;
+        padding: 3px 9px;
+        border: 1px solid rgba(45, 150, 255, .48);
+        border-radius: 999px;
+        color: #168cff;
+        background: linear-gradient(115deg, rgba(31, 132, 255, .13), rgba(139, 92, 246, .12));
+        box-shadow: 0 0 8px rgba(36, 145, 255, .16), inset 0 0 7px rgba(36, 145, 255, .08);
+        font-size: .64rem;
+        line-height: 1.2;
+        font-weight: 850;
+        letter-spacing: 1.15px;
+        white-space: nowrap;
+        animation: azncmstr-badge-glow 2.8s ease-in-out infinite;
+    }
+
+    .azncmstr-badge i {
+        font-size: .72rem;
+        animation: azncmstr-star-turn 4s ease-in-out infinite;
+    }
+
+    .async-developer-mode .topbar-avatar-button::before {
+        inset: -5px;
+        padding: 3.5px;
+        filter: drop-shadow(0 0 5px rgba(0, 210, 255, .65));
+        animation: developer-avatar-ring-spin 4.2s linear infinite, developer-avatar-halo 2.1s ease-in-out infinite;
+    }
+
+    .async-developer-mode .topbar-avatar-button::after {
+        content: "";
+        position: absolute;
+        inset: -9px;
+        z-index: -2;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, rgba(0, 229, 255, 0), rgba(0, 229, 255, .48), rgba(168, 85, 247, .42), rgba(255, 60, 172, .28), rgba(0, 229, 255, 0));
+        filter: blur(9px);
+        opacity: .65;
+        animation: developer-avatar-ring-spin 4.2s linear infinite, developer-avatar-halo 2.1s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    .async-developer-mode .topbar-avatar-button .topbar-avatar {
+        border-width: 2.5px;
+        border-color: rgba(255, 255, 255, .92);
+        box-shadow: 0 0 0 2px rgba(35, 150, 255, .2);
+    }
+
+    @keyframes developer-type-caret {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes azncmstr-badge-glow {
+
+        0%,
+        100% {
+            box-shadow: 0 0 6px rgba(36, 145, 255, .14), inset 0 0 5px rgba(36, 145, 255, .06);
+        }
+
+        50% {
+            box-shadow: 0 0 13px rgba(36, 145, 255, .34), 0 0 19px rgba(139, 92, 246, .16), inset 0 0 8px rgba(36, 145, 255, .12);
+        }
+    }
+
+    @keyframes azncmstr-star-turn {
+
+        0%,
+        100% {
+            transform: rotate(0) scale(1);
+        }
+
+        50% {
+            transform: rotate(18deg) scale(1.12);
+        }
+    }
+
+    @keyframes developer-avatar-halo {
+
+        0%,
+        100% {
+            opacity: .48;
+        }
+
+        50% {
+            opacity: .95;
+        }
     }
 
     @property --developer-frame-angle {
