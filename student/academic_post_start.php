@@ -249,12 +249,13 @@ if ($redirectUrlJson === false) {
         .async-page-shell {
             width: min(100%, 1120px);
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 160px;
+            grid-template-columns: minmax(0, 1fr);
             grid-template-areas:
-                "banner banner"
-                "main sidebar"
-                "inpage inpage"
-                "preroll preroll";
+                "banner"
+                "main"
+                "vertical"
+                "inpage"
+                "referral";
             align-items: center;
             justify-items: center;
             gap: 18px;
@@ -304,92 +305,29 @@ if ($redirectUrlJson === false) {
             justify-self: center;
         }
 
-        .async-ad-preroll {
-            grid-area: preroll;
-            width: min(100%, 760px);
+        .async-ad-vertical {
+            grid-area: vertical;
+            width: 184px;
+            min-height: 340px;
             justify-self: center;
         }
 
-        .async-preroll-player {
-            position: relative;
-            width: 100%;
-            max-width: 640px;
-            aspect-ratio: 16 / 9;
-            overflow: hidden;
-            border-radius: 8px;
-            background: #101828;
+        .async-ad-referral {
+            grid-area: referral;
+            width: min(100%, 752px);
+            min-height: 120px;
+            justify-self: center;
         }
 
-        .async-preroll-player video,
-        .async-preroll-player .async-ima-ad-container {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .async-preroll-player video {
+        .async-ad-referral img {
             display: block;
+            width: min(720px, 100%);
+            height: auto;
+            max-height: 90px;
             object-fit: contain;
-            background: #101828;
         }
 
-        .async-preroll-player .async-ima-ad-container {
-            z-index: 2;
-        }
-
-        .async-preroll-prompt {
-            margin: 9px 0 0;
-            color: var(--async-muted);
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .async-preroll-play {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-height: 39px;
-            margin-top: 10px;
-            padding: 9px 16px;
-            border: 0;
-            border-radius: 10px;
-            color: #fff;
-            background: linear-gradient(110deg, #267ce5, #1255b9);
-            font: inherit;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .async-preroll-play[hidden] {
-            display: none;
-        }
-
-        .async-preroll-play:disabled {
-            opacity: .6;
-            cursor: wait;
-        }
-
-        .async-ad-banner {
-            grid-area: banner;
-            width: 752px;
-            min-height: 130px;
-        }
-
-        .async-ad-mobile {
-            display: none;
-        }
-
-        .async-ad-sidebar {
-            grid-area: sidebar;
-            width: 184px;
-            min-height: 340px;
-            align-self: center;
-        }
-
-        .async-ad iframe {
+        .async-ad-vertical iframe {
             display: block;
             max-width: 100%;
             border: 0;
@@ -644,13 +582,10 @@ if ($redirectUrlJson === false) {
                 grid-template-areas:
                     "banner"
                     "main"
+                    "vertical"
                     "inpage"
-                    "preroll";
+                    "referral";
                 gap: 14px;
-            }
-
-            .async-ad-sidebar {
-                display: none;
             }
 
             .async-ad-banner {
@@ -698,14 +633,6 @@ if ($redirectUrlJson === false) {
                 min-height: 90px;
             }
 
-            .async-ad-preroll {
-                padding-left: 8px;
-                padding-right: 8px;
-            }
-
-            .async-preroll-frame {
-                height: 160px;
-            }
         }
 
         @media (max-width: 350px) {
@@ -811,7 +738,24 @@ if ($redirectUrlJson === false) {
             </button>
         </main>
 
-        <aside class="async-ad async-ad-sidebar" aria-label="Advertisement">
+        <section class="async-ad async-ad-inpage" aria-label="In-page advertisement">
+            <div class="async-ad-inner">
+                <script>
+                    (function(gptwkeg) {
+                        var d = document,
+                            s = d.createElement('script'),
+                            l = d.currentScript || d.scripts[d.scripts.length - 1];
+                        s.settings = gptwkeg || {};
+                        s.src = "//juvenilechoice.com/bsXvV/s.dhGdlX0qYIWlcC/qeEm/9duXZeUmlGkFP/Tzch2/MHDOQMw/OcD-EgtTNNzfY/wANLDRAK4eNIQO";
+                        s.async = true;
+                        s.referrerPolicy = 'no-referrer-when-downgrade';
+                        l.parentNode.insertBefore(s, l);
+                    })({});
+                </script>
+            </div>
+        </section>
+
+        <section class="async-ad async-ad-vertical" aria-label="Advertisement">
             <div class="async-ad-inner">
                 <script>
                     var atOptions = {
@@ -824,44 +768,18 @@ if ($redirectUrlJson === false) {
                 </script>
                 <script src="https://bauval.org/22/981d46f3eb1343ec22581b3edf14be30"></script>
             </div>
-        </aside>
-
-        <section class="async-ad async-ad-inpage" aria-label="In-page advertisement">
-            <div class="async-ad-inner">
-                <script>
-                    (function(teec) {
-                        var d = document,
-                            s = d.createElement('script'),
-                            l = d.currentScript || d.scripts[d.scripts.length - 1];
-                        s.settings = teec || {};
-                        s.src = "//juvenilechoice.com/bDX.V/sNdwGilU0dYFWWcN/VedmK9_ubZ-U/lfk/PiTvcl2/MBDmcrzTOVTncEtJNUz/YiwhNyzHQswiMiQq";
-                        s.async = true;
-                        s.referrerPolicy = 'no-referrer-when-downgrade';
-                        l.parentNode.insertBefore(s, l);
-                    })({});
-                </script>
-            </div>
         </section>
 
-        <section class="async-ad async-ad-preroll" aria-label="Sponsored video advertisement">
+        <section class="async-ad async-ad-referral" aria-label="Adsterra banner">
             <div class="async-ad-inner">
-                <div style="width:100%;max-width:640px;">
-                    <div class="async-preroll-player" id="asyncPrerollPlayer">
-                        <video id="asyncPrerollContent" playsinline muted></video>
-                        <div class="async-ima-ad-container" id="asyncImaAdContainer"></div>
-                    </div>
-                    <p class="async-preroll-prompt" id="asyncPrerollPrompt">
-                        A sponsored video may play before you continue.
-                    </p>
-                    <button type="button" class="async-preroll-play" id="asyncPlayPreroll" hidden>
-                        <span aria-hidden="true">▶</span> Play sponsored video
-                    </button>
-                </div>
+                <img
+                    src="https://landings-cdn.adsterratech.com/referralBanners/gif/720x90_adsterra_reff.gif"
+                    alt="Adsterra referral banner"
+                    loading="lazy">
             </div>
         </section>
     </div>
 
-    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
     <script>
         (function() {
             "use strict";
@@ -875,17 +793,6 @@ if ($redirectUrlJson === false) {
             const statusText = document.getElementById("asyncLoaderStatus");
             const continueButton = document.getElementById("asyncContinueButton");
             const steps = Array.from(document.querySelectorAll(".async-loader-step"));
-            const playAdButton = document.getElementById("asyncPlayPreroll");
-            const prerollPrompt = document.getElementById("asyncPrerollPrompt");
-            const contentVideo = document.getElementById("asyncPrerollContent");
-            const adContainer = document.getElementById("asyncImaAdContainer");
-
-            const vastTagUrl = "https://rude-movie.com/d.mnFXzsdjG/N/vLZDGAUq/feLm/9/uSZ-U/lokGPLTdcr2nMMDvQOx_M/jPEst/NpzNYiwCNmDoEFyXNMQm";
-            let adFinished = false;
-            let adStarted = false;
-            let adsLoader = null;
-            let adsManager = null;
-            let imaDisplayContainer = null;
 
             const stages = [{
                     at: 0,
@@ -942,117 +849,12 @@ if ($redirectUrlJson === false) {
                     step.classList.add("is-complete");
                 });
 
-                statusText.textContent = "Preparation complete. Play the sponsored video to continue.";
-                playAdButton.hidden = false;
-                playAdButton.focus({
+                statusText.textContent = "Page ready. You can continue.";
+                continueButton.classList.add("is-visible");
+                continueButton.focus({
                     preventScroll: true
                 });
-                updateContinueAvailability();
             }
-
-            function updateContinueAvailability() {
-                if (ready && adFinished) {
-                    continueButton.classList.add("is-visible");
-                    statusText.textContent = "Security verification complete. You can continue.";
-                }
-            }
-
-            function finishAd(message) {
-                adFinished = true;
-                playAdButton.disabled = true;
-                playAdButton.textContent = "Sponsored video completed";
-                prerollPrompt.textContent = message;
-                updateContinueAvailability();
-            }
-
-            function startVastAd() {
-                if (adStarted || !ready) return;
-                adStarted = true;
-                playAdButton.disabled = true;
-                playAdButton.textContent = "Loading sponsored video…";
-                prerollPrompt.textContent = "Loading the video advertisement…";
-
-                if (!window.google || !google.ima) {
-                    finishAd("The video ad player could not be loaded. You may continue.");
-                    return;
-                }
-
-                try {
-                    imaDisplayContainer = new google.ima.AdDisplayContainer(adContainer, contentVideo);
-                    adsLoader = new google.ima.AdsLoader(imaDisplayContainer);
-
-                    adsLoader.addEventListener(
-                        google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-                        function(event) {
-                            try {
-                                adsManager = event.getAdsManager(contentVideo);
-                                adsManager.addEventListener(
-                                    google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
-                                    function() {
-                                        finishAd("Sponsored video completed.");
-                                    }
-                                );
-                                adsManager.addEventListener(
-                                    google.ima.AdEvent.Type.COMPLETE,
-                                    function() {
-                                        finishAd("Sponsored video completed.");
-                                    }
-                                );
-                                adsManager.addEventListener(
-                                    google.ima.AdErrorEvent.Type.AD_ERROR,
-                                    function() {
-                                        finishAd("The video advertisement ended or could not be played.");
-                                    }
-                                );
-
-                                adsManager.init(
-                                    adContainer.clientWidth || 640,
-                                    adContainer.clientHeight || 360,
-                                    google.ima.ViewMode.NORMAL
-                                );
-                                adsManager.start();
-                            } catch (error) {
-                                finishAd("The video advertisement could not be started. You may continue.");
-                            }
-                        },
-                        false
-                    );
-
-                    adsLoader.addEventListener(
-                        google.ima.AdErrorEvent.Type.AD_ERROR,
-                        function() {
-                            finishAd("No playable video advertisement was returned. You may continue.");
-                        },
-                        false
-                    );
-
-                    imaDisplayContainer.initialize();
-
-                    const request = new google.ima.AdsRequest();
-                    request.adTagUrl = vastTagUrl;
-                    request.linearAdSlotWidth = adContainer.clientWidth || 640;
-                    request.linearAdSlotHeight = adContainer.clientHeight || 360;
-                    request.nonLinearAdSlotWidth = adContainer.clientWidth || 640;
-                    request.nonLinearAdSlotHeight = Math.max(50, Math.round((adContainer.clientHeight || 360) / 3));
-                    adsLoader.requestAds(request);
-                } catch (error) {
-                    finishAd("The video advertisement could not be loaded. You may continue.");
-                }
-            }
-
-            playAdButton.addEventListener("click", startVastAd);
-
-            window.addEventListener("resize", function() {
-                if (adsManager && adContainer.clientWidth && adContainer.clientHeight) {
-                    try {
-                        adsManager.resize(
-                            adContainer.clientWidth,
-                            adContainer.clientHeight,
-                            google.ima.ViewMode.NORMAL
-                        );
-                    } catch (error) {}
-                }
-            });
 
             continueButton.addEventListener("click", function() {
                 if (!ready) return;
