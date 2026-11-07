@@ -1577,35 +1577,41 @@
     #asyncToolsFab {
         width: 56px;
         height: 56px;
-        border: 1px solid rgba(255, 255, 255, .4);
-        border-radius: 18px;
-        background: linear-gradient(145deg, #5278ed, #3157c7);
+        border: 1px solid rgba(255, 255, 255, .52);
+        border-radius: 19px;
+        background: linear-gradient(145deg, rgba(59, 130, 246, .88), rgba(37, 99, 235, .78));
         color: #fff;
         font-size: 22px;
-        box-shadow: 0 8px 24px rgba(37, 76, 180, .35);
+        box-shadow: 0 9px 26px rgba(37, 76, 180, .28);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
         cursor: pointer;
-        transition: transform .2s
+        transition: transform .48s cubic-bezier(.22, 1, .36, 1), border-radius .48s cubic-bezier(.22, 1, .36, 1), box-shadow .48s cubic-bezier(.22, 1, .36, 1), background .3s ease
     }
 
     #asyncToolsFab[aria-expanded=true] {
-        transform: rotate(90deg)
+        transform: rotate(90deg) scale(1.06);
+        border-radius: 50%;
+        box-shadow: 0 12px 30px rgba(37, 76, 180, .4)
     }
 
     #asyncToolsMenu {
         display: flex;
         flex-direction: column;
-        gap: 7px;
+        gap: 8px;
         opacity: 0;
         visibility: hidden;
-        transform: translateY(12px) scale(.96);
+        pointer-events: none;
+        transform: translateY(18px) scale(.92);
         transform-origin: bottom right;
-        transition: .2s
+        transition: opacity .38s cubic-bezier(.22, 1, .36, 1), transform .48s cubic-bezier(.22, 1, .36, 1), visibility .38s
     }
 
     #asyncToolsMenu.is-visible {
         opacity: 1;
         visibility: visible;
-        transform: none
+        pointer-events: auto;
+        transform: translateY(0) scale(1)
     }
 
     #asyncToolsMenu button {
@@ -1614,14 +1620,38 @@
         gap: 11px;
         min-width: 175px;
         padding: 11px 14px;
-        border: 1px solid rgba(255, 255, 255, .35);
-        border-radius: 12px;
-        background: linear-gradient(110deg, #4169e1, #3157c7);
+        border: 1px solid rgba(255, 255, 255, .48);
+        border-radius: 13px;
+        background: rgba(59, 130, 246, .78);
         color: #fff;
-        box-shadow: 0 5px 16px #0f172a2e;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 6px 18px rgba(15, 23, 42, .16);
         font-size: 13px;
         text-align: left;
-        cursor: pointer
+        cursor: pointer;
+        transition: transform .28s cubic-bezier(.22, 1, .36, 1), filter .2s ease, background .2s ease
+    }
+
+    #asyncToolsMenu button:nth-child(2) {
+        background: rgba(13, 148, 136, .78)
+    }
+
+    #asyncToolsMenu button:nth-child(3) {
+        background: rgba(124, 58, 237, .78)
+    }
+
+    #asyncToolsMenu button:nth-child(4) {
+        background: rgba(217, 119, 6, .78)
+    }
+
+    #asyncToolsMenu button:nth-child(5) {
+        background: rgba(225, 29, 72, .78)
+    }
+
+    #asyncToolsMenu button:hover {
+        transform: translateX(-4px) scale(1.025);
+        filter: brightness(1.08)
     }
 
     #asyncToolsMenu button i {
@@ -1731,9 +1761,91 @@
     }
 
     #asyncSupplementalSounds button.active {
-        background: rgba(65, 105, 225, .2);
-        border-color: #4169e1;
+        background: rgba(16, 185, 129, .18);
+        border-color: #10b981;
+        color: var(--aux-text);
         font-weight: 800
+    }
+
+    #asyncSupplementalSounds button {
+        min-height: 34px;
+        transition: background .18s ease, border-color .18s ease, transform .18s ease
+    }
+
+    #asyncSupplementalSounds button:hover {
+        transform: translateY(-1px);
+        border-color: #60a5fa
+    }
+
+    html[data-theme="dark"] #readingToolsPanel,
+    html[data-theme="dark"] #asyncNotesPanel,
+    html[data-theme="dark"] #asyncCalcPanel,
+    html[data-theme="dark"] #asyncSoundPanel {
+        --aux-text: #f1f5f9 !important;
+        --aux-editor-text: #f1f5f9 !important;
+        --aux-control: rgba(255, 255, 255, .09) !important;
+        --aux-display-bg: #111827 !important;
+        --aux-op-bg: rgba(96, 165, 250, .2) !important;
+        --aux-border: rgba(203, 213, 225, .28) !important;
+        color: #f1f5f9 !important;
+    }
+
+    html[data-theme="dark"] #readingToolsPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
+    html[data-theme="dark"] #asyncNotesPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
+    html[data-theme="dark"] #asyncCalcPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
+    html[data-theme="dark"] #asyncSoundPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li) {
+        color: var(--aux-text)
+    }
+
+    html[data-theme="dark"] #readingToolsPanel :is(input, select, textarea),
+    html[data-theme="dark"] #asyncNotesPanel :is(input, select, textarea),
+    html[data-theme="dark"] #asyncCalcPanel :is(input, select, textarea),
+    html[data-theme="dark"] #asyncSoundPanel :is(input, select, textarea) {
+        background: #172033 !important;
+        color: #f8fafc !important;
+        border-color: var(--aux-border) !important
+    }
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-editor {
+        color: #f1f5f9 !important
+    }
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker-options {
+        background: #172033;
+        color: #f1f5f9
+    }
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker-item {
+        color: #f1f5f9
+    }
+
+    html[data-theme="dark"] #asyncCalcPanel #asyncCalcKeys button,
+    html[data-theme="dark"] #readingToolsPanel .rt-btn,
+    html[data-theme="dark"] #asyncSoundPanel button {
+        color: #f8fafc
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer {
+        color: #f8fafc !important;
+        background: rgba(25, 32, 45, .97) !important;
+        border-color: rgba(203, 213, 225, .25) !important
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer :is(strong, label, span, div, p) {
+        color: #f1f5f9 !important
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer input {
+        background: #172033 !important;
+        color: #f8fafc !important;
+        border-color: rgba(203, 213, 225, .28) !important
+    }
+
+    html[data-theme="dark"] #readingToolsPanel button:not(.rt-header button),
+    html[data-theme="dark"] #asyncNotesPanel button,
+    html[data-theme="dark"] #asyncCalcPanel button,
+    html[data-theme="dark"] #asyncSoundPanel button {
+        color: #f8fafc
     }
 
     @media(max-width:520px) {
@@ -1851,13 +1963,6 @@
             </div>
             <div class="rt-scroll-status" id="rtScrollStatus">Auto-scroll is stopped.</div>
         </div>
-
-        <div class="rt-group">
-            <span class="rt-label">Floating timer</span>
-            <button type="button" class="rt-btn" id="rtOpenTimer" style="width:100%"><i class="bi bi-stopwatch"></i> Open Timer</button>
-            <small class="rt-muted">Set a countdown, drag it anywhere, and hear an alarm when time is up.</small>
-        </div>
-
         <div class="rt-button-row">
             <button type="button" class="rt-btn" id="rtResetAll">Reset all settings</button>
         </div>
@@ -1935,15 +2040,15 @@
     <div class="sound-choice"><button type="button" data-sound="rain">🌧️ Rain</button><button type="button" data-sound="ocean">🌊 Ocean waves</button><button type="button" data-sound="forest">🌲 Forest ambience</button><button type="button" data-sound="wind">🍃 Gentle wind</button><button type="button" data-sound="fire">🔥 Fireplace</button></div>
     <div class="supplemental-heading">Supplemental ASMR layers <small>Mix any of these with the main ambience.</small></div>
     <div id="asyncSupplementalSounds" class="supplemental-sounds">
-        <button data-layer="thunder">Thunder</button><button data-layer="white">White noise</button><button data-layer="pink">Pink noise</button><button data-layer="brown">Brown noise</button>
-        <button data-layer="fan">Fan</button><button data-layer="aircon">Air conditioner</button><button data-layer="rainroof">Rain on roof</button><button data-layer="rainwindow">Rain on window</button>
-        <button data-layer="firecrackle">Fire crackle</button><button data-layer="water">Running water</button><button data-layer="stream">Stream</button><button data-layer="night">Night insects</button>
-        <button data-layer="birds">Birdsong</button><button data-layer="heartbeat">Heartbeat</button><button data-layer="vinyl">Vinyl static</button><button data-layer="cafe">Cafe murmur</button>
-        <button data-layer="train">Train rumble</button><button data-layer="typing">Soft typing</button>
+        <button type="button" data-layer="thunder" aria-pressed="false">▶ Thunder</button><button type="button" data-layer="white" aria-pressed="false">▶ White noise</button><button type="button" data-layer="pink" aria-pressed="false">▶ Pink noise</button><button type="button" data-layer="brown" aria-pressed="false">▶ Brown noise</button>
+        <button type="button" data-layer="fan" aria-pressed="false">▶ Fan</button><button type="button" data-layer="aircon" aria-pressed="false">▶ Air conditioner</button><button type="button" data-layer="rainroof" aria-pressed="false">▶ Rain on roof</button><button type="button" data-layer="rainwindow" aria-pressed="false">▶ Rain on window</button>
+        <button type="button" data-layer="firecrackle" aria-pressed="false">▶ Fire crackle</button><button type="button" data-layer="water" aria-pressed="false">▶ Running water</button><button type="button" data-layer="stream" aria-pressed="false">▶ Stream</button><button type="button" data-layer="night" aria-pressed="false">▶ Night insects</button>
+        <button type="button" data-layer="birds" aria-pressed="false">▶ Birdsong</button><button type="button" data-layer="heartbeat" aria-pressed="false">▶ Heartbeat</button><button type="button" data-layer="vinyl" aria-pressed="false">▶ Vinyl static</button><button type="button" data-layer="cafe" aria-pressed="false">▶ Cafe murmur</button>
+        <button type="button" data-layer="train" aria-pressed="false">▶ Train rumble</button><button type="button" data-layer="typing" aria-pressed="false">▶ Soft typing</button>
     </div>
     <label class="sound-volume"><span>Layer volume</span><input id="asyncLayerVolume" type="range" min="0" max="100" value="35"><span id="asyncLayerVolumeValue">35%</span></label>
     <label class="sound-volume"><span>Volume</span><input id="asyncSoundVolume" type="range" min="0" max="100" value="28"><span id="asyncSoundVolumeValue">28%</span></label>
-    <div class="sound-actions"><button type="button" id="asyncSoundPlay"><i class="bi bi-play-fill"></i> Play sound</button><button type="button" id="asyncSoundStop" style="background:#64748b">Stop</button></div>
+    <div class="sound-actions"><button type="button" id="asyncSoundPlay"><i class="bi bi-play-fill"></i> Play sound</button><button type="button" id="asyncSoundStop" style="background:#64748b">Stop all</button></div>
     <div id="asyncSoundStatus" aria-live="polite">Select a sound, then press Play. Audio starts only after your action.</div>
 </section>
 
@@ -2115,17 +2220,6 @@
             renderTimer();
             timerStatus.textContent = 'Timer reset.';
         }
-        document.getElementById('rtOpenTimer').addEventListener('click', () => {
-            if (window.asyncCloseOtherTools) window.asyncCloseOtherTools(timerBox);
-            timerBox.classList.add('is-visible');
-            timerBox.style.left = '50%';
-            timerBox.style.top = '50%';
-            timerBox.style.right = 'auto';
-            timerBox.style.bottom = 'auto';
-            timerBox.style.transform = 'translate(-50%,-50%)';
-            timerBox.setAttribute('aria-hidden', 'false');
-            togglePanel(false);
-        });
         document.getElementById('aftMinimize').addEventListener('click', () => {
             const minimized = timerBox.classList.toggle('is-minimized');
             const button = document.getElementById('aftMinimize');
@@ -2968,15 +3062,16 @@
                 showExpression();
             }
         });
-        // Procedural ambient soundscapes: no audio files or third-party media required.
+        // Main ambience and supplemental ASMR sounds run independently.
         let ambienceContext = null,
             ambienceNodes = [],
             selectedSound = 'rain',
             ambienceGain = null;
         const soundStatus = byId('asyncSoundStatus'),
             soundVolume = byId('asyncSoundVolume');
+        const layerPlayers = new Map();
 
-        function stopAmbience() {
+        function stopMainAmbience(update = true) {
             ambienceNodes.forEach(node => {
                 try {
                     node.stop ? node.stop() : node.disconnect();
@@ -2989,12 +3084,21 @@
                 } catch (_) {}
                 ambienceGain = null;
             }
-            soundStatus.textContent = 'Sound stopped.';
+            if (update) soundStatus.textContent = 'Main ambience stopped. Supplemental sounds can continue playing.';
             document.querySelectorAll('[data-sound]').forEach(btn => btn.classList.toggle('active', btn.dataset.sound === selectedSound));
+            byId('asyncSoundPlay').innerHTML = '<i class="bi bi-play-fill"></i> Play sound';
         }
-        const selectedLayers = new Set();
 
-        function addNoiseLayer(ctx, master, type, volume) {
+        function stopAmbience() {
+            stopMainAmbience(false);
+            [...layerPlayers.keys()].forEach(stopLayer);
+            soundStatus.textContent = 'All sounds stopped.';
+        }
+
+        function buildLayer(ctx, destination, type, volume) {
+            const g = ctx.createGain();
+            g.gain.value = volume;
+            g.connect(destination);
             const len = ctx.sampleRate * 3,
                 buf = ctx.createBuffer(1, len, ctx.sampleRate),
                 d = buf.getChannelData(0);
@@ -3010,63 +3114,129 @@
             const src = ctx.createBufferSource();
             src.buffer = buf;
             src.loop = true;
-            const f = ctx.createBiquadFilter(),
-                g = ctx.createGain();
+            const f = ctx.createBiquadFilter();
             f.type = 'lowpass';
-            f.frequency.value = type === 'white' ? 6500 : type === 'pink' ? 2300 : type === 'brown' ? 450 : 1200;
-            g.gain.value = volume;
+            f.frequency.value = ({
+                white: 6500,
+                pink: 2300,
+                brown: 450,
+                thunder: 180,
+                train: 260,
+                heartbeat: 90,
+                fan: 700,
+                aircon: 900,
+                rainroof: 2600,
+                rainwindow: 3400,
+                firecrackle: 1800,
+                water: 2400,
+                stream: 1900,
+                night: 5200,
+                birds: 5000,
+                vinyl: 4200,
+                cafe: 1100,
+                typing: 3200
+            } [type] || 1200);
             src.connect(f);
             f.connect(g);
-            g.connect(master);
             src.start();
-            ambienceNodes.push(src);
-            if (['thunder', 'train', 'heartbeat'].includes(type)) {
+            const nodes = [src];
+            if (['thunder', 'train', 'heartbeat', 'fan', 'aircon', 'firecrackle', 'night', 'birds', 'cafe', 'typing'].includes(type)) {
                 const o = ctx.createOscillator(),
                     og = ctx.createGain();
                 o.type = 'sine';
-                o.frequency.value = type === 'thunder' ? 38 : type === 'train' ? 55 : 1.2;
-                og.gain.value = .045;
+                o.frequency.value = ({
+                    thunder: 38,
+                    train: 55,
+                    heartbeat: 1.2,
+                    fan: 60,
+                    aircon: 48,
+                    firecrackle: 3.5,
+                    night: 4.5,
+                    birds: 2100,
+                    cafe: 180,
+                    typing: 2.8
+                } [type] || 40);
+                og.gain.value = ({
+                    thunder: .035,
+                    train: .025,
+                    heartbeat: .025,
+                    fan: .008,
+                    aircon: .006,
+                    firecrackle: .012,
+                    night: .006,
+                    birds: .006,
+                    cafe: .004,
+                    typing: .009
+                } [type] || .005);
                 o.connect(og);
-                og.connect(master);
+                og.connect(g);
                 o.start();
-                ambienceNodes.push(o);
+                nodes.push(o);
             }
-            if (['fan', 'aircon', 'rainroof', 'rainwindow', 'firecrackle', 'water', 'stream', 'night', 'birds', 'vinyl', 'cafe', 'typing'].includes(type)) {
-                const o = ctx.createOscillator(),
-                    og = ctx.createGain();
-                o.frequency.value = type === 'typing' ? 2.8 : type === 'firecrackle' ? 3.5 : .16;
-                og.gain.value = .012;
-                o.connect(og);
-                og.connect(master);
-                o.start();
-                ambienceNodes.push(o);
-            }
+            return {
+                gain: g,
+                nodes
+            };
         }
-        document.querySelectorAll('#asyncSupplementalSounds [data-layer]').forEach(btn => btn.addEventListener('click', () => {
-            const k = btn.dataset.layer;
-            if (selectedLayers.has(k)) {
-                selectedLayers.delete(k);
-                btn.classList.remove('active');
-            } else {
-                selectedLayers.add(k);
-                btn.classList.add('active');
-            }
-            soundStatus.textContent = selectedLayers.size + ' supplemental layers selected. Press Play to mix.';
-            if (ambienceGain) startAmbience();
-        }));
 
-        function startAmbience() {
+        function stopLayer(key) {
+            const player = layerPlayers.get(key);
+            if (!player) return;
+            player.nodes.forEach(n => {
+                try {
+                    n.stop();
+                } catch (_) {}
+            });
+            try {
+                player.gain.disconnect();
+            } catch (_) {}
+            layerPlayers.delete(key);
+            const btn = document.querySelector('[data-layer="' + key + '"]');
+            if (btn) {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+                btn.textContent = '▶ ' + btn.textContent.replace(/^[▶■]\s*/, '');
+            }
+            soundStatus.textContent = 'Supplemental sound stopped. Other sounds continue playing.';
+        }
+        async function toggleLayer(btn) {
+            const key = btn.dataset.layer;
+            if (layerPlayers.has(key)) {
+                stopLayer(key);
+                return;
+            }
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC) {
                 soundStatus.textContent = 'Web Audio is not supported in this browser.';
                 return;
             }
             if (!ambienceContext) ambienceContext = new AC();
-            ambienceContext.resume().then(() => {
-                stopAmbience();
+            try {
+                await ambienceContext.resume();
+                const player = buildLayer(ambienceContext, ambienceContext.destination, key, Number(byId('asyncLayerVolume').value) / 100 * .18);
+                layerPlayers.set(key, player);
+                btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
+                btn.textContent = '■ ' + btn.textContent.replace(/^[▶■]\s*/, '');
+                soundStatus.textContent = key + ' is playing independently. Click it again to stop it.';
+            } catch (_) {
+                soundStatus.textContent = 'Audio was blocked. Click the sound again to allow playback.';
+            }
+        }
+        document.querySelectorAll('#asyncSupplementalSounds [data-layer]').forEach(btn => btn.addEventListener('click', () => toggleLayer(btn)));
+        async function startAmbience() {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) {
+                soundStatus.textContent = 'Web Audio is not supported in this browser.';
+                return;
+            }
+            if (!ambienceContext) ambienceContext = new AC();
+            try {
+                await ambienceContext.resume();
+                stopMainAmbience(false);
                 const ctx = ambienceContext,
                     master = ctx.createGain();
-                master.gain.value = Number(soundVolume.value) / 100 * 0.22;
+                master.gain.value = Number(soundVolume.value) / 100 * .22;
                 master.connect(ctx.destination);
                 ambienceGain = master;
                 const length = ctx.sampleRate * 3,
@@ -3096,13 +3266,11 @@
                 lfo.start();
                 ambienceNodes.push(lfo);
                 if (selectedSound === 'rain') {
-                    filter.type = 'lowpass';
                     filter.frequency.value = 2200;
                     lfo.frequency.value = .35;
                     lfoGain.gain.value = .12;
                 }
                 if (selectedSound === 'ocean') {
-                    filter.type = 'lowpass';
                     filter.frequency.value = 650;
                     lfo.frequency.value = .075;
                     lfoGain.gain.value = .55;
@@ -3112,18 +3280,8 @@
                     filter.frequency.value = 950;
                     lfo.frequency.value = .18;
                     lfoGain.gain.value = .12;
-                    const bird = ctx.createOscillator(),
-                        birdGain = ctx.createGain();
-                    bird.type = 'sine';
-                    bird.frequency.value = 2100;
-                    birdGain.gain.value = .012;
-                    bird.connect(birdGain);
-                    birdGain.connect(master);
-                    bird.start();
-                    ambienceNodes.push(bird);
                 }
                 if (selectedSound === 'wind') {
-                    filter.type = 'lowpass';
                     filter.frequency.value = 330;
                     lfo.frequency.value = .045;
                     lfoGain.gain.value = .7;
@@ -3135,25 +3293,23 @@
                     lfo.frequency.value = 1.7;
                     lfoGain.gain.value = .16;
                 }
-                const lv = Number(byId('asyncLayerVolume').value) / 100 * .10;
-                selectedLayers.forEach(k => addNoiseLayer(ctx, master, k, lv));
-                soundStatus.textContent = 'Playing ' + selectedSound + ' with ' + selectedLayers.size + ' supplemental layers.';
-                byId('asyncSoundPlay').innerHTML = '<i class="bi bi-pause-fill"></i> Restart sound';
-            }).catch(() => {
-                soundStatus.textContent = 'Audio was blocked. Press Play again to allow sound.';
-            });
+                soundStatus.textContent = 'Main ambience: ' + selectedSound + '. Supplemental sounds play and stop independently.';
+                byId('asyncSoundPlay').innerHTML = '<i class="bi bi-arrow-repeat"></i> Restart sound';
+            } catch (_) {
+                soundStatus.textContent = 'Audio was blocked. Press Play sound again to allow audio.';
+            }
         }
         document.querySelectorAll('[data-sound]').forEach(button => button.addEventListener('click', () => {
             selectedSound = button.dataset.sound;
             document.querySelectorAll('[data-sound]').forEach(item => item.classList.toggle('active', item === button));
-            if (ambienceNodes.length) startAmbience();
+            if (ambienceGain) startAmbience();
             else soundStatus.textContent = selectedSound + ' selected. Press Play sound.';
         }));
         byId('asyncSoundPlay').addEventListener('click', startAmbience);
         byId('asyncSoundStop').addEventListener('click', stopAmbience);
         byId('asyncLayerVolume').addEventListener('input', () => {
             byId('asyncLayerVolumeValue').textContent = byId('asyncLayerVolume').value + '%';
-            if (ambienceGain) startAmbience();
+            layerPlayers.forEach(player => player.gain.gain.setTargetAtTime(Number(byId('asyncLayerVolume').value) / 100 * .18, ambienceContext.currentTime, .08));
         });
         soundVolume.addEventListener('input', () => {
             byId('asyncSoundVolumeValue').textContent = soundVolume.value + '%';
