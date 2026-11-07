@@ -312,6 +312,9 @@ if (
                             <span class="developer-wave-letter<?= preg_match('/\s/u', $waveCharacter) ? ' developer-wave-space' : '' ?>" style="--wave-index: <?= (int) $waveIndex ?>"><?= preg_match('/\s/u', $waveCharacter) ? '&nbsp;' : htmlspecialchars($waveCharacter, ENT_QUOTES, "UTF-8") ?></span>
                         <?php endforeach; ?>
                     </span>
+                    <span class="async-dev-rank" aria-label="Developer rank">
+                        <i class="bi bi-code-slash" aria-hidden="true"></i> DEV
+                    </span>
                 <?php else: ?>
                     <?= htmlspecialchars($fullName ?? "", ENT_QUOTES, "UTF-8") ?>
                 <?php endif; ?>
@@ -1761,6 +1764,114 @@ if (
        Applied only to the exact matching full name.
     ========================================================= */
 
+    /* Developer-only topbar identity and subtle interface detailing. */
+    .async-developer-mode .topbar {
+        position: relative;
+        isolation: isolate;
+        border-bottom: 1px solid rgba(67, 190, 255, .38);
+        box-shadow: 0 5px 22px rgba(0, 150, 255, .09);
+    }
+
+    .async-developer-mode .topbar::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: .34;
+        background: linear-gradient(105deg, transparent 0%, rgba(0, 225, 255, .08) 42%, rgba(168, 85, 247, .10) 50%, transparent 62%);
+        background-size: 220% 100%;
+        animation: developer-topbar-scan 8s linear infinite;
+    }
+
+    .async-developer-mode .topbar>* {
+        position: relative;
+        z-index: 1;
+    }
+
+    .async-developer-mode .topbar-user-info {
+        overflow: visible;
+    }
+
+    .async-developer-mode .topbar-name {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .async-developer-mode .async-dev-rank {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 7px;
+        border: 1px solid rgba(0, 220, 255, .58);
+        border-radius: 5px;
+        color: #7cecff;
+        background: linear-gradient(110deg, rgba(0, 190, 255, .12), rgba(168, 85, 247, .13));
+        font: 800 9px/1.2 system-ui, sans-serif;
+        letter-spacing: 1.25px;
+        white-space: nowrap;
+        text-shadow: 0 0 8px rgba(0, 220, 255, .65);
+        box-shadow: inset 0 0 8px rgba(0, 200, 255, .10), 0 0 10px rgba(0, 200, 255, .12);
+        animation: developer-rank-pulse 2.5s ease-in-out infinite;
+    }
+
+    .async-developer-mode .async-dev-rank i {
+        font-size: 10px;
+    }
+
+    .async-developer-mode .topbar-profile-menu {
+        border-color: rgba(0, 190, 255, .42);
+        box-shadow: 0 14px 38px rgba(0, 80, 150, .20), 0 0 16px rgba(0, 190, 255, .10);
+    }
+
+    .async-developer-mode .topbar-profile-menu-link {
+        position: relative;
+        overflow: hidden;
+        transition: transform .22s cubic-bezier(.2, .8, .2, 1), background-color .2s ease, color .2s ease;
+    }
+
+    .async-developer-mode .topbar-profile-menu-link:hover {
+        transform: translateX(3px);
+        background: linear-gradient(90deg, rgba(0, 190, 255, .13), rgba(168, 85, 247, .08));
+    }
+
+    .async-developer-mode .topbar-avatar-button:focus-visible {
+        outline: 2px solid #55eaff;
+        outline-offset: 5px;
+        box-shadow: 0 0 0 5px rgba(0, 200, 255, .12);
+    }
+
+    .async-developer-mode .topbar-profile-chevron {
+        color: #55dfff;
+        border-color: rgba(0, 210, 255, .55);
+        box-shadow: 0 0 8px rgba(0, 210, 255, .24);
+    }
+
+    @keyframes developer-topbar-scan {
+        from {
+            background-position: 120% 0;
+        }
+
+        to {
+            background-position: -120% 0;
+        }
+    }
+
+    @keyframes developer-rank-pulse {
+
+        0%,
+        100% {
+            opacity: .78;
+            box-shadow: inset 0 0 8px rgba(0, 200, 255, .08), 0 0 5px rgba(0, 200, 255, .10);
+        }
+
+        50% {
+            opacity: 1;
+            box-shadow: inset 0 0 10px rgba(0, 200, 255, .18), 0 0 13px rgba(0, 200, 255, .32);
+        }
+    }
+
     .async-developer-mode .topbar-title,
     .async-developer-mode .topbar-access {
         color: var(--academic-blue) !important;
@@ -2003,7 +2114,9 @@ if (
 
         .async-developer-mode *,
         .async-developer-mode body::before,
-        .async-developer-mode body::after {
+        .async-developer-mode body::after,
+        .async-developer-mode .topbar::after,
+        .async-developer-mode .async-dev-rank {
             animation-duration: .01ms !important;
             animation-iteration-count: 1 !important;
             scroll-behavior: auto !important;
