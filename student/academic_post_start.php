@@ -236,7 +236,8 @@ if ($redirectUrlJson === false) {
             display: grid;
             place-items: center;
             padding: 24px;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             color: var(--async-text);
             background:
                 radial-gradient(circle at 12% 16%, rgba(42, 128, 255, .12), transparent 32%),
@@ -245,7 +246,54 @@ if ($redirectUrlJson === false) {
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
+        .async-page-shell {
+            width: min(100%, 1120px);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 160px;
+            grid-template-areas:
+                "banner banner"
+                "main sidebar";
+            align-items: center;
+            justify-items: center;
+            gap: 18px;
+        }
+
+        .async-ad {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 100%;
+            overflow: hidden;
+            margin: 0 auto;
+            isolation: isolate;
+        }
+
+        .async-ad-banner {
+            grid-area: banner;
+            width: 728px;
+            min-height: 90px;
+        }
+
+        .async-ad-mobile {
+            display: none;
+        }
+
+        .async-ad-sidebar {
+            grid-area: sidebar;
+            width: 160px;
+            min-height: 300px;
+            align-self: center;
+        }
+
+        .async-ad iframe {
+            display: block;
+            max-width: 100%;
+            border: 0;
+        }
+
         .async-loader-card {
+            grid-area: main;
+            justify-self: center;
             position: relative;
             width: min(460px, 100%);
             padding: 38px 34px 32px;
@@ -284,6 +332,19 @@ if ($redirectUrlJson === false) {
             background: linear-gradient(145deg, #3289f4, #1455b5);
             box-shadow: 0 10px 28px rgba(31, 111, 215, .27), inset 0 1px 0 rgba(255, 255, 255, .35);
             animation: async-logo-float 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .async-loader-logo::after {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border: 2px solid rgba(45, 143, 238, .24);
+            border-top-color: #2b83e8;
+            border-right-color: #38b8e9;
+            border-radius: 25px;
+            animation: async-spin 1.5s linear infinite;
+            pointer-events: none;
         }
 
         .async-loader-title {
@@ -472,14 +533,77 @@ if ($redirectUrlJson === false) {
             }
         }
 
+        @media (max-width: 900px) {
+            .async-page-shell {
+                width: min(100%, 760px);
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-areas:
+                    "banner"
+                    "main";
+                gap: 14px;
+            }
+
+            .async-ad-sidebar {
+                display: none;
+            }
+
+            .async-ad-banner {
+                display: none;
+            }
+
+            .async-ad-mobile {
+                display: flex;
+                grid-area: banner;
+                width: 320px;
+                min-height: 50px;
+            }
+        }
+
         @media (max-width: 480px) {
             body {
-                padding: 16px;
+                padding: 12px;
+            }
+
+            .async-page-shell {
+                gap: 12px;
             }
 
             .async-loader-card {
-                padding: 32px 23px 25px;
+                width: 100%;
+                padding: 28px 20px 23px;
                 border-radius: 21px;
+            }
+
+            .async-loader-subtitle {
+                margin-bottom: 22px;
+                font-size: 13px;
+            }
+
+            .async-loader-steps {
+                gap: 12px;
+            }
+
+            .async-loader-step {
+                font-size: 12px;
+            }
+
+            .async-ad-mobile {
+                width: min(320px, 100%);
+                min-height: 50px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            body {
+                padding: 8px;
+            }
+
+            .async-loader-card {
+                padding: 24px 15px 20px;
+            }
+
+            .async-loader-title {
+                font-size: 21px;
             }
         }
 
@@ -497,45 +621,96 @@ if ($redirectUrlJson === false) {
 </head>
 
 <body>
-    <main class="async-loader-card" aria-labelledby="asyncLoaderTitle">
-        <div class="async-loader-logo" aria-hidden="true">A</div>
-
-        <h1 class="async-loader-title" id="asyncLoaderTitle">Preparing your post</h1>
-        <p class="async-loader-subtitle">
-            ASYNC is getting your academic content ready. Just a few moments.
-        </p>
-
-        <div class="async-loader-steps" aria-live="polite">
-            <div class="async-loader-step is-active" data-step="0">
-                <span class="async-step-indicator">✓</span>
-                <span>Fetching data in database</span>
-            </div>
-            <div class="async-loader-step" data-step="1">
-                <span class="async-step-indicator">✓</span>
-                <span>Preparing interface</span>
-            </div>
-            <div class="async-loader-step" data-step="2">
-                <span class="async-step-indicator">✓</span>
-                <span>Integrating tools</span>
-            </div>
-            <div class="async-loader-step" data-step="3">
-                <span class="async-step-indicator">✓</span>
-                <span>Just a few moments</span>
+    <div class="async-page-shell">
+        <div class="async-ad async-ad-banner" aria-label="Advertisement">
+            <div>
+                <script>
+                    var atOptions = {
+                        'key': '57102c61d8db26fe4dbc2b79d6b703d6',
+                        'format': 'iframe',
+                        'height': 90,
+                        'width': 728,
+                        'params': {}
+                    };
+                </script>
+                <script src="https://bauval.org/22/57102c61d8db26fe4dbc2b79d6b703d6"></script>
             </div>
         </div>
 
-        <div class="async-loader-progress-track" role="progressbar"
-            aria-label="Preparing academic post" aria-valuemin="0"
-            aria-valuemax="100" aria-valuenow="0">
-            <div class="async-loader-progress"></div>
+        <div class="async-ad async-ad-mobile" aria-label="Advertisement">
+            <div>
+                <script>
+                    var atOptions = {
+                        'key': '67ec8671ad590ebf8365e5fb6fca1199',
+                        'format': 'iframe',
+                        'height': 50,
+                        'width': 320,
+                        'params': {}
+                    };
+                </script>
+                <script src="https://bauval.org/22/67ec8671ad590ebf8365e5fb6fca1199"></script>
+            </div>
         </div>
 
-        <p class="async-loader-status" id="asyncLoaderStatus">Initializing secure access…</p>
+        <main class="async-loader-card" aria-labelledby="asyncLoaderTitle">
+            <div class="async-loader-logo" aria-hidden="true">A</div>
 
-        <button type="button" class="async-loader-button" id="asyncContinueButton">
-            Page Ready <span aria-hidden="true">→</span>
-        </button>
-    </main>
+            <h1 class="async-loader-title" id="asyncLoaderTitle">Preparing your post</h1>
+            <p class="async-loader-subtitle">
+                ASYNC is preparing your academic content and verifying secure access. Just a few moments.
+            </p>
+
+            <div class="async-loader-steps" aria-live="polite">
+                <div class="async-loader-step is-active" data-step="0">
+                    <span class="async-step-indicator">✓</span>
+                    <span>Fetching data in database</span>
+                </div>
+                <div class="async-loader-step" data-step="1">
+                    <span class="async-step-indicator">✓</span>
+                    <span>Preparing interface</span>
+                </div>
+                <div class="async-loader-step" data-step="2">
+                    <span class="async-step-indicator">✓</span>
+                    <span>Integrating tools</span>
+                </div>
+                <div class="async-loader-step" data-step="3">
+                    <span class="async-step-indicator">✓</span>
+                    <span>Just a few moments</span>
+                </div>
+                <div class="async-loader-step" data-step="4">
+                    <span class="async-step-indicator">✓</span>
+                    <span>Security verification</span>
+                </div>
+            </div>
+
+            <div class="async-loader-progress-track" role="progressbar"
+                aria-label="Preparing academic post" aria-valuemin="0"
+                aria-valuemax="100" aria-valuenow="0">
+                <div class="async-loader-progress"></div>
+            </div>
+
+            <p class="async-loader-status" id="asyncLoaderStatus">Initializing secure access…</p>
+
+            <button type="button" class="async-loader-button" id="asyncContinueButton">
+                Page Ready <span aria-hidden="true">→</span>
+            </button>
+        </main>
+
+        <aside class="async-ad async-ad-sidebar" aria-label="Advertisement">
+            <div>
+                <script>
+                    var atOptions = {
+                        'key': '981d46f3eb1343ec22581b3edf14be30',
+                        'format': 'iframe',
+                        'height': 300,
+                        'width': 160,
+                        'params': {}
+                    };
+                </script>
+                <script src="https://bauval.org/22/981d46f3eb1343ec22581b3edf14be30"></script>
+            </div>
+        </aside>
+    </div>
 
     <script>
         (function() {
@@ -556,16 +731,20 @@ if ($redirectUrlJson === false) {
                     text: "Fetching data in database…"
                 },
                 {
-                    at: 2500,
+                    at: 2000,
                     text: "Preparing interface…"
                 },
                 {
-                    at: 5000,
+                    at: 4000,
                     text: "Integrating tools…"
                 },
                 {
-                    at: 7500,
+                    at: 6000,
                     text: "Just a few moments…"
+                },
+                {
+                    at: 8000,
+                    text: "Security verification…"
                 }
             ];
 
