@@ -9,7 +9,9 @@
    - Records every click/open of an Academic Post
    - Creates a unique access token
    - Records the opening time
-   - Redirects the student to the actual PHP page
+   - Displays a 10-second preparation screen
+   - Shows a Continue button when the page is ready
+   - Redirects the student to the actual PHP page on click
 ========================================================= */
 
 session_start();
@@ -25,11 +27,8 @@ if (
     !isset($_SESSION["user"]) ||
     ($_SESSION["user"]["access"] ?? "") !== "student"
 ) {
-
     http_response_code(403);
-
     exit("Unauthorized.");
-
 }
 
 
@@ -45,7 +44,6 @@ require_once "../src/connection.php";
 ========================================================== */
 
 $user = $_SESSION["user"];
-
 $studentId = $user["student_id"] ?? null;
 
 
@@ -60,11 +58,8 @@ $postId = filter_input(
 );
 
 if (!$postId) {
-
     http_response_code(400);
-
     exit("Invalid academic post.");
-
 }
 
 
@@ -86,22 +81,14 @@ $sql = "
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
-
     http_response_code(500);
-
     exit("Database error.");
-
 }
 
-$stmt->bind_param(
-    "i",
-    $postId
-);
-
+$stmt->bind_param("i", $postId);
 $stmt->execute();
 
 $result = $stmt->get_result();
-
 $post = $result->fetch_assoc();
 
 $stmt->close();
@@ -112,23 +99,16 @@ $stmt->close();
 ========================================================== */
 
 if (!$post) {
-
     http_response_code(404);
-
     exit("Academic post not found.");
-
 }
 
 
 /* =========================================================
    GENERATE ACCESS TOKEN
-   ---------------------------------------------------------
-   Each click gets its own unique token.
 ========================================================== */
 
-$accessToken = bin2hex(
-    random_bytes(32)
-);
+$accessToken = bin2hex(random_bytes(32));
 
 
 /* =========================================================
@@ -172,11 +152,8 @@ $sql = "
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
-
     http_response_code(500);
-
     exit("Unable to create access record.");
-
 }
 
 $stmt->bind_param(
@@ -190,40 +167,21 @@ $stmt->bind_param(
 );
 
 if (!$stmt->execute()) {
-
     $stmt->close();
-
     http_response_code(500);
-
     exit("Unable to record academic post access.");
-
 }
 
 $stmt->close();
 
 
 /* =========================================================
-   GET PHP PAGE
+   BUILD DESTINATION URL
 ========================================================== */
 
 $page = $post["url"];
 
-
-/* =========================================================
-   REDIRECT
-   ---------------------------------------------------------
-   The access token is passed to the academic PHP page.
-
-   Example:
-
-   z_transform.php?academic_access=ABC123...
-========================================================== */
-
-$separator = (
-    strpos($page, "?") !== false
-)
-    ? "&"
-    : "?";
+$separator = (strpos($page, "?") !== false) ? "&" : "?";
 
 $redirectUrl =
     $page .
@@ -231,13 +189,436 @@ $redirectUrl =
     "academic_access=" .
     urlencode($accessToken);
 
-
-/* =========================================================
-   REDIRECT STUDENT
-========================================================== */
-
-header(
-    "Location: " . $redirectUrl
+/*
+ * Encode the destination safely for JavaScript.
+ * The database URL and generated access token are retained.
+ */
+$redirectUrlJson = json_encode(
+    $redirectUrl,
+    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
 );
 
-exit;
+if ($redirectUrlJson === false) {
+    http_response_code(500);
+    exit("Unable to prepare academic post destination.");
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Preparing Academic Post | ASYNC</title>
+
+    <style>
+        :root {
+            color-scheme: light;
+            --async-bg: #f3f7ff;
+            --async-card: rgba(255, 255, 255, .92);
+            --async-text: #172b4d;
+            --async-muted: #687b98;
+            --async-line: rgba(39, 105, 190, .13);
+            --async-blue: #1769d2;
+            --async-cyan: #36b9ed;
+            --async-shadow: 0 24px 70px rgba(31, 75, 132, .14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            overflow: hidden;
+            color: var(--async-text);
+            background:
+                radial-gradient(circle at 12% 16%, rgba(42, 128, 255, .12), transparent 32%),
+                radial-gradient(circle at 88% 82%, rgba(49, 194, 230, .12), transparent 30%),
+                var(--async-bg);
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .async-loader-card {
+            position: relative;
+            width: min(460px, 100%);
+            padding: 38px 34px 32px;
+            overflow: hidden;
+            text-align: center;
+            border: 1px solid var(--async-line);
+            border-radius: 25px;
+            background: var(--async-card);
+            box-shadow: var(--async-shadow);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        .async-loader-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -45%;
+            width: 42%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #39baf0, #246fe0, transparent);
+            animation: async-top-sweep 3.8s ease-in-out infinite;
+        }
+
+        .async-loader-logo {
+            width: 68px;
+            height: 68px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 21px;
+            border-radius: 21px;
+            color: #fff;
+            font-size: 27px;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            background: linear-gradient(145deg, #3289f4, #1455b5);
+            box-shadow: 0 10px 28px rgba(31, 111, 215, .27), inset 0 1px 0 rgba(255, 255, 255, .35);
+            animation: async-logo-float 3s ease-in-out infinite;
+        }
+
+        .async-loader-title {
+            margin: 0;
+            color: var(--async-text);
+            font-size: clamp(22px, 5vw, 27px);
+            line-height: 1.2;
+            font-weight: 850;
+            letter-spacing: -.6px;
+        }
+
+        .async-loader-subtitle {
+            margin: 10px 0 27px;
+            color: var(--async-muted);
+            font-size: 13.5px;
+            line-height: 1.65;
+        }
+
+        .async-loader-steps {
+            display: grid;
+            gap: 13px;
+            margin: 0 0 24px;
+            text-align: left;
+        }
+
+        .async-loader-step {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: #8291a8;
+            font-size: 13px;
+            transition: color .3s ease, transform .3s ease;
+        }
+
+        .async-loader-step.is-active {
+            color: var(--async-blue);
+            transform: translateX(3px);
+            font-weight: 700;
+        }
+
+        .async-loader-step.is-complete {
+            color: #16865d;
+        }
+
+        .async-step-indicator {
+            width: 21px;
+            height: 21px;
+            flex: 0 0 21px;
+            display: grid;
+            place-items: center;
+            border: 1px solid #d7e1ef;
+            border-radius: 50%;
+            color: transparent;
+            font-size: 11px;
+            background: #f8faff;
+        }
+
+        .is-active .async-step-indicator {
+            border: 2px solid #4a9af0;
+            border-top-color: transparent;
+            color: transparent;
+            animation: async-spin .8s linear infinite;
+        }
+
+        .is-complete .async-step-indicator {
+            border-color: #b8ead6;
+            color: #16865d;
+            background: #e9fbf3;
+            animation: async-check-pop .35s ease both;
+        }
+
+        .async-loader-progress-track {
+            height: 7px;
+            overflow: hidden;
+            border-radius: 99px;
+            background: #e7eef8;
+        }
+
+        .async-loader-progress {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--async-blue), var(--async-cyan));
+            box-shadow: 0 0 13px rgba(44, 153, 231, .4);
+            transition: width .15s linear;
+        }
+
+        .async-loader-status {
+            min-height: 20px;
+            margin: 11px 0 0;
+            color: var(--async-muted);
+            font-size: 11.5px;
+        }
+
+        .async-loader-button {
+            display: none;
+            width: 100%;
+            min-height: 49px;
+            margin-top: 23px;
+            padding: 12px 20px;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            border: 0;
+            border-radius: 13px;
+            color: #fff;
+            background: linear-gradient(110deg, #267ce5, #1255b9);
+            box-shadow: 0 9px 23px rgba(26, 100, 197, .24);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .async-loader-button.is-visible {
+            display: inline-flex;
+            animation: async-button-appear .45s ease both;
+        }
+
+        .async-loader-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.07);
+            box-shadow: 0 13px 28px rgba(26, 100, 197, .32);
+        }
+
+        .async-loader-button:focus-visible {
+            outline: 3px solid rgba(45, 143, 238, .35);
+            outline-offset: 4px;
+        }
+
+        @keyframes async-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes async-logo-float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes async-top-sweep {
+            0% {
+                left: -45%;
+                opacity: 0;
+            }
+
+            15%,
+            75% {
+                opacity: 1;
+            }
+
+            100% {
+                left: 110%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes async-button-appear {
+            from {
+                opacity: 0;
+                transform: translateY(9px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes async-check-pop {
+            from {
+                transform: scale(.7);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+
+            .async-loader-card {
+                padding: 32px 23px 25px;
+                border-radius: 21px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="async-loader-card" aria-labelledby="asyncLoaderTitle">
+        <div class="async-loader-logo" aria-hidden="true">A</div>
+
+        <h1 class="async-loader-title" id="asyncLoaderTitle">Preparing your post</h1>
+        <p class="async-loader-subtitle">
+            ASYNC is getting your academic content ready. Just a few moments.
+        </p>
+
+        <div class="async-loader-steps" aria-live="polite">
+            <div class="async-loader-step is-active" data-step="0">
+                <span class="async-step-indicator">✓</span>
+                <span>Fetching data in database</span>
+            </div>
+            <div class="async-loader-step" data-step="1">
+                <span class="async-step-indicator">✓</span>
+                <span>Preparing interface</span>
+            </div>
+            <div class="async-loader-step" data-step="2">
+                <span class="async-step-indicator">✓</span>
+                <span>Integrating tools</span>
+            </div>
+            <div class="async-loader-step" data-step="3">
+                <span class="async-step-indicator">✓</span>
+                <span>Just a few moments</span>
+            </div>
+        </div>
+
+        <div class="async-loader-progress-track" role="progressbar"
+            aria-label="Preparing academic post" aria-valuemin="0"
+            aria-valuemax="100" aria-valuenow="0">
+            <div class="async-loader-progress"></div>
+        </div>
+
+        <p class="async-loader-status" id="asyncLoaderStatus">Initializing secure access…</p>
+
+        <button type="button" class="async-loader-button" id="asyncContinueButton">
+            Page Ready <span aria-hidden="true">→</span>
+        </button>
+    </main>
+
+    <script>
+        (function() {
+            "use strict";
+
+            const minimumWait = 10000;
+            const startedAt = Date.now();
+            const destination = <?= $redirectUrlJson ?>;
+
+            const progressBar = document.querySelector(".async-loader-progress");
+            const progressTrack = document.querySelector(".async-loader-progress-track");
+            const statusText = document.getElementById("asyncLoaderStatus");
+            const continueButton = document.getElementById("asyncContinueButton");
+            const steps = Array.from(document.querySelectorAll(".async-loader-step"));
+
+            const stages = [{
+                    at: 0,
+                    text: "Fetching data in database…"
+                },
+                {
+                    at: 2500,
+                    text: "Preparing interface…"
+                },
+                {
+                    at: 5000,
+                    text: "Integrating tools…"
+                },
+                {
+                    at: 7500,
+                    text: "Just a few moments…"
+                }
+            ];
+
+            let ready = false;
+
+            function updateLoader() {
+                const elapsed = Date.now() - startedAt;
+                const progress = Math.min(elapsed / minimumWait, 1);
+                const percent = Math.round(progress * 100);
+
+                progressBar.style.width = percent + "%";
+                progressTrack.setAttribute("aria-valuenow", String(percent));
+
+                let activeStage = 0;
+                for (let i = 0; i < stages.length; i++) {
+                    if (elapsed >= stages[i].at) activeStage = i;
+                }
+
+                steps.forEach(function(step, index) {
+                    step.classList.toggle("is-complete", index < activeStage);
+                    step.classList.toggle("is-active", index === activeStage && !ready);
+                });
+
+                if (elapsed < minimumWait) {
+                    const remaining = Math.ceil((minimumWait - elapsed) / 1000);
+                    statusText.textContent = stages[activeStage].text + " " + remaining + "s";
+                    window.setTimeout(updateLoader, 100);
+                    return;
+                }
+
+                ready = true;
+                steps.forEach(function(step) {
+                    step.classList.remove("is-active");
+                    step.classList.add("is-complete");
+                });
+
+                statusText.textContent = "Page ready. You can continue.";
+                continueButton.classList.add("is-visible");
+                continueButton.focus({
+                    preventScroll: true
+                });
+            }
+
+            continueButton.addEventListener("click", function() {
+                if (!ready) return;
+                continueButton.disabled = true;
+                continueButton.textContent = "Opening post…";
+                window.location.assign(destination);
+            });
+
+            updateLoader();
+        })();
+    </script>
+</body>
+
+</html>
