@@ -14,6 +14,10 @@ $topbarProfilePhoto = "";
 $topbarProfilePhotoURL = "";
 $topbarStudentId = "";
 
+$isAsyncDeveloper =
+    isset($fullName) &&
+    trim((string) $fullName) === "Engr. Karl Stephen O. Evallo";
+
 
 /* =========================================================
    GET STUDENT ID
@@ -279,7 +283,7 @@ if (
 
         <div class="topbar-title">
 
-            Student Dashboard
+            <?= $isAsyncDeveloper ? "Developer" : "Student Dashboard" ?>
 
         </div>
 
@@ -302,18 +306,22 @@ if (
 
             <div class="topbar-name">
 
-                <?= htmlspecialchars(
-                    $fullName ?? "",
-                    ENT_QUOTES,
-                    "UTF-8"
-                ) ?>
+                <?php if ($isAsyncDeveloper): ?>
+                    <span class="developer-wave-name" aria-label="<?= htmlspecialchars($fullName ?? "", ENT_QUOTES, "UTF-8") ?>">
+                        <?php foreach (preg_split('//u', (string) $fullName, -1, PREG_SPLIT_NO_EMPTY) as $waveIndex => $waveCharacter): ?>
+                            <span class="developer-wave-letter" style="--wave-index: <?= (int) $waveIndex ?>"><?= htmlspecialchars($waveCharacter, ENT_QUOTES, "UTF-8") ?></span>
+                        <?php endforeach; ?>
+                    </span>
+                <?php else: ?>
+                    <?= htmlspecialchars($fullName ?? "", ENT_QUOTES, "UTF-8") ?>
+                <?php endif; ?>
 
             </div>
 
 
             <div class="topbar-access">
 
-                Student Account
+                <?= $isAsyncDeveloper ? "Developer" : "Student Account" ?>
 
             </div>
 
@@ -496,11 +504,15 @@ if (
 
                         <div class="topbar-profile-menu-name">
 
-                            <?= htmlspecialchars(
-                                $fullName ?? "",
-                                ENT_QUOTES,
-                                "UTF-8"
-                            ) ?>
+                            <?php if ($isAsyncDeveloper): ?>
+                                <span class="developer-wave-name" aria-label="<?= htmlspecialchars($fullName ?? "", ENT_QUOTES, "UTF-8") ?>">
+                                    <?php foreach (preg_split('//u', (string) $fullName, -1, PREG_SPLIT_NO_EMPTY) as $waveIndex => $waveCharacter): ?>
+                                        <span class="developer-wave-letter" style="--wave-index: <?= (int) $waveIndex ?>"><?= htmlspecialchars($waveCharacter, ENT_QUOTES, "UTF-8") ?></span>
+                                    <?php endforeach; ?>
+                                </span>
+                            <?php else: ?>
+                                <?= htmlspecialchars($fullName ?? "", ENT_QUOTES, "UTF-8") ?>
+                            <?php endif; ?>
 
                         </div>
 
@@ -1098,6 +1110,12 @@ if (
     );
 </script>
 
+
+<?php if ($isAsyncDeveloper): ?>
+    <script>
+        document.documentElement.classList.add("async-developer-mode");
+    </script>
+<?php endif; ?>
 
 <!-- =========================================================
      TOPBAR / PROFILE DROPDOWN CSS
@@ -1736,5 +1754,243 @@ if (
 
         }
 
+    }
+
+    /* =========================================================
+       SPECIAL DEVELOPER PROFILE EFFECTS
+       Applied only to the exact matching full name.
+    ========================================================= */
+
+    .async-developer-mode .topbar-title,
+    .async-developer-mode .topbar-access {
+        color: var(--academic-blue) !important;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 1px currentColor;
+        paint-order: stroke fill;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        filter: drop-shadow(0 0 5px rgba(75, 170, 255, .45));
+        animation: developer-outline-pulse 2.8s ease-in-out infinite;
+    }
+
+    .async-developer-mode .developer-wave-name {
+        display: inline-flex;
+        align-items: baseline;
+        white-space: nowrap;
+    }
+
+    .async-developer-mode .developer-wave-letter {
+        display: inline-block;
+        transform-origin: 50% 85%;
+        animation: developer-wave-bounce 1.65s ease-in-out infinite;
+        animation-delay: calc(var(--wave-index) * 55ms);
+        will-change: transform;
+    }
+
+    .async-developer-mode .topbar-avatar-button {
+        isolation: isolate;
+        overflow: visible;
+    }
+
+    .async-developer-mode .topbar-avatar-button::before {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        z-index: -1;
+        border-radius: 50%;
+        padding: 2.5px;
+        background: conic-gradient(from 0deg,
+                #00e5ff,
+                #3978ff,
+                #a855f7,
+                #ff3cac,
+                #ffb347,
+                #00e5ff);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: developer-avatar-ring-spin 3.2s linear infinite;
+        filter: drop-shadow(0 0 4px rgba(0, 210, 255, .7));
+    }
+
+    .async-developer-mode .topbar-avatar-button .topbar-avatar {
+        animation: developer-avatar-energy 2.1s ease-in-out infinite;
+    }
+
+    .async-developer-mode .topbar-profile-menu-avatar {
+        border: 2px solid transparent;
+        background:
+            linear-gradient(var(--academic-blue), var(--academic-blue)) padding-box,
+            conic-gradient(from 0deg, #00e5ff, #3978ff, #a855f7, #ff3cac, #ffb347, #00e5ff) border-box;
+        animation: developer-menu-avatar-glow 2.1s ease-in-out infinite;
+    }
+
+    /* Animated electric frame around the viewport; pointer-events never block the page. */
+    .async-developer-mode body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 99990;
+        pointer-events: none;
+        border: 3px solid transparent;
+        border-radius: 2px;
+        background:
+            linear-gradient(transparent, transparent) padding-box,
+            conic-gradient(from var(--developer-frame-angle, 0deg),
+                #00e5ff, #286bff, #a855f7, #ff3cac, #00e5ff) border-box;
+        opacity: .72;
+        filter: drop-shadow(0 0 5px rgba(0, 190, 255, .65));
+        animation: developer-frame-rotate 5s linear infinite, developer-frame-flicker 3.7s steps(1, end) infinite;
+    }
+
+    .async-developer-mode body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 99991;
+        pointer-events: none;
+        opacity: 0;
+        background:
+            linear-gradient(118deg, transparent 0 5%, rgba(130, 235, 255, .95) 5.15%, transparent 5.45% 100%) top left / 23% 34% no-repeat,
+            linear-gradient(72deg, transparent 0 47%, rgba(110, 210, 255, .95) 47.2%, transparent 47.55% 100%) bottom right / 27% 39% no-repeat,
+            linear-gradient(245deg, transparent 0 48%, rgba(190, 145, 255, .9) 48.2%, transparent 48.55% 100%) top right / 19% 28% no-repeat,
+            linear-gradient(300deg, transparent 0 48%, rgba(110, 225, 255, .9) 48.2%, transparent 48.55% 100%) bottom left / 21% 30% no-repeat;
+        filter: drop-shadow(0 0 7px #28cfff);
+        animation: developer-thunder-flash 4.8s infinite;
+    }
+
+    @property --developer-frame-angle {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 0deg;
+    }
+
+    @keyframes developer-wave-bounce {
+
+        0%,
+        100% {
+            transform: translateY(0) rotate(0deg);
+        }
+
+        18% {
+            transform: translateY(-4px) rotate(-3deg);
+        }
+
+        38% {
+            transform: translateY(1px) rotate(2deg);
+        }
+
+        58% {
+            transform: translateY(-2px) rotate(-1deg);
+        }
+
+        76% {
+            transform: translateY(0) rotate(0deg);
+        }
+    }
+
+    @keyframes developer-outline-pulse {
+
+        0%,
+        100% {
+            opacity: .78;
+            filter: drop-shadow(0 0 3px rgba(75, 170, 255, .3));
+        }
+
+        50% {
+            opacity: 1;
+            filter: drop-shadow(0 0 8px rgba(75, 170, 255, .8));
+        }
+    }
+
+    @keyframes developer-avatar-ring-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes developer-avatar-energy {
+
+        0%,
+        100% {
+            filter: drop-shadow(0 0 3px rgba(0, 220, 255, .35));
+        }
+
+        50% {
+            filter: drop-shadow(0 0 11px rgba(0, 220, 255, .95)) drop-shadow(0 0 17px rgba(168, 85, 247, .55));
+        }
+    }
+
+    @keyframes developer-menu-avatar-glow {
+
+        0%,
+        100% {
+            box-shadow: 0 0 4px rgba(0, 220, 255, .35);
+        }
+
+        50% {
+            box-shadow: 0 0 13px rgba(0, 220, 255, .9), 0 0 20px rgba(168, 85, 247, .55);
+        }
+    }
+
+    @keyframes developer-frame-rotate {
+        to {
+            --developer-frame-angle: 360deg;
+        }
+    }
+
+    @keyframes developer-frame-flicker {
+
+        0%,
+        7%,
+        9%,
+        54%,
+        56%,
+        100% {
+            opacity: .72;
+        }
+
+        8%,
+        55% {
+            opacity: 1;
+        }
+
+        31% {
+            opacity: .42;
+        }
+    }
+
+    @keyframes developer-thunder-flash {
+
+        0%,
+        13%,
+        15%,
+        47%,
+        49%,
+        100% {
+            opacity: 0;
+        }
+
+        14%,
+        48% {
+            opacity: .95;
+        }
+
+        14.4%,
+        48.4% {
+            opacity: .28;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .async-developer-mode *,
+        .async-developer-mode body::before,
+        .async-developer-mode body::after {
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+        }
     }
 </style>
