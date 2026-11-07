@@ -1177,52 +1177,6 @@ if (
     }
 
 
-    /* Subtle circuit traces flowing behind the developer topbar content. */
-    .async-developer-mode .topbar {
-        position: relative;
-        isolation: isolate;
-        --circuit-line: rgba(24, 137, 255, .16);
-        --circuit-node: rgba(30, 160, 255, .34);
-        --circuit-glow: rgba(30, 145, 255, .12);
-    }
-
-    .async-developer-mode .topbar::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        opacity: .62;
-        background-image:
-            radial-gradient(circle, var(--circuit-node) 0 1.4px, transparent 1.8px),
-            linear-gradient(90deg, transparent 0 17%, var(--circuit-line) 17.2% 17.5%, transparent 17.7% 100%),
-            linear-gradient(0deg, transparent 0 48%, var(--circuit-line) 48.2% 48.6%, transparent 48.8% 100%),
-            linear-gradient(135deg, transparent 0 47%, var(--circuit-line) 47.2% 47.5%, transparent 47.7% 100%),
-            radial-gradient(ellipse at 25% 50%, var(--circuit-glow), transparent 48%);
-        background-size: 74px 34px, 116px 34px, 148px 42px, 126px 48px, 100% 100%;
-        background-position: 0 0, 0 0, 28px 0, 62px 0, center;
-        mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-        animation: developer-circuit-flow 18s linear infinite;
-    }
-
-    .async-developer-mode .topbar>* {
-        position: relative;
-        z-index: 1;
-    }
-
-    html[data-theme="dark"] .async-developer-mode .topbar {
-        --circuit-line: rgba(40, 190, 255, .22);
-        --circuit-node: rgba(64, 205, 255, .5);
-        --circuit-glow: rgba(0, 160, 255, .16);
-    }
-
-    html[data-theme="light"] .async-developer-mode .topbar {
-        --circuit-line: rgba(25, 112, 210, .13);
-        --circuit-node: rgba(20, 125, 220, .28);
-        --circuit-glow: rgba(35, 130, 220, .08);
-    }
-
-
     /* =========================================================
    PROFILE DROPDOWN CONTAINER
 ========================================================= */
@@ -1879,8 +1833,8 @@ if (
         position: relative;
         transform: translateY(0);
         transform-origin: 50% 85%;
-        animation: developer-wave-bounce 4.2s ease-in-out infinite both !important;
-        animation-delay: calc(var(--wave-index) * 135ms) !important;
+        animation: developer-wave-bounce 1.45s ease-in-out infinite both !important;
+        animation-delay: calc(var(--wave-index) * 75ms) !important;
         will-change: transform;
     }
 
@@ -1996,48 +1950,26 @@ if (
     }
 
     .azncmstr-badge {
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
         display: inline-flex;
         align-items: center;
         gap: 5px;
         margin-top: 4px;
-        padding: 3px 10px;
-        border: 1px solid rgba(255, 224, 137, .9);
+        padding: 3px 9px;
+        border: 1px solid rgba(45, 150, 255, .48);
         border-radius: 999px;
-        color: #fff !important;
-        -webkit-text-fill-color: #fff !important;
-        background: linear-gradient(112deg, #8b5b08 0%, #c58b19 24%, #f0c75e 48%, #b77a0b 72%, #8a5908 100%);
-        box-shadow: 0 0 8px rgba(218, 166, 47, .32), 0 0 16px rgba(218, 166, 47, .18), inset 0 1px 2px rgba(255, 255, 255, .42);
-        text-shadow: 0 1px 3px rgba(66, 40, 0, .65), 0 0 7px rgba(255, 255, 255, .3);
+        color: #168cff;
+        background: linear-gradient(115deg, rgba(31, 132, 255, .13), rgba(139, 92, 246, .12));
+        box-shadow: 0 0 8px rgba(36, 145, 255, .16), inset 0 0 7px rgba(36, 145, 255, .08);
         font-size: .64rem;
         line-height: 1.2;
-        font-weight: 900;
+        font-weight: 850;
         letter-spacing: 1.15px;
         white-space: nowrap;
-        animation: azncmstr-badge-glow 3.4s ease-in-out infinite;
-    }
-
-    .azncmstr-badge::after {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        top: -60%;
-        bottom: -60%;
-        left: -48%;
-        width: 32%;
-        transform: skewX(-24deg);
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .78), transparent);
-        filter: blur(1px);
-        animation: azncmstr-badge-shine 4.2s ease-in-out infinite;
-        pointer-events: none;
+        animation: azncmstr-badge-glow 2.8s ease-in-out infinite;
     }
 
     .azncmstr-badge i {
         font-size: .72rem;
-        color: #fff;
-        text-shadow: 0 0 6px rgba(255, 255, 255, .8);
         animation: azncmstr-star-turn 4s ease-in-out infinite;
     }
 
@@ -2077,40 +2009,11 @@ if (
 
         0%,
         100% {
-            box-shadow: 0 0 7px rgba(218, 166, 47, .25), 0 0 13px rgba(218, 166, 47, .12), inset 0 1px 2px rgba(255, 255, 255, .34);
+            box-shadow: 0 0 6px rgba(36, 145, 255, .14), inset 0 0 5px rgba(36, 145, 255, .06);
         }
 
         50% {
-            box-shadow: 0 0 12px rgba(255, 198, 67, .58), 0 0 23px rgba(218, 166, 47, .3), inset 0 1px 4px rgba(255, 255, 255, .55);
-        }
-    }
-
-    @keyframes azncmstr-badge-shine {
-
-        0%,
-        18% {
-            left: -48%;
-            opacity: 0;
-        }
-
-        28% {
-            opacity: .9;
-        }
-
-        52%,
-        100% {
-            left: 125%;
-            opacity: 0;
-        }
-    }
-
-    @keyframes developer-circuit-flow {
-        from {
-            background-position: 0 0, 0 0, 28px 0, 62px 0, center;
-        }
-
-        to {
-            background-position: 148px 0, 232px 0, -120px 0, 188px 0, center;
+            box-shadow: 0 0 13px rgba(36, 145, 255, .34), 0 0 19px rgba(139, 92, 246, .16), inset 0 0 8px rgba(36, 145, 255, .12);
         }
     }
 
@@ -2152,11 +2055,11 @@ if (
         }
 
         18% {
-            transform: translateY(-1px) rotate(-.5deg);
+            transform: translateY(-4px) rotate(-3deg);
         }
 
         38% {
-            transform: translateY(1px) rotate(.8deg);
+            transform: translateY(1px) rotate(2deg);
         }
 
         58% {
@@ -2265,9 +2168,7 @@ if (
 
         .async-developer-mode *,
         .async-developer-mode body::before,
-        .async-developer-mode body::after,
-        .async-developer-mode .topbar::after,
-        .async-developer-mode .azncmstr-badge::after {
+        .async-developer-mode body::after {
             animation-duration: .01ms !important;
             animation-iteration-count: 1 !important;
             scroll-behavior: auto !important;
