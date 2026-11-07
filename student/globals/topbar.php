@@ -1826,24 +1826,26 @@ if (
         animation: developer-menu-avatar-glow 2.1s ease-in-out infinite;
     }
 
-    /* Animated electric frame around the viewport; pointer-events never block the page. */
+    /* Thin animated frame: mask confines all color strictly to the viewport edge. */
     .async-developer-mode body::before {
         content: "";
         position: fixed;
         inset: 0;
         z-index: 99990;
         pointer-events: none;
-        border: 3px solid transparent;
-        border-radius: 2px;
-        background:
-            linear-gradient(transparent, transparent) padding-box,
-            conic-gradient(from var(--developer-frame-angle, 0deg),
-                #00e5ff, #286bff, #a855f7, #ff3cac, #00e5ff) border-box;
-        opacity: .72;
-        filter: drop-shadow(0 0 5px rgba(0, 190, 255, .65));
+        padding: 3px;
+        border-radius: 3px;
+        background: conic-gradient(from var(--developer-frame-angle, 0deg),
+                #00e5ff, #286bff, #a855f7, #ff3cac, #ffb347, #00e5ff);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: .68;
+        filter: drop-shadow(0 0 4px rgba(0, 190, 255, .55));
         animation: developer-frame-rotate 5s linear infinite, developer-frame-flicker 3.7s steps(1, end) infinite;
     }
 
+    /* Lightning is drawn only in narrow corner strips, never as a page tint. */
     .async-developer-mode body::after {
         content: "";
         position: fixed;
@@ -1852,11 +1854,11 @@ if (
         pointer-events: none;
         opacity: 0;
         background:
-            linear-gradient(118deg, transparent 0 5%, rgba(130, 235, 255, .95) 5.15%, transparent 5.45% 100%) top left / 23% 34% no-repeat,
-            linear-gradient(72deg, transparent 0 47%, rgba(110, 210, 255, .95) 47.2%, transparent 47.55% 100%) bottom right / 27% 39% no-repeat,
-            linear-gradient(245deg, transparent 0 48%, rgba(190, 145, 255, .9) 48.2%, transparent 48.55% 100%) top right / 19% 28% no-repeat,
-            linear-gradient(300deg, transparent 0 48%, rgba(110, 225, 255, .9) 48.2%, transparent 48.55% 100%) bottom left / 21% 30% no-repeat;
-        filter: drop-shadow(0 0 7px #28cfff);
+            linear-gradient(132deg, transparent 0 43%, rgba(130, 235, 255, .98) 44%, transparent 45%) top left / 76px 110px no-repeat,
+            linear-gradient(48deg, transparent 0 43%, rgba(110, 210, 255, .98) 44%, transparent 45%) top right / 76px 110px no-repeat,
+            linear-gradient(228deg, transparent 0 43%, rgba(190, 145, 255, .98) 44%, transparent 45%) bottom left / 76px 110px no-repeat,
+            linear-gradient(312deg, transparent 0 43%, rgba(110, 225, 255, .98) 44%, transparent 45%) bottom right / 76px 110px no-repeat;
+        filter: drop-shadow(0 0 6px #28cfff);
         animation: developer-thunder-flash 4.8s infinite;
     }
 
