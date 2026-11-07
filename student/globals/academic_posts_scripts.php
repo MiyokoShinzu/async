@@ -2039,14 +2039,22 @@
         touch-action: none;
         user-select: none;
         -webkit-user-select: none;
-        opacity: .42;
+        opacity: 0;
+        background: transparent;
         transition: opacity .16s ease, background .16s ease;
     }
 
+    #readingToolsPanel:hover .async-tool-resize-handle,
+    #asyncNotesPanel:hover .async-tool-resize-handle,
+    #asyncCalcPanel:hover .async-tool-resize-handle,
+    #asyncSoundPanel:hover .async-tool-resize-handle,
+    #asyncPresentationPanel:hover .async-tool-resize-handle,
+    #asyncFloatingTimer:hover .async-tool-resize-handle,
+    .async-tool-resize-handle:focus-visible,
     .async-tool-resize-handle:hover,
     .async-tool-resize-handle:active {
-        opacity: 1;
-        background: rgba(96, 165, 250, .18);
+        opacity: .95;
+        background: rgba(96, 165, 250, .22);
     }
 
     .async-tool-resize-handle[data-resize="n"],
@@ -2136,6 +2144,418 @@
             height: 20px;
         }
     }
+
+
+    /* macOS traffic-light controls */
+    .mac-window-header,
+    #asyncTimerDrag {
+        display: flex;
+        align-items: center;
+        gap: 10px
+    }
+
+    .mac-window-controls {
+        display: inline-flex !important;
+        align-items: center;
+        flex: 0 0 auto;
+        gap: 7px !important;
+        order: -1;
+        margin-right: 7px
+    }
+
+    .mac-window-controls .mac-window-btn,
+    #readingToolsPanel .rt-window-actions .mac-window-btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 12px;
+        width: 12px !important;
+        height: 12px !important;
+        min-width: 12px;
+        min-height: 12px;
+        padding: 0 !important;
+        margin: 0;
+        border: 1px solid rgba(0, 0, 0, .12) !important;
+        border-radius: 50% !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3);
+        color: transparent !important;
+        font-size: 0 !important;
+        line-height: 0;
+        cursor: pointer;
+        transition: filter .15s ease, transform .15s ease;
+    }
+
+    .mac-window-btn:hover {
+        filter: brightness(1.08);
+        transform: scale(1.08)
+    }
+
+    .mac-window-btn.mac-close {
+        background: #ff5f57 !important
+    }
+
+    .mac-window-btn.mac-minimize {
+        background: #febc2e !important
+    }
+
+    .mac-window-btn.mac-maximize {
+        background: #28c840 !important
+    }
+
+    .mac-window-btn::after {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(65, 35, 25, .8);
+        font: 800 9px/1 Arial, sans-serif;
+        opacity: 0;
+        transition: opacity .12s ease
+    }
+
+    .mac-close::after {
+        content: "×"
+    }
+
+    .mac-minimize::after {
+        content: "−"
+    }
+
+    .mac-maximize::after {
+        content: "+"
+    }
+
+    .mac-window-btn:hover::after {
+        opacity: 1
+    }
+
+    .mac-window-header>strong {
+        flex: 0 1 auto
+    }
+
+    .mac-window-header>.aux-drag-hint {
+        margin-left: auto
+    }
+
+    #readingToolsPanel .rt-window-actions {
+        order: -1;
+        flex: 0 0 auto
+    }
+
+    #asyncTimerDrag>strong {
+        flex: 0 1 auto
+    }
+
+    #asyncTimerDrag>.aft-tick-toggle {
+        margin-left: auto
+    }
+
+    #aftTickToggle {
+        width: 29px;
+        height: 29px;
+        flex: 0 0 29px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, .24);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, .14);
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer
+    }
+
+    #aftTickToggle[aria-pressed="false"] {
+        opacity: .65;
+        background: rgba(15, 23, 42, .2)
+    }
+
+    /* Match the title bar color with the tool's colored launcher/menu entry. */
+    #readingToolsPanel .rt-header {
+        background: #3b82f6 !important
+    }
+
+    #asyncNotesPanel .aux-head {
+        background: #0d9488 !important
+    }
+
+    #asyncCalcPanel .aux-head {
+        background: #7c3aed !important
+    }
+
+    #asyncSoundPanel .aux-head {
+        background: #d97706 !important
+    }
+
+    #asyncPresentationPanel .aux-head {
+        background: #e11d48 !important
+    }
+
+    #asyncFloatingTimer .aft-header {
+        background: #3b82f6
+    }
+
+    /* Quill formatting buttons: clean spacing and responsive wrapping. */
+    #asyncNotesPanel .ql-toolbar.ql-snow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 9px !important;
+        overflow: visible;
+        box-sizing: border-box
+    }
+
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
+        display: inline-flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 3px;
+        margin: 2px 7px 2px 0 !important
+    }
+
+    #asyncNotesPanel .ql-toolbar.ql-snow button {
+        width: 29px;
+        height: 29px;
+        padding: 4px !important;
+        margin: 0 !important;
+        border-radius: 6px
+    }
+
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker {
+        height: 29px;
+        margin: 0 2px
+    }
+
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-label {
+        padding: 3px 5px;
+        border-radius: 6px
+    }
+
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-options {
+        max-height: 220px;
+        overflow: auto
+    }
+
+    @media(max-width:480px) {
+        #asyncNotesPanel .ql-toolbar.ql-snow {
+            gap: 3px;
+            padding: 7px 6px !important
+        }
+
+        #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
+            gap: 2px;
+            margin-right: 4px !important
+        }
+
+        #asyncNotesPanel .ql-toolbar.ql-snow button {
+            width: 27px;
+            height: 27px
+        }
+    }
+
+    /* Presentation minimization collapses to an interactive icon toolbar. */
+    #asyncPresentationPanel.is-minimized {
+        display: flex !important;
+        flex-direction: column;
+        width: max-content !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 16px) !important;
+        height: auto !important;
+        max-height: none !important;
+        padding: 6px !important;
+        gap: 5px !important;
+        overflow: visible !important;
+        border-radius: 13px !important;
+    }
+
+    #asyncPresentationPanel.is-minimized>:not(.aux-head):not(.presentation-actions) {
+        display: none !important
+    }
+
+    #asyncPresentationPanel.is-minimized .aux-head {
+        padding: 2px 3px !important;
+        min-height: 14px;
+        gap: 4px;
+        background: transparent !important
+    }
+
+    #asyncPresentationPanel.is-minimized .aux-head>strong,
+    #asyncPresentationPanel.is-minimized .aux-drag-hint {
+        display: none !important
+    }
+
+    #asyncPresentationPanel.is-minimized .aux-window-actions {
+        margin: 0 !important
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-actions {
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px !important
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 33px;
+        height: 33px;
+        min-width: 33px;
+        min-height: 33px;
+        padding: 0 !important;
+        margin: 0;
+        font-size: 0 !important;
+        line-height: 0;
+        border-radius: 8px;
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button i {
+        font-size: 15px;
+        line-height: 1
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button.active {
+        background: rgba(225, 29, 72, .2) !important;
+        border-color: #e11d48 !important
+    }
+
+    /* Correct light/dark presentation text and controls. */
+    html[data-theme="dark"] #asyncPresentationPanel {
+        --aux-text: #f1f5f9 !important;
+        --aux-control: rgba(255, 255, 255, .09) !important;
+        --aux-border: rgba(203, 213, 225, .3) !important;
+        --aux-glass: rgba(25, 32, 45, .96) !important;
+        background: rgba(25, 32, 45, .96) !important;
+        color: #f1f5f9 !important;
+    }
+
+    html[data-theme="dark"] #asyncPresentationPanel>p,
+    html[data-theme="dark"] #asyncPresentationPanel label,
+    html[data-theme="dark"] #asyncPresentationPanel label span,
+    html[data-theme="dark"] #asyncPresentationPanel #asyncPresentationStatus {
+        color: #f1f5f9 !important
+    }
+
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
+        background: rgba(255, 255, 255, .08) !important;
+        border-color: rgba(203, 213, 225, .3) !important;
+        color: #f8fafc !important
+    }
+
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
+        background: rgba(225, 29, 72, .24) !important;
+        border-color: #fb7185 !important;
+        color: #fff !important
+    }
+
+    html[data-theme="dark"] #asyncPresentationPanel input,
+    html[data-theme="dark"] #asyncPresentationPanel select {
+        color: #f8fafc !important;
+        background: #172033 !important;
+        border-color: rgba(203, 213, 225, .3) !important
+    }
+
+    html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) {
+        color: #f1f5f9 !important
+    }
+
+    /* Additional annotation modes can receive pointer/touch drawing input. */
+    #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) {
+        pointer-events: auto;
+        cursor: crosshair
+    }
+
+    #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) #asyncPresentationCanvas {
+        pointer-events: auto;
+        cursor: crosshair
+    }
+
+    #readingToolsPanel.is-maximized .async-tool-resize-handle,
+    #asyncNotesPanel.is-maximized .async-tool-resize-handle,
+    #asyncCalcPanel.is-maximized .async-tool-resize-handle,
+    #asyncSoundPanel.is-maximized .async-tool-resize-handle,
+    #asyncPresentationPanel.is-maximized .async-tool-resize-handle,
+    #asyncFloatingTimer.is-maximized .async-tool-resize-handle {
+        display: none !important
+    }
+
+
+    #readingToolsPanel.is-maximized .async-tool-resize-handle,
+    #asyncNotesPanel.is-maximized .async-tool-resize-handle,
+    #asyncCalcPanel.is-maximized .async-tool-resize-handle,
+    #asyncSoundPanel.is-maximized .async-tool-resize-handle,
+    #asyncPresentationPanel.is-maximized .async-tool-resize-handle,
+    #asyncFloatingTimer.is-maximized .async-tool-resize-handle {
+        display: none !important
+    }
+
+    #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) {
+        pointer-events: auto;
+        cursor: crosshair
+    }
+
+    #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) #asyncPresentationCanvas {
+        pointer-events: auto;
+        cursor: crosshair
+    }
+
+
+    /* Higher-specificity overrides for the controls' original component styles. */
+    #asyncNotesPanel .aux-window-actions .mac-close,
+    #asyncCalcPanel .aux-window-actions .mac-close,
+    #asyncSoundPanel .aux-window-actions .mac-close,
+    #asyncPresentationPanel .aux-window-actions .mac-close {
+        background: #ff5f57 !important;
+        color: transparent !important
+    }
+
+    #asyncNotesPanel .aux-window-actions .mac-minimize,
+    #asyncCalcPanel .aux-window-actions .mac-minimize,
+    #asyncSoundPanel .aux-window-actions .mac-minimize,
+    #asyncPresentationPanel .aux-window-actions .mac-minimize {
+        background: #febc2e !important;
+        color: transparent !important
+    }
+
+    #asyncNotesPanel .aux-window-actions .mac-maximize,
+    #asyncCalcPanel .aux-window-actions .mac-maximize,
+    #asyncSoundPanel .aux-window-actions .mac-maximize,
+    #asyncPresentationPanel .aux-window-actions .mac-maximize {
+        background: #28c840 !important;
+        color: transparent !important
+    }
+
+    #aftClose,
+    #aftMinimize,
+    #aftMaximize {
+        width: 12px !important;
+        height: 12px !important;
+        min-width: 12px !important;
+        min-height: 12px !important;
+        padding: 0 !important;
+        border: 1px solid rgba(0, 0, 0, .12) !important;
+        border-radius: 50% !important;
+        color: transparent !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3) !important;
+    }
+
+    #aftClose {
+        background: #ff5f57 !important
+    }
+
+    #aftMinimize {
+        background: #febc2e !important
+    }
+
+    #aftMaximize {
+        background: #28c840 !important
+    }
 </style>
 
 <div id="readingToolsRoot">
@@ -2153,7 +2573,9 @@
     <section id="readingToolsPanel" aria-label="Reading tools">
         <div class="rt-header" id="rtDrag">
             <strong><i class="bi bi-sliders"></i> Reading Tools</strong>
-            <span class="rt-window-actions"><button type="button" id="rtMinimize" title="Minimize">−</button><button type="button" class="rt-close" id="rtClose" aria-label="Close reading tools">&times;</button></span>
+            <span class="rt-window-actions mac-window-controls">
+                <button type="button" class="mac-window-btn mac-close" id="rtClose" title="Close Reading Tools" aria-label="Close Reading Tools"></button>
+            </span>
         </div>
 
         <div class="rt-group">
@@ -2229,10 +2651,12 @@
 <div id="asyncFloatingTimer" role="dialog" aria-label="Floating countdown timer" aria-hidden="true">
     <div id="asyncTimerDrag" class="aft-header">
         <strong><i class="bi bi-stopwatch"></i> ASYNC Timer</strong>
-        <span style="display:flex;align-items:center;gap:3px">
-            <button type="button" id="aftMinimize" aria-label="Minimize timer" title="Minimize timer"><i class="bi bi-dash-lg"></i></button>
-            <button type="button" id="aftClose" aria-label="Close timer">&times;</button>
+        <span class="aft-window-controls mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="aftClose" aria-label="Close timer" title="Close timer"></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="aftMinimize" aria-label="Minimize timer" title="Minimize timer"></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="aftMaximize" aria-label="Maximize timer" title="Maximize timer"></button>
         </span>
+        <button type="button" id="aftTickToggle" class="aft-tick-toggle" aria-pressed="true" title="Ticking sound on" aria-label="Turn ticking sound off"><i class="bi bi-volume-up-fill"></i></button>
     </div>
     <div class="aft-display" id="aftDisplay">05:00</div>
     <div class="aft-inputs">
@@ -2258,7 +2682,15 @@
 
 
 <section id="asyncNotesPanel" aria-label="Personal notes">
-    <div class="aux-head" id="asyncNotesDrag"><strong><i class="bi bi-grip-horizontal"></i> My Study Notes</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncNotesMinimize" title="Minimize">−</button><button type="button" id="asyncNotesClose" aria-label="Close notes">&times;</button></span></div>
+    <div class="aux-head mac-window-header" id="asyncNotesDrag">
+        <span class="aux-window-actions mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="asyncNotesClose" aria-label="Close My Study Notes" title="Close"></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="asyncNotesMinimize" aria-label="Minimize My Study Notes" title="Minimize"></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="asyncNotesMaximize" aria-label="Maximize My Study Notes" title="Maximize"></button>
+        </span>
+        <strong><i class="bi bi-grip-horizontal"></i> My Study Notes</strong>
+        <span class="aux-drag-hint">Drag to move</span>
+    </div>
     <div class="notes-toolbar">
         <select id="asyncNotesList" aria-label="Saved notes"></select>
         <button type="button" id="asyncNoteNew"><i class="bi bi-plus-lg"></i> New</button>
@@ -2270,7 +2702,15 @@
 </section>
 
 <section id="asyncCalcPanel" aria-label="Scientific calculator">
-    <div class="aux-head" id="asyncCalcDrag" style="margin:0 -13px 2px"><strong><i class="bi bi-grip-horizontal"></i> Scientific Calculator</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncCalcMinimize" title="Minimize">−</button><button type="button" id="asyncCalcClose" aria-label="Close calculator">&times;</button></span></div>
+    <div class="aux-head mac-window-header" id="asyncCalcDrag">
+        <span class="aux-window-actions mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="asyncCalcClose" aria-label="Close Scientific Calculator" title="Close"></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="asyncCalcMinimize" aria-label="Minimize Scientific Calculator" title="Minimize"></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="asyncCalcMaximize" aria-label="Maximize Scientific Calculator" title="Maximize"></button>
+        </span>
+        <strong><i class="bi bi-grip-horizontal"></i> Scientific Calculator</strong>
+        <span class="aux-drag-hint">Drag to move</span>
+    </div>
     <div class="simple-calc-mode"><span>SCIENTIFIC</span><select id="asyncCalcAngle">
             <option value="deg">DEG</option>
             <option value="rad">RAD</option>
@@ -2291,7 +2731,15 @@
 </section>
 
 <section id="asyncSoundPanel" aria-label="Ambient sound player">
-    <div class="aux-head" id="asyncSoundDrag"><strong><i class="bi bi-headphones"></i> Reading Ambience</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncSoundMinimize" title="Minimize">−</button><button type="button" id="asyncSoundClose" aria-label="Close sounds">&times;</button></span></div>
+    <div class="aux-head mac-window-header" id="asyncSoundDrag">
+        <span class="aux-window-actions mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="asyncSoundClose" aria-label="Close Reading Ambience" title="Close"></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="asyncSoundMinimize" aria-label="Minimize Reading Ambience" title="Minimize"></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="asyncSoundMaximize" aria-label="Maximize Reading Ambience" title="Maximize"></button>
+        </span>
+        <strong><i class="bi bi-headphones"></i> Reading Ambience</strong>
+        <span class="aux-drag-hint">Drag to move</span>
+    </div>
     <div style="font-size:12px;color:var(--aux-text);opacity:.75">Choose a continuous background sound while you read.</div>
     <div class="supplemental-heading">Audio library <small>Upload MP3, OGG, or WAV files to assets/audio/ambient/ on your hosting account.</small></div>
     <div style="display:flex;gap:7px;align-items:center">
@@ -2315,31 +2763,42 @@
         <button type="button" id="asyncLibraryStop" style="padding:9px 12px;border:0;border-radius:9px;background:#64748b;color:white">Stop</button>
     </div>
     <audio id="asyncLibraryAudio" preload="none" loop></audio>
-    <div class="sound-choice"><button type="button" data-sound="rain">🌧️ Rain</button><button type="button" data-sound="ocean">🌊 Ocean waves</button><button type="button" data-sound="forest">🌲 Forest ambience</button><button type="button" data-sound="wind">🍃 Gentle wind</button><button type="button" data-sound="fire">🔥 Fireplace</button></div>
-    <div class="supplemental-heading">Supplemental ASMR layers <small>Mix any of these with the main ambience.</small></div>
-    <div id="asyncSupplementalSounds" class="supplemental-sounds">
-        <button type="button" data-layer="thunder" aria-pressed="false">▶ Thunder</button><button type="button" data-layer="white" aria-pressed="false">▶ White noise</button><button type="button" data-layer="pink" aria-pressed="false">▶ Pink noise</button><button type="button" data-layer="brown" aria-pressed="false">▶ Brown noise</button>
-        <button type="button" data-layer="fan" aria-pressed="false">▶ Fan</button><button type="button" data-layer="aircon" aria-pressed="false">▶ Air conditioner</button><button type="button" data-layer="rainroof" aria-pressed="false">▶ Rain on roof</button><button type="button" data-layer="rainwindow" aria-pressed="false">▶ Rain on window</button>
-        <button type="button" data-layer="firecrackle" aria-pressed="false">▶ Fire crackle</button><button type="button" data-layer="water" aria-pressed="false">▶ Running water</button><button type="button" data-layer="stream" aria-pressed="false">▶ Stream</button><button type="button" data-layer="night" aria-pressed="false">▶ Night insects</button>
-        <button type="button" data-layer="birds" aria-pressed="false">▶ Birdsong</button><button type="button" data-layer="heartbeat" aria-pressed="false">▶ Heartbeat</button><button type="button" data-layer="vinyl" aria-pressed="false">▶ Vinyl static</button><button type="button" data-layer="cafe" aria-pressed="false">▶ Cafe murmur</button>
-        <button type="button" data-layer="train" aria-pressed="false">▶ Train rumble</button><button type="button" data-layer="typing" aria-pressed="false">▶ Soft typing</button>
+    <div class="sound-choice" aria-label="Choose ambience">
+        <button type="button" data-sound="ocean" title="Ocean waves">🌊 Ocean</button>
+        <button type="button" data-sound="rain" title="Rain">🌧️ Rain</button>
+        <button type="button" data-sound="white" title="White noise">〰️ White noise</button>
+        <button type="button" data-sound="fire" title="Fireplace">🔥 Fireplace</button>
+        <button type="button" data-sound="forest" title="Forest ambience">🌲 Forest</button>
     </div>
-    <label class="sound-volume"><span>Layer volume</span><input id="asyncLayerVolume" type="range" min="0" max="100" value="35"><span id="asyncLayerVolumeValue">35%</span></label>
     <label class="sound-volume"><span>Volume</span><input id="asyncSoundVolume" type="range" min="0" max="100" value="28"><span id="asyncSoundVolumeValue">28%</span></label>
     <div class="sound-actions"><button type="button" id="asyncSoundPlay"><i class="bi bi-play-fill"></i> Play sound</button><button type="button" id="asyncSoundStop" style="background:#64748b">Stop all</button></div>
     <div id="asyncSoundStatus" aria-live="polite">Select a sound, then press Play. Audio starts only after your action.</div>
 </section>
 
 <section id="asyncPresentationPanel" class="async-extra-panel" aria-label="Presentation tools">
-    <div class="aux-head" id="asyncPresentationDrag"><strong><i class="bi bi-easel2"></i> Presentation Tools</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncPresentationMinimize" title="Minimize">−</button><button type="button" id="asyncPresentationClose" aria-label="Close presentation tools">&times;</button></span></div>
+    <div class="aux-head mac-window-header" id="asyncPresentationDrag">
+        <span class="aux-window-actions mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="asyncPresentationClose" aria-label="Close Presentation Tools" title="Close"></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="asyncPresentationMinimize" aria-label="Minimize Presentation Tools" title="Minimize"></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="asyncPresentationMaximize" aria-label="Maximize Presentation Tools" title="Maximize"></button>
+        </span>
+        <strong><i class="bi bi-easel2"></i> Presentation Tools</strong>
+        <span class="aux-drag-hint">Drag to move</span>
+    </div>
     <p style="font-size:12px;color:var(--aux-text)">Use on slides, lessons, or any page. Presentation effects appear over the whole screen.</p>
     <div class="presentation-actions">
-        <button type="button" data-present-mode="laser"><i class="bi bi-record-circle"></i> Laser</button>
-        <button type="button" data-present-mode="pointer"><i class="bi bi-cursor-fill"></i> Pointer</button>
-        <button type="button" data-present-mode="spotlight"><i class="bi bi-brightness-high"></i> Spotlight</button>
-        <button type="button" data-present-mode="draw"><i class="bi bi-pencil"></i> Draw</button>
-        <button type="button" id="asyncPresentationClear"><i class="bi bi-eraser"></i> Clear ink</button>
-        <button type="button" id="asyncPresentationExit"><i class="bi bi-x-circle"></i> Exit mode</button>
+        <button type="button" data-present-mode="laser" title="Laser pointer"><i class="bi bi-record-circle"></i> Laser</button>
+        <button type="button" data-present-mode="pointer" title="Pointer ring"><i class="bi bi-cursor-fill"></i> Pointer</button>
+        <button type="button" data-present-mode="spotlight" title="Spotlight"><i class="bi bi-brightness-high"></i> Spotlight</button>
+        <button type="button" data-present-mode="draw" title="Freehand pen"><i class="bi bi-pencil"></i> Pen</button>
+        <button type="button" data-present-mode="highlight" title="Highlighter"><i class="bi bi-highlighter"></i> Highlight</button>
+        <button type="button" data-present-mode="arrow" title="Draw arrow"><i class="bi bi-arrow-up-right"></i> Arrow</button>
+        <button type="button" data-present-mode="rectangle" title="Draw rectangle"><i class="bi bi-square"></i> Rectangle</button>
+        <button type="button" data-present-mode="circle" title="Draw circle"><i class="bi bi-circle"></i> Circle</button>
+        <button type="button" data-present-mode="text" title="Add text label"><i class="bi bi-fonts"></i> Text</button>
+        <button type="button" data-present-mode="erase" title="Eraser"><i class="bi bi-eraser"></i> Eraser</button>
+        <button type="button" id="asyncPresentationClear" title="Clear annotations"><i class="bi bi-trash3"></i> Clear</button>
+        <button type="button" id="asyncPresentationExit" title="Exit presentation mode"><i class="bi bi-x-circle"></i> Exit</button>
     </div>
     <label class="sound-volume"><span>Pointer size</span><input id="asyncPresentationSize" type="range" min="6" max="36" value="14"><span id="asyncPresentationSizeValue">14px</span></label>
     <label class="sound-volume"><span>Laser color</span><input id="asyncPresentationColor" type="color" value="#ff2d55"></label>
@@ -2400,6 +2859,29 @@
         let audioContext = null,
             alarmLoop = null,
             alarmActive = false;
+        let tickSoundEnabled = true;
+        try {
+            tickSoundEnabled = localStorage.getItem('asyncTimerTickSound') !== 'off';
+        } catch (_) {}
+        const tickToggle = document.getElementById('aftTickToggle');
+
+        function renderTickToggle() {
+            if (!tickToggle) return;
+            tickToggle.setAttribute('aria-pressed', String(tickSoundEnabled));
+            tickToggle.setAttribute('aria-label', tickSoundEnabled ? 'Turn ticking sound off' : 'Turn ticking sound on');
+            tickToggle.title = tickSoundEnabled ? 'Ticking sound on' : 'Ticking sound off';
+            tickToggle.innerHTML = tickSoundEnabled ?
+                '<i class="bi bi-volume-up-fill"></i>' :
+                '<i class="bi bi-volume-mute-fill"></i>';
+        }
+        if (tickToggle) tickToggle.addEventListener('click', () => {
+            tickSoundEnabled = !tickSoundEnabled;
+            try {
+                localStorage.setItem('asyncTimerTickSound', tickSoundEnabled ? 'on' : 'off');
+            } catch (_) {}
+            renderTickToggle();
+        });
+        renderTickToggle();
 
         function formatTimer(seconds) {
             const m = Math.floor(seconds / 60),
@@ -2447,6 +2929,7 @@
         }
 
         function tickSound() {
+            if (!tickSoundEnabled) return;
             playTone(1250, 0.12, 0.20, 'square');
         }
 
@@ -2522,13 +3005,14 @@
         document.getElementById('aftMinimize').addEventListener('click', () => {
             const minimized = timerBox.classList.toggle('is-minimized');
             const button = document.getElementById('aftMinimize');
-            button.innerHTML = minimized ? '<i class="bi bi-arrows-angle-expand"></i>' : '<i class="bi bi-dash-lg"></i>';
-            button.setAttribute('aria-label', minimized ? 'Expand timer' : 'Minimize timer');
-            button.title = minimized ? 'Expand timer' : 'Minimize timer';
+            button.setAttribute('aria-label', minimized ? 'Restore timer' : 'Minimize timer');
+            button.title = minimized ? 'Restore timer' : 'Minimize timer';
+            if (timerBox.classList.contains('is-maximized') && window.asyncRestoreMaximized) window.asyncRestoreMaximized(timerBox);
         });
         document.getElementById('aftClose').addEventListener('click', () => {
             if (alarmActive) return;
-            timerBox.classList.remove('is-visible');
+            if (timerBox.classList.contains('is-maximized') && window.asyncRestoreMaximized) window.asyncRestoreMaximized(timerBox);
+            timerBox.classList.remove('is-visible', 'is-minimized', 'is-maximized');
             timerBox.setAttribute('aria-hidden', 'true');
         });
         document.getElementById('aftStart').addEventListener('click', startTimer);
@@ -2771,10 +3255,6 @@
             togglePanel(false);
             panel.classList.remove('is-minimized');
         });
-        document.getElementById('rtMinimize').addEventListener('click', () => {
-            const minimized = panel.classList.toggle('is-minimized');
-            document.getElementById('rtMinimize').textContent = minimized ? '□' : '−';
-        });
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') togglePanel(false);
         });
@@ -2965,9 +3445,9 @@
 
         function setPanelClosed(item) {
             if (!item) return;
-            item.classList.remove('is-open', 'is-minimized');
+            if (item.classList.contains('is-maximized')) restoreMaximized(item);
+            item.classList.remove('is-open', 'is-minimized', 'is-maximized');
             const minimizeId = {
-                readingToolsPanel: 'rtMinimize',
                 asyncNotesPanel: 'asyncNotesMinimize',
                 asyncCalcPanel: 'asyncCalcMinimize',
                 asyncSoundPanel: 'asyncSoundMinimize',
@@ -3005,7 +3485,6 @@
             target.classList.toggle('is-open', shouldOpen);
             target.classList.remove('is-minimized');
             const minimizeId = {
-                readingToolsPanel: 'rtMinimize',
                 asyncNotesPanel: 'asyncNotesMinimize',
                 asyncCalcPanel: 'asyncCalcMinimize',
                 asyncSoundPanel: 'asyncSoundMinimize',
@@ -3066,17 +3545,78 @@
         byId('asyncSoundClose').addEventListener('click', () => setPanelClosed(soundPanel));
         byId('asyncPresentationClose').addEventListener('click', () => setPanelClosed(presentationPanel));
 
+        function restoreMaximized(panel) {
+            if (!panel || !panel.classList.contains('is-maximized')) return;
+            panel.classList.remove('is-maximized');
+            let saved = null;
+            try {
+                saved = JSON.parse(panel.dataset.preMaxGeometry || 'null');
+            } catch (_) {}
+            if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
+                const width = Math.min(saved.width || 400, window.innerWidth - 12);
+                const height = Math.min(saved.height || 300, window.innerHeight - 12);
+                const left = Math.max(6, Math.min(window.innerWidth - width - 6, saved.left));
+                const top = Math.max(6, Math.min(window.innerHeight - height - 6, saved.top));
+                panel.style.setProperty('left', left + 'px', 'important');
+                panel.style.setProperty('top', top + 'px', 'important');
+                panel.style.setProperty('right', 'auto', 'important');
+                panel.style.setProperty('bottom', 'auto', 'important');
+                panel.style.setProperty('transform', 'none', 'important');
+                panel.style.setProperty('width', width + 'px', 'important');
+                panel.style.setProperty('height', height + 'px', 'important');
+            }
+        }
+        window.asyncRestoreMaximized = restoreMaximized;
+
         function setMinimize(panel, button) {
+            if (!panel || !button) return;
             button.addEventListener('click', () => {
                 const minimized = panel.classList.toggle('is-minimized');
-                button.textContent = minimized ? '□' : '−';
                 button.title = minimized ? 'Restore' : 'Minimize';
+                button.setAttribute('aria-label', minimized ? 'Restore window' : 'Minimize window');
+                if (panel.classList.contains('is-maximized')) restoreMaximized(panel);
+            });
+        }
+
+        function setMaximize(panel, button) {
+            if (!panel || !button) return;
+            button.addEventListener('click', () => {
+                if (panel.classList.contains('is-minimized')) panel.classList.remove('is-minimized');
+                if (panel.classList.contains('is-maximized')) {
+                    restoreMaximized(panel);
+                } else {
+                    const rect = panel.getBoundingClientRect();
+                    panel.dataset.preMaxGeometry = JSON.stringify({
+                        left: rect.left,
+                        top: rect.top,
+                        width: rect.width,
+                        height: rect.height
+                    });
+                    panel.classList.add('is-maximized');
+                    panel.style.setProperty('left', '8px', 'important');
+                    panel.style.setProperty('top', '8px', 'important');
+                    panel.style.setProperty('right', 'auto', 'important');
+                    panel.style.setProperty('bottom', 'auto', 'important');
+                    panel.style.setProperty('transform', 'none', 'important');
+                    panel.style.setProperty('width', Math.max(180, window.innerWidth - 16) + 'px', 'important');
+                    panel.style.setProperty('height', Math.max(130, window.innerHeight - 16) + 'px', 'important');
+                    panel.style.setProperty('max-width', 'none', 'important');
+                    panel.style.setProperty('max-height', 'none', 'important');
+                    panel.dataset.userPositioned = '1';
+                }
+                button.title = panel.classList.contains('is-maximized') ? 'Restore window' : 'Maximize window';
+                button.setAttribute('aria-label', button.title);
             });
         }
         setMinimize(notesPanel, byId('asyncNotesMinimize'));
         setMinimize(calcPanel, byId('asyncCalcMinimize'));
         setMinimize(soundPanel, byId('asyncSoundMinimize'));
         setMinimize(presentationPanel, byId('asyncPresentationMinimize'));
+        setMaximize(notesPanel, byId('asyncNotesMaximize'));
+        setMaximize(calcPanel, byId('asyncCalcMaximize'));
+        setMaximize(soundPanel, byId('asyncSoundMaximize'));
+        setMaximize(presentationPanel, byId('asyncPresentationMaximize'));
+        setMaximize(timerBox, byId('aftMaximize'));
 
         function readNotes() {
             try {
@@ -3395,12 +3935,6 @@
             presentationPanel,
             timerBox
         ].forEach(makeResizable);
-
-        byId('rtMinimize').addEventListener('click', () => {
-            const readingPanel = byId('readingToolsPanel');
-            const minimized = readingPanel.classList.toggle('is-minimized');
-            byId('rtMinimize').textContent = minimized ? '□' : '−';
-        });
         window.addEventListener('resize', () => {
             [notesPanel, calcPanel, soundPanel, byId('readingToolsPanel')].forEach(panel => {
                 if (!panel.classList.contains('is-open')) return;
@@ -3516,19 +4050,23 @@
                 showExpression();
             }
         });
-        // Main ambience and supplemental ASMR sounds run independently.
+        // Five selected ambient presets plus uploaded audio-library tracks.
         let ambienceContext = null,
             ambienceNodes = [],
             selectedSound = 'rain',
             ambienceGain = null;
         const soundStatus = byId('asyncSoundStatus'),
             soundVolume = byId('asyncSoundVolume');
-        const layerPlayers = new Map();
+        const libraryAudio = byId('asyncLibraryAudio'),
+            librarySelect = byId('asyncAudioLibrarySelect');
 
         function stopMainAmbience(update = true) {
             ambienceNodes.forEach(node => {
                 try {
-                    node.stop ? node.stop() : node.disconnect();
+                    node.stop();
+                } catch (_) {}
+                try {
+                    node.disconnect();
                 } catch (_) {}
             });
             ambienceNodes = [];
@@ -3538,150 +4076,11 @@
                 } catch (_) {}
                 ambienceGain = null;
             }
-            if (update) soundStatus.textContent = 'Main ambience stopped. Supplemental sounds can continue playing.';
-            document.querySelectorAll('[data-sound]').forEach(btn => btn.classList.toggle('active', btn.dataset.sound === selectedSound));
-            byId('asyncSoundPlay').innerHTML = '<i class="bi bi-play-fill"></i> Play sound';
+            if (update) soundStatus.textContent = 'Ambient sound stopped. Audio-library music can continue independently.';
+            byId('asyncSoundPlay').innerHTML = '<i class="bi bi-play-fill"></i> Play ambience';
         }
-
-        function stopAmbience() {
-            stopMainAmbience(false);
-            [...layerPlayers.keys()].forEach(stopLayer);
-            soundStatus.textContent = 'All sounds stopped.';
-        }
-
-        function buildLayer(ctx, destination, type, volume) {
-            const g = ctx.createGain();
-            g.gain.value = volume;
-            g.connect(destination);
-            const len = ctx.sampleRate * 3,
-                buf = ctx.createBuffer(1, len, ctx.sampleRate),
-                d = buf.getChannelData(0);
-            let brown = 0;
-            for (let i = 0; i < len; i++) {
-                const w = Math.random() * 2 - 1;
-                if (type === 'pink') d[i] = (w + (i ? d[i - 1] * .94 : 0)) * .32;
-                else if (type === 'brown') {
-                    brown = (brown + .02 * w) / 1.02;
-                    d[i] = brown * 3.5;
-                } else d[i] = w;
-            }
-            const src = ctx.createBufferSource();
-            src.buffer = buf;
-            src.loop = true;
-            const f = ctx.createBiquadFilter();
-            f.type = 'lowpass';
-            f.frequency.value = ({
-                white: 6500,
-                pink: 2300,
-                brown: 450,
-                thunder: 180,
-                train: 260,
-                heartbeat: 90,
-                fan: 700,
-                aircon: 900,
-                rainroof: 2600,
-                rainwindow: 3400,
-                firecrackle: 1800,
-                water: 2400,
-                stream: 1900,
-                night: 5200,
-                birds: 5000,
-                vinyl: 4200,
-                cafe: 1100,
-                typing: 3200
-            } [type] || 1200);
-            src.connect(f);
-            f.connect(g);
-            src.start();
-            const nodes = [src];
-            if (['thunder', 'train', 'heartbeat', 'fan', 'aircon', 'firecrackle', 'night', 'birds', 'cafe', 'typing'].includes(type)) {
-                const o = ctx.createOscillator(),
-                    og = ctx.createGain();
-                o.type = 'sine';
-                o.frequency.value = ({
-                    thunder: 38,
-                    train: 55,
-                    heartbeat: 1.2,
-                    fan: 60,
-                    aircon: 48,
-                    firecrackle: 3.5,
-                    night: 4.5,
-                    birds: 2100,
-                    cafe: 180,
-                    typing: 2.8
-                } [type] || 40);
-                og.gain.value = ({
-                    thunder: .035,
-                    train: .025,
-                    heartbeat: .025,
-                    fan: .008,
-                    aircon: .006,
-                    firecrackle: .012,
-                    night: .006,
-                    birds: .006,
-                    cafe: .004,
-                    typing: .009
-                } [type] || .005);
-                o.connect(og);
-                og.connect(g);
-                o.start();
-                nodes.push(o);
-            }
-            return {
-                gain: g,
-                nodes
-            };
-        }
-
-        function stopLayer(key) {
-            const player = layerPlayers.get(key);
-            if (!player) return;
-            player.nodes.forEach(n => {
-                try {
-                    n.stop();
-                } catch (_) {}
-            });
-            try {
-                player.gain.disconnect();
-            } catch (_) {}
-            layerPlayers.delete(key);
-            const btn = document.querySelector('[data-layer="' + key + '"]');
-            if (btn) {
-                btn.classList.remove('active');
-                btn.setAttribute('aria-pressed', 'false');
-                btn.textContent = '▶ ' + btn.textContent.replace(/^[▶■]\s*/, '');
-            }
-            soundStatus.textContent = 'Supplemental sound stopped. Other sounds continue playing.';
-        }
-        async function toggleLayer(btn) {
-            const key = btn.dataset.layer;
-            if (layerPlayers.has(key)) {
-                stopLayer(key);
-                return;
-            }
-            const AC = window.AudioContext || window.webkitAudioContext;
-            if (!AC) {
-                soundStatus.textContent = 'Web Audio is not supported in this browser.';
-                return;
-            }
-            if (!ambienceContext) ambienceContext = new AC();
-            try {
-                await ambienceContext.resume();
-                const player = buildLayer(ambienceContext, ambienceContext.destination, key, Number(byId('asyncLayerVolume').value) / 100 * .18);
-                layerPlayers.set(key, player);
-                btn.classList.add('active');
-                btn.setAttribute('aria-pressed', 'true');
-                btn.textContent = '■ ' + btn.textContent.replace(/^[▶■]\s*/, '');
-                soundStatus.textContent = key + ' is playing independently. Click it again to stop it.';
-            } catch (_) {
-                soundStatus.textContent = 'Audio was blocked. Click the sound again to allow playback.';
-            }
-        }
-        document.querySelectorAll('#asyncSupplementalSounds [data-layer]').forEach(btn => btn.addEventListener('click', () => toggleLayer(btn)));
-        const libraryAudio = byId('asyncLibraryAudio'),
-            librarySelect = byId('asyncAudioLibrarySelect');
         async function playLibraryAudio() {
-            const src = librarySelect.value;
+            const src = librarySelect ? librarySelect.value : '';
             if (!src) {
                 soundStatus.textContent = 'No audio file found. Upload MP3/OGG/WAV files into assets/audio/ambient/ and reload this page.';
                 return;
@@ -3691,94 +4090,130 @@
             libraryAudio.volume = Number(soundVolume.value) / 100;
             try {
                 await libraryAudio.play();
-                soundStatus.textContent = 'Playing audio library track in a continuous loop.';
+                soundStatus.textContent = 'Audio-library track is playing in a continuous loop.';
             } catch (_) {
                 soundStatus.textContent = 'Playback was blocked or the file could not be loaded. Check the file path and press Play again.';
             }
         }
 
         function stopLibraryAudio() {
+            if (!libraryAudio) return;
             libraryAudio.pause();
             libraryAudio.currentTime = 0;
-            soundStatus.textContent = 'Library music stopped. Supplemental sounds can continue.';
+            soundStatus.textContent = 'Audio-library track stopped.';
         }
         byId('asyncLibraryPlay').addEventListener('click', playLibraryAudio);
         byId('asyncLibraryStop').addEventListener('click', stopLibraryAudio);
+
         async function startAmbience() {
-            soundStatus.textContent = 'Choose an audio library track above, or select a procedural ambience below.';
-            // Retain the existing procedural ambience as an optional fallback.
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC) {
-                soundStatus.textContent = 'Choose a track from the audio library above.';
+                soundStatus.textContent = 'Web Audio is unavailable. You can still play uploaded audio-library tracks.';
                 return;
             }
             if (!ambienceContext) ambienceContext = new AC();
             try {
                 await ambienceContext.resume();
                 stopMainAmbience(false);
-                const ctx = ambienceContext,
-                    master = ctx.createGain();
-                master.gain.value = Number(soundVolume.value) / 100 * .12;
+                const ctx = ambienceContext;
+                const master = ctx.createGain();
+                master.gain.value = Number(soundVolume.value) / 100 * .18;
                 master.connect(ctx.destination);
                 ambienceGain = master;
-                const length = ctx.sampleRate * 3,
-                    buffer = ctx.createBuffer(1, length, ctx.sampleRate),
-                    data = buffer.getChannelData(0);
-                for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
+
+                const length = ctx.sampleRate * 4;
+                const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                let brown = 0;
+                for (let i = 0; i < length; i++) {
+                    const white = Math.random() * 2 - 1;
+                    if (selectedSound === 'white') data[i] = white;
+                    else if (selectedSound === 'ocean') {
+                        brown = (brown + .018 * white) / 1.018;
+                        data[i] = brown * 3.4;
+                    } else if (selectedSound === 'fire') {
+                        data[i] = white * (Math.random() > .992 ? 1.7 : .38);
+                    } else if (selectedSound === 'forest') {
+                        data[i] = (white + (i ? data[i - 1] * .93 : 0)) * .3;
+                    } else {
+                        data[i] = (white + (i ? data[i - 1] * .65 : 0)) * .48;
+                    }
+                }
                 const noise = ctx.createBufferSource();
                 noise.buffer = buffer;
                 noise.loop = true;
-                const filter = ctx.createBiquadFilter(),
-                    tone = ctx.createGain();
-                filter.type = 'lowpass';
-                filter.frequency.value = selectedSound === 'ocean' ? 650 : selectedSound === 'wind' ? 330 : 1800;
+                const filter = ctx.createBiquadFilter();
+                filter.type = selectedSound === 'forest' ? 'bandpass' : 'lowpass';
+                filter.frequency.value = ({
+                    ocean: 520,
+                    rain: 2600,
+                    white: 12000,
+                    fire: 1800,
+                    forest: 1200
+                })[selectedSound] || 2000;
+                const tone = ctx.createGain();
+                tone.gain.value = selectedSound === 'fire' ? .72 : 1;
                 noise.connect(filter);
                 filter.connect(tone);
                 tone.connect(master);
                 noise.start();
                 ambienceNodes.push(noise);
-                soundStatus.textContent = 'Procedural ' + selectedSound + ' ambience playing. For real recordings, use the audio library above.';
+
+                const lfo = ctx.createOscillator();
+                const lfoGain = ctx.createGain();
+                lfo.type = 'sine';
+                lfo.frequency.value = selectedSound === 'ocean' ? .08 : selectedSound === 'fire' ? 2.1 : .22;
+                lfoGain.gain.value = selectedSound === 'ocean' ? .34 : selectedSound === 'fire' ? .1 : .06;
+                lfo.connect(lfoGain);
+                lfoGain.connect(tone.gain);
+                lfo.start();
+                ambienceNodes.push(lfo);
+
+                soundStatus.textContent = selectedSound.charAt(0).toUpperCase() + selectedSound.slice(1) + ' ambience is playing. The library player can run independently.';
                 byId('asyncSoundPlay').innerHTML = '<i class="bi bi-arrow-repeat"></i> Restart ambience';
             } catch (_) {
-                soundStatus.textContent = 'Audio could not start. Press Play again.';
+                soundStatus.textContent = 'Ambient audio could not start. Press Play ambience again.';
             }
         }
         document.querySelectorAll('[data-sound]').forEach(button => button.addEventListener('click', () => {
             selectedSound = button.dataset.sound;
             document.querySelectorAll('[data-sound]').forEach(item => item.classList.toggle('active', item === button));
-            soundStatus.textContent = selectedSound + ' procedural ambience selected. Press Play ambience.';
+            soundStatus.textContent = selectedSound + ' selected. Press Play ambience.';
         }));
         byId('asyncSoundPlay').addEventListener('click', startAmbience);
         byId('asyncSoundStop').addEventListener('click', () => {
-            stopMainAmbience();
+            stopMainAmbience(false);
             stopLibraryAudio();
-            [...layerPlayers.keys()].forEach(stopLayer);
-            soundStatus.textContent = 'All music and supplemental sounds stopped.';
-        });
-        byId('asyncLayerVolume').addEventListener('input', () => {
-            byId('asyncLayerVolumeValue').textContent = byId('asyncLayerVolume').value + '%';
-            layerPlayers.forEach(player => player.gain.gain.setTargetAtTime(Number(byId('asyncLayerVolume').value) / 100 * .18, ambienceContext.currentTime, .08));
+            soundStatus.textContent = 'All ambience and library music stopped.';
         });
         soundVolume.addEventListener('input', () => {
             byId('asyncSoundVolumeValue').textContent = soundVolume.value + '%';
-            libraryAudio.volume = Number(soundVolume.value) / 100;
-            if (ambienceGain) ambienceGain.gain.setTargetAtTime(Number(soundVolume.value) / 100 * .12, ambienceContext.currentTime, .08);
+            if (libraryAudio) libraryAudio.volume = Number(soundVolume.value) / 100;
+            if (ambienceGain && ambienceContext) {
+                ambienceGain.gain.setTargetAtTime(Number(soundVolume.value) / 100 * .18, ambienceContext.currentTime, .08);
+            }
         });
         window.addEventListener('beforeunload', () => {
-            stopAmbience();
+            stopMainAmbience(false);
             stopLibraryAudio();
         });
-        // Presentation overlay: laser, pointer, spotlight and freehand annotation.
+
+        // Presentation overlay: pointer, laser, spotlight, and drawing tools.
         const presentOverlay = byId('asyncPresentationOverlay'),
             presentCursor = byId('asyncPresentationCursor');
         const presentCanvas = byId('asyncPresentationCanvas'),
             presentCtx = presentCanvas.getContext('2d');
         let presentMode = '',
             presentDrawing = false,
-            lastPoint = null;
+            lastPoint = null,
+            shapeBaseImage = null;
 
         function resizePresentCanvas() {
             const dpr = window.devicePixelRatio || 1;
+            const oldCanvas = document.createElement('canvas');
+            oldCanvas.width = presentCanvas.width;
+            oldCanvas.height = presentCanvas.height;
+            if (oldCanvas.width && oldCanvas.height) oldCanvas.getContext('2d').drawImage(presentCanvas, 0, 0);
             presentCanvas.width = Math.round(innerWidth * dpr);
             presentCanvas.height = Math.round(innerHeight * dpr);
             presentCanvas.style.width = innerWidth + 'px';
@@ -3786,66 +4221,146 @@
             presentCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
             presentCtx.lineCap = 'round';
             presentCtx.lineJoin = 'round';
+            if (oldCanvas.width && oldCanvas.height) presentCtx.drawImage(oldCanvas, 0, 0, innerWidth, innerHeight);
         }
         resizePresentCanvas();
         window.addEventListener('resize', resizePresentCanvas);
 
+        const presentModes = {
+            laser: 'Laser dot follows your cursor.',
+            pointer: 'Pointer ring follows your cursor.',
+            spotlight: 'Spotlight dims the page around your cursor.',
+            draw: 'Freehand pen: draw directly over the page.',
+            highlight: 'Highlighter: swipe across text or diagrams.',
+            arrow: 'Arrow: drag from the starting point to the arrow tip.',
+            rectangle: 'Rectangle: drag to draw a box.',
+            circle: 'Circle: drag to draw an ellipse.',
+            text: 'Text: click the page and enter a label.',
+            erase: 'Eraser: swipe over annotations to remove them.'
+        };
+
         function setPresentMode(mode) {
             presentMode = mode || '';
+            presentDrawing = false;
+            lastPoint = null;
             presentOverlay.className = presentMode ? 'active mode-' + presentMode : '';
-            document.querySelectorAll('[data-present-mode]').forEach(b => b.classList.toggle('active', b.dataset.presentMode === presentMode));
-            byId('asyncPresentationStatus').textContent = presentMode ? ({
-                laser: 'Laser dot follows your cursor.',
-                pointer: 'Pointer ring follows your cursor.',
-                spotlight: 'Spotlight dims the page around your cursor.',
-                draw: 'Draw on the screen; use Clear ink to erase.'
-            } [presentMode]) : 'Presentation mode is off.';
+            document.querySelectorAll('[data-present-mode]').forEach(button => {
+                button.classList.toggle('active', button.dataset.presentMode === presentMode);
+                button.setAttribute('aria-pressed', String(button.dataset.presentMode === presentMode));
+            });
+            byId('asyncPresentationStatus').textContent = presentMode ? presentModes[presentMode] : 'Presentation mode is off.';
         }
-        document.querySelectorAll('[data-present-mode]').forEach(b => b.addEventListener('click', () => setPresentMode(b.dataset.presentMode)));
-        document.addEventListener('pointermove', e => {
-            if (!presentMode) return;
-            presentCursor.style.left = e.clientX + 'px';
-            presentCursor.style.top = e.clientY + 'px';
-            presentOverlay.style.setProperty('--spot-x', e.clientX + 'px');
-            presentOverlay.style.setProperty('--spot-y', e.clientY + 'px');
-            if (presentMode === 'draw' && presentDrawing) {
-                presentCtx.strokeStyle = byId('asyncPresentationColor').value;
-                presentCtx.lineWidth = Number(byId('asyncPresentationSize').value);
+        document.querySelectorAll('[data-present-mode]').forEach(button => button.addEventListener('click', () => setPresentMode(button.dataset.presentMode)));
+
+        const getPresentColor = () => byId('asyncPresentationColor').value || '#ff2d55';
+        const getPresentSize = () => Number(byId('asyncPresentationSize').value) || 14;
+
+        function drawArrow(x1, y1, x2, y2) {
+            const angle = Math.atan2(y2 - y1, x2 - x1),
+                head = Math.max(12, getPresentSize() * 1.35);
+            presentCtx.beginPath();
+            presentCtx.moveTo(x1, y1);
+            presentCtx.lineTo(x2, y2);
+            presentCtx.moveTo(x2, y2);
+            presentCtx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
+            presentCtx.moveTo(x2, y2);
+            presentCtx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+            presentCtx.stroke();
+        }
+
+        function previewShape(x, y) {
+            if (!shapeBaseImage || !lastPoint) return;
+            presentCtx.putImageData(shapeBaseImage, 0, 0);
+            presentCtx.save();
+            presentCtx.strokeStyle = getPresentColor();
+            presentCtx.lineWidth = Math.max(2, getPresentSize() / 3);
+            const left = Math.min(lastPoint.x, x),
+                top = Math.min(lastPoint.y, y),
+                width = Math.abs(x - lastPoint.x),
+                height = Math.abs(y - lastPoint.y);
+            if (presentMode === 'arrow') drawArrow(lastPoint.x, lastPoint.y, x, y);
+            else if (presentMode === 'rectangle') presentCtx.strokeRect(left, top, width, height);
+            else if (presentMode === 'circle') {
                 presentCtx.beginPath();
-                presentCtx.moveTo(lastPoint.x, lastPoint.y);
-                presentCtx.lineTo(e.clientX, e.clientY);
+                presentCtx.ellipse(left + width / 2, top + height / 2, Math.max(1, width / 2), Math.max(1, height / 2), 0, 0, Math.PI * 2);
                 presentCtx.stroke();
-                lastPoint = {
-                    x: e.clientX,
-                    y: e.clientY
-                };
             }
+            presentCtx.restore();
+        }
+        document.addEventListener('pointermove', event => {
+            if (!presentMode) return;
+            presentCursor.style.left = event.clientX + 'px';
+            presentCursor.style.top = event.clientY + 'px';
+            presentOverlay.style.setProperty('--spot-x', event.clientX + 'px');
+            presentOverlay.style.setProperty('--spot-y', event.clientY + 'px');
+            if (!presentDrawing || !lastPoint) return;
+            if (['arrow', 'rectangle', 'circle'].includes(presentMode)) {
+                previewShape(event.clientX, event.clientY);
+                return;
+            }
+            presentCtx.save();
+            presentCtx.lineWidth = presentMode === 'erase' ? getPresentSize() * 2.4 : presentMode === 'highlight' ? getPresentSize() * 2.5 : getPresentSize();
+            if (presentMode === 'highlight') {
+                presentCtx.globalAlpha = .32;
+                presentCtx.strokeStyle = '#ffe66d';
+                presentCtx.globalCompositeOperation = 'source-over';
+            } else if (presentMode === 'erase') {
+                presentCtx.globalAlpha = 1;
+                presentCtx.globalCompositeOperation = 'destination-out';
+            } else {
+                presentCtx.globalAlpha = 1;
+                presentCtx.globalCompositeOperation = 'source-over';
+                presentCtx.strokeStyle = getPresentColor();
+            }
+            presentCtx.beginPath();
+            presentCtx.moveTo(lastPoint.x, lastPoint.y);
+            presentCtx.lineTo(event.clientX, event.clientY);
+            presentCtx.stroke();
+            presentCtx.restore();
+            lastPoint = {
+                x: event.clientX,
+                y: event.clientY
+            };
         });
-        presentCanvas.addEventListener('pointerdown', e => {
-            if (presentMode !== 'draw') return;
+        presentCanvas.addEventListener('pointerdown', event => {
+            if (!['draw', 'highlight', 'arrow', 'rectangle', 'circle', 'text', 'erase'].includes(presentMode)) return;
+            if (presentMode === 'text') {
+                const label = window.prompt('Enter presentation text:');
+                if (label && label.trim()) {
+                    presentCtx.save();
+                    presentCtx.globalCompositeOperation = 'source-over';
+                    presentCtx.globalAlpha = 1;
+                    presentCtx.fillStyle = getPresentColor();
+                    presentCtx.font = `700 ${Math.max(16,getPresentSize())}px Arial,sans-serif`;
+                    presentCtx.fillText(label.trim().slice(0, 120), event.clientX, event.clientY);
+                    presentCtx.restore();
+                }
+                return;
+            }
             presentDrawing = true;
             lastPoint = {
-                x: e.clientX,
-                y: e.clientY
+                x: event.clientX,
+                y: event.clientY
             };
-            presentCanvas.setPointerCapture(e.pointerId);
+            if (['arrow', 'rectangle', 'circle'].includes(presentMode)) shapeBaseImage = presentCtx.getImageData(0, 0, presentCanvas.width, presentCanvas.height);
+            try {
+                presentCanvas.setPointerCapture(event.pointerId);
+            } catch (_) {}
         });
-        presentCanvas.addEventListener('pointerup', () => {
+        const finishPresentationStroke = () => {
             presentDrawing = false;
             lastPoint = null;
-        });
-        presentCanvas.addEventListener('pointercancel', () => {
-            presentDrawing = false;
-            lastPoint = null;
-        });
+            shapeBaseImage = null;
+        };
+        presentCanvas.addEventListener('pointerup', finishPresentationStroke);
+        presentCanvas.addEventListener('pointercancel', finishPresentationStroke);
         byId('asyncPresentationClear').addEventListener('click', () => presentCtx.clearRect(0, 0, innerWidth, innerHeight));
         byId('asyncPresentationExit').addEventListener('click', () => setPresentMode(''));
-        byId('asyncPresentationSize').addEventListener('input', e => {
-            byId('asyncPresentationSizeValue').textContent = e.target.value + 'px';
-            presentCursor.style.width = e.target.value + 'px';
-            presentCursor.style.height = e.target.value + 'px';
+        byId('asyncPresentationSize').addEventListener('input', event => {
+            byId('asyncPresentationSizeValue').textContent = event.target.value + 'px';
+            presentCursor.style.width = event.target.value + 'px';
+            presentCursor.style.height = event.target.value + 'px';
         });
-
 
         const themeObserver = new MutationObserver(() => {
             const dark = document.documentElement.getAttribute('data-theme') === 'dark';
