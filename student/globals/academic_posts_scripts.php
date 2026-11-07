@@ -1881,6 +1881,142 @@
             max-height: 130px
         }
     }
+
+
+    #asyncPresentationPanel {
+        display: none;
+        position: fixed;
+        z-index: 100090;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: min(430px, calc(100vw - 24px));
+        max-height: 85dvh;
+        overflow: auto;
+        padding: 14px;
+        border: 1px solid var(--aux-border, rgba(148, 163, 184, .3));
+        border-radius: 18px;
+        background: var(--aux-glass, rgba(255, 255, 255, .94));
+        color: var(--aux-text, #172033);
+        box-shadow: 0 22px 65px rgba(15, 23, 42, .25);
+        backdrop-filter: blur(20px)
+    }
+
+    #asyncPresentationPanel.is-open {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        animation: asyncToolPop .22s ease-out
+    }
+
+    #asyncPresentationPanel.is-minimized {
+        display: none !important
+    }
+
+    #asyncPresentationPanel .presentation-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px
+    }
+
+    #asyncPresentationPanel .presentation-actions button {
+        padding: 11px 9px;
+        border: 1px solid var(--aux-border);
+        border-radius: 10px;
+        background: var(--aux-control);
+        color: var(--aux-text);
+        cursor: pointer
+    }
+
+    #asyncPresentationPanel .presentation-actions button.active {
+        background: rgba(37, 99, 235, .18);
+        border-color: #3b82f6;
+        color: var(--aux-text);
+        font-weight: 800
+    }
+
+    #asyncPresentationOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100080;
+        pointer-events: none
+    }
+
+    #asyncPresentationOverlay.active {
+        display: block
+    }
+
+    #asyncPresentationCursor {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #ff2d55;
+        box-shadow: 0 0 0 5px rgba(255, 45, 85, .2), 0 0 18px rgba(255, 45, 85, .85);
+        transform: translate(-50%, -50%);
+        display: none
+    }
+
+    #asyncPresentationOverlay.mode-pointer #asyncPresentationCursor {
+        width: 24px;
+        height: 24px;
+        background: transparent;
+        border: 3px solid #2563eb;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, .2)
+    }
+
+    #asyncPresentationOverlay.mode-laser #asyncPresentationCursor {
+        display: block
+    }
+
+    #asyncPresentationOverlay.mode-pointer #asyncPresentationCursor {
+        display: block
+    }
+
+    #asyncPresentationOverlay.mode-spotlight {
+        background: rgba(0, 0, 0, .68);
+        -webkit-mask: radial-gradient(circle 95px at var(--spot-x, 50%) var(--spot-y, 50%), transparent 0 90px, #000 98px);
+        mask: radial-gradient(circle 95px at var(--spot-x, 50%) var(--spot-y, 50%), transparent 0 90px, #000 98px)
+    }
+
+    #asyncPresentationOverlay.mode-spotlight #asyncPresentationSpotlight {
+        display: block;
+        position: fixed;
+        left: var(--spot-x, 50%);
+        top: var(--spot-y, 50%);
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, .65);
+        border: 2px solid rgba(255, 255, 255, .85)
+    }
+
+    #asyncPresentationCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        touch-action: none
+    }
+
+    #asyncPresentationOverlay.mode-draw {
+        pointer-events: auto;
+        cursor: crosshair
+    }
+
+    #asyncPresentationOverlay.mode-draw #asyncPresentationCanvas {
+        pointer-events: auto;
+        cursor: crosshair
+    }
+
+    #asyncPresentationPanel[data-user-positioned="1"] {
+        transform: none !important
+    }
 </style>
 
 <div id="readingToolsRoot">
@@ -1890,6 +2026,7 @@
             <button type="button" data-open-tool="asyncNotesPanel"><i class="bi bi-journal-text"></i><span>Study notes</span></button>
             <button type="button" data-open-tool="asyncCalcPanel"><i class="bi bi-calculator"></i><span>Calculator</span></button>
             <button type="button" data-open-tool="asyncSoundPanel"><i class="bi bi-headphones"></i><span>Ambient sounds</span></button>
+            <button type="button" data-open-tool="asyncPresentationPanel"><i class="bi bi-easel2"></i><span>Presentation tools</span></button>
             <button type="button" id="asyncDockTimer"><i class="bi bi-stopwatch"></i><span>Timer</span></button>
         </div>
         <button type="button" id="asyncToolsFab" aria-label="Show study tools" aria-expanded="false"><i class="bi bi-grid-3x3-gap-fill"></i></button>
@@ -2037,6 +2174,28 @@
 <section id="asyncSoundPanel" aria-label="Ambient sound player">
     <div class="aux-head" id="asyncSoundDrag"><strong><i class="bi bi-headphones"></i> Reading Ambience</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncSoundMinimize" title="Minimize">−</button><button type="button" id="asyncSoundClose" aria-label="Close sounds">&times;</button></span></div>
     <div style="font-size:12px;color:var(--aux-text);opacity:.75">Choose a continuous background sound while you read.</div>
+    <div class="supplemental-heading">Audio library <small>Upload MP3, OGG, or WAV files to assets/audio/ambient/ on your hosting account.</small></div>
+    <div style="display:flex;gap:7px;align-items:center">
+        <select id="asyncAudioLibrarySelect" style="flex:1;min-width:0;padding:9px;border:1px solid var(--aux-border);border-radius:9px;background:var(--aux-control);color:var(--aux-text)">
+            <option value="">No audio files found — add files to assets/audio/ambient/</option>
+            <?php
+            $asyncAudioDir = __DIR__ . '/assets/audio/ambient/';
+            $asyncAudioFiles = [];
+            if (is_dir($asyncAudioDir)) {
+                foreach (glob($asyncAudioDir . '*.{mp3,ogg,wav,m4a}', GLOB_BRACE) ?: [] as $asyncAudioFile) {
+                    if (is_file($asyncAudioFile)) $asyncAudioFiles[] = basename($asyncAudioFile);
+                }
+            }
+            foreach ($asyncAudioFiles as $asyncAudioFile) {
+                $asyncAudioUrl = '/assets/audio/ambient/' . rawurlencode($asyncAudioFile);
+                echo '<option value="' . htmlspecialchars($asyncAudioUrl, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars(pathinfo($asyncAudioFile, PATHINFO_FILENAME), ENT_QUOTES, 'UTF-8') . '</option>';
+            }
+            ?>
+        </select>
+        <button type="button" id="asyncLibraryPlay" style="padding:9px 12px;border:0;border-radius:9px;background:#2563eb;color:white">Play</button>
+        <button type="button" id="asyncLibraryStop" style="padding:9px 12px;border:0;border-radius:9px;background:#64748b;color:white">Stop</button>
+    </div>
+    <audio id="asyncLibraryAudio" preload="none" loop></audio>
     <div class="sound-choice"><button type="button" data-sound="rain">🌧️ Rain</button><button type="button" data-sound="ocean">🌊 Ocean waves</button><button type="button" data-sound="forest">🌲 Forest ambience</button><button type="button" data-sound="wind">🍃 Gentle wind</button><button type="button" data-sound="fire">🔥 Fireplace</button></div>
     <div class="supplemental-heading">Supplemental ASMR layers <small>Mix any of these with the main ambience.</small></div>
     <div id="asyncSupplementalSounds" class="supplemental-sounds">
@@ -2051,6 +2210,27 @@
     <div class="sound-actions"><button type="button" id="asyncSoundPlay"><i class="bi bi-play-fill"></i> Play sound</button><button type="button" id="asyncSoundStop" style="background:#64748b">Stop all</button></div>
     <div id="asyncSoundStatus" aria-live="polite">Select a sound, then press Play. Audio starts only after your action.</div>
 </section>
+
+<section id="asyncPresentationPanel" class="async-extra-panel" aria-label="Presentation tools">
+    <div class="aux-head" id="asyncPresentationDrag"><strong><i class="bi bi-easel2"></i> Presentation Tools</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncPresentationMinimize" title="Minimize">−</button><button type="button" id="asyncPresentationClose" aria-label="Close presentation tools">&times;</button></span></div>
+    <p style="font-size:12px;color:var(--aux-text)">Use on slides, lessons, or any page. Presentation effects appear over the whole screen.</p>
+    <div class="presentation-actions">
+        <button type="button" data-present-mode="laser"><i class="bi bi-record-circle"></i> Laser</button>
+        <button type="button" data-present-mode="pointer"><i class="bi bi-cursor-fill"></i> Pointer</button>
+        <button type="button" data-present-mode="spotlight"><i class="bi bi-brightness-high"></i> Spotlight</button>
+        <button type="button" data-present-mode="draw"><i class="bi bi-pencil"></i> Draw</button>
+        <button type="button" id="asyncPresentationClear"><i class="bi bi-eraser"></i> Clear ink</button>
+        <button type="button" id="asyncPresentationExit"><i class="bi bi-x-circle"></i> Exit mode</button>
+    </div>
+    <label class="sound-volume"><span>Pointer size</span><input id="asyncPresentationSize" type="range" min="6" max="36" value="14"><span id="asyncPresentationSizeValue">14px</span></label>
+    <label class="sound-volume"><span>Laser color</span><input id="asyncPresentationColor" type="color" value="#ff2d55"></label>
+    <div id="asyncPresentationStatus" style="font-size:11px;color:var(--aux-text)">Choose Laser, Pointer, Spotlight, or Draw to begin.</div>
+</section>
+<div id="asyncPresentationOverlay" aria-hidden="true">
+    <div id="asyncPresentationSpotlight"></div>
+    <div id="asyncPresentationCursor"></div>
+    <canvas id="asyncPresentationCanvas"></canvas>
+</div>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
@@ -2661,7 +2841,8 @@
         const soundPanel = byId('asyncSoundPanel');
         const timerBox = byId('asyncFloatingTimer');
         const readingPanel = byId('readingToolsPanel');
-        const allToolPanels = [readingPanel, notesPanel, calcPanel, soundPanel].filter(Boolean);
+        const presentationPanel = byId('asyncPresentationPanel');
+        const allToolPanels = [readingPanel, notesPanel, calcPanel, soundPanel, presentationPanel].filter(Boolean);
 
         function setPanelClosed(item) {
             if (!item) return;
@@ -2670,7 +2851,8 @@
                 readingToolsPanel: 'rtMinimize',
                 asyncNotesPanel: 'asyncNotesMinimize',
                 asyncCalcPanel: 'asyncCalcMinimize',
-                asyncSoundPanel: 'asyncSoundMinimize'
+                asyncSoundPanel: 'asyncSoundMinimize',
+                asyncPresentationPanel: 'asyncPresentationMinimize'
             } [item.id];
             const minimizeButton = minimizeId && byId(minimizeId);
             if (minimizeButton) {
@@ -2707,7 +2889,8 @@
                 readingToolsPanel: 'rtMinimize',
                 asyncNotesPanel: 'asyncNotesMinimize',
                 asyncCalcPanel: 'asyncCalcMinimize',
-                asyncSoundPanel: 'asyncSoundMinimize'
+                asyncSoundPanel: 'asyncSoundMinimize',
+                asyncPresentationPanel: 'asyncPresentationMinimize'
             } [target.id];
             const minimizeButton = minimizeId && byId(minimizeId);
             if (minimizeButton) {
@@ -2762,6 +2945,7 @@
         byId('asyncNotesClose').addEventListener('click', () => setPanelClosed(notesPanel));
         byId('asyncCalcClose').addEventListener('click', () => setPanelClosed(calcPanel));
         byId('asyncSoundClose').addEventListener('click', () => setPanelClosed(soundPanel));
+        byId('asyncPresentationClose').addEventListener('click', () => setPanelClosed(presentationPanel));
 
         function setMinimize(panel, button) {
             button.addEventListener('click', () => {
@@ -2773,6 +2957,7 @@
         setMinimize(notesPanel, byId('asyncNotesMinimize'));
         setMinimize(calcPanel, byId('asyncCalcMinimize'));
         setMinimize(soundPanel, byId('asyncSoundMinimize'));
+        setMinimize(presentationPanel, byId('asyncPresentationMinimize'));
 
         function readNotes() {
             try {
@@ -2941,6 +3126,7 @@
         makeDraggable(notesPanel, byId('asyncNotesDrag'));
         makeDraggable(calcPanel, byId('asyncCalcDrag'));
         makeDraggable(soundPanel, byId('asyncSoundDrag'));
+        makeDraggable(presentationPanel, byId('asyncPresentationDrag'));
         makeDraggable(byId('readingToolsPanel'), byId('rtDrag'));
         byId('rtMinimize').addEventListener('click', () => {
             const readingPanel = byId('readingToolsPanel');
@@ -3224,10 +3410,38 @@
             }
         }
         document.querySelectorAll('#asyncSupplementalSounds [data-layer]').forEach(btn => btn.addEventListener('click', () => toggleLayer(btn)));
+        const libraryAudio = byId('asyncLibraryAudio'),
+            librarySelect = byId('asyncAudioLibrarySelect');
+        async function playLibraryAudio() {
+            const src = librarySelect.value;
+            if (!src) {
+                soundStatus.textContent = 'No audio file found. Upload MP3/OGG/WAV files into assets/audio/ambient/ and reload this page.';
+                return;
+            }
+            if (libraryAudio.src !== new URL(src, location.href).href) libraryAudio.src = src;
+            libraryAudio.loop = true;
+            libraryAudio.volume = Number(soundVolume.value) / 100;
+            try {
+                await libraryAudio.play();
+                soundStatus.textContent = 'Playing audio library track in a continuous loop.';
+            } catch (_) {
+                soundStatus.textContent = 'Playback was blocked or the file could not be loaded. Check the file path and press Play again.';
+            }
+        }
+
+        function stopLibraryAudio() {
+            libraryAudio.pause();
+            libraryAudio.currentTime = 0;
+            soundStatus.textContent = 'Library music stopped. Supplemental sounds can continue.';
+        }
+        byId('asyncLibraryPlay').addEventListener('click', playLibraryAudio);
+        byId('asyncLibraryStop').addEventListener('click', stopLibraryAudio);
         async function startAmbience() {
+            soundStatus.textContent = 'Choose an audio library track above, or select a procedural ambience below.';
+            // Retain the existing procedural ambience as an optional fallback.
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC) {
-                soundStatus.textContent = 'Web Audio is not supported in this browser.';
+                soundStatus.textContent = 'Choose a track from the audio library above.';
                 return;
             }
             if (!ambienceContext) ambienceContext = new AC();
@@ -3236,7 +3450,7 @@
                 stopMainAmbience(false);
                 const ctx = ambienceContext,
                     master = ctx.createGain();
-                master.gain.value = Number(soundVolume.value) / 100 * .22;
+                master.gain.value = Number(soundVolume.value) / 100 * .12;
                 master.connect(ctx.destination);
                 ambienceGain = master;
                 const length = ctx.sampleRate * 3,
@@ -3249,73 +3463,121 @@
                 const filter = ctx.createBiquadFilter(),
                     tone = ctx.createGain();
                 filter.type = 'lowpass';
-                filter.frequency.value = 1100;
-                filter.Q.value = .7;
+                filter.frequency.value = selectedSound === 'ocean' ? 650 : selectedSound === 'wind' ? 330 : 1800;
                 noise.connect(filter);
                 filter.connect(tone);
                 tone.connect(master);
-                tone.gain.value = 1;
                 noise.start();
                 ambienceNodes.push(noise);
-                const lfo = ctx.createOscillator(),
-                    lfoGain = ctx.createGain();
-                lfo.type = 'sine';
-                lfo.frequency.value = .12;
-                lfo.connect(lfoGain);
-                lfoGain.connect(tone.gain);
-                lfo.start();
-                ambienceNodes.push(lfo);
-                if (selectedSound === 'rain') {
-                    filter.frequency.value = 2200;
-                    lfo.frequency.value = .35;
-                    lfoGain.gain.value = .12;
-                }
-                if (selectedSound === 'ocean') {
-                    filter.frequency.value = 650;
-                    lfo.frequency.value = .075;
-                    lfoGain.gain.value = .55;
-                }
-                if (selectedSound === 'forest') {
-                    filter.type = 'bandpass';
-                    filter.frequency.value = 950;
-                    lfo.frequency.value = .18;
-                    lfoGain.gain.value = .12;
-                }
-                if (selectedSound === 'wind') {
-                    filter.frequency.value = 330;
-                    lfo.frequency.value = .045;
-                    lfoGain.gain.value = .7;
-                }
-                if (selectedSound === 'fire') {
-                    filter.type = 'bandpass';
-                    filter.frequency.value = 1250;
-                    filter.Q.value = .45;
-                    lfo.frequency.value = 1.7;
-                    lfoGain.gain.value = .16;
-                }
-                soundStatus.textContent = 'Main ambience: ' + selectedSound + '. Supplemental sounds play and stop independently.';
-                byId('asyncSoundPlay').innerHTML = '<i class="bi bi-arrow-repeat"></i> Restart sound';
+                soundStatus.textContent = 'Procedural ' + selectedSound + ' ambience playing. For real recordings, use the audio library above.';
+                byId('asyncSoundPlay').innerHTML = '<i class="bi bi-arrow-repeat"></i> Restart ambience';
             } catch (_) {
-                soundStatus.textContent = 'Audio was blocked. Press Play sound again to allow audio.';
+                soundStatus.textContent = 'Audio could not start. Press Play again.';
             }
         }
         document.querySelectorAll('[data-sound]').forEach(button => button.addEventListener('click', () => {
             selectedSound = button.dataset.sound;
             document.querySelectorAll('[data-sound]').forEach(item => item.classList.toggle('active', item === button));
-            if (ambienceGain) startAmbience();
-            else soundStatus.textContent = selectedSound + ' selected. Press Play sound.';
+            soundStatus.textContent = selectedSound + ' procedural ambience selected. Press Play ambience.';
         }));
         byId('asyncSoundPlay').addEventListener('click', startAmbience);
-        byId('asyncSoundStop').addEventListener('click', stopAmbience);
+        byId('asyncSoundStop').addEventListener('click', () => {
+            stopMainAmbience();
+            stopLibraryAudio();
+            [...layerPlayers.keys()].forEach(stopLayer);
+            soundStatus.textContent = 'All music and supplemental sounds stopped.';
+        });
         byId('asyncLayerVolume').addEventListener('input', () => {
             byId('asyncLayerVolumeValue').textContent = byId('asyncLayerVolume').value + '%';
             layerPlayers.forEach(player => player.gain.gain.setTargetAtTime(Number(byId('asyncLayerVolume').value) / 100 * .18, ambienceContext.currentTime, .08));
         });
         soundVolume.addEventListener('input', () => {
             byId('asyncSoundVolumeValue').textContent = soundVolume.value + '%';
-            if (ambienceGain) ambienceGain.gain.setTargetAtTime(Number(soundVolume.value) / 100 * .22, ambienceContext.currentTime, .08);
+            libraryAudio.volume = Number(soundVolume.value) / 100;
+            if (ambienceGain) ambienceGain.gain.setTargetAtTime(Number(soundVolume.value) / 100 * .12, ambienceContext.currentTime, .08);
         });
-        window.addEventListener('beforeunload', stopAmbience);
+        window.addEventListener('beforeunload', () => {
+            stopAmbience();
+            stopLibraryAudio();
+        });
+        // Presentation overlay: laser, pointer, spotlight and freehand annotation.
+        const presentOverlay = byId('asyncPresentationOverlay'),
+            presentCursor = byId('asyncPresentationCursor');
+        const presentCanvas = byId('asyncPresentationCanvas'),
+            presentCtx = presentCanvas.getContext('2d');
+        let presentMode = '',
+            presentDrawing = false,
+            lastPoint = null;
+
+        function resizePresentCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            presentCanvas.width = Math.round(innerWidth * dpr);
+            presentCanvas.height = Math.round(innerHeight * dpr);
+            presentCanvas.style.width = innerWidth + 'px';
+            presentCanvas.style.height = innerHeight + 'px';
+            presentCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            presentCtx.lineCap = 'round';
+            presentCtx.lineJoin = 'round';
+        }
+        resizePresentCanvas();
+        window.addEventListener('resize', resizePresentCanvas);
+
+        function setPresentMode(mode) {
+            presentMode = mode || '';
+            presentOverlay.className = presentMode ? 'active mode-' + presentMode : '';
+            document.querySelectorAll('[data-present-mode]').forEach(b => b.classList.toggle('active', b.dataset.presentMode === presentMode));
+            byId('asyncPresentationStatus').textContent = presentMode ? ({
+                laser: 'Laser dot follows your cursor.',
+                pointer: 'Pointer ring follows your cursor.',
+                spotlight: 'Spotlight dims the page around your cursor.',
+                draw: 'Draw on the screen; use Clear ink to erase.'
+            } [presentMode]) : 'Presentation mode is off.';
+        }
+        document.querySelectorAll('[data-present-mode]').forEach(b => b.addEventListener('click', () => setPresentMode(b.dataset.presentMode)));
+        document.addEventListener('pointermove', e => {
+            if (!presentMode) return;
+            presentCursor.style.left = e.clientX + 'px';
+            presentCursor.style.top = e.clientY + 'px';
+            presentOverlay.style.setProperty('--spot-x', e.clientX + 'px');
+            presentOverlay.style.setProperty('--spot-y', e.clientY + 'px');
+            if (presentMode === 'draw' && presentDrawing) {
+                presentCtx.strokeStyle = byId('asyncPresentationColor').value;
+                presentCtx.lineWidth = Number(byId('asyncPresentationSize').value);
+                presentCtx.beginPath();
+                presentCtx.moveTo(lastPoint.x, lastPoint.y);
+                presentCtx.lineTo(e.clientX, e.clientY);
+                presentCtx.stroke();
+                lastPoint = {
+                    x: e.clientX,
+                    y: e.clientY
+                };
+            }
+        });
+        presentCanvas.addEventListener('pointerdown', e => {
+            if (presentMode !== 'draw') return;
+            presentDrawing = true;
+            lastPoint = {
+                x: e.clientX,
+                y: e.clientY
+            };
+            presentCanvas.setPointerCapture(e.pointerId);
+        });
+        presentCanvas.addEventListener('pointerup', () => {
+            presentDrawing = false;
+            lastPoint = null;
+        });
+        presentCanvas.addEventListener('pointercancel', () => {
+            presentDrawing = false;
+            lastPoint = null;
+        });
+        byId('asyncPresentationClear').addEventListener('click', () => presentCtx.clearRect(0, 0, innerWidth, innerHeight));
+        byId('asyncPresentationExit').addEventListener('click', () => setPresentMode(''));
+        byId('asyncPresentationSize').addEventListener('input', e => {
+            byId('asyncPresentationSizeValue').textContent = e.target.value + 'px';
+            presentCursor.style.width = e.target.value + 'px';
+            presentCursor.style.height = e.target.value + 'px';
+        });
+
 
         const themeObserver = new MutationObserver(() => {
             const dark = document.documentElement.getAttribute('data-theme') === 'dark';
