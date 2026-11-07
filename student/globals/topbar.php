@@ -321,7 +321,13 @@ if (
 
             <div class="topbar-access">
 
-                <?= $isAsyncDeveloper ? "Developer" : "Student Account" ?>
+                <?php if ($isAsyncDeveloper): ?>
+                    <span class="async-dev-rank" aria-label="Developer">
+                        <i class="bi bi-code-slash" aria-hidden="true"></i><span>DEV</span>
+                    </span>
+                <?php else: ?>
+                    Student Account
+                <?php endif; ?>
 
             </div>
 
@@ -722,15 +728,13 @@ if (
 
         <button
             type="button"
-            class="btn btn-theme"
+            class="btn btn-theme topbar-theme-switch"
             id="themeToggle"
             title="Toggle dark mode"
             aria-label="Toggle dark mode">
-
-            <i
-                class="bi bi-moon-fill"
-                id="themeIcon"></i>
-
+            <span class="theme-switch-track" aria-hidden="true">
+                <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+            </span>
         </button>
 
 
@@ -738,6 +742,22 @@ if (
 
 
 </header>
+
+<?php if ($isAsyncDeveloper): ?>
+    <div class="async-game-intro" id="asyncGameIntro" aria-hidden="true">
+        <div class="async-intro-grid"></div>
+        <div class="async-intro-scan"></div>
+        <div class="async-intro-content">
+            <div class="async-intro-emblem"><i class="bi bi-code-slash"></i></div>
+            <div class="async-intro-kicker">ASYNC SYSTEM // DEVELOPER ACCESS</div>
+            <div class="async-intro-title">WELCOME BACK</div>
+            <div class="async-intro-name">ENGR. KARL STEPHEN O. EVALLO</div>
+            <div class="async-intro-loading"><span></span></div>
+            <div class="async-intro-status">INITIALIZING DEVELOPER INTERFACE</div>
+            <button type="button" class="async-intro-skip" id="asyncIntroSkip">SKIP INTRO <i class="bi bi-arrow-right"></i></button>
+        </div>
+    </div>
+<?php endif; ?>
 
 
 <!-- =========================================================
@@ -1114,6 +1134,27 @@ if (
 <?php if ($isAsyncDeveloper): ?>
     <script>
         document.documentElement.classList.add("async-developer-mode");
+    </script>
+<?php endif; ?>
+
+<?php if ($isAsyncDeveloper): ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const intro = document.getElementById("asyncGameIntro");
+            const skip = document.getElementById("asyncIntroSkip");
+            if (!intro) return;
+            let dismissed = false;
+            const closeIntro = function() {
+                if (dismissed) return;
+                dismissed = true;
+                intro.classList.add("is-leaving");
+                window.setTimeout(function() {
+                    if (intro && intro.parentNode) intro.parentNode.removeChild(intro);
+                }, 700);
+            };
+            if (skip) skip.addEventListener("click", closeIntro);
+            window.setTimeout(closeIntro, 2300);
+        });
     </script>
 <?php endif; ?>
 
@@ -1761,6 +1802,114 @@ if (
        Applied only to the exact matching full name.
     ========================================================= */
 
+    /* Developer-only topbar identity and subtle interface detailing. */
+    .async-developer-mode .topbar {
+        position: relative;
+        isolation: isolate;
+        border-bottom: 1px solid rgba(67, 190, 255, .38);
+        box-shadow: 0 5px 22px rgba(0, 150, 255, .09);
+    }
+
+    .async-developer-mode .topbar::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: .34;
+        background: linear-gradient(105deg, transparent 0%, rgba(0, 225, 255, .08) 42%, rgba(168, 85, 247, .10) 50%, transparent 62%);
+        background-size: 220% 100%;
+        animation: developer-topbar-scan 8s linear infinite;
+    }
+
+    .async-developer-mode .topbar>* {
+        position: relative;
+        z-index: 1;
+    }
+
+    .async-developer-mode .topbar-user-info {
+        overflow: visible;
+    }
+
+    .async-developer-mode .topbar-name {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .async-developer-mode .async-dev-rank {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 7px;
+        border: 1px solid rgba(0, 220, 255, .58);
+        border-radius: 5px;
+        color: #7cecff;
+        background: linear-gradient(110deg, rgba(0, 190, 255, .12), rgba(168, 85, 247, .13));
+        font: 800 9px/1.2 system-ui, sans-serif;
+        letter-spacing: 1.25px;
+        white-space: nowrap;
+        text-shadow: 0 0 8px rgba(0, 220, 255, .65);
+        box-shadow: inset 0 0 8px rgba(0, 200, 255, .10), 0 0 10px rgba(0, 200, 255, .12);
+        animation: developer-rank-pulse 2.5s ease-in-out infinite;
+    }
+
+    .async-developer-mode .async-dev-rank i {
+        font-size: 10px;
+    }
+
+    .async-developer-mode .topbar-profile-menu {
+        border-color: rgba(0, 190, 255, .42);
+        box-shadow: 0 14px 38px rgba(0, 80, 150, .20), 0 0 16px rgba(0, 190, 255, .10);
+    }
+
+    .async-developer-mode .topbar-profile-menu-link {
+        position: relative;
+        overflow: hidden;
+        transition: transform .22s cubic-bezier(.2, .8, .2, 1), background-color .2s ease, color .2s ease;
+    }
+
+    .async-developer-mode .topbar-profile-menu-link:hover {
+        transform: translateX(3px);
+        background: linear-gradient(90deg, rgba(0, 190, 255, .13), rgba(168, 85, 247, .08));
+    }
+
+    .async-developer-mode .topbar-avatar-button:focus-visible {
+        outline: 2px solid #55eaff;
+        outline-offset: 5px;
+        box-shadow: 0 0 0 5px rgba(0, 200, 255, .12);
+    }
+
+    .async-developer-mode .topbar-profile-chevron {
+        color: #55dfff;
+        border-color: rgba(0, 210, 255, .55);
+        box-shadow: 0 0 8px rgba(0, 210, 255, .24);
+    }
+
+    @keyframes developer-topbar-scan {
+        from {
+            background-position: 120% 0;
+        }
+
+        to {
+            background-position: -120% 0;
+        }
+    }
+
+    @keyframes developer-rank-pulse {
+
+        0%,
+        100% {
+            opacity: .78;
+            box-shadow: inset 0 0 8px rgba(0, 200, 255, .08), 0 0 5px rgba(0, 200, 255, .10);
+        }
+
+        50% {
+            opacity: 1;
+            box-shadow: inset 0 0 10px rgba(0, 200, 255, .18), 0 0 13px rgba(0, 200, 255, .32);
+        }
+    }
+
     .async-developer-mode .topbar-title,
     .async-developer-mode .topbar-access {
         color: var(--academic-blue) !important;
@@ -1999,14 +2148,444 @@ if (
         }
     }
 
+    /* Keep the original topbar layout intact on tablet and mobile. */
+    .async-developer-mode .topbar-left,
+    .async-developer-mode .topbar-user {
+        min-width: 0;
+        flex-shrink: 1;
+    }
+
+    .async-developer-mode .topbar-user-info {
+        min-width: 0;
+        max-width: min(260px, 32vw);
+    }
+
+    .async-developer-mode .topbar-name {
+        min-width: 0;
+        max-width: 100%;
+        gap: 6px;
+    }
+
+    .async-developer-mode .developer-wave-name {
+        min-width: 0;
+        max-width: 100%;
+        font-size: inherit;
+    }
+
+    .async-developer-mode .async-dev-rank {
+        flex: 0 0 auto;
+    }
+
+    @media (max-width: 991px) {
+        .async-developer-mode .topbar {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .async-developer-mode .topbar-left {
+            flex: 1 1 auto;
+        }
+
+        .async-developer-mode .topbar-user {
+            flex: 0 1 auto;
+            gap: 8px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .async-developer-mode .topbar-user-info {
+            max-width: 118px;
+        }
+
+        .async-developer-mode .topbar-name {
+            font-size: 11px;
+            letter-spacing: -.25px;
+            gap: 0;
+        }
+
+        .async-developer-mode .async-dev-rank {
+            display: none;
+        }
+
+        .async-developer-mode .topbar-access {
+            font-size: 10px;
+            letter-spacing: .7px;
+        }
+
+        .async-developer-mode .topbar-profile-menu {
+            width: min(260px, calc(100vw - 20px));
+            right: -5px;
+        }
+    }
+
+    /* Match the original compact-header behavior on very small phones. */
+    @media (max-width: 400px) {
+        .async-developer-mode .topbar-user-info {
+            display: none !important;
+        }
+
+        .async-developer-mode .topbar-profile-menu {
+            width: min(250px, calc(100vw - 16px));
+            right: -5px;
+        }
+    }
+
     @media (prefers-reduced-motion: reduce) {
 
         .async-developer-mode *,
         .async-developer-mode body::before,
-        .async-developer-mode body::after {
+        .async-developer-mode body::after,
+        .async-developer-mode .topbar::after,
+        .async-developer-mode .async-dev-rank {
             animation-duration: .01ms !important;
             animation-iteration-count: 1 !important;
             scroll-behavior: auto !important;
+        }
+    }
+
+
+    /* Professional theme switch: same original button footprint and IDs. */
+    .topbar-theme-switch {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        padding: 0 !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 13px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: var(--surface-color) !important;
+        color: var(--text-color) !important;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        transition: background .22s ease, border-color .22s ease, transform .22s ease, box-shadow .22s ease;
+    }
+
+    .topbar-theme-switch:hover {
+        transform: translateY(-1px);
+        border-color: var(--academic-blue) !important;
+        box-shadow: 0 4px 14px var(--shadow-color);
+    }
+
+    .theme-switch-track {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        border-radius: 9px;
+        background: color-mix(in srgb, var(--academic-blue) 12%, transparent);
+    }
+
+    .theme-switch-track i {
+        font-size: 15px;
+        line-height: 1;
+        transition: transform .35s cubic-bezier(.2, .8, .2, 1), color .25s ease;
+    }
+
+    .topbar-theme-switch:active .theme-switch-track i {
+        transform: rotate(35deg) scale(.88);
+    }
+
+    /* DEV rank sits below the developer's name and follows the active theme. */
+    .async-developer-mode .topbar-user-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .async-developer-mode .topbar-access {
+        display: flex;
+        align-items: center;
+        min-height: 16px;
+        color: inherit;
+        -webkit-text-fill-color: initial;
+        -webkit-text-stroke: 0;
+        filter: none;
+        animation: none;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
+    .async-developer-mode .async-dev-rank {
+        --dev-accent: #087fbd;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 7px;
+        min-height: 17px;
+        border-radius: 6px;
+        border: 1px solid color-mix(in srgb, var(--dev-accent) 48%, var(--border-color));
+        color: var(--dev-accent);
+        background: color-mix(in srgb, var(--dev-accent) 10%, var(--surface-color));
+        font: 800 9px/1 system-ui, sans-serif;
+        letter-spacing: 1.1px;
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--dev-accent) 8%, transparent);
+        animation: dev-badge-enter .55s cubic-bezier(.2, .8, .2, 1) both, dev-badge-glow 2.8s ease-in-out .55s infinite;
+    }
+
+    .async-developer-mode .async-dev-rank i {
+        font-size: 10px;
+        animation: dev-icon-pulse 2s ease-in-out infinite;
+    }
+
+    html[data-theme="dark"] .async-developer-mode .async-dev-rank {
+        --dev-accent: #65d9ff;
+        background: color-mix(in srgb, var(--dev-accent) 13%, #101827);
+        border-color: color-mix(in srgb, var(--dev-accent) 55%, transparent);
+        color: #8be4ff;
+    }
+
+    @keyframes dev-badge-enter {
+        from {
+            opacity: 0;
+            transform: translateY(-5px) scale(.88);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes dev-badge-glow {
+
+        0%,
+        100% {
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--dev-accent) 8%, transparent);
+        }
+
+        50% {
+            box-shadow: 0 0 11px color-mix(in srgb, var(--dev-accent) 28%, transparent);
+        }
+    }
+
+    @keyframes dev-icon-pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.16);
+        }
+    }
+
+    /* Short game-style boot sequence. Only rendered for the exact developer account. */
+    .async-game-intro {
+        --intro-accent: #168acb;
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        color: var(--text-color, #f4f8ff);
+        background: var(--surface-color, #f5f8fc);
+        isolation: isolate;
+        animation: async-intro-fade-in .35s ease both;
+    }
+
+    html[data-theme="dark"] .async-game-intro {
+        --intro-accent: #63dfff;
+        background: #070d19;
+        color: #f2f8ff;
+    }
+
+    .async-game-intro.is-leaving {
+        animation: async-intro-exit .65s cubic-bezier(.7, 0, .2, 1) forwards;
+        pointer-events: none;
+    }
+
+    .async-intro-grid {
+        position: absolute;
+        inset: -50%;
+        background-image: linear-gradient(color-mix(in srgb, var(--intro-accent) 12%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--intro-accent) 12%, transparent) 1px, transparent 1px);
+        background-size: 46px 46px;
+        transform: perspective(500px) rotateX(58deg) scale(1.7);
+        transform-origin: center 65%;
+        mask-image: linear-gradient(transparent, #000 38%, #000 75%, transparent);
+        animation: async-intro-grid-drift 5s linear infinite;
+    }
+
+    .async-intro-scan {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(transparent 48%, color-mix(in srgb, var(--intro-accent) 9%, transparent) 50%, transparent 52%);
+        background-size: 100% 9px;
+        opacity: .45;
+        animation: async-intro-scan 5s linear infinite;
+    }
+
+    .async-intro-content {
+        position: relative;
+        z-index: 1;
+        width: min(92vw, 620px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 30px 18px;
+        animation: async-intro-content-in .8s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    .async-intro-emblem {
+        width: 66px;
+        height: 66px;
+        display: grid;
+        place-items: center;
+        border: 1px solid color-mix(in srgb, var(--intro-accent) 65%, transparent);
+        border-radius: 20px;
+        color: var(--intro-accent);
+        background: color-mix(in srgb, var(--intro-accent) 10%, var(--surface-color));
+        box-shadow: 0 0 35px color-mix(in srgb, var(--intro-accent) 25%, transparent), inset 0 0 20px color-mix(in srgb, var(--intro-accent) 9%, transparent);
+        font-size: 27px;
+        animation: async-intro-emblem 2.2s ease-in-out infinite;
+    }
+
+    .async-intro-kicker {
+        margin-top: 26px;
+        font: 700 10px/1.5 system-ui, sans-serif;
+        letter-spacing: 3px;
+        color: var(--intro-accent);
+    }
+
+    .async-intro-title {
+        margin-top: 12px;
+        font: 900 clamp(28px, 6vw, 54px)/1 system-ui, sans-serif;
+        letter-spacing: .08em;
+        text-shadow: 0 0 28px color-mix(in srgb, var(--intro-accent) 24%, transparent);
+    }
+
+    .async-intro-name {
+        margin-top: 14px;
+        font: 600 clamp(9px, 2vw, 12px)/1.5 system-ui, sans-serif;
+        letter-spacing: .2em;
+        opacity: .7;
+    }
+
+    .async-intro-loading {
+        width: min(270px, 70vw);
+        height: 3px;
+        margin-top: 30px;
+        overflow: hidden;
+        border-radius: 9px;
+        background: color-mix(in srgb, var(--intro-accent) 15%, var(--border-color));
+    }
+
+    .async-intro-loading span {
+        display: block;
+        width: 38%;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--intro-accent);
+        box-shadow: 0 0 12px var(--intro-accent);
+        animation: async-intro-load 1.65s cubic-bezier(.65, 0, .35, 1) forwards;
+    }
+
+    .async-intro-status {
+        margin-top: 11px;
+        color: var(--intro-accent);
+        font: 700 9px/1.5 system-ui, sans-serif;
+        letter-spacing: 1.8px;
+    }
+
+    .async-intro-skip {
+        margin-top: 36px;
+        padding: 8px 13px;
+        border: 1px solid color-mix(in srgb, var(--intro-accent) 35%, var(--border-color));
+        border-radius: 7px;
+        background: transparent;
+        color: inherit;
+        font: 700 9px system-ui, sans-serif;
+        letter-spacing: 1px;
+        opacity: .7;
+        cursor: pointer;
+    }
+
+    .async-intro-skip:hover {
+        opacity: 1;
+        color: var(--intro-accent);
+        border-color: var(--intro-accent);
+    }
+
+    @keyframes async-intro-fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes async-intro-exit {
+        to {
+            opacity: 0;
+            transform: scale(1.035);
+            visibility: hidden;
+        }
+    }
+
+    @keyframes async-intro-content-in {
+        from {
+            opacity: 0;
+            transform: translateY(18px) scale(.97);
+            filter: blur(8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+            filter: blur(0);
+        }
+    }
+
+    @keyframes async-intro-emblem {
+
+        0%,
+        100% {
+            transform: translateY(0);
+            box-shadow: 0 0 24px color-mix(in srgb, var(--intro-accent) 18%, transparent);
+        }
+
+        50% {
+            transform: translateY(-5px);
+            box-shadow: 0 0 42px color-mix(in srgb, var(--intro-accent) 38%, transparent);
+        }
+    }
+
+    @keyframes async-intro-grid-drift {
+        to {
+            background-position: 0 46px, 46px 0;
+        }
+    }
+
+    @keyframes async-intro-scan {
+        to {
+            background-position: 0 100vh;
+        }
+    }
+
+    @keyframes async-intro-load {
+        from {
+            width: 0;
+        }
+
+        to {
+            width: 100%;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .async-game-intro,
+        .async-game-intro *,
+        .async-developer-mode .async-dev-rank {
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
         }
     }
 </style>
