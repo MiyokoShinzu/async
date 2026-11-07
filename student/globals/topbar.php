@@ -309,7 +309,7 @@ if (
                 <?php if ($isAsyncDeveloper): ?>
                     <span class="developer-wave-name" aria-label="<?= htmlspecialchars($fullName ?? "", ENT_QUOTES, "UTF-8") ?>">
                         <?php foreach (preg_split('//u', (string) $fullName, -1, PREG_SPLIT_NO_EMPTY) as $waveIndex => $waveCharacter): ?>
-                            <span class="developer-wave-letter" style="--wave-index: <?= (int) $waveIndex ?>"><?= htmlspecialchars($waveCharacter, ENT_QUOTES, "UTF-8") ?></span>
+                            <span class="developer-wave-letter<?= preg_match('/\s/u', $waveCharacter) ? ' developer-wave-space' : '' ?>" style="--wave-index: <?= (int) $waveIndex ?>"><?= preg_match('/\s/u', $waveCharacter) ? '&nbsp;' : htmlspecialchars($waveCharacter, ENT_QUOTES, "UTF-8") ?></span>
                         <?php endforeach; ?>
                     </span>
                 <?php else: ?>
@@ -507,7 +507,7 @@ if (
                             <?php if ($isAsyncDeveloper): ?>
                                 <span class="developer-wave-name" aria-label="<?= htmlspecialchars($fullName ?? "", ENT_QUOTES, "UTF-8") ?>">
                                     <?php foreach (preg_split('//u', (string) $fullName, -1, PREG_SPLIT_NO_EMPTY) as $waveIndex => $waveCharacter): ?>
-                                        <span class="developer-wave-letter" style="--wave-index: <?= (int) $waveIndex ?>"><?= htmlspecialchars($waveCharacter, ENT_QUOTES, "UTF-8") ?></span>
+                                        <span class="developer-wave-letter<?= preg_match('/\s/u', $waveCharacter) ? ' developer-wave-space' : '' ?>" style="--wave-index: <?= (int) $waveIndex ?>"><?= preg_match('/\s/u', $waveCharacter) ? '&nbsp;' : htmlspecialchars($waveCharacter, ENT_QUOTES, "UTF-8") ?></span>
                                     <?php endforeach; ?>
                                 </span>
                             <?php else: ?>
@@ -1774,18 +1774,32 @@ if (
         animation: developer-outline-pulse 2.8s ease-in-out infinite;
     }
 
+    .async-developer-mode .topbar-name {
+        overflow: visible !important;
+    }
+
     .async-developer-mode .developer-wave-name {
-        display: inline-flex;
+        display: inline-flex !important;
         align-items: baseline;
-        white-space: nowrap;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        gap: 0;
     }
 
     .async-developer-mode .developer-wave-letter {
-        display: inline-block;
+        display: inline-block !important;
+        position: relative;
+        transform: translateY(0);
         transform-origin: 50% 85%;
-        animation: developer-wave-bounce 1.65s ease-in-out infinite;
-        animation-delay: calc(var(--wave-index) * 55ms);
+        animation: developer-wave-bounce 1.45s ease-in-out infinite both !important;
+        animation-delay: calc(var(--wave-index) * 75ms) !important;
         will-change: transform;
+    }
+
+    .async-developer-mode .developer-wave-space {
+        width: .34em;
+        min-width: .34em;
+        animation: none !important;
     }
 
     .async-developer-mode .topbar-avatar-button {
