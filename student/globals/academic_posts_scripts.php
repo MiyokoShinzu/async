@@ -1596,9 +1596,24 @@
     }
 
     #asyncToolsMenu {
+        position: relative;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 7px;
+        width: 214px;
+        min-width: 180px;
+        max-width: calc(100vw - 24px);
+        max-height: min(58vh, 520px);
+        min-height: 0;
+        padding: 9px;
+        overflow: visible;
+        border: 1px solid rgba(255, 255, 255, .4);
+        border-radius: 16px;
+        background: rgba(15, 23, 42, .18);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, .18), inset 0 1px 0 rgba(255, 255, 255, .2);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        box-sizing: border-box;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -1614,11 +1629,148 @@
         transform: translateY(0) scale(1)
     }
 
-    #asyncToolsMenu button {
+    .async-tools-menu-grip {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        flex: 0 0 auto;
+        min-height: 25px;
+        margin: 0 2px 2px;
+        border: 1px dashed rgba(255, 255, 255, .45);
+        border-radius: 8px;
+        background: rgba(15, 23, 42, .18);
+        color: rgba(255, 255, 255, .92);
+        font: 700 10px/1.2 Arial, sans-serif;
+        letter-spacing: .25px;
+        cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+    }
+
+    .async-tools-menu-grip:active {
+        cursor: grabbing;
+    }
+
+    .async-tools-menu-grip i {
+        font-size: 12px;
+        opacity: .9;
+    }
+
+    .async-tools-menu-items {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 0;
+        max-height: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 1px 2px 2px;
+        scrollbar-width: thin;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle {
+        position: absolute;
+        z-index: 20;
+        display: block;
+        padding: 0;
+        margin: 0;
+        min-width: 0;
+        min-height: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        opacity: .7;
+        touch-action: none;
+        cursor: default;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle:hover {
+        opacity: 1;
+        filter: none;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="n"],
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="s"] {
+        left: 14px;
+        right: 14px;
+        height: 9px;
+        width: auto;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="n"] {
+        top: -3px;
+        cursor: n-resize;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="s"] {
+        bottom: -3px;
+        cursor: s-resize;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="e"],
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="w"] {
+        top: 14px;
+        bottom: 14px;
+        width: 9px;
+        height: auto;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="e"] {
+        right: -3px;
+        cursor: e-resize;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="w"] {
+        left: -3px;
+        cursor: w-resize;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="ne"],
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="nw"],
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="se"],
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="sw"] {
+        width: 15px;
+        height: 15px;
+        border: 1px solid rgba(255, 255, 255, .62);
+        border-radius: 5px;
+        background: rgba(37, 99, 235, .55);
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="ne"] {
+        right: -4px;
+        top: -4px;
+        cursor: ne-resize;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="nw"] {
+        left: -4px;
+        top: -4px;
+        cursor: nw-resize;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="se"] {
+        right: -4px;
+        bottom: -4px;
+        cursor: se-resize;
+    }
+
+    #asyncToolsMenu .async-menu-resize-handle[data-resize="sw"] {
+        left: -4px;
+        bottom: -4px;
+        cursor: sw-resize;
+    }
+
+    #asyncToolsMenu .async-tools-menu-items>button {
         display: flex;
         align-items: center;
         gap: 11px;
-        min-width: 175px;
+        width: 100%;
+        min-width: 0;
+        flex: 0 0 auto;
         padding: 11px 14px;
         border: 1px solid rgba(255, 255, 255, .48);
         border-radius: 13px;
@@ -1633,28 +1785,28 @@
         transition: transform .28s cubic-bezier(.22, 1, .36, 1), filter .2s ease, background .2s ease
     }
 
-    #asyncToolsMenu button:nth-child(2) {
+    #asyncToolsMenu .async-tools-menu-items>button:nth-child(2) {
         background: rgba(13, 148, 136, .78)
     }
 
-    #asyncToolsMenu button:nth-child(3) {
+    #asyncToolsMenu .async-tools-menu-items>button:nth-child(3) {
         background: rgba(124, 58, 237, .78)
     }
 
-    #asyncToolsMenu button:nth-child(4) {
+    #asyncToolsMenu .async-tools-menu-items>button:nth-child(4) {
         background: rgba(217, 119, 6, .78)
     }
 
-    #asyncToolsMenu button:nth-child(5) {
+    #asyncToolsMenu .async-tools-menu-items>button:nth-child(5) {
         background: rgba(225, 29, 72, .78)
     }
 
-    #asyncToolsMenu button:hover {
+    #asyncToolsMenu .async-tools-menu-items>button:hover {
         transform: translateX(-4px) scale(1.025);
         filter: brightness(1.08)
     }
 
-    #asyncToolsMenu button i {
+    #asyncToolsMenu .async-tools-menu-items>button i {
         width: 20px;
         text-align: center;
         font-size: 17px
@@ -2832,6 +2984,224 @@
             calcPanel = byId('asyncCalcPanel');
         const toolsFab = byId('asyncToolsFab'),
             toolsMenu = byId('asyncToolsMenu');
+        const toolsDock = byId('asyncToolsDock');
+
+        // Turn the launcher menu into a movable and eight-direction resizable panel.
+        // The grab strip moves the complete dock, keeping the launcher attached.
+        (function enableMenuMoveAndResize() {
+            if (!toolsDock || !toolsMenu || toolsMenu.dataset.resizeReady === '1') return;
+            toolsMenu.dataset.resizeReady = '1';
+
+            const originalButtons = Array.from(toolsMenu.querySelectorAll(':scope > button'));
+            const items = document.createElement('div');
+            items.className = 'async-tools-menu-items';
+            originalButtons.forEach(button => items.appendChild(button));
+
+            const grip = document.createElement('div');
+            grip.className = 'async-tools-menu-grip';
+            grip.setAttribute('role', 'button');
+            grip.setAttribute('tabindex', '0');
+            grip.setAttribute('aria-label', 'Drag to move the ASYNC tools menu');
+            grip.title = 'Drag to move the menu. Use the edge and corner grips to resize.';
+            grip.innerHTML = '<i class="bi bi-grip-horizontal" aria-hidden="true"></i><span>DRAG TO MOVE · RESIZE EDGES</span>';
+
+            toolsMenu.appendChild(grip);
+            toolsMenu.appendChild(items);
+
+            const directions = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
+            directions.forEach(direction => {
+                const handle = document.createElement('div');
+                handle.className = 'async-menu-resize-handle';
+                handle.dataset.resize = direction;
+                handle.setAttribute('role', 'separator');
+                handle.setAttribute('aria-label', 'Resize menu ' + direction);
+                handle.title = 'Resize menu';
+                toolsMenu.appendChild(handle);
+            });
+
+            const MIN_WIDTH = 180;
+            const MIN_HEIGHT = 145;
+            const EDGE = 8;
+            const STORAGE_KEY = 'asyncToolsDockLayoutV1';
+
+            function clamp(value, min, max) {
+                return Math.max(min, Math.min(max, value));
+            }
+
+            function dockRect() {
+                return toolsDock.getBoundingClientRect();
+            }
+
+            function applyDockPosition(left, bottom) {
+                const rect = dockRect();
+                const maxLeft = Math.max(EDGE, window.innerWidth - rect.width - EDGE);
+                const maxBottom = Math.max(EDGE, window.innerHeight - rect.height - EDGE);
+                toolsDock.style.left = clamp(left, EDGE, maxLeft) + 'px';
+                toolsDock.style.right = 'auto';
+                toolsDock.style.top = 'auto';
+                toolsDock.style.bottom = clamp(bottom, EDGE, maxBottom) + 'px';
+            }
+
+            function saveLayout() {
+                try {
+                    const rect = dockRect();
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        left: Math.round(rect.left),
+                        bottom: Math.round(window.innerHeight - rect.bottom),
+                        width: Math.round(toolsMenu.getBoundingClientRect().width),
+                        height: Math.round(toolsMenu.getBoundingClientRect().height)
+                    }));
+                } catch (_) {}
+            }
+
+            function restoreLayout() {
+                try {
+                    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+                    if (!saved || typeof saved !== 'object') return;
+                    const maxWidth = Math.max(MIN_WIDTH, window.innerWidth - 2 * EDGE);
+                    const maxHeight = Math.max(MIN_HEIGHT, window.innerHeight - 100);
+                    if (Number.isFinite(saved.width)) {
+                        toolsMenu.style.width = clamp(saved.width, MIN_WIDTH, maxWidth) + 'px';
+                    }
+                    if (Number.isFinite(saved.height)) {
+                        toolsMenu.style.height = clamp(saved.height, MIN_HEIGHT, maxHeight) + 'px';
+                        toolsMenu.style.maxHeight = 'none';
+                    }
+                    if (Number.isFinite(saved.left)) toolsDock.style.left = clamp(saved.left, EDGE, window.innerWidth - MIN_WIDTH - EDGE) + 'px';
+                    if (Number.isFinite(saved.bottom)) toolsDock.style.bottom = clamp(saved.bottom, EDGE, window.innerHeight - 75) + 'px';
+                    if (Number.isFinite(saved.left)) toolsDock.style.right = 'auto';
+                } catch (_) {}
+            }
+
+            function capturePointer(element, event) {
+                try {
+                    element.setPointerCapture(event.pointerId);
+                } catch (_) {}
+            }
+
+            // Move the dock from its top grip; menu clicks remain untouched.
+            grip.addEventListener('pointerdown', event => {
+                if (event.button !== undefined && event.button !== 0) return;
+                event.preventDefault();
+                const rect = dockRect();
+                const startX = event.clientX;
+                const startY = event.clientY;
+                const startLeft = rect.left;
+                const startBottom = window.innerHeight - rect.bottom;
+                let moved = false;
+                capturePointer(grip, event);
+
+                const move = e => {
+                    if (e.pointerId !== event.pointerId) return;
+                    if (Math.abs(e.clientX - startX) + Math.abs(e.clientY - startY) > 2) moved = true;
+                    const nextLeft = startLeft + e.clientX - startX;
+                    const nextBottom = startBottom - (e.clientY - startY);
+                    applyDockPosition(nextLeft, nextBottom);
+                };
+                const finish = e => {
+                    if (e.pointerId !== event.pointerId) return;
+                    grip.removeEventListener('pointermove', move);
+                    grip.removeEventListener('pointerup', finish);
+                    grip.removeEventListener('pointercancel', finish);
+                    if (moved) saveLayout();
+                };
+                grip.addEventListener('pointermove', move);
+                grip.addEventListener('pointerup', finish);
+                grip.addEventListener('pointercancel', finish);
+            });
+
+            // All four edges and all four corners resize the menu.
+            toolsMenu.querySelectorAll('.async-menu-resize-handle').forEach(handle => {
+                handle.addEventListener('pointerdown', event => {
+                    if (event.button !== undefined && event.button !== 0) return;
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const direction = handle.dataset.resize;
+                    const menuRect = toolsMenu.getBoundingClientRect();
+                    const dock = dockRect();
+                    const startX = event.clientX;
+                    const startY = event.clientY;
+                    const startWidth = menuRect.width;
+                    const startHeight = menuRect.height;
+                    const startLeft = dock.left;
+                    const startBottom = window.innerHeight - dock.bottom;
+                    const fixedRight = dock.right;
+                    const fixedTop = dock.top;
+                    const isWest = direction.includes('w');
+                    const isEast = direction.includes('e');
+                    const isNorth = direction.includes('n');
+                    const isSouth = direction.includes('s');
+
+                    toolsMenu.style.width = startWidth + 'px';
+                    toolsMenu.style.height = startHeight + 'px';
+                    toolsMenu.style.maxHeight = 'none';
+                    applyDockPosition(startLeft, startBottom);
+                    capturePointer(handle, event);
+
+                    const move = e => {
+                        if (e.pointerId !== event.pointerId) return;
+                        const dx = e.clientX - startX;
+                        const dy = e.clientY - startY;
+                        const maxWidth = Math.max(MIN_WIDTH, window.innerWidth - 2 * EDGE);
+                        let width = startWidth;
+                        let height = startHeight;
+                        let left = startLeft;
+                        let bottom = startBottom;
+
+                        if (isWest) {
+                            width = clamp(startWidth - dx, MIN_WIDTH, maxWidth);
+                            left = fixedRight - width;
+                        } else if (isEast) {
+                            width = clamp(startWidth + dx, MIN_WIDTH, maxWidth);
+                        }
+
+                        if (isNorth) {
+                            height = startHeight - dy;
+                            bottom = startBottom;
+                        } else if (isSouth) {
+                            height = startHeight + dy;
+                            bottom = startBottom - (height - startHeight);
+                        }
+
+                        const maxHeight = Math.max(MIN_HEIGHT, isSouth ?
+                            window.innerHeight - fixedTop - 74 :
+                            window.innerHeight - bottom - 74);
+                        height = clamp(height, MIN_HEIGHT, Math.min(620, maxHeight));
+
+                        if (isWest) left = fixedRight - width;
+                        const maxLeft = Math.max(EDGE, window.innerWidth - width - EDGE);
+                        left = clamp(left, EDGE, maxLeft);
+                        bottom = clamp(bottom, EDGE, Math.max(EDGE, window.innerHeight - 74));
+
+                        toolsMenu.style.width = width + 'px';
+                        toolsMenu.style.height = height + 'px';
+                        applyDockPosition(left, bottom);
+                    };
+
+                    const finish = e => {
+                        if (e.pointerId !== event.pointerId) return;
+                        handle.removeEventListener('pointermove', move);
+                        handle.removeEventListener('pointerup', finish);
+                        handle.removeEventListener('pointercancel', finish);
+                        saveLayout();
+                    };
+                    handle.addEventListener('pointermove', move);
+                    handle.addEventListener('pointerup', finish);
+                    handle.addEventListener('pointercancel', finish);
+                });
+            });
+
+            restoreLayout();
+            window.addEventListener('resize', () => {
+                const rect = dockRect();
+                const maxLeft = Math.max(EDGE, window.innerWidth - rect.width - EDGE);
+                const maxBottom = Math.max(EDGE, window.innerHeight - rect.height - EDGE);
+                if (toolsDock.style.left) toolsDock.style.left = clamp(rect.left, EDGE, maxLeft) + 'px';
+                if (toolsDock.style.bottom) toolsDock.style.bottom = clamp(window.innerHeight - rect.bottom, EDGE, maxBottom) + 'px';
+            });
+        })();
+
         const notesKey = 'asyncAcademicPersonalNotes_v1';
         let notes = [],
             activeNoteId = null,
