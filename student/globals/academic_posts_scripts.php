@@ -628,6 +628,71 @@ html[data-theme="dark"] #asyncCalcPanel {
   #asyncCalcKeys button { min-height:36px; }
 }
 
+
+/* ASYNC unified centered study workspace */
+#readingToolsPanel,#asyncNotesPanel,#asyncCalcPanel,#asyncSoundPanel {
+ position:fixed!important;left:50%;top:50%;right:auto;bottom:auto;
+ transform:translate(-50%,-50%);width:min(540px,calc(100vw - 28px))!important;
+ max-height:min(82vh,760px);border:1px solid var(--aux-border,rgba(148,163,184,.28))!important;
+ border-radius:19px!important;background:var(--aux-glass,rgba(255,255,255,.9))!important;
+ color:var(--aux-text,#172033)!important;box-shadow:0 22px 65px rgba(15,23,42,.23),inset 0 1px 0 rgba(255,255,255,.32)!important;
+ backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
+ overflow:auto;opacity:.68;transition:opacity .18s ease,box-shadow .18s ease;
+}
+#readingToolsPanel.is-open,#asyncNotesPanel.is-open,#asyncCalcPanel.is-open,#asyncSoundPanel.is-open{display:flex!important;flex-direction:column}
+#readingToolsPanel:hover,#readingToolsPanel:focus-within,#asyncNotesPanel:hover,#asyncNotesPanel:focus-within,
+#asyncCalcPanel:hover,#asyncCalcPanel:focus-within,#asyncSoundPanel:hover,#asyncSoundPanel:focus-within{opacity:.98}
+#readingToolsPanel{padding:16px!important}
+#readingToolsPanel .rt-header{position:sticky;top:-16px;z-index:2;margin:-16px -16px 13px!important;padding:13px 16px!important;
+ background:rgba(65,105,225,.94);color:#fff;border:0!important;border-radius:18px 18px 0 0;cursor:grab;touch-action:none;user-select:none}
+#readingToolsPanel .rt-header strong,#readingToolsPanel .rt-close{color:#fff!important}
+#readingToolsPanel .rt-group{margin-bottom:12px}
+#readingToolsPanel .rt-btn,#readingToolsPanel .rt-select{border-radius:9px;background:var(--aux-control,rgba(15,23,42,.04));color:var(--aux-text,#172033);border-color:var(--aux-border)}
+#readingToolsPanel .rt-muted{color:var(--aux-text)}
+#asyncNotesPanel{height:min(590px,76vh)!important;width:min(500px,calc(100vw - 28px))!important}
+#asyncCalcPanel{width:min(430px,calc(100vw - 28px))!important;max-height:82vh;padding-bottom:12px!important;gap:7px!important}
+#asyncSoundPanel{width:min(390px,calc(100vw - 28px))!important;padding:0 14px 14px;gap:12px}
+#asyncNotesPanel.is-minimized,#asyncCalcPanel.is-minimized,#asyncSoundPanel.is-minimized,#readingToolsPanel.is-minimized{
+ width:min(300px,calc(100vw - 28px))!important;height:auto!important;max-height:none!important;overflow:hidden!important;opacity:.82}
+#asyncNotesPanel.is-minimized>:not(.aux-head),#asyncCalcPanel.is-minimized>:not(.aux-head),
+#asyncSoundPanel.is-minimized>:not(.aux-head),#readingToolsPanel.is-minimized>:not(.rt-header){display:none!important}
+#asyncNotesPanel.is-minimized .aux-head,#asyncCalcPanel.is-minimized .aux-head,
+#asyncSoundPanel.is-minimized .aux-head,#readingToolsPanel.is-minimized .rt-header{margin:0!important;border-radius:16px!important}
+.aux-head,#readingToolsPanel .rt-header{cursor:grab;touch-action:none;user-select:none}
+.aux-head:active,#readingToolsPanel .rt-header:active{cursor:grabbing}
+.aux-window-actions,#readingToolsPanel .rt-window-actions{display:flex;align-items:center;gap:3px}
+.aux-window-actions button,#readingToolsPanel .rt-window-actions button{width:29px;height:29px;padding:0;border:0;border-radius:7px;background:rgba(255,255,255,.13);color:#fff;font-size:17px;cursor:pointer}
+#asyncNotesFab,#asyncCalcFab,#asyncSoundFab{opacity:.58;transition:opacity .2s ease,filter .2s ease}
+#asyncNotesFab:hover,#asyncCalcFab:hover,#asyncSoundFab:hover,#asyncNotesFab:focus-visible,#asyncCalcFab:focus-visible,#asyncSoundFab:focus-visible{opacity:1;filter:saturate(1.15)}
+#asyncSoundFab{position:fixed;right:22px;bottom:194px;z-index:99989;width:46px;height:46px;border:1px solid var(--aux-launch-border);
+ border-radius:15px;background:var(--aux-sound-fab,rgba(217,119,6,.72));color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 4px 14px rgba(15,23,42,.13);backdrop-filter:blur(12px)}
+#asyncSoundPanel .sound-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#asyncSoundPanel .sound-choice button{padding:11px 8px;border:1px solid var(--aux-border);border-radius:10px;background:var(--aux-control);color:var(--aux-text);cursor:pointer;font-size:12px}
+#asyncSoundPanel .sound-choice button.active{border-color:#d97706;background:rgba(217,119,6,.14)}
+#asyncSoundPanel .sound-volume{display:flex;align-items:center;gap:10px;color:var(--aux-text);font-size:12px}
+#asyncSoundPanel input[type=range]{flex:1;accent-color:#d97706}
+#asyncSoundPanel .sound-actions{display:flex;gap:8px}
+#asyncSoundPanel .sound-actions button{flex:1;padding:10px;border:0;border-radius:9px;background:#d97706;color:#fff;cursor:pointer}
+#asyncSoundStatus{font-size:11px;opacity:.7;color:var(--aux-text)}
+#asyncCalcPanel #asyncCalcDisplay{font-size:clamp(19px,4vw,25px);min-width:0}
+#asyncCalcMathResult{min-height:38px;max-height:100px;overflow:auto;padding:8px 10px;border:1px solid var(--aux-border);border-radius:9px;background:var(--aux-display-bg);color:var(--aux-text);font-size:14px;text-align:center}
+#asyncCalcSymbolic{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#asyncCalcSymbolic button{padding:8px 5px;border:1px solid var(--aux-border);border-radius:8px;background:var(--aux-op-bg);color:var(--aux-text);font-size:11px;cursor:pointer}
+#asyncCalcVariable{width:48px;padding:5px;border:1px solid var(--aux-border);border-radius:6px;background:var(--aux-control);color:var(--aux-text)}
+#asyncCalcPanel #asyncCalcKeys{gap:5px}
+#asyncCalcPanel #asyncCalcKeys button{min-width:0;min-height:clamp(31px,5vh,39px);font-size:clamp(10px,1.5vw,12px)}
+html[data-theme="dark"] #readingToolsPanel,html[data-theme="dark"] #asyncNotesPanel,html[data-theme="dark"] #asyncCalcPanel,html[data-theme="dark"] #asyncSoundPanel{--aux-glass:rgba(25,32,45,.93);--aux-control:rgba(255,255,255,.07)}
+#asyncFloatingTimer{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);opacity:.68;transition:opacity .18s ease}
+#asyncFloatingTimer:hover,#asyncFloatingTimer:focus-within{opacity:.98}
+@media(max-width:480px){
+ #asyncNotesFab,#asyncCalcFab,#asyncSoundFab{right:13px;width:42px;height:42px}
+ #asyncNotesFab{bottom:72px}#asyncCalcFab{bottom:122px}#asyncSoundFab{bottom:172px}
+ #readingToolsPanel,#asyncNotesPanel,#asyncCalcPanel,#asyncSoundPanel{width:calc(100vw - 18px)!important;max-height:84dvh;border-radius:15px!important}
+ #asyncNotesPanel{height:76dvh!important}#asyncCalcPanel{padding-left:9px;padding-right:9px}
+ #asyncCalcPanel #asyncCalcKeys{gap:4px}#asyncCalcPanel #asyncCalcKeys button{min-height:32px;padding:3px 1px}
+ #readingToolsPanel{padding:12px!important}
+}
+
 </style>
 
 <div id="readingToolsRoot">
@@ -637,9 +702,9 @@ html[data-theme="dark"] #asyncCalcPanel {
     </button>
 
     <section id="readingToolsPanel" aria-label="Reading tools">
-        <div class="rt-header">
+        <div class="rt-header" id="rtDrag">
             <strong><i class="bi bi-sliders"></i> Reading Tools</strong>
-            <button type="button" class="rt-close" id="rtClose" aria-label="Close reading tools">&times;</button>
+            <span class="rt-window-actions"><button type="button" id="rtMinimize" title="Minimize">−</button><button type="button" class="rt-close" id="rtClose" aria-label="Close reading tools">&times;</button></span>
         </div>
 
         <div class="rt-group">
@@ -754,7 +819,7 @@ html[data-theme="dark"] #asyncCalcPanel {
 <button type="button" id="asyncCalcFab" aria-label="Open calculator" title="Scientific Calculator"><i class="bi bi-calculator"></i></button>
 
 <section id="asyncNotesPanel" aria-label="Personal notes">
-  <div class="aux-head" id="asyncNotesDrag"><strong><i class="bi bi-grip-horizontal"></i> My Study Notes</strong><span class="aux-drag-hint">Drag to move</span><button type="button" id="asyncNotesClose" aria-label="Close notes">&times;</button></div>
+  <div class="aux-head" id="asyncNotesDrag"><strong><i class="bi bi-grip-horizontal"></i> My Study Notes</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncNotesMinimize" title="Minimize">−</button><button type="button" id="asyncNotesClose" aria-label="Close notes">&times;</button></span></div>
   <div class="notes-toolbar">
     <select id="asyncNotesList" aria-label="Saved notes"></select>
     <button type="button" id="asyncNoteNew"><i class="bi bi-plus-lg"></i> New</button>
@@ -766,9 +831,11 @@ html[data-theme="dark"] #asyncCalcPanel {
 </section>
 
 <section id="asyncCalcPanel" aria-label="Scientific calculator">
-  <div class="aux-head" id="asyncCalcDrag" style="margin:0 -13px 2px"><strong><i class="bi bi-grip-horizontal"></i> Scientific Calculator</strong><span class="aux-drag-hint">Drag to move</span><button type="button" id="asyncCalcClose" aria-label="Close calculator">&times;</button></div>
+  <div class="aux-head" id="asyncCalcDrag" style="margin:0 -13px 2px"><strong><i class="bi bi-grip-horizontal"></i> Scientific Calculator</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncCalcMinimize" title="Minimize">−</button><button type="button" id="asyncCalcClose" aria-label="Close calculator">&times;</button></span></div>
   <input id="asyncCalcDisplay" type="text" value="0" aria-label="Calculator display" autocomplete="off">
-  <div class="calc-mode"><span>Trigonometry mode</span><select id="asyncCalcAngle"><option value="deg">Degrees (DEG)</option><option value="rad">Radians (RAD)</option></select></div>
+  <div id="asyncCalcMathResult" aria-live="polite">Symbolic results will appear here.</div>
+  <div id="asyncCalcSymbolic"><button type="button" data-symbolic="integrate">∫ Integrate expression</button><button type="button" data-symbolic="diff">d/dx Differentiate</button><button type="button" data-symbolic="simplify">⅟ Simplify / fraction</button></div>
+  <div class="calc-mode"><span>Variable</span><input id="asyncCalcVariable" value="x" maxlength="3" aria-label="Calculus variable"><span>Trigonometry mode</span><select id="asyncCalcAngle"><option value="deg">Degrees (DEG)</option><option value="rad">Radians (RAD)</option></select></div>
   <div class="calc-memory">
     <button data-action="mc">MC</button><button data-action="mr">MR</button><button data-action="mplus">M+</button><button data-action="mminus">M−</button><button data-action="ans">Ans</button>
   </div>
@@ -786,9 +853,23 @@ html[data-theme="dark"] #asyncCalcPanel {
   <div id="asyncCalcStatus">Use sin(30), cos(60), or tan(45). Results follow DEG/RAD mode.</div>
 </section>
 
+<button type="button" id="asyncSoundFab" aria-label="Open ambient sounds" title="Ambient sounds"><i class="bi bi-music-note-beamed"></i></button>
+<section id="asyncSoundPanel" aria-label="Ambient sound player">
+ <div class="aux-head" id="asyncSoundDrag"><strong><i class="bi bi-headphones"></i> Reading Ambience</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncSoundMinimize" title="Minimize">−</button><button type="button" id="asyncSoundClose" aria-label="Close sounds">&times;</button></span></div>
+ <div style="font-size:12px;color:var(--aux-text);opacity:.75">Choose a continuous background sound while you read.</div>
+ <div class="sound-choice"><button type="button" data-sound="rain">🌧️ Rain</button><button type="button" data-sound="ocean">🌊 Ocean waves</button><button type="button" data-sound="forest">🌲 Forest ambience</button><button type="button" data-sound="wind">🍃 Gentle wind</button><button type="button" data-sound="fire">🔥 Fireplace</button></div>
+ <label class="sound-volume"><span>Volume</span><input id="asyncSoundVolume" type="range" min="0" max="100" value="28"><span id="asyncSoundVolumeValue">28%</span></label>
+ <div class="sound-actions"><button type="button" id="asyncSoundPlay"><i class="bi bi-play-fill"></i> Play sound</button><button type="button" id="asyncSoundStop" style="background:#64748b">Stop</button></div>
+ <div id="asyncSoundStatus" aria-live="polite">Select a sound, then press Play. Audio starts only after your action.</div>
+</section>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/nerdamer.core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Calculus.min.js"></script>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
 <script>
     (() => {
@@ -956,7 +1037,9 @@ html[data-theme="dark"] #asyncCalcPanel {
             timerStatus.textContent = 'Timer reset.';
         }
         document.getElementById('rtOpenTimer').addEventListener('click', () => {
+            if (window.asyncCloseOtherTools) window.asyncCloseOtherTools(timerBox);
             timerBox.classList.add('is-visible');
+            timerBox.style.left = '50%'; timerBox.style.top = '50%'; timerBox.style.right = 'auto'; timerBox.style.bottom = 'auto'; timerBox.style.transform = 'translate(-50%,-50%)';
             timerBox.setAttribute('aria-hidden', 'false');
             togglePanel(false);
         });
@@ -1027,6 +1110,8 @@ html[data-theme="dark"] #asyncCalcPanel {
             timerBox.style.top = top + 'px';
             timerBox.style.right = 'auto';
             timerBox.style.bottom = 'auto';
+            timerBox.style.transform = 'none';
+            timerBox.dataset.userPositioned = '1';
         });
         ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(name => dragHandle.addEventListener(name, () => {
             dragState = null;
@@ -1116,6 +1201,11 @@ html[data-theme="dark"] #asyncCalcPanel {
             rootStyle.setProperty('--aux-launch-border', backgroundIsDark ? 'rgba(255,255,255,.22)' : 'rgba(255,255,255,.58)');
             rootStyle.setProperty('--aux-notes-fab', backgroundIsDark ? 'rgba(13,148,136,.88)' : 'rgba(13,148,136,.68)');
             rootStyle.setProperty('--aux-calc-fab', backgroundIsDark ? 'rgba(65,105,225,.9)' : 'rgba(65,105,225,.68)');
+            rootStyle.setProperty('--aux-sound-fab', backgroundIsDark ? 'rgba(217,119,6,.9)' : 'rgba(217,119,6,.68)');
+            rootStyle.setProperty('--aux-glass', backgroundIsDark ? 'rgba(25,32,45,.93)' : 'rgba(255,255,255,.91)');
+            rootStyle.setProperty('--rt-bg', backgroundIsDark ? 'rgba(25,32,45,.93)' : 'rgba(255,255,255,.91)');
+            rootStyle.setProperty('--rt-text', usableFg);
+            rootStyle.setProperty('--rt-border', dark ? 'rgba(148,163,184,.25)' : 'rgba(100,116,139,.25)');
         }
 
         function apply() {
@@ -1181,12 +1271,28 @@ html[data-theme="dark"] #asyncCalcPanel {
         }
 
         function togglePanel(open) {
+            if (open && window.asyncCloseOtherTools) window.asyncCloseOtherTools(panel);
             panel.classList.toggle('is-open', open);
+            panel.classList.remove('is-minimized');
+            if (open && !panel.dataset.userPositioned) {
+                panel.style.left = '50%'; panel.style.top = '50%'; panel.style.right = 'auto'; panel.style.bottom = 'auto';
+                panel.style.transform = 'translate(-50%,-50%)';
+            }
             fab.setAttribute('aria-expanded', String(open));
         }
 
-        fab.addEventListener('click', () => togglePanel(!panel.classList.contains('is-open')));
+        fab.addEventListener('click', () => {
+            if (panel.classList.contains('is-minimized') && panel.classList.contains('is-open')) {
+                panel.classList.remove('is-minimized');
+                return;
+            }
+            togglePanel(!panel.classList.contains('is-open'));
+        });
         document.getElementById('rtClose').addEventListener('click', () => togglePanel(false));
+        document.getElementById('rtMinimize').addEventListener('click', () => {
+            const minimized = panel.classList.toggle('is-minimized');
+            document.getElementById('rtMinimize').textContent = minimized ? '□' : '−';
+        });
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') togglePanel(false);
         });
@@ -1364,15 +1470,53 @@ html[data-theme="dark"] #asyncCalcPanel {
   const notesKey = 'asyncAcademicPersonalNotes_v1';
   let notes = [], activeNoteId = null, quill = null, saveTimer = null;
 
-  const openPanel = (panel, other) => { other.classList.remove('is-open'); panel.classList.toggle('is-open'); };
+  const soundPanel = byId('asyncSoundPanel'), soundFab = byId('asyncSoundFab');
+  const timerBox = byId('asyncFloatingTimer');
+  const allToolPanels = [byId('readingToolsPanel'), notesPanel, calcPanel, soundPanel];
+  function closeOtherTools(keep) {
+    allToolPanels.forEach(item => {
+      if (item && item !== keep) {
+        item.classList.remove('is-open');
+        if (item.id === 'readingToolsPanel') byId('readingToolsFab').setAttribute('aria-expanded', 'false');
+      }
+    });
+    if (timerBox && keep !== timerBox) timerBox.classList.remove('is-visible');
+  }
+  window.asyncCloseOtherTools = closeOtherTools;
+  function openPanel(target) {
+    if (target.classList.contains('is-minimized') && target.classList.contains('is-open')) {
+      target.classList.remove('is-minimized');
+      return;
+    }
+    const shouldOpen = !target.classList.contains('is-open');
+    if (shouldOpen) closeOtherTools(target);
+    target.classList.toggle('is-open', shouldOpen);
+    target.classList.remove('is-minimized');
+    if (shouldOpen && !target.dataset.userPositioned) {
+      target.style.left = '50%'; target.style.top = '50%'; target.style.right = 'auto'; target.style.bottom = 'auto';
+      target.style.transform = 'translate(-50%,-50%)';
+    }
+  }
   notesFab.addEventListener('click', () => {
-    openPanel(notesPanel, calcPanel);
+    openPanel(notesPanel);
     if (!quill && window.Quill) initializeNotes();
     else if (!window.Quill) byId('asyncNotesSaveStatus').textContent = 'Quill could not load. Check your connection.';
   });
-  calcFab.addEventListener('click', () => openPanel(calcPanel, notesPanel));
+  calcFab.addEventListener('click', () => openPanel(calcPanel));
+  soundFab.addEventListener('click', () => openPanel(soundPanel));
   byId('asyncNotesClose').addEventListener('click', () => notesPanel.classList.remove('is-open'));
   byId('asyncCalcClose').addEventListener('click', () => calcPanel.classList.remove('is-open'));
+  byId('asyncSoundClose').addEventListener('click', () => soundPanel.classList.remove('is-open'));
+  function setMinimize(panel, button) {
+    button.addEventListener('click', () => {
+      const minimized = panel.classList.toggle('is-minimized');
+      button.textContent = minimized ? '□' : '−';
+      button.title = minimized ? 'Restore' : 'Minimize';
+    });
+  }
+  setMinimize(notesPanel, byId('asyncNotesMinimize'));
+  setMinimize(calcPanel, byId('asyncCalcMinimize'));
+  setMinimize(soundPanel, byId('asyncSoundMinimize'));
 
   function readNotes() {
     try {
@@ -1468,6 +1612,8 @@ html[data-theme="dark"] #asyncCalcPanel {
       panel.style.top = top + 'px';
       panel.style.right = 'auto';
       panel.style.bottom = 'auto';
+      panel.style.transform = 'none';
+      panel.dataset.userPositioned = '1';
     });
     const stop = () => { drag = null; };
     handle.addEventListener('pointerup', stop);
@@ -1476,13 +1622,26 @@ html[data-theme="dark"] #asyncCalcPanel {
   }
   makeDraggable(notesPanel, byId('asyncNotesDrag'));
   makeDraggable(calcPanel, byId('asyncCalcDrag'));
+  makeDraggable(soundPanel, byId('asyncSoundDrag'));
+  makeDraggable(byId('readingToolsPanel'), byId('rtDrag'));
+  byId('rtMinimize').addEventListener('click', () => {
+    const readingPanel = byId('readingToolsPanel');
+    const minimized = readingPanel.classList.toggle('is-minimized');
+    byId('rtMinimize').textContent = minimized ? '□' : '−';
+  });
   window.addEventListener('resize', () => {
-    [notesPanel, calcPanel].forEach(panel => {
+    [notesPanel, calcPanel, soundPanel, byId('readingToolsPanel')].forEach(panel => {
       if (!panel.classList.contains('is-open')) return;
+      if (!panel.dataset.userPositioned) {
+        panel.style.left = '50%'; panel.style.top = '50%';
+        panel.style.right = 'auto'; panel.style.bottom = 'auto';
+        panel.style.transform = 'translate(-50%,-50%)';
+        return;
+      }
       const rect = panel.getBoundingClientRect();
       panel.style.left = Math.max(6, Math.min(window.innerWidth - panel.offsetWidth - 6, rect.left)) + 'px';
       panel.style.top = Math.max(6, Math.min(window.innerHeight - panel.offsetHeight - 6, rect.top)) + 'px';
-      panel.style.right = 'auto'; panel.style.bottom = 'auto';
+      panel.style.right = 'auto'; panel.style.bottom = 'auto'; panel.style.transform = 'none';
     });
   });
 
@@ -1513,10 +1672,34 @@ html[data-theme="dark"] #asyncCalcPanel {
       showExpression(); calcStatus.textContent = 'Calculated successfully.';
     } catch (error) { calcStatus.textContent = error.message || 'Invalid expression.'; }
   }
+  const mathResult = byId('asyncCalcMathResult');
+  function symbolicOperation(kind) {
+    const expr = expression.trim();
+    const variable = (byId('asyncCalcVariable').value.trim() || 'x').replace(/[^a-zA-Z]/g, '');
+    if (!expr) { calcStatus.textContent = 'Enter an expression first, for example x^3 + 2*x.'; return; }
+    if (!window.nerdamer) { calcStatus.textContent = 'Symbolic engine did not load. Check your connection.'; return; }
+    try {
+      const command = kind === 'integrate' ? `integrate(${expr},${variable})` :
+        kind === 'diff' ? `diff(${expr},${variable})` : expr;
+      const result = window.nerdamer(command);
+      const latex = window.nerdamer.convertToLaTeX(result.toString());
+      mathResult.innerHTML = `\\[${latex}\\]`;
+      if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([mathResult]).catch(() => {});
+      calcStatus.textContent = kind === 'integrate' ? `Indefinite integral with respect to ${variable}. Add + C when writing your final answer.` :
+        kind === 'diff' ? `Derivative with respect to ${variable}.` : 'Expression simplified; exact fractions are retained when possible.';
+    } catch (error) {
+      mathResult.textContent = 'Could not solve this symbolic expression.';
+      calcStatus.textContent = error.message || 'Unsupported expression.';
+    }
+  }
+  byId('asyncCalcSymbolic').addEventListener('click', event => {
+    const button = event.target.closest('[data-symbolic]');
+    if (button) symbolicOperation(button.dataset.symbolic);
+  });
   byId('asyncCalcKeys').addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button) return;
     const action = button.dataset.action, value = button.dataset.insert;
-    if (action === 'clear') { expression = ''; calcStatus.textContent = 'Cleared.'; }
+    if (action === 'clear') { expression = ''; mathResult.textContent = 'Symbolic results will appear here.'; calcStatus.textContent = 'Cleared.'; }
     else if (action === 'back') expression = expression.slice(0, -1);
     else if (action === 'equals') { calculate(); return; }
     else if (action === 'mc') { calculatorMemory = 0; calcStatus.textContent = 'Memory cleared.'; }
@@ -1538,15 +1721,80 @@ html[data-theme="dark"] #asyncCalcPanel {
     if (event.key === 'Escape') { expression = ''; showExpression(); }
   });
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') { notesPanel.classList.remove('is-open'); calcPanel.classList.remove('is-open'); }
+    if (event.key === 'Escape') { allToolPanels.forEach(item => item && item.classList.remove('is-open')); if (timerBox) timerBox.classList.remove('is-visible'); }
   });
+  // Procedural ambient soundscapes: no audio files or third-party media required.
+  let ambienceContext = null, ambienceNodes = [], selectedSound = 'rain', ambienceGain = null;
+  const soundStatus = byId('asyncSoundStatus'), soundVolume = byId('asyncSoundVolume');
+  function stopAmbience() {
+    ambienceNodes.forEach(node => { try { node.stop ? node.stop() : node.disconnect(); } catch (_) {} });
+    ambienceNodes = [];
+    if (ambienceGain) { try { ambienceGain.disconnect(); } catch (_) {} ambienceGain = null; }
+    soundStatus.textContent = 'Sound stopped.';
+    document.querySelectorAll('[data-sound]').forEach(btn => btn.classList.toggle('active', btn.dataset.sound === selectedSound));
+  }
+  function startAmbience() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) { soundStatus.textContent = 'Web Audio is not supported in this browser.'; return; }
+    if (!ambienceContext) ambienceContext = new AC();
+    ambienceContext.resume().then(() => {
+      stopAmbience();
+      const ctx = ambienceContext, master = ctx.createGain();
+      master.gain.value = Number(soundVolume.value) / 100 * 0.22;
+      master.connect(ctx.destination); ambienceGain = master;
+      const length = ctx.sampleRate * 3, buffer = ctx.createBuffer(1, length, ctx.sampleRate), data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = buffer; noise.loop = true;
+      const filter = ctx.createBiquadFilter(), tone = ctx.createGain();
+      filter.type = 'lowpass'; filter.frequency.value = 1100; filter.Q.value = .7;
+      noise.connect(filter); filter.connect(tone); tone.connect(master); tone.gain.value = 1;
+      noise.start(); ambienceNodes.push(noise);
+      const lfo = ctx.createOscillator(), lfoGain = ctx.createGain();
+      lfo.type = 'sine'; lfo.frequency.value = .12; lfo.connect(lfoGain); lfoGain.connect(tone.gain); lfo.start();
+      ambienceNodes.push(lfo);
+      if (selectedSound === 'rain') { filter.type = 'lowpass'; filter.frequency.value = 2200; lfo.frequency.value = .35; lfoGain.gain.value = .12; }
+      if (selectedSound === 'ocean') { filter.type = 'lowpass'; filter.frequency.value = 650; lfo.frequency.value = .075; lfoGain.gain.value = .55; }
+      if (selectedSound === 'forest') {
+        filter.type = 'bandpass'; filter.frequency.value = 950; lfo.frequency.value = .18; lfoGain.gain.value = .12;
+        const bird = ctx.createOscillator(), birdGain = ctx.createGain();
+        bird.type = 'sine'; bird.frequency.value = 2100; birdGain.gain.value = .012;
+        bird.connect(birdGain); birdGain.connect(master); bird.start(); ambienceNodes.push(bird);
+      }
+      if (selectedSound === 'wind') { filter.type = 'lowpass'; filter.frequency.value = 330; lfo.frequency.value = .045; lfoGain.gain.value = .7; }
+      if (selectedSound === 'fire') { filter.type = 'bandpass'; filter.frequency.value = 1250; filter.Q.value = .45; lfo.frequency.value = 1.7; lfoGain.gain.value = .16; }
+      soundStatus.textContent = 'Playing ' + selectedSound + ' ambience. It loops until you stop it.';
+      byId('asyncSoundPlay').innerHTML = '<i class="bi bi-pause-fill"></i> Restart sound';
+    }).catch(() => { soundStatus.textContent = 'Audio was blocked. Press Play again to allow sound.'; });
+  }
+  document.querySelectorAll('[data-sound]').forEach(button => button.addEventListener('click', () => {
+    selectedSound = button.dataset.sound;
+    document.querySelectorAll('[data-sound]').forEach(item => item.classList.toggle('active', item === button));
+    if (ambienceNodes.length) startAmbience();
+    else soundStatus.textContent = selectedSound + ' selected. Press Play sound.';
+  }));
+  byId('asyncSoundPlay').addEventListener('click', startAmbience);
+  byId('asyncSoundStop').addEventListener('click', stopAmbience);
+  soundVolume.addEventListener('input', () => {
+    byId('asyncSoundVolumeValue').textContent = soundVolume.value + '%';
+    if (ambienceGain) ambienceGain.gain.setTargetAtTime(Number(soundVolume.value) / 100 * .22, ambienceContext.currentTime, .08);
+  });
+  window.addEventListener('beforeunload', stopAmbience);
+
   const themeObserver = new MutationObserver(() => {
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    if (dark) {
-      [notesPanel, calcPanel].forEach(panel => panel.style.setProperty('--aux-bg', 'rgba(25,32,45,.97)'));
-    } else {
-      [notesPanel, calcPanel].forEach(panel => panel.style.removeProperty('--aux-bg'));
-    }
+    const rootStyle = document.documentElement.style;
+    rootStyle.setProperty('--aux-glass', dark ? 'rgba(25,32,45,.93)' : 'rgba(255,255,255,.91)');
+    rootStyle.setProperty('--aux-bg', dark ? 'rgba(25,32,45,.97)' : 'rgba(255,255,255,.97)');
+    rootStyle.setProperty('--aux-text', dark ? '#edf2fa' : '#172033');
+    rootStyle.setProperty('--aux-border', dark ? 'rgba(148,163,184,.25)' : 'rgba(100,116,139,.25)');
+    rootStyle.setProperty('--aux-control', dark ? 'rgba(255,255,255,.07)' : 'rgba(15,23,42,.035)');
+    rootStyle.setProperty('--aux-editor-bg', dark ? '#202938' : '#ffffff');
+    rootStyle.setProperty('--aux-editor-text', dark ? '#edf2fa' : '#172033');
+    rootStyle.setProperty('--aux-display-bg', dark ? '#111827' : '#f1f5f9');
+    rootStyle.setProperty('--aux-op-bg', dark ? 'rgba(65,105,225,.16)' : '#eff6ff');
+    rootStyle.setProperty('--rt-bg', dark ? 'rgba(25,32,45,.93)' : 'rgba(255,255,255,.91)');
+    rootStyle.setProperty('--rt-text', dark ? '#edf2fa' : '#172033');
+    rootStyle.setProperty('--rt-border', dark ? 'rgba(148,163,184,.25)' : 'rgba(100,116,139,.25)');
   });
   themeObserver.observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
 })();
