@@ -813,6 +813,7 @@ if ($redirectUrlJson === false) {
         </section>
 
         <!-- Additional ad scripts: loaded once, independent of device layout -->
+        <script data-cfasync="false" src="https://bauval.org/14/218560b283b13bee8fff4813a6daac54"></script>
         <script>
             (function(teec) {
                 var d = document,
