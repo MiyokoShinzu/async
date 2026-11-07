@@ -2064,14 +2064,8 @@
         height: 9px;
         cursor: ns-resize;
     }
-
-    .async-tool-resize-handle[data-resize="n"] {
-        top: 1px;
-    }
-
-    .async-tool-resize-handle[data-resize="s"] {
-        bottom: 1px;
-    }
+    .async-tool-resize-handle[data-resize="n"] { top: 1px; }
+    .async-tool-resize-handle[data-resize="s"] { bottom: 1px; }
 
     .async-tool-resize-handle[data-resize="e"],
     .async-tool-resize-handle[data-resize="w"] {
@@ -2080,14 +2074,8 @@
         width: 9px;
         cursor: ew-resize;
     }
-
-    .async-tool-resize-handle[data-resize="e"] {
-        right: 1px;
-    }
-
-    .async-tool-resize-handle[data-resize="w"] {
-        left: 1px;
-    }
+    .async-tool-resize-handle[data-resize="e"] { right: 1px; }
+    .async-tool-resize-handle[data-resize="w"] { left: 1px; }
 
     .async-tool-resize-handle[data-resize="ne"],
     .async-tool-resize-handle[data-resize="nw"],
@@ -2095,35 +2083,15 @@
     .async-tool-resize-handle[data-resize="sw"] {
         width: 17px;
         height: 17px;
-        border: 1px solid rgba(255, 255, 255, .58);
+        border: 1px solid rgba(255,255,255,.58);
         border-radius: 6px;
-        background: rgba(59, 130, 246, .42);
-        box-shadow: 0 1px 5px rgba(15, 23, 42, .18);
+        background: rgba(59,130,246,.42);
+        box-shadow: 0 1px 5px rgba(15,23,42,.18);
     }
-
-    .async-tool-resize-handle[data-resize="ne"] {
-        top: 2px;
-        right: 2px;
-        cursor: nesw-resize;
-    }
-
-    .async-tool-resize-handle[data-resize="nw"] {
-        top: 2px;
-        left: 2px;
-        cursor: nwse-resize;
-    }
-
-    .async-tool-resize-handle[data-resize="se"] {
-        bottom: 2px;
-        right: 2px;
-        cursor: nwse-resize;
-    }
-
-    .async-tool-resize-handle[data-resize="sw"] {
-        bottom: 2px;
-        left: 2px;
-        cursor: nesw-resize;
-    }
+    .async-tool-resize-handle[data-resize="ne"] { top: 2px; right: 2px; cursor: nesw-resize; }
+    .async-tool-resize-handle[data-resize="nw"] { top: 2px; left: 2px; cursor: nwse-resize; }
+    .async-tool-resize-handle[data-resize="se"] { bottom: 2px; right: 2px; cursor: nwse-resize; }
+    .async-tool-resize-handle[data-resize="sw"] { bottom: 2px; left: 2px; cursor: nesw-resize; }
 
     #readingToolsPanel.is-minimized .async-tool-resize-handle,
     #asyncNotesPanel.is-minimized .async-tool-resize-handle,
@@ -2135,7 +2103,6 @@
     }
 
     @media (max-width: 480px) {
-
         .async-tool-resize-handle[data-resize="ne"],
         .async-tool-resize-handle[data-resize="nw"],
         .async-tool-resize-handle[data-resize="se"],
@@ -2147,341 +2114,96 @@
 
 
     /* macOS traffic-light controls */
-    .mac-window-header,
-    #asyncTimerDrag {
-        display: flex;
-        align-items: center;
-        gap: 10px
+    .mac-window-header,#asyncTimerDrag{display:flex;align-items:center;gap:10px}
+    .mac-window-controls{display:inline-flex!important;align-items:center;flex:0 0 auto;gap:7px!important;order:-1;margin-right:7px}
+    .mac-window-controls .mac-window-btn,#readingToolsPanel .rt-window-actions .mac-window-btn{
+        position:relative;display:inline-flex;align-items:center;justify-content:center;
+        flex:0 0 12px;width:12px!important;height:12px!important;min-width:12px;min-height:12px;
+        padding:0!important;margin:0;border:1px solid rgba(0,0,0,.12)!important;border-radius:50%!important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.3);color:transparent!important;font-size:0!important;
+        line-height:0;cursor:pointer;transition:filter .15s ease,transform .15s ease;
     }
-
-    .mac-window-controls {
-        display: inline-flex !important;
-        align-items: center;
-        flex: 0 0 auto;
-        gap: 7px !important;
-        order: -1;
-        margin-right: 7px
-    }
-
-    .mac-window-controls .mac-window-btn,
-    #readingToolsPanel .rt-window-actions .mac-window-btn {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 12px;
-        width: 12px !important;
-        height: 12px !important;
-        min-width: 12px;
-        min-height: 12px;
-        padding: 0 !important;
-        margin: 0;
-        border: 1px solid rgba(0, 0, 0, .12) !important;
-        border-radius: 50% !important;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3);
-        color: transparent !important;
-        font-size: 0 !important;
-        line-height: 0;
-        cursor: pointer;
-        transition: filter .15s ease, transform .15s ease;
-    }
-
-    .mac-window-btn:hover {
-        filter: brightness(1.08);
-        transform: scale(1.08)
-    }
-
-    .mac-window-btn.mac-close {
-        background: #ff5f57 !important
-    }
-
-    .mac-window-btn.mac-minimize {
-        background: #febc2e !important
-    }
-
-    .mac-window-btn.mac-maximize {
-        background: #28c840 !important
-    }
-
-    .mac-window-btn::after {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba(65, 35, 25, .8);
-        font: 800 9px/1 Arial, sans-serif;
-        opacity: 0;
-        transition: opacity .12s ease
-    }
-
-    .mac-close::after {
-        content: "×"
-    }
-
-    .mac-minimize::after {
-        content: "−"
-    }
-
-    .mac-maximize::after {
-        content: "+"
-    }
-
-    .mac-window-btn:hover::after {
-        opacity: 1
-    }
-
-    .mac-window-header>strong {
-        flex: 0 1 auto
-    }
-
-    .mac-window-header>.aux-drag-hint {
-        margin-left: auto
-    }
-
-    #readingToolsPanel .rt-window-actions {
-        order: -1;
-        flex: 0 0 auto
-    }
-
-    #asyncTimerDrag>strong {
-        flex: 0 1 auto
-    }
-
-    #asyncTimerDrag>.aft-tick-toggle {
-        margin-left: auto
-    }
-
-    #aftTickToggle {
-        width: 29px;
-        height: 29px;
-        flex: 0 0 29px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(255, 255, 255, .24);
-        border-radius: 9px;
-        background: rgba(255, 255, 255, .14);
-        color: #fff;
-        font-size: 15px;
-        cursor: pointer
-    }
-
-    #aftTickToggle[aria-pressed="false"] {
-        opacity: .65;
-        background: rgba(15, 23, 42, .2)
-    }
+    .mac-window-btn:hover{filter:brightness(1.08);transform:scale(1.08)}
+    .mac-window-btn.mac-close{background:#ff5f57!important}
+    .mac-window-btn.mac-minimize{background:#febc2e!important}
+    .mac-window-btn.mac-maximize{background:#28c840!important}
+    .mac-window-btn::after{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(65,35,25,.8);font:800 9px/1 Arial,sans-serif;opacity:0;transition:opacity .12s ease}
+    .mac-close::after{content:"×"}.mac-minimize::after{content:"−"}.mac-maximize::after{content:"+"}
+    .mac-window-btn:hover::after{opacity:1}
+    .mac-window-header>strong{flex:0 1 auto}
+    .mac-window-header>.aux-drag-hint{margin-left:auto}
+    #readingToolsPanel .rt-window-actions{order:-1;flex:0 0 auto}
+    #asyncTimerDrag>strong{flex:0 1 auto}
+    #asyncTimerDrag>.aft-tick-toggle{margin-left:auto}
+    #aftTickToggle{width:29px;height:29px;flex:0 0 29px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.24);border-radius:9px;background:rgba(255,255,255,.14);color:#fff;font-size:15px;cursor:pointer}
+    #aftTickToggle[aria-pressed="false"]{opacity:.65;background:rgba(15,23,42,.2)}
 
     /* Match the title bar color with the tool's colored launcher/menu entry. */
-    #readingToolsPanel .rt-header {
-        background: #3b82f6 !important
-    }
-
-    #asyncNotesPanel .aux-head {
-        background: #0d9488 !important
-    }
-
-    #asyncCalcPanel .aux-head {
-        background: #7c3aed !important
-    }
-
-    #asyncSoundPanel .aux-head {
-        background: #d97706 !important
-    }
-
-    #asyncPresentationPanel .aux-head {
-        background: #e11d48 !important
-    }
-
-    #asyncFloatingTimer .aft-header {
-        background: #3b82f6
-    }
+    #readingToolsPanel .rt-header{background:#3b82f6!important}
+    #asyncNotesPanel .aux-head{background:#0d9488!important}
+    #asyncCalcPanel .aux-head{background:#7c3aed!important}
+    #asyncSoundPanel .aux-head{background:#d97706!important}
+    #asyncPresentationPanel .aux-head{background:#e11d48!important}
+    #asyncFloatingTimer .aft-header{background:#3b82f6}
 
     /* Quill formatting buttons: clean spacing and responsive wrapping. */
-    #asyncNotesPanel .ql-toolbar.ql-snow {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 4px;
-        padding: 8px 9px !important;
-        overflow: visible;
-        box-sizing: border-box
-    }
-
-    #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
-        display: inline-flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 3px;
-        margin: 2px 7px 2px 0 !important
-    }
-
-    #asyncNotesPanel .ql-toolbar.ql-snow button {
-        width: 29px;
-        height: 29px;
-        padding: 4px !important;
-        margin: 0 !important;
-        border-radius: 6px
-    }
-
-    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker {
-        height: 29px;
-        margin: 0 2px
-    }
-
-    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-label {
-        padding: 3px 5px;
-        border-radius: 6px
-    }
-
-    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-options {
-        max-height: 220px;
-        overflow: auto
-    }
-
-    @media(max-width:480px) {
-        #asyncNotesPanel .ql-toolbar.ql-snow {
-            gap: 3px;
-            padding: 7px 6px !important
-        }
-
-        #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
-            gap: 2px;
-            margin-right: 4px !important
-        }
-
-        #asyncNotesPanel .ql-toolbar.ql-snow button {
-            width: 27px;
-            height: 27px
-        }
+    #asyncNotesPanel .ql-toolbar.ql-snow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:8px 9px!important;overflow:visible;box-sizing:border-box}
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats{display:inline-flex;align-items:center;flex-wrap:wrap;gap:3px;margin:2px 7px 2px 0!important}
+    #asyncNotesPanel .ql-toolbar.ql-snow button{width:29px;height:29px;padding:4px!important;margin:0!important;border-radius:6px}
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker{height:29px;margin:0 2px}
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-label{padding:3px 5px;border-radius:6px}
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-options{max-height:220px;overflow:auto}
+    @media(max-width:480px){
+        #asyncNotesPanel .ql-toolbar.ql-snow{gap:3px;padding:7px 6px!important}
+        #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats{gap:2px;margin-right:4px!important}
+        #asyncNotesPanel .ql-toolbar.ql-snow button{width:27px;height:27px}
     }
 
     /* Presentation minimization collapses to an interactive icon toolbar. */
-    #asyncPresentationPanel.is-minimized {
-        display: flex !important;
-        flex-direction: column;
-        width: max-content !important;
-        min-width: 0 !important;
-        max-width: calc(100vw - 16px) !important;
-        height: auto !important;
-        max-height: none !important;
-        padding: 6px !important;
-        gap: 5px !important;
-        overflow: visible !important;
-        border-radius: 13px !important;
+    #asyncPresentationPanel.is-minimized{
+        display:flex!important;flex-direction:column;width:max-content!important;min-width:0!important;
+        max-width:calc(100vw - 16px)!important;height:auto!important;max-height:none!important;
+        padding:6px!important;gap:5px!important;overflow:visible!important;border-radius:13px!important;
     }
-
-    #asyncPresentationPanel.is-minimized>:not(.aux-head):not(.presentation-actions) {
-        display: none !important
-    }
-
-    #asyncPresentationPanel.is-minimized .aux-head {
-        padding: 2px 3px !important;
-        min-height: 14px;
-        gap: 4px;
-        background: transparent !important
-    }
-
+    #asyncPresentationPanel.is-minimized>:not(.aux-head):not(.presentation-actions){display:none!important}
+    #asyncPresentationPanel.is-minimized .aux-head{padding:2px 3px!important;min-height:14px;gap:4px;background:transparent!important}
     #asyncPresentationPanel.is-minimized .aux-head>strong,
-    #asyncPresentationPanel.is-minimized .aux-drag-hint {
-        display: none !important
+    #asyncPresentationPanel.is-minimized .aux-drag-hint{display:none!important}
+    #asyncPresentationPanel.is-minimized .aux-window-actions{margin:0!important}
+    #asyncPresentationPanel.is-minimized .presentation-actions{display:flex!important;flex-wrap:wrap;justify-content:center;gap:4px!important}
+    #asyncPresentationPanel.is-minimized .presentation-actions button{
+        display:inline-flex;align-items:center;justify-content:center;width:33px;height:33px;
+        min-width:33px;min-height:33px;padding:0!important;margin:0;font-size:0!important;line-height:0;border-radius:8px;
     }
-
-    #asyncPresentationPanel.is-minimized .aux-window-actions {
-        margin: 0 !important
-    }
-
-    #asyncPresentationPanel.is-minimized .presentation-actions {
-        display: flex !important;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 4px !important
-    }
-
-    #asyncPresentationPanel.is-minimized .presentation-actions button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 33px;
-        height: 33px;
-        min-width: 33px;
-        min-height: 33px;
-        padding: 0 !important;
-        margin: 0;
-        font-size: 0 !important;
-        line-height: 0;
-        border-radius: 8px;
-    }
-
-    #asyncPresentationPanel.is-minimized .presentation-actions button i {
-        font-size: 15px;
-        line-height: 1
-    }
-
-    #asyncPresentationPanel.is-minimized .presentation-actions button.active {
-        background: rgba(225, 29, 72, .2) !important;
-        border-color: #e11d48 !important
-    }
+    #asyncPresentationPanel.is-minimized .presentation-actions button i{font-size:15px;line-height:1}
+    #asyncPresentationPanel.is-minimized .presentation-actions button.active{background:rgba(225,29,72,.2)!important;border-color:#e11d48!important}
 
     /* Correct light/dark presentation text and controls. */
-    html[data-theme="dark"] #asyncPresentationPanel {
-        --aux-text: #f1f5f9 !important;
-        --aux-control: rgba(255, 255, 255, .09) !important;
-        --aux-border: rgba(203, 213, 225, .3) !important;
-        --aux-glass: rgba(25, 32, 45, .96) !important;
-        background: rgba(25, 32, 45, .96) !important;
-        color: #f1f5f9 !important;
+    html[data-theme="dark"] #asyncPresentationPanel{
+        --aux-text:#f1f5f9!important;--aux-control:rgba(255,255,255,.09)!important;
+        --aux-border:rgba(203,213,225,.3)!important;--aux-glass:rgba(25,32,45,.96)!important;
+        background:rgba(25,32,45,.96)!important;color:#f1f5f9!important;
     }
-
     html[data-theme="dark"] #asyncPresentationPanel>p,
     html[data-theme="dark"] #asyncPresentationPanel label,
     html[data-theme="dark"] #asyncPresentationPanel label span,
-    html[data-theme="dark"] #asyncPresentationPanel #asyncPresentationStatus {
-        color: #f1f5f9 !important
-    }
-
-    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
-        background: rgba(255, 255, 255, .08) !important;
-        border-color: rgba(203, 213, 225, .3) !important;
-        color: #f8fafc !important
-    }
-
-    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
-        background: rgba(225, 29, 72, .24) !important;
-        border-color: #fb7185 !important;
-        color: #fff !important
-    }
-
+    html[data-theme="dark"] #asyncPresentationPanel #asyncPresentationStatus{color:#f1f5f9!important}
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button{background:rgba(255,255,255,.08)!important;border-color:rgba(203,213,225,.3)!important;color:#f8fafc!important}
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active{background:rgba(225,29,72,.24)!important;border-color:#fb7185!important;color:#fff!important}
     html[data-theme="dark"] #asyncPresentationPanel input,
-    html[data-theme="dark"] #asyncPresentationPanel select {
-        color: #f8fafc !important;
-        background: #172033 !important;
-        border-color: rgba(203, 213, 225, .3) !important
-    }
-
-    html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) {
-        color: #f1f5f9 !important
-    }
+    html[data-theme="dark"] #asyncPresentationPanel select{color:#f8fafc!important;background:#172033!important;border-color:rgba(203,213,225,.3)!important}
+    html[data-theme="dark"] #asyncPresentationPanel :is(p,div,label,span,small){color:#f1f5f9!important}
 
     /* Additional annotation modes can receive pointer/touch drawing input. */
-    #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) {
-        pointer-events: auto;
-        cursor: crosshair
-    }
-
-    #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) #asyncPresentationCanvas {
-        pointer-events: auto;
-        cursor: crosshair
-    }
+    #asyncPresentationOverlay:is(.mode-draw,.mode-highlight,.mode-arrow,.mode-rectangle,.mode-circle,.mode-text,.mode-erase){pointer-events:auto;cursor:crosshair}
+    #asyncPresentationOverlay:is(.mode-draw,.mode-highlight,.mode-arrow,.mode-rectangle,.mode-circle,.mode-text,.mode-erase) #asyncPresentationCanvas{pointer-events:auto;cursor:crosshair}
 
     #readingToolsPanel.is-maximized .async-tool-resize-handle,
     #asyncNotesPanel.is-maximized .async-tool-resize-handle,
     #asyncCalcPanel.is-maximized .async-tool-resize-handle,
     #asyncSoundPanel.is-maximized .async-tool-resize-handle,
     #asyncPresentationPanel.is-maximized .async-tool-resize-handle,
-    #asyncFloatingTimer.is-maximized .async-tool-resize-handle {
-        display: none !important
-    }
+    #asyncFloatingTimer.is-maximized .async-tool-resize-handle{display:none!important}
 
 
     #readingToolsPanel.is-maximized .async-tool-resize-handle,
@@ -2489,73 +2211,34 @@
     #asyncCalcPanel.is-maximized .async-tool-resize-handle,
     #asyncSoundPanel.is-maximized .async-tool-resize-handle,
     #asyncPresentationPanel.is-maximized .async-tool-resize-handle,
-    #asyncFloatingTimer.is-maximized .async-tool-resize-handle {
-        display: none !important
-    }
-
-    #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) {
-        pointer-events: auto;
-        cursor: crosshair
-    }
-
-    #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) #asyncPresentationCanvas {
-        pointer-events: auto;
-        cursor: crosshair
-    }
+    #asyncFloatingTimer.is-maximized .async-tool-resize-handle{display:none!important}
+    #asyncPresentationOverlay:is(.mode-draw,.mode-highlight,.mode-arrow,.mode-rectangle,.mode-circle,.mode-text,.mode-erase){pointer-events:auto;cursor:crosshair}
+    #asyncPresentationOverlay:is(.mode-draw,.mode-highlight,.mode-arrow,.mode-rectangle,.mode-circle,.mode-text,.mode-erase) #asyncPresentationCanvas{pointer-events:auto;cursor:crosshair}
 
 
     /* Higher-specificity overrides for the controls' original component styles. */
     #asyncNotesPanel .aux-window-actions .mac-close,
     #asyncCalcPanel .aux-window-actions .mac-close,
     #asyncSoundPanel .aux-window-actions .mac-close,
-    #asyncPresentationPanel .aux-window-actions .mac-close {
-        background: #ff5f57 !important;
-        color: transparent !important
-    }
-
+    #asyncPresentationPanel .aux-window-actions .mac-close {background:#ff5f57!important;color:transparent!important}
     #asyncNotesPanel .aux-window-actions .mac-minimize,
     #asyncCalcPanel .aux-window-actions .mac-minimize,
     #asyncSoundPanel .aux-window-actions .mac-minimize,
-    #asyncPresentationPanel .aux-window-actions .mac-minimize {
-        background: #febc2e !important;
-        color: transparent !important
-    }
-
+    #asyncPresentationPanel .aux-window-actions .mac-minimize {background:#febc2e!important;color:transparent!important}
     #asyncNotesPanel .aux-window-actions .mac-maximize,
     #asyncCalcPanel .aux-window-actions .mac-maximize,
     #asyncSoundPanel .aux-window-actions .mac-maximize,
-    #asyncPresentationPanel .aux-window-actions .mac-maximize {
-        background: #28c840 !important;
-        color: transparent !important
+    #asyncPresentationPanel .aux-window-actions .mac-maximize {background:#28c840!important;color:transparent!important}
+    #aftClose,#aftMinimize,#aftMaximize {
+        width:12px!important;height:12px!important;min-width:12px!important;min-height:12px!important;
+        padding:0!important;border:1px solid rgba(0,0,0,.12)!important;border-radius:50%!important;
+        color:transparent!important;font-size:0!important;line-height:0!important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.3)!important;
     }
+    #aftClose{background:#ff5f57!important}
+    #aftMinimize{background:#febc2e!important}
+    #aftMaximize{background:#28c840!important}
 
-    #aftClose,
-    #aftMinimize,
-    #aftMaximize {
-        width: 12px !important;
-        height: 12px !important;
-        min-width: 12px !important;
-        min-height: 12px !important;
-        padding: 0 !important;
-        border: 1px solid rgba(0, 0, 0, .12) !important;
-        border-radius: 50% !important;
-        color: transparent !important;
-        font-size: 0 !important;
-        line-height: 0 !important;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3) !important;
-    }
-
-    #aftClose {
-        background: #ff5f57 !important
-    }
-
-    #aftMinimize {
-        background: #febc2e !important
-    }
-
-    #aftMaximize {
-        background: #28c840 !important
-    }
 </style>
 
 <div id="readingToolsRoot">
@@ -2860,25 +2543,20 @@
             alarmLoop = null,
             alarmActive = false;
         let tickSoundEnabled = true;
-        try {
-            tickSoundEnabled = localStorage.getItem('asyncTimerTickSound') !== 'off';
-        } catch (_) {}
+        try { tickSoundEnabled = localStorage.getItem('asyncTimerTickSound') !== 'off'; } catch (_) {}
         const tickToggle = document.getElementById('aftTickToggle');
-
         function renderTickToggle() {
             if (!tickToggle) return;
             tickToggle.setAttribute('aria-pressed', String(tickSoundEnabled));
             tickToggle.setAttribute('aria-label', tickSoundEnabled ? 'Turn ticking sound off' : 'Turn ticking sound on');
             tickToggle.title = tickSoundEnabled ? 'Ticking sound on' : 'Ticking sound off';
-            tickToggle.innerHTML = tickSoundEnabled ?
-                '<i class="bi bi-volume-up-fill"></i>' :
-                '<i class="bi bi-volume-mute-fill"></i>';
+            tickToggle.innerHTML = tickSoundEnabled
+                ? '<i class="bi bi-volume-up-fill"></i>'
+                : '<i class="bi bi-volume-mute-fill"></i>';
         }
         if (tickToggle) tickToggle.addEventListener('click', () => {
             tickSoundEnabled = !tickSoundEnabled;
-            try {
-                localStorage.setItem('asyncTimerTickSound', tickSoundEnabled ? 'on' : 'off');
-            } catch (_) {}
+            try { localStorage.setItem('asyncTimerTickSound', tickSoundEnabled ? 'on' : 'off'); } catch (_) {}
             renderTickToggle();
         });
         renderTickToggle();
@@ -3255,7 +2933,7 @@
             togglePanel(false);
             panel.classList.remove('is-minimized');
         });
-        document.addEventListener('keydown', e => {
+document.addEventListener('keydown', e => {
             if (e.key === 'Escape') togglePanel(false);
         });
 
@@ -3549,9 +3227,7 @@
             if (!panel || !panel.classList.contains('is-maximized')) return;
             panel.classList.remove('is-maximized');
             let saved = null;
-            try {
-                saved = JSON.parse(panel.dataset.preMaxGeometry || 'null');
-            } catch (_) {}
+            try { saved = JSON.parse(panel.dataset.preMaxGeometry || 'null'); } catch (_) {}
             if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
                 const width = Math.min(saved.width || 400, window.innerWidth - 12);
                 const height = Math.min(saved.height || 300, window.innerHeight - 12);
@@ -3567,7 +3243,6 @@
             }
         }
         window.asyncRestoreMaximized = restoreMaximized;
-
         function setMinimize(panel, button) {
             if (!panel || !button) return;
             button.addEventListener('click', () => {
@@ -3577,7 +3252,6 @@
                 if (panel.classList.contains('is-maximized')) restoreMaximized(panel);
             });
         }
-
         function setMaximize(panel, button) {
             if (!panel || !button) return;
             button.addEventListener('click', () => {
@@ -3585,27 +3259,22 @@
                 if (panel.classList.contains('is-maximized')) {
                     restoreMaximized(panel);
                 } else {
-                    const rect = panel.getBoundingClientRect();
-                    panel.dataset.preMaxGeometry = JSON.stringify({
-                        left: rect.left,
-                        top: rect.top,
-                        width: rect.width,
-                        height: rect.height
-                    });
+                    const rect=panel.getBoundingClientRect();
+                    panel.dataset.preMaxGeometry=JSON.stringify({left:rect.left,top:rect.top,width:rect.width,height:rect.height});
                     panel.classList.add('is-maximized');
-                    panel.style.setProperty('left', '8px', 'important');
-                    panel.style.setProperty('top', '8px', 'important');
-                    panel.style.setProperty('right', 'auto', 'important');
-                    panel.style.setProperty('bottom', 'auto', 'important');
-                    panel.style.setProperty('transform', 'none', 'important');
-                    panel.style.setProperty('width', Math.max(180, window.innerWidth - 16) + 'px', 'important');
-                    panel.style.setProperty('height', Math.max(130, window.innerHeight - 16) + 'px', 'important');
-                    panel.style.setProperty('max-width', 'none', 'important');
-                    panel.style.setProperty('max-height', 'none', 'important');
-                    panel.dataset.userPositioned = '1';
+                    panel.style.setProperty('left','8px','important');
+                    panel.style.setProperty('top','8px','important');
+                    panel.style.setProperty('right','auto','important');
+                    panel.style.setProperty('bottom','auto','important');
+                    panel.style.setProperty('transform','none','important');
+                    panel.style.setProperty('width',Math.max(180,window.innerWidth-16)+'px','important');
+                    panel.style.setProperty('height',Math.max(130,window.innerHeight-16)+'px','important');
+                    panel.style.setProperty('max-width','none','important');
+                    panel.style.setProperty('max-height','none','important');
+                    panel.dataset.userPositioned='1';
                 }
-                button.title = panel.classList.contains('is-maximized') ? 'Restore window' : 'Maximize window';
-                button.setAttribute('aria-label', button.title);
+                button.title=panel.classList.contains('is-maximized')?'Restore window':'Maximize window';
+                button.setAttribute('aria-label',button.title);
             });
         }
         setMinimize(notesPanel, byId('asyncNotesMinimize'));
@@ -3796,35 +3465,14 @@
 
             const directions = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
             const minSizes = {
-                readingToolsPanel: {
-                    width: 270,
-                    height: 180
-                },
-                asyncNotesPanel: {
-                    width: 260,
-                    height: 230
-                },
-                asyncCalcPanel: {
-                    width: 250,
-                    height: 250
-                },
-                asyncSoundPanel: {
-                    width: 255,
-                    height: 205
-                },
-                asyncPresentationPanel: {
-                    width: 250,
-                    height: 175
-                },
-                asyncFloatingTimer: {
-                    width: 205,
-                    height: 125
-                }
+                readingToolsPanel: { width: 270, height: 180 },
+                asyncNotesPanel: { width: 260, height: 230 },
+                asyncCalcPanel: { width: 250, height: 250 },
+                asyncSoundPanel: { width: 255, height: 205 },
+                asyncPresentationPanel: { width: 250, height: 175 },
+                asyncFloatingTimer: { width: 205, height: 125 }
             };
-            const minSize = minSizes[panel.id] || {
-                width: 230,
-                height: 160
-            };
+            const minSize = minSizes[panel.id] || { width: 230, height: 160 };
 
             directions.forEach(direction => {
                 const handle = document.createElement('div');
@@ -3870,9 +3518,7 @@
                     panel.style.setProperty('max-height', 'none', 'important');
                     panel.dataset.userPositioned = '1';
 
-                    try {
-                        handle.setPointerCapture(event.pointerId);
-                    } catch (_) {}
+                    try { handle.setPointerCapture(event.pointerId); } catch (_) {}
 
                     const move = e => {
                         if (e.pointerId !== event.pointerId) return;
@@ -3935,7 +3581,7 @@
             presentationPanel,
             timerBox
         ].forEach(makeResizable);
-        window.addEventListener('resize', () => {
+window.addEventListener('resize', () => {
             [notesPanel, calcPanel, soundPanel, byId('readingToolsPanel')].forEach(panel => {
                 if (!panel.classList.contains('is-open')) return;
                 if (!panel.dataset.userPositioned) {
@@ -4062,18 +3708,12 @@
 
         function stopMainAmbience(update = true) {
             ambienceNodes.forEach(node => {
-                try {
-                    node.stop();
-                } catch (_) {}
-                try {
-                    node.disconnect();
-                } catch (_) {}
+                try { node.stop(); } catch (_) {}
+                try { node.disconnect(); } catch (_) {}
             });
             ambienceNodes = [];
             if (ambienceGain) {
-                try {
-                    ambienceGain.disconnect();
-                } catch (_) {}
+                try { ambienceGain.disconnect(); } catch (_) {}
                 ambienceGain = null;
             }
             if (update) soundStatus.textContent = 'Ambient sound stopped. Audio-library music can continue independently.';
@@ -4095,7 +3735,6 @@
                 soundStatus.textContent = 'Playback was blocked or the file could not be loaded. Check the file path and press Play again.';
             }
         }
-
         function stopLibraryAudio() {
             if (!libraryAudio) return;
             libraryAudio.pause();
@@ -4144,13 +3783,7 @@
                 noise.loop = true;
                 const filter = ctx.createBiquadFilter();
                 filter.type = selectedSound === 'forest' ? 'bandpass' : 'lowpass';
-                filter.frequency.value = ({
-                    ocean: 520,
-                    rain: 2600,
-                    white: 12000,
-                    fire: 1800,
-                    forest: 1200
-                })[selectedSound] || 2000;
+                filter.frequency.value = ({ ocean: 520, rain: 2600, white: 12000, fire: 1800, forest: 1200 })[selectedSound] || 2000;
                 const tone = ctx.createGain();
                 tone.gain.value = selectedSound === 'fire' ? .72 : 1;
                 noise.connect(filter);
@@ -4203,10 +3836,7 @@
             presentCursor = byId('asyncPresentationCursor');
         const presentCanvas = byId('asyncPresentationCanvas'),
             presentCtx = presentCanvas.getContext('2d');
-        let presentMode = '',
-            presentDrawing = false,
-            lastPoint = null,
-            shapeBaseImage = null;
+        let presentMode = '', presentDrawing = false, lastPoint = null, shapeBaseImage = null;
 
         function resizePresentCanvas() {
             const dpr = window.devicePixelRatio || 1;
@@ -4238,7 +3868,6 @@
             text: 'Text: click the page and enter a label.',
             erase: 'Eraser: swipe over annotations to remove them.'
         };
-
         function setPresentMode(mode) {
             presentMode = mode || '';
             presentDrawing = false;
@@ -4254,112 +3883,60 @@
 
         const getPresentColor = () => byId('asyncPresentationColor').value || '#ff2d55';
         const getPresentSize = () => Number(byId('asyncPresentationSize').value) || 14;
-
-        function drawArrow(x1, y1, x2, y2) {
-            const angle = Math.atan2(y2 - y1, x2 - x1),
-                head = Math.max(12, getPresentSize() * 1.35);
+        function drawArrow(x1,y1,x2,y2) {
+            const angle=Math.atan2(y2-y1,x2-x1), head=Math.max(12,getPresentSize()*1.35);
             presentCtx.beginPath();
-            presentCtx.moveTo(x1, y1);
-            presentCtx.lineTo(x2, y2);
-            presentCtx.moveTo(x2, y2);
-            presentCtx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
-            presentCtx.moveTo(x2, y2);
-            presentCtx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+            presentCtx.moveTo(x1,y1);presentCtx.lineTo(x2,y2);
+            presentCtx.moveTo(x2,y2);
+            presentCtx.lineTo(x2-head*Math.cos(angle-Math.PI/6),y2-head*Math.sin(angle-Math.PI/6));
+            presentCtx.moveTo(x2,y2);
+            presentCtx.lineTo(x2-head*Math.cos(angle+Math.PI/6),y2-head*Math.sin(angle+Math.PI/6));
             presentCtx.stroke();
         }
-
-        function previewShape(x, y) {
-            if (!shapeBaseImage || !lastPoint) return;
-            presentCtx.putImageData(shapeBaseImage, 0, 0);
-            presentCtx.save();
-            presentCtx.strokeStyle = getPresentColor();
-            presentCtx.lineWidth = Math.max(2, getPresentSize() / 3);
-            const left = Math.min(lastPoint.x, x),
-                top = Math.min(lastPoint.y, y),
-                width = Math.abs(x - lastPoint.x),
-                height = Math.abs(y - lastPoint.y);
-            if (presentMode === 'arrow') drawArrow(lastPoint.x, lastPoint.y, x, y);
-            else if (presentMode === 'rectangle') presentCtx.strokeRect(left, top, width, height);
-            else if (presentMode === 'circle') {
-                presentCtx.beginPath();
-                presentCtx.ellipse(left + width / 2, top + height / 2, Math.max(1, width / 2), Math.max(1, height / 2), 0, 0, Math.PI * 2);
-                presentCtx.stroke();
-            }
+        function previewShape(x,y) {
+            if(!shapeBaseImage||!lastPoint)return;
+            presentCtx.putImageData(shapeBaseImage,0,0);
+            presentCtx.save();presentCtx.strokeStyle=getPresentColor();presentCtx.lineWidth=Math.max(2,getPresentSize()/3);
+            const left=Math.min(lastPoint.x,x),top=Math.min(lastPoint.y,y),width=Math.abs(x-lastPoint.x),height=Math.abs(y-lastPoint.y);
+            if(presentMode==='arrow')drawArrow(lastPoint.x,lastPoint.y,x,y);
+            else if(presentMode==='rectangle')presentCtx.strokeRect(left,top,width,height);
+            else if(presentMode==='circle'){presentCtx.beginPath();presentCtx.ellipse(left+width/2,top+height/2,Math.max(1,width/2),Math.max(1,height/2),0,0,Math.PI*2);presentCtx.stroke();}
             presentCtx.restore();
         }
-        document.addEventListener('pointermove', event => {
-            if (!presentMode) return;
-            presentCursor.style.left = event.clientX + 'px';
-            presentCursor.style.top = event.clientY + 'px';
-            presentOverlay.style.setProperty('--spot-x', event.clientX + 'px');
-            presentOverlay.style.setProperty('--spot-y', event.clientY + 'px');
-            if (!presentDrawing || !lastPoint) return;
-            if (['arrow', 'rectangle', 'circle'].includes(presentMode)) {
-                previewShape(event.clientX, event.clientY);
-                return;
-            }
+        document.addEventListener('pointermove',event=>{
+            if(!presentMode)return;
+            presentCursor.style.left=event.clientX+'px';presentCursor.style.top=event.clientY+'px';
+            presentOverlay.style.setProperty('--spot-x',event.clientX+'px');
+            presentOverlay.style.setProperty('--spot-y',event.clientY+'px');
+            if(!presentDrawing||!lastPoint)return;
+            if(['arrow','rectangle','circle'].includes(presentMode)){previewShape(event.clientX,event.clientY);return;}
             presentCtx.save();
-            presentCtx.lineWidth = presentMode === 'erase' ? getPresentSize() * 2.4 : presentMode === 'highlight' ? getPresentSize() * 2.5 : getPresentSize();
-            if (presentMode === 'highlight') {
-                presentCtx.globalAlpha = .32;
-                presentCtx.strokeStyle = '#ffe66d';
-                presentCtx.globalCompositeOperation = 'source-over';
-            } else if (presentMode === 'erase') {
-                presentCtx.globalAlpha = 1;
-                presentCtx.globalCompositeOperation = 'destination-out';
-            } else {
-                presentCtx.globalAlpha = 1;
-                presentCtx.globalCompositeOperation = 'source-over';
-                presentCtx.strokeStyle = getPresentColor();
-            }
-            presentCtx.beginPath();
-            presentCtx.moveTo(lastPoint.x, lastPoint.y);
-            presentCtx.lineTo(event.clientX, event.clientY);
-            presentCtx.stroke();
-            presentCtx.restore();
-            lastPoint = {
-                x: event.clientX,
-                y: event.clientY
-            };
+            presentCtx.lineWidth=presentMode==='erase'?getPresentSize()*2.4:presentMode==='highlight'?getPresentSize()*2.5:getPresentSize();
+            if(presentMode==='highlight'){presentCtx.globalAlpha=.32;presentCtx.strokeStyle='#ffe66d';presentCtx.globalCompositeOperation='source-over';}
+            else if(presentMode==='erase'){presentCtx.globalAlpha=1;presentCtx.globalCompositeOperation='destination-out';}
+            else{presentCtx.globalAlpha=1;presentCtx.globalCompositeOperation='source-over';presentCtx.strokeStyle=getPresentColor();}
+            presentCtx.beginPath();presentCtx.moveTo(lastPoint.x,lastPoint.y);presentCtx.lineTo(event.clientX,event.clientY);presentCtx.stroke();presentCtx.restore();
+            lastPoint={x:event.clientX,y:event.clientY};
         });
-        presentCanvas.addEventListener('pointerdown', event => {
-            if (!['draw', 'highlight', 'arrow', 'rectangle', 'circle', 'text', 'erase'].includes(presentMode)) return;
-            if (presentMode === 'text') {
-                const label = window.prompt('Enter presentation text:');
-                if (label && label.trim()) {
-                    presentCtx.save();
-                    presentCtx.globalCompositeOperation = 'source-over';
-                    presentCtx.globalAlpha = 1;
-                    presentCtx.fillStyle = getPresentColor();
-                    presentCtx.font = `700 ${Math.max(16,getPresentSize())}px Arial,sans-serif`;
-                    presentCtx.fillText(label.trim().slice(0, 120), event.clientX, event.clientY);
-                    presentCtx.restore();
-                }
+        presentCanvas.addEventListener('pointerdown',event=>{
+            if(!['draw','highlight','arrow','rectangle','circle','text','erase'].includes(presentMode))return;
+            if(presentMode==='text'){
+                const label=window.prompt('Enter presentation text:');
+                if(label&&label.trim()){presentCtx.save();presentCtx.globalCompositeOperation='source-over';presentCtx.globalAlpha=1;presentCtx.fillStyle=getPresentColor();presentCtx.font=`700 ${Math.max(16,getPresentSize())}px Arial,sans-serif`;presentCtx.fillText(label.trim().slice(0,120),event.clientX,event.clientY);presentCtx.restore();}
                 return;
             }
-            presentDrawing = true;
-            lastPoint = {
-                x: event.clientX,
-                y: event.clientY
-            };
-            if (['arrow', 'rectangle', 'circle'].includes(presentMode)) shapeBaseImage = presentCtx.getImageData(0, 0, presentCanvas.width, presentCanvas.height);
-            try {
-                presentCanvas.setPointerCapture(event.pointerId);
-            } catch (_) {}
+            presentDrawing=true;lastPoint={x:event.clientX,y:event.clientY};
+            if(['arrow','rectangle','circle'].includes(presentMode))shapeBaseImage=presentCtx.getImageData(0,0,presentCanvas.width,presentCanvas.height);
+            try{presentCanvas.setPointerCapture(event.pointerId);}catch(_){}
         });
-        const finishPresentationStroke = () => {
-            presentDrawing = false;
-            lastPoint = null;
-            shapeBaseImage = null;
-        };
-        presentCanvas.addEventListener('pointerup', finishPresentationStroke);
-        presentCanvas.addEventListener('pointercancel', finishPresentationStroke);
-        byId('asyncPresentationClear').addEventListener('click', () => presentCtx.clearRect(0, 0, innerWidth, innerHeight));
-        byId('asyncPresentationExit').addEventListener('click', () => setPresentMode(''));
-        byId('asyncPresentationSize').addEventListener('input', event => {
-            byId('asyncPresentationSizeValue').textContent = event.target.value + 'px';
-            presentCursor.style.width = event.target.value + 'px';
-            presentCursor.style.height = event.target.value + 'px';
+        const finishPresentationStroke=()=>{presentDrawing=false;lastPoint=null;shapeBaseImage=null;};
+        presentCanvas.addEventListener('pointerup',finishPresentationStroke);
+        presentCanvas.addEventListener('pointercancel',finishPresentationStroke);
+        byId('asyncPresentationClear').addEventListener('click',()=>presentCtx.clearRect(0,0,innerWidth,innerHeight));
+        byId('asyncPresentationExit').addEventListener('click',()=>setPresentMode(''));
+        byId('asyncPresentationSize').addEventListener('input',event=>{
+            byId('asyncPresentationSizeValue').textContent=event.target.value+'px';
+            presentCursor.style.width=event.target.value+'px';presentCursor.style.height=event.target.value+'px';
         });
 
         const themeObserver = new MutationObserver(() => {
