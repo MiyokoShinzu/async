@@ -1207,11 +1207,17 @@ if (
 ========================================================= */
 
     .topbar {
-
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
         transition:
             margin-left 0.3s ease,
             width 0.3s ease;
+    }
 
+    .topbar,
+    .topbar * {
+        box-sizing: border-box;
     }
 
 
@@ -1845,8 +1851,51 @@ if (
     .async-developer-mode .topbar {
         position: relative;
         isolation: isolate;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
         border-bottom: 1px solid rgba(67, 190, 255, .38);
         box-shadow: 0 5px 22px rgba(0, 150, 255, .09);
+    }
+
+    /* A soft animated glow travels along the lower edge without changing layout size. */
+    .async-developer-mode .topbar::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 2px;
+        z-index: 2;
+        pointer-events: none;
+        background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(0, 190, 255, .12) 12%,
+                rgba(0, 210, 255, .88) 38%,
+                rgba(160, 120, 255, .72) 58%,
+                rgba(0, 190, 255, .18) 82%,
+                transparent 100%);
+        background-size: 220% 100%;
+        opacity: .78;
+        filter: blur(.35px);
+        animation: developer-border-glow 7s ease-in-out infinite;
+    }
+
+    @keyframes developer-border-glow {
+        0% {
+            background-position: 100% 0;
+            opacity: .38;
+        }
+
+        50% {
+            background-position: 0 0;
+            opacity: .9;
+        }
+
+        100% {
+            background-position: -100% 0;
+            opacity: .38;
+        }
     }
 
     .async-developer-mode .topbar::after {
@@ -2191,7 +2240,25 @@ if (
     .async-developer-mode .topbar-left,
     .async-developer-mode .topbar-user {
         min-width: 0;
+        max-width: 100%;
         flex-shrink: 1;
+    }
+
+    .async-developer-mode .topbar-left {
+        flex: 1 1 0%;
+        overflow: hidden;
+    }
+
+    .async-developer-mode .topbar-user {
+        flex: 0 1 auto;
+    }
+
+    .async-developer-mode .topbar-title,
+    .async-developer-mode #asyncDevTyping {
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .async-developer-mode .topbar-user-info {
@@ -2217,8 +2284,10 @@ if (
 
     @media (max-width: 991px) {
         .async-developer-mode .topbar {
-            width: 100%;
-            max-width: 100%;
+            width: 100% !important;
+            max-width: 100vw;
+            min-width: 0;
+            margin-left: 0 !important;
         }
 
         .async-developer-mode .topbar-left {
@@ -2275,6 +2344,7 @@ if (
         .async-developer-mode body::before,
         .async-developer-mode body::after,
         .async-developer-mode .topbar::after,
+        .async-developer-mode .topbar::before,
         .async-developer-mode .async-dev-rank {
             animation-duration: .01ms !important;
             animation-iteration-count: 1 !important;
