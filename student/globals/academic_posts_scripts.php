@@ -409,7 +409,6 @@
         display: block;
         margin-top: 9px;
         text-align: center;
-        opacity: .72;
         font-size: 10px;
     }
 
@@ -512,187 +511,915 @@
         }
     }
 
-/* Quiet, theme-aware floating study tools */
-#asyncNotesFab, #asyncCalcFab {
-    position: fixed;
-    right: 22px;
-    z-index: 99989;
-    width: 46px;
-    height: 46px;
-    border: 1px solid var(--aux-launch-border, rgba(255,255,255,.35));
-    border-radius: 15px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 18px;
-    opacity: .72;
-    box-shadow: 0 4px 14px rgba(15,23,42,.13);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: opacity .18s ease, transform .18s ease, box-shadow .18s ease;
-}
-#asyncNotesFab { bottom: 82px; background: var(--aux-notes-fab, rgba(13,148,136,.72)); }
-#asyncCalcFab { bottom: 138px; background: var(--aux-calc-fab, rgba(65,105,225,.72)); }
-#asyncNotesPanel .aux-head { background:#0f8f83; }
-#asyncCalcPanel .aux-head { background:#4169e1; }
-#asyncNotesFab:hover, #asyncCalcFab:hover,
-#asyncNotesFab:focus-visible, #asyncCalcFab:focus-visible {
-    opacity: 1;
-    transform: translateY(-2px);
-    box-shadow: 0 7px 20px rgba(15,23,42,.2);
-    outline: none;
-}
-#asyncNotesPanel, #asyncCalcPanel {
-    position: fixed;
-    right: 22px;
-    z-index: 100010;
-    display: none;
-    color: var(--aux-text, #172033);
-    background: var(--aux-bg, rgba(255,255,255,.97));
-    border: 1px solid var(--aux-border, rgba(148,163,184,.4));
-    border-radius: 16px;
-    box-shadow: 0 16px 45px rgba(15,23,42,.22);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-}
-#asyncNotesPanel.is-open, #asyncCalcPanel.is-open { display: flex; flex-direction: column; }
-#asyncNotesPanel { bottom: 138px; width: min(470px,calc(100vw - 28px)); height: min(620px,76vh); }
-#asyncCalcPanel { bottom: 138px; width: min(390px,calc(100vw - 28px)); padding: 0 13px 13px; gap: 9px; }
-.aux-head {
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    padding: 11px 13px; color: #fff; background: var(--aux-accent, #4169e1);
-    flex-shrink: 0; cursor: grab; touch-action: none; user-select: none;
-}
-.aux-head:active { cursor: grabbing; }
-.aux-head strong { font-size: 13px; }
-.aux-head button { border: 0; background: transparent; color: #fff; font-size: 21px; cursor: pointer; padding: 2px 6px; }
-.aux-head .aux-drag-hint { opacity: .75; font-size: 10px; margin-left: auto; margin-right: 5px; }
-#asyncNotesPanel .notes-toolbar { display:flex; gap:7px; padding:10px 12px; border-bottom:1px solid var(--aux-border); }
-#asyncNotesPanel select, #asyncNotesPanel input, #asyncNotesPanel button,
-#asyncCalcPanel button, #asyncCalcPanel select {
-    border:1px solid var(--aux-border); border-radius:8px; padding:8px;
-    font-size:12px; color:var(--aux-text); background:var(--aux-control);
-}
-#asyncNotesPanel select { flex:1; min-width:0; }
-#asyncNotesPanel .notes-toolbar button, #asyncCalcPanel button { cursor:pointer; }
-#asyncNotesPanel #asyncNoteTitle {
-    margin:10px 12px 0; width:calc(100% - 24px); padding:10px;
-    border:1px solid var(--aux-border); border-radius:8px;
-    color:var(--aux-text); background:var(--aux-control);
-}
-#asyncQuillEditor { flex:1; min-height:0; overflow:auto; background:var(--aux-editor-bg); color:var(--aux-editor-text); }
-#asyncNotesPanel .ql-toolbar.ql-snow { border-left:0; border-right:0; border-top:0; border-color:var(--aux-border); }
-#asyncNotesPanel .ql-container.ql-snow { border:0; font-size:14px; }
-#asyncNotesPanel .ql-editor { color:var(--aux-editor-text); }
-#asyncNotesPanel .ql-editor.ql-blank::before { color:var(--aux-text); opacity:.55; }
-#asyncNotesPanel .ql-snow .ql-stroke { stroke:var(--aux-text); }
-#asyncNotesPanel .ql-snow .ql-fill { fill:var(--aux-text); }
-#asyncNotesPanel .ql-snow .ql-picker { color:var(--aux-text); }
-#asyncNotesPanel .notes-footer {
-    padding:8px 12px; border-top:1px solid var(--aux-border); color:var(--aux-text);
-    opacity:.72; font-size:10px; display:flex; justify-content:space-between; gap:8px;
-}
-#asyncCalcDisplay {
-    width:100%; padding:14px 11px; border:1px solid var(--aux-border);
-    border-radius:10px; background:var(--aux-display-bg); color:var(--aux-text);
-    font-size:25px; font-weight:700; text-align:right; font-variant-numeric:tabular-nums;
-}
-#asyncCalcPanel .calc-mode { display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--aux-text); font-size:11px; }
-#asyncCalcKeys { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; }
-#asyncCalcKeys button { min-height:39px; padding:6px 2px; font-weight:650; font-size:12px; }
-#asyncCalcKeys button.calc-op { color:var(--aux-accent); background:var(--aux-op-bg); }
-#asyncCalcKeys button.calc-number { font-size:14px; }
-#asyncCalcKeys button.calc-equals { background:var(--aux-accent); color:#fff; border-color:var(--aux-accent); }
-#asyncCalcKeys button.calc-clear { color:#dc5555; }
-#asyncCalcStatus { min-height:14px; font-size:10px; color:var(--aux-text); opacity:.7; }
-#asyncCalcPanel .calc-memory { display:flex; gap:6px; }
-#asyncCalcPanel .calc-memory button { flex:1; min-height:30px; padding:4px; font-size:10px; }
-#asyncCalcPanel .calc-memory button:hover, #asyncCalcKeys button:hover { filter:brightness(.96); }
-html[data-theme="dark"] #asyncNotesPanel,
-html[data-theme="dark"] #asyncCalcPanel {
-    --aux-bg: rgba(25,32,45,.97); --aux-text:#edf2fa; --aux-border:rgba(148,163,184,.25);
-    --aux-control:rgba(255,255,255,.07); --aux-editor-bg:#202938; --aux-editor-text:#edf2fa;
-    --aux-display-bg:#111827; --aux-op-bg:rgba(65,105,225,.16);
-}
-@media(max-width:480px) {
-  #asyncNotesFab, #asyncCalcFab { right:14px; width:43px; height:43px; }
-  #asyncNotesFab { bottom:76px; } #asyncCalcFab { bottom:128px; }
-  #asyncNotesPanel, #asyncCalcPanel { right:10px; width:calc(100vw - 20px); }
-  #asyncNotesPanel { bottom:128px; height:min(72vh,600px); }
-  #asyncCalcPanel { bottom:128px; }
-  #asyncCalcKeys { gap:5px; }
-  #asyncCalcKeys button { min-height:36px; }
-}
+    /* Quiet, theme-aware floating study tools */
+    #asyncNotesFab,
+    #asyncCalcFab {
+        position: fixed;
+        right: 22px;
+        z-index: 99989;
+        width: 46px;
+        height: 46px;
+        border: 1px solid var(--aux-launch-border, rgba(255, 255, 255, .35));
+        border-radius: 15px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 18px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, .13);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    #asyncNotesFab {
+        bottom: 82px;
+        background: var(--aux-notes-fab, rgba(13, 148, 136, .72));
+    }
+
+    #asyncCalcFab {
+        bottom: 138px;
+        background: var(--aux-calc-fab, rgba(65, 105, 225, .72));
+    }
+
+    #asyncNotesPanel .aux-head {
+        background: #0f8f83;
+    }
+
+    #asyncCalcPanel .aux-head {
+        background: #4169e1;
+    }
+
+    #asyncNotesFab:hover,
+    #asyncCalcFab:hover,
+    #asyncNotesFab:focus-visible,
+    #asyncCalcFab:focus-visible {
+        opacity: 1;
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px rgba(15, 23, 42, .2);
+        outline: none;
+    }
+
+    #asyncNotesPanel,
+    #asyncCalcPanel {
+        position: fixed;
+        right: 22px;
+        z-index: 100010;
+        display: none;
+        color: var(--aux-text, #172033);
+        background: var(--aux-bg, rgba(255, 255, 255, .97));
+        border: 1px solid var(--aux-border, rgba(148, 163, 184, .4));
+        border-radius: 16px;
+        box-shadow: 0 16px 45px rgba(15, 23, 42, .22);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+    }
+
+    #asyncNotesPanel.is-open,
+    #asyncCalcPanel.is-open {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #asyncNotesPanel {
+        bottom: 138px;
+        width: min(470px, calc(100vw - 28px));
+        height: min(620px, 76vh);
+    }
+
+    #asyncCalcPanel {
+        bottom: 138px;
+        width: min(390px, calc(100vw - 28px));
+        padding: 0 13px 13px;
+        gap: 9px;
+    }
+
+    .aux-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 11px 13px;
+        color: #fff;
+        background: var(--aux-accent, #4169e1);
+        flex-shrink: 0;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+    }
+
+    .aux-head:active {
+        cursor: grabbing;
+    }
+
+    .aux-head strong {
+        font-size: 13px;
+    }
+
+    .aux-head button {
+        border: 0;
+        background: transparent;
+        color: #fff;
+        font-size: 21px;
+        cursor: pointer;
+        padding: 2px 6px;
+    }
+
+    .aux-head .aux-drag-hint {
+        opacity: .75;
+        font-size: 10px;
+        margin-left: auto;
+        margin-right: 5px;
+    }
+
+    #asyncNotesPanel .notes-toolbar {
+        display: flex;
+        gap: 7px;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--aux-border);
+    }
+
+    #asyncNotesPanel select,
+    #asyncNotesPanel input,
+    #asyncNotesPanel button,
+    #asyncCalcPanel button,
+    #asyncCalcPanel select {
+        border: 1px solid var(--aux-border);
+        border-radius: 8px;
+        padding: 8px;
+        font-size: 12px;
+        color: var(--aux-text);
+        background: var(--aux-control);
+    }
+
+    #asyncNotesPanel select {
+        flex: 1;
+        min-width: 0;
+    }
+
+    #asyncNotesPanel .notes-toolbar button,
+    #asyncCalcPanel button {
+        cursor: pointer;
+    }
+
+    #asyncNotesPanel #asyncNoteTitle {
+        margin: 10px 12px 0;
+        width: calc(100% - 24px);
+        padding: 10px;
+        border: 1px solid var(--aux-border);
+        border-radius: 8px;
+        color: var(--aux-text);
+        background: var(--aux-control);
+    }
+
+    #asyncQuillEditor {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        background: var(--aux-editor-bg);
+        color: var(--aux-editor-text);
+    }
+
+    #asyncNotesPanel .ql-toolbar.ql-snow {
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+        border-color: var(--aux-border);
+    }
+
+    #asyncNotesPanel .ql-container.ql-snow {
+        border: 0;
+        font-size: 14px;
+    }
+
+    #asyncNotesPanel .ql-editor {
+        color: var(--aux-editor-text);
+    }
+
+    #asyncNotesPanel .ql-editor.ql-blank::before {
+        color: var(--aux-text);
+        opacity: .55;
+    }
+
+    #asyncNotesPanel .ql-snow .ql-stroke {
+        stroke: var(--aux-text);
+    }
+
+    #asyncNotesPanel .ql-snow .ql-fill {
+        fill: var(--aux-text);
+    }
+
+    #asyncNotesPanel .ql-snow .ql-picker {
+        color: var(--aux-text);
+    }
+
+    #asyncNotesPanel .notes-footer {
+        padding: 8px 12px;
+        border-top: 1px solid var(--aux-border);
+        color: var(--aux-text);
+        opacity: .72;
+        font-size: 10px;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    #asyncCalcDisplay {
+        width: 100%;
+        padding: 14px 11px;
+        border: 1px solid var(--aux-border);
+        border-radius: 10px;
+        background: var(--aux-display-bg);
+        color: var(--aux-text);
+        font-size: 25px;
+        font-weight: 700;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    #asyncCalcPanel .calc-mode {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--aux-text);
+        font-size: 11px;
+    }
+
+    #asyncCalcKeys {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    #asyncCalcKeys button {
+        min-height: 39px;
+        padding: 6px 2px;
+        font-weight: 650;
+        font-size: 12px;
+    }
+
+    #asyncCalcKeys button.calc-op {
+        color: var(--aux-accent);
+        background: var(--aux-op-bg);
+    }
+
+    #asyncCalcKeys button.calc-number {
+        font-size: 14px;
+    }
+
+    #asyncCalcKeys button.calc-equals {
+        background: var(--aux-accent);
+        color: #fff;
+        border-color: var(--aux-accent);
+    }
+
+    #asyncCalcKeys button.calc-clear {
+        color: #dc5555;
+    }
+
+    #asyncCalcStatus {
+        min-height: 14px;
+        font-size: 10px;
+        color: var(--aux-text);
+    }
+
+    #asyncCalcPanel .calc-memory {
+        display: flex;
+        gap: 6px;
+    }
+
+    #asyncCalcPanel .calc-memory button {
+        flex: 1;
+        min-height: 30px;
+        padding: 4px;
+        font-size: 10px;
+    }
+
+    #asyncCalcPanel .calc-memory button:hover,
+    #asyncCalcKeys button:hover {
+        filter: brightness(.96);
+    }
+
+    html[data-theme="dark"] #asyncNotesPanel,
+    html[data-theme="dark"] #asyncCalcPanel {
+        --aux-bg: rgba(25, 32, 45, .97);
+        --aux-text: #edf2fa;
+        --aux-border: rgba(148, 163, 184, .25);
+        --aux-control: rgba(255, 255, 255, .07);
+        --aux-editor-bg: #202938;
+        --aux-editor-text: #edf2fa;
+        --aux-display-bg: #111827;
+        --aux-op-bg: rgba(65, 105, 225, .16);
+    }
+
+    @media(max-width:480px) {
+
+        #asyncNotesFab,
+        #asyncCalcFab {
+            right: 14px;
+            width: 43px;
+            height: 43px;
+        }
+
+        #asyncNotesFab {
+            bottom: 76px;
+        }
+
+        #asyncCalcFab {
+            bottom: 128px;
+        }
+
+        #asyncNotesPanel,
+        #asyncCalcPanel {
+            right: 10px;
+            width: calc(100vw - 20px);
+        }
+
+        #asyncNotesPanel {
+            bottom: 128px;
+            height: min(72vh, 600px);
+        }
+
+        #asyncCalcPanel {
+            bottom: 128px;
+        }
+
+        #asyncCalcKeys {
+            gap: 5px;
+        }
+
+        #asyncCalcKeys button {
+            min-height: 36px;
+        }
+    }
 
 
-/* ASYNC unified centered study workspace */
-#readingToolsPanel,#asyncNotesPanel,#asyncCalcPanel,#asyncSoundPanel {
- position:fixed!important;left:50%;top:50%;right:auto;bottom:auto;
- transform:translate(-50%,-50%);width:min(540px,calc(100vw - 28px))!important;
- max-height:min(82vh,760px);border:1px solid var(--aux-border,rgba(148,163,184,.28))!important;
- border-radius:19px!important;background:var(--aux-glass,rgba(255,255,255,.9))!important;
- color:var(--aux-text,#172033)!important;box-shadow:0 22px 65px rgba(15,23,42,.23),inset 0 1px 0 rgba(255,255,255,.32)!important;
- backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
- overflow:auto;opacity:.68;transition:opacity .18s ease,box-shadow .18s ease;
-}
-#readingToolsPanel.is-open,#asyncNotesPanel.is-open,#asyncCalcPanel.is-open,#asyncSoundPanel.is-open{display:flex!important;flex-direction:column}
-#readingToolsPanel:hover,#readingToolsPanel:focus-within,#asyncNotesPanel:hover,#asyncNotesPanel:focus-within,
-#asyncCalcPanel:hover,#asyncCalcPanel:focus-within,#asyncSoundPanel:hover,#asyncSoundPanel:focus-within{opacity:.98}
-#readingToolsPanel{padding:16px!important}
-#readingToolsPanel .rt-header{position:sticky;top:-16px;z-index:2;margin:-16px -16px 13px!important;padding:13px 16px!important;
- background:rgba(65,105,225,.94);color:#fff;border:0!important;border-radius:18px 18px 0 0;cursor:grab;touch-action:none;user-select:none}
-#readingToolsPanel .rt-header strong,#readingToolsPanel .rt-close{color:#fff!important}
-#readingToolsPanel .rt-group{margin-bottom:12px}
-#readingToolsPanel .rt-btn,#readingToolsPanel .rt-select{border-radius:9px;background:var(--aux-control,rgba(15,23,42,.04));color:var(--aux-text,#172033);border-color:var(--aux-border)}
-#readingToolsPanel .rt-muted{color:var(--aux-text)}
-#asyncNotesPanel{height:min(590px,76vh)!important;width:min(500px,calc(100vw - 28px))!important}
-#asyncCalcPanel{width:min(430px,calc(100vw - 28px))!important;max-height:82vh;padding-bottom:12px!important;gap:7px!important}
-#asyncSoundPanel{width:min(390px,calc(100vw - 28px))!important;padding:0 14px 14px;gap:12px}
-#asyncNotesPanel.is-minimized,#asyncCalcPanel.is-minimized,#asyncSoundPanel.is-minimized,#readingToolsPanel.is-minimized{
- width:min(300px,calc(100vw - 28px))!important;height:auto!important;max-height:none!important;overflow:hidden!important;opacity:.82}
-#asyncNotesPanel.is-minimized>:not(.aux-head),#asyncCalcPanel.is-minimized>:not(.aux-head),
-#asyncSoundPanel.is-minimized>:not(.aux-head),#readingToolsPanel.is-minimized>:not(.rt-header){display:none!important}
-#asyncNotesPanel.is-minimized .aux-head,#asyncCalcPanel.is-minimized .aux-head,
-#asyncSoundPanel.is-minimized .aux-head,#readingToolsPanel.is-minimized .rt-header{margin:0!important;border-radius:16px!important}
-.aux-head,#readingToolsPanel .rt-header{cursor:grab;touch-action:none;user-select:none}
-.aux-head:active,#readingToolsPanel .rt-header:active{cursor:grabbing}
-.aux-window-actions,#readingToolsPanel .rt-window-actions{display:flex;align-items:center;gap:3px}
-.aux-window-actions button,#readingToolsPanel .rt-window-actions button{width:29px;height:29px;padding:0;border:0;border-radius:7px;background:rgba(255,255,255,.13);color:#fff;font-size:17px;cursor:pointer}
-#asyncNotesFab,#asyncCalcFab,#asyncSoundFab{opacity:.58;transition:opacity .2s ease,filter .2s ease}
-#asyncNotesFab:hover,#asyncCalcFab:hover,#asyncSoundFab:hover,#asyncNotesFab:focus-visible,#asyncCalcFab:focus-visible,#asyncSoundFab:focus-visible{opacity:1;filter:saturate(1.15)}
-#asyncSoundFab{position:fixed;right:22px;bottom:194px;z-index:99989;width:46px;height:46px;border:1px solid var(--aux-launch-border);
- border-radius:15px;background:var(--aux-sound-fab,rgba(217,119,6,.72));color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 4px 14px rgba(15,23,42,.13);backdrop-filter:blur(12px)}
-#asyncSoundPanel .sound-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-#asyncSoundPanel .sound-choice button{padding:11px 8px;border:1px solid var(--aux-border);border-radius:10px;background:var(--aux-control);color:var(--aux-text);cursor:pointer;font-size:12px}
-#asyncSoundPanel .sound-choice button.active{border-color:#d97706;background:rgba(217,119,6,.14)}
-#asyncSoundPanel .sound-volume{display:flex;align-items:center;gap:10px;color:var(--aux-text);font-size:12px}
-#asyncSoundPanel input[type=range]{flex:1;accent-color:#d97706}
-#asyncSoundPanel .sound-actions{display:flex;gap:8px}
-#asyncSoundPanel .sound-actions button{flex:1;padding:10px;border:0;border-radius:9px;background:#d97706;color:#fff;cursor:pointer}
-#asyncSoundStatus{font-size:11px;opacity:.7;color:var(--aux-text)}
-#asyncCalcPanel #asyncCalcDisplay{font-size:clamp(19px,4vw,25px);min-width:0}
-#asyncCalcMathResult{min-height:38px;max-height:100px;overflow:auto;padding:8px 10px;border:1px solid var(--aux-border);border-radius:9px;background:var(--aux-display-bg);color:var(--aux-text);font-size:14px;text-align:center}
-#asyncCalcSymbolic{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-#asyncCalcSymbolic button{padding:8px 5px;border:1px solid var(--aux-border);border-radius:8px;background:var(--aux-op-bg);color:var(--aux-text);font-size:11px;cursor:pointer}
-#asyncCalcVariable{width:48px;padding:5px;border:1px solid var(--aux-border);border-radius:6px;background:var(--aux-control);color:var(--aux-text)}
-#asyncCalcPanel #asyncCalcKeys{gap:5px}
-#asyncCalcPanel #asyncCalcKeys button{min-width:0;min-height:clamp(31px,5vh,39px);font-size:clamp(10px,1.5vw,12px)}
-html[data-theme="dark"] #readingToolsPanel,html[data-theme="dark"] #asyncNotesPanel,html[data-theme="dark"] #asyncCalcPanel,html[data-theme="dark"] #asyncSoundPanel{--aux-glass:rgba(25,32,45,.93);--aux-control:rgba(255,255,255,.07)}
-#asyncFloatingTimer{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);opacity:.68;transition:opacity .18s ease}
-#asyncFloatingTimer:hover,#asyncFloatingTimer:focus-within{opacity:.98}
-@media(max-width:480px){
- #asyncNotesFab,#asyncCalcFab,#asyncSoundFab{right:13px;width:42px;height:42px}
- #asyncNotesFab{bottom:72px}#asyncCalcFab{bottom:122px}#asyncSoundFab{bottom:172px}
- #readingToolsPanel,#asyncNotesPanel,#asyncCalcPanel,#asyncSoundPanel{width:calc(100vw - 18px)!important;max-height:84dvh;border-radius:15px!important}
- #asyncNotesPanel{height:76dvh!important}#asyncCalcPanel{padding-left:9px;padding-right:9px}
- #asyncCalcPanel #asyncCalcKeys{gap:4px}#asyncCalcPanel #asyncCalcKeys button{min-height:32px;padding:3px 1px}
- #readingToolsPanel{padding:12px!important}
-}
+    /* ASYNC unified centered study workspace */
+    #readingToolsPanel,
+    #asyncNotesPanel,
+    #asyncCalcPanel,
+    #asyncSoundPanel {
+        display: none !important;
+        position: fixed !important;
+        left: 50%;
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        transform: translate(-50%, -50%);
+        width: min(540px, calc(100vw - 28px)) !important;
+        max-height: min(82vh, 760px);
+        border: 1px solid var(--aux-border, rgba(148, 163, 184, .28)) !important;
+        border-radius: 19px !important;
+        background: var(--aux-glass, rgba(255, 255, 255, .9)) !important;
+        color: var(--aux-text, #172033) !important;
+        box-shadow: 0 22px 65px rgba(15, 23, 42, .23), inset 0 1px 0 rgba(255, 255, 255, .32) !important;
+        backdrop-filter: blur(22px) saturate(150%);
+        -webkit-backdrop-filter: blur(22px) saturate(150%);
+        overflow: auto;
+    }
 
+    #readingToolsPanel.is-open,
+    #asyncNotesPanel.is-open,
+    #asyncCalcPanel.is-open,
+    #asyncSoundPanel.is-open {
+        display: flex !important;
+        flex-direction: column
+    }
+
+    #readingToolsPanel:not(.is-open),
+    #asyncNotesPanel:not(.is-open),
+    #asyncCalcPanel:not(.is-open),
+    #asyncSoundPanel:not(.is-open) {
+        visibility: hidden;
+        pointer-events: none
+    }
+
+    #readingToolsPanel.is-open,
+    #asyncNotesPanel.is-open,
+    #asyncCalcPanel.is-open,
+    #asyncSoundPanel.is-open {
+        visibility: visible;
+        pointer-events: auto
+    }
+
+    #readingToolsPanel {
+        padding: 16px !important
+    }
+
+    #readingToolsPanel .rt-header {
+        position: sticky;
+        top: -16px;
+        z-index: 2;
+        margin: -16px -16px 13px !important;
+        padding: 13px 16px !important;
+        background: rgba(65, 105, 225, .94);
+        color: #fff;
+        border: 0 !important;
+        border-radius: 18px 18px 0 0;
+        cursor: grab;
+        touch-action: none;
+        user-select: none
+    }
+
+    #readingToolsPanel .rt-header strong,
+    #readingToolsPanel .rt-close {
+        color: #fff !important
+    }
+
+    #readingToolsPanel .rt-group {
+        margin-bottom: 12px
+    }
+
+    #readingToolsPanel .rt-btn,
+    #readingToolsPanel .rt-select {
+        border-radius: 9px;
+        background: var(--aux-control, rgba(15, 23, 42, .04));
+        color: var(--aux-text, #172033);
+        border-color: var(--aux-border)
+    }
+
+    #readingToolsPanel .rt-muted {
+        color: var(--aux-text)
+    }
+
+    #asyncNotesPanel {
+        height: min(590px, 76vh) !important;
+        width: min(500px, calc(100vw - 28px)) !important
+    }
+
+    #asyncCalcPanel {
+        width: min(430px, calc(100vw - 28px)) !important;
+        max-height: 82vh;
+        padding-bottom: 12px !important;
+        gap: 7px !important
+    }
+
+    #asyncSoundPanel {
+        width: min(390px, calc(100vw - 28px)) !important;
+        padding: 0 14px 14px;
+        gap: 12px
+    }
+
+    #asyncNotesPanel.is-minimized,
+    #asyncCalcPanel.is-minimized,
+    #asyncSoundPanel.is-minimized,
+    #readingToolsPanel.is-minimized {
+        width: min(300px, calc(100vw - 28px)) !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: hidden !important;
+    }
+
+    #asyncNotesPanel.is-minimized>:not(.aux-head),
+    #asyncCalcPanel.is-minimized>:not(.aux-head),
+    #asyncSoundPanel.is-minimized>:not(.aux-head),
+    #readingToolsPanel.is-minimized>:not(.rt-header) {
+        display: none !important
+    }
+
+    #asyncNotesPanel.is-minimized .aux-head,
+    #asyncCalcPanel.is-minimized .aux-head,
+    #asyncSoundPanel.is-minimized .aux-head,
+    #readingToolsPanel.is-minimized .rt-header {
+        margin: 0 !important;
+        border-radius: 16px !important
+    }
+
+    .aux-head,
+    #readingToolsPanel .rt-header {
+        cursor: grab;
+        touch-action: none;
+        user-select: none
+    }
+
+    .aux-head:active,
+    #readingToolsPanel .rt-header:active {
+        cursor: grabbing
+    }
+
+    .aux-window-actions,
+    #readingToolsPanel .rt-window-actions {
+        display: flex;
+        align-items: center;
+        gap: 3px
+    }
+
+    .aux-window-actions button,
+    #readingToolsPanel .rt-window-actions button {
+        width: 29px;
+        height: 29px;
+        padding: 0;
+        border: 0;
+        border-radius: 7px;
+        background: rgba(255, 255, 255, .13);
+        color: #fff;
+        font-size: 17px;
+        cursor: pointer
+    }
+
+
+    #asyncSoundFab {
+        position: fixed;
+        right: 22px;
+        bottom: 194px;
+        z-index: 99989;
+        width: 46px;
+        height: 46px;
+        border: 1px solid var(--aux-launch-border);
+        border-radius: 15px;
+        background: var(--aux-sound-fab, rgba(217, 119, 6, .72));
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, .13);
+        backdrop-filter: blur(12px)
+    }
+
+    #asyncSoundPanel .sound-choice {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px
+    }
+
+    #asyncSoundPanel .sound-choice button {
+        padding: 11px 8px;
+        border: 1px solid var(--aux-border);
+        border-radius: 10px;
+        background: var(--aux-control);
+        color: var(--aux-text);
+        cursor: pointer;
+        font-size: 12px
+    }
+
+    #asyncSoundPanel .sound-choice button.active {
+        border-color: #d97706;
+        background: rgba(217, 119, 6, .14)
+    }
+
+    #asyncSoundPanel .sound-volume {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--aux-text);
+        font-size: 12px
+    }
+
+    #asyncSoundPanel input[type=range] {
+        flex: 1;
+        accent-color: #d97706
+    }
+
+    #asyncSoundPanel .sound-actions {
+        display: flex;
+        gap: 8px
+    }
+
+    #asyncSoundPanel .sound-actions button {
+        flex: 1;
+        padding: 10px;
+        border: 0;
+        border-radius: 9px;
+        background: #d97706;
+        color: #fff;
+        cursor: pointer
+    }
+
+    #asyncSoundStatus {
+        font-size: 11px;
+        color: var(--aux-text)
+    }
+
+    #asyncCalcPanel #asyncCalcDisplay {
+        font-size: clamp(19px, 4vw, 25px);
+        min-width: 0
+    }
+
+    #asyncCalcMathResult {
+        min-height: 38px;
+        max-height: 100px;
+        overflow: auto;
+        padding: 8px 10px;
+        border: 1px solid var(--aux-border);
+        border-radius: 9px;
+        background: var(--aux-display-bg);
+        color: var(--aux-text);
+        font-size: 14px;
+        text-align: center
+    }
+
+    #asyncCalcSymbolic {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px
+    }
+
+    #asyncCalcSymbolic button {
+        padding: 8px 5px;
+        border: 1px solid var(--aux-border);
+        border-radius: 8px;
+        background: var(--aux-op-bg);
+        color: var(--aux-text);
+        font-size: 11px;
+        cursor: pointer
+    }
+
+    #asyncCalcVariable {
+        width: 48px;
+        padding: 5px;
+        border: 1px solid var(--aux-border);
+        border-radius: 6px;
+        background: var(--aux-control);
+        color: var(--aux-text)
+    }
+
+    #asyncCalcPanel #asyncCalcKeys {
+        gap: 5px
+    }
+
+    #asyncCalcPanel #asyncCalcKeys button {
+        min-width: 0;
+        min-height: clamp(31px, 5vh, 39px);
+        font-size: clamp(10px, 1.5vw, 12px)
+    }
+
+    html[data-theme="dark"] #readingToolsPanel,
+    html[data-theme="dark"] #asyncNotesPanel,
+    html[data-theme="dark"] #asyncCalcPanel,
+    html[data-theme="dark"] #asyncSoundPanel {
+        --aux-glass: rgba(25, 32, 45, .93);
+        --aux-control: rgba(255, 255, 255, .07)
+    }
+
+    #asyncFloatingTimer {
+        left: 50%;
+        top: 50%;
+        right: auto;
+        bottom: auto;
+        transform: translate(-50%, -50%);
+    }
+
+    @media(max-width:480px) {
+
+        #asyncNotesFab,
+        #asyncCalcFab,
+        #asyncSoundFab {
+            right: 13px;
+            width: 42px;
+            height: 42px
+        }
+
+        #asyncNotesFab {
+            bottom: 72px
+        }
+
+        #asyncCalcFab {
+            bottom: 122px
+        }
+
+        #asyncSoundFab {
+            bottom: 172px
+        }
+
+        #readingToolsPanel,
+        #asyncNotesPanel,
+        #asyncCalcPanel,
+        #asyncSoundPanel {
+            width: calc(100vw - 18px) !important;
+            max-height: 84dvh;
+            border-radius: 15px !important
+        }
+
+        #asyncNotesPanel {
+            height: 76dvh !important
+        }
+
+        #asyncCalcPanel {
+            padding-left: 9px;
+            padding-right: 9px
+        }
+
+        #asyncCalcPanel #asyncCalcKeys {
+            gap: 4px
+        }
+
+        #asyncCalcPanel #asyncCalcKeys button {
+            min-height: 32px;
+            padding: 3px 1px
+        }
+
+        #readingToolsPanel {
+            padding: 12px !important
+        }
+    }
+
+
+    /* Unified ASYNC tool appearance: one royal-blue glass style for every tool and launcher. */
+    #readingToolsFab,
+    #asyncNotesFab,
+    #asyncCalcFab,
+    #asyncSoundFab {
+        position: fixed !important;
+        right: 22px !important;
+        width: 50px !important;
+        height: 50px !important;
+        border: 1px solid rgba(255, 255, 255, .35) !important;
+        border-radius: 15px !important;
+        background: linear-gradient(145deg, #5278ed, #3157c7) !important;
+        color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 20px !important;
+        box-shadow: 0 7px 20px rgba(37, 76, 180, .28) !important;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        opacity: 1 !important;
+        transition: transform .18s ease, box-shadow .18s ease !important;
+    }
+
+    #readingToolsFab {
+        bottom: 24px !important;
+        z-index: 99990
+    }
+
+    #asyncNotesFab {
+        bottom: 82px !important
+    }
+
+    #asyncCalcFab {
+        bottom: 140px !important
+    }
+
+    #asyncSoundFab {
+        bottom: 198px !important
+    }
+
+    #readingToolsFab:hover,
+    #asyncNotesFab:hover,
+    #asyncCalcFab:hover,
+    #asyncSoundFab:hover,
+    #readingToolsFab:focus-visible,
+    #asyncNotesFab:focus-visible,
+    #asyncCalcFab:focus-visible,
+    #asyncSoundFab:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(37, 76, 180, .36) !important;
+        outline: none
+    }
+
+    #readingToolsPanel .rt-header,
+    .aux-head,
+    #asyncNotesPanel .aux-head,
+    #asyncCalcPanel .aux-head,
+    #asyncSoundPanel .aux-head {
+        background: linear-gradient(110deg, #4169e1, #3157c7) !important;
+        color: #fff !important
+    }
+
+    #asyncNotesPanel .aux-head strong,
+    #asyncCalcPanel .aux-head strong,
+    #asyncSoundPanel .aux-head strong,
+    #readingToolsPanel .rt-header strong {
+        color: #fff !important
+    }
+
+    #asyncNotesPanel .aux-window-actions button,
+    #asyncCalcPanel .aux-window-actions button,
+    #asyncSoundPanel .aux-window-actions button,
+    #readingToolsPanel .rt-window-actions button {
+        background: rgba(255, 255, 255, .16) !important;
+        color: #fff !important
+    }
+
+    #asyncNotesPanel .aux-head,
+    #asyncCalcPanel .aux-head,
+    #asyncSoundPanel .aux-head {
+        border-radius: 16px 16px 0 0
+    }
+
+    #asyncCalcExpressionPreview,
+    #asyncCalcLatexPreview {
+        min-height: 42px;
+        max-height: 110px;
+        overflow: auto;
+        padding: 9px 11px;
+        border: 1px solid var(--aux-border);
+        border-radius: 9px;
+        background: var(--aux-display-bg);
+        color: var(--aux-text);
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-wrap: anywhere
+    }
+
+    #asyncCalcExpressionPreview {
+        font-size: 17px
+    }
+
+    .calc-formula-editor {
+        display: grid;
+        gap: 6px;
+        color: var(--aux-text);
+        font-size: 11px
+    }
+
+    .calc-formula-editor label {
+        font-weight: 700
+    }
+
+    #asyncCalcLatexInput {
+        width: 100%;
+        min-height: 48px;
+        resize: vertical;
+        padding: 8px 10px;
+        border: 1px solid var(--aux-border);
+        border-radius: 8px;
+        background: var(--aux-control);
+        color: var(--aux-text);
+        font: 12px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace
+    }
+
+    #asyncCalcLatexPreview {
+        min-height: 52px;
+        font-size: 17px
+    }
+
+    #asyncCalcLatexPreview .katex-display,
+    #asyncCalcExpressionPreview .katex-display {
+        margin: 0
+    }
+
+    #asyncCalcMathResult {
+        max-height: 150px !important;
+        min-height: 48px !important
+    }
+
+    #asyncSoundPanel .sound-actions button {
+        background: #4169e1 !important
+    }
+
+    #asyncSoundPanel .sound-choice button.active {
+        border-color: #4169e1 !important;
+        background: rgba(65, 105, 225, .14) !important
+    }
+
+    #asyncSoundPanel input[type=range] {
+        accent-color: #4169e1 !important
+    }
+
+    #asyncNotesPanel .notes-toolbar button,
+    #asyncCalcPanel #asyncCalcSymbolic button,
+    #asyncCalcPanel .calc-memory button,
+    #asyncCalcPanel #asyncCalcKeys button,
+    #readingToolsPanel .rt-btn {
+        border-radius: 9px
+    }
+
+    #asyncCalcPanel #asyncCalcKeys button.calc-equals,
+    #asyncCalcPanel #asyncCalcSymbolic button:hover,
+    #asyncNotesPanel .notes-toolbar button:hover,
+    #readingToolsPanel .rt-btn:hover {
+        background: #4169e1;
+        color: #fff;
+        border-color: #4169e1
+    }
+
+    @media(max-width:480px) {
+
+        #readingToolsFab,
+        #asyncNotesFab,
+        #asyncCalcFab,
+        #asyncSoundFab {
+            right: 13px !important;
+            width: 44px !important;
+            height: 44px !important
+        }
+
+        #readingToolsFab {
+            bottom: 18px !important
+        }
+
+        #asyncNotesFab {
+            bottom: 70px !important
+        }
+
+        #asyncCalcFab {
+            bottom: 122px !important
+        }
+
+        #asyncSoundFab {
+            bottom: 174px !important
+        }
+    }
 </style>
 
 <div id="readingToolsRoot">
@@ -815,52 +1542,61 @@ html[data-theme="dark"] #readingToolsPanel,html[data-theme="dark"] #asyncNotesPa
 </div>
 
 
-<button type="button" id="asyncNotesFab" aria-label="Open notes" title="My Notes"><i class="bi bi-journal-text"></i></button>
-<button type="button" id="asyncCalcFab" aria-label="Open calculator" title="Scientific Calculator"><i class="bi bi-calculator"></i></button>
+<button type="button" id="asyncNotesFab" aria-expanded="false" aria-controls="asyncNotesPanel" aria-label="Open notes" title="My Notes"><i class="bi bi-journal-text"></i></button>
+<button type="button" id="asyncCalcFab" aria-expanded="false" aria-controls="asyncCalcPanel" aria-label="Open calculator" title="Scientific Calculator"><i class="bi bi-calculator"></i></button>
 
 <section id="asyncNotesPanel" aria-label="Personal notes">
-  <div class="aux-head" id="asyncNotesDrag"><strong><i class="bi bi-grip-horizontal"></i> My Study Notes</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncNotesMinimize" title="Minimize">−</button><button type="button" id="asyncNotesClose" aria-label="Close notes">&times;</button></span></div>
-  <div class="notes-toolbar">
-    <select id="asyncNotesList" aria-label="Saved notes"></select>
-    <button type="button" id="asyncNoteNew"><i class="bi bi-plus-lg"></i> New</button>
-    <button type="button" id="asyncNoteDelete" title="Delete note"><i class="bi bi-trash"></i></button>
-  </div>
-  <input id="asyncNoteTitle" type="text" maxlength="120" placeholder="Note title">
-  <div id="asyncQuillEditor"></div>
-  <div class="notes-footer"><span id="asyncNotesSaveStatus">Saved in this browser</span><span>Private to this device/browser</span></div>
+    <div class="aux-head" id="asyncNotesDrag"><strong><i class="bi bi-grip-horizontal"></i> My Study Notes</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncNotesMinimize" title="Minimize">−</button><button type="button" id="asyncNotesClose" aria-label="Close notes">&times;</button></span></div>
+    <div class="notes-toolbar">
+        <select id="asyncNotesList" aria-label="Saved notes"></select>
+        <button type="button" id="asyncNoteNew"><i class="bi bi-plus-lg"></i> New</button>
+        <button type="button" id="asyncNoteDelete" title="Delete note"><i class="bi bi-trash"></i></button>
+    </div>
+    <input id="asyncNoteTitle" type="text" maxlength="120" placeholder="Note title">
+    <div id="asyncQuillEditor"></div>
+    <div class="notes-footer"><span id="asyncNotesSaveStatus">Saved in this browser</span><span>Private to this device/browser</span></div>
 </section>
 
 <section id="asyncCalcPanel" aria-label="Scientific calculator">
-  <div class="aux-head" id="asyncCalcDrag" style="margin:0 -13px 2px"><strong><i class="bi bi-grip-horizontal"></i> Scientific Calculator</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncCalcMinimize" title="Minimize">−</button><button type="button" id="asyncCalcClose" aria-label="Close calculator">&times;</button></span></div>
-  <input id="asyncCalcDisplay" type="text" value="0" aria-label="Calculator display" autocomplete="off">
-  <div id="asyncCalcMathResult" aria-live="polite">Symbolic results will appear here.</div>
-  <div id="asyncCalcSymbolic"><button type="button" data-symbolic="integrate">∫ Integrate expression</button><button type="button" data-symbolic="diff">d/dx Differentiate</button><button type="button" data-symbolic="simplify">⅟ Simplify / fraction</button></div>
-  <div class="calc-mode"><span>Variable</span><input id="asyncCalcVariable" value="x" maxlength="3" aria-label="Calculus variable"><span>Trigonometry mode</span><select id="asyncCalcAngle"><option value="deg">Degrees (DEG)</option><option value="rad">Radians (RAD)</option></select></div>
-  <div class="calc-memory">
-    <button data-action="mc">MC</button><button data-action="mr">MR</button><button data-action="mplus">M+</button><button data-action="mminus">M−</button><button data-action="ans">Ans</button>
-  </div>
-  <div id="asyncCalcKeys">
-    <button class="calc-op" data-insert="sin(">sin</button><button class="calc-op" data-insert="cos(">cos</button><button class="calc-op" data-insert="tan(">tan</button><button class="calc-op" data-insert="asin(">sin⁻¹</button><button class="calc-op" data-insert="acos(">cos⁻¹</button>
-    <button class="calc-op" data-insert="atan(">tan⁻¹</button><button class="calc-op" data-insert="sinh(">sinh</button><button class="calc-op" data-insert="cosh(">cosh</button><button class="calc-op" data-insert="tanh(">tanh</button><button class="calc-op" data-insert="pi">π</button>
-    <button class="calc-op" data-insert="sqrt(">√</button><button class="calc-op" data-insert="cbrt(">∛</button><button class="calc-op" data-insert="^2">x²</button><button class="calc-op" data-insert="^3">x³</button><button class="calc-op" data-insert="^">xʸ</button>
-    <button class="calc-op" data-insert="log(">log</button><button class="calc-op" data-insert="ln(">ln</button><button class="calc-op" data-insert="exp(">eˣ</button><button class="calc-op" data-insert="abs(">abs</button><button class="calc-op" data-insert="!">n!</button>
-    <button class="calc-op" data-insert="(">(</button><button class="calc-op" data-insert=")">)</button><button class="calc-op" data-insert="%">%</button><button class="calc-op" data-insert="e">e</button><button class="calc-clear" data-action="back">⌫</button>
-    <button class="calc-number" data-insert="7">7</button><button class="calc-number" data-insert="8">8</button><button class="calc-number" data-insert="9">9</button><button class="calc-op" data-insert="/">÷</button><button class="calc-clear" data-action="clear">AC</button>
-    <button class="calc-number" data-insert="4">4</button><button class="calc-number" data-insert="5">5</button><button class="calc-number" data-insert="6">6</button><button class="calc-op" data-insert="*">×</button><button class="calc-op" data-insert="%">mod</button>
-    <button class="calc-number" data-insert="1">1</button><button class="calc-number" data-insert="2">2</button><button class="calc-number" data-insert="3">3</button><button class="calc-op" data-insert="-">−</button><button class="calc-op" data-insert="^(-1)">1/x</button>
-    <button class="calc-number" data-insert="0">0</button><button class="calc-number" data-insert=".">.</button><button class="calc-op" data-insert="pi">π</button><button class="calc-op" data-insert="+">+</button><button class="calc-equals" data-action="equals">=</button>
-  </div>
-  <div id="asyncCalcStatus">Use sin(30), cos(60), or tan(45). Results follow DEG/RAD mode.</div>
+    <div class="aux-head" id="asyncCalcDrag" style="margin:0 -13px 2px"><strong><i class="bi bi-grip-horizontal"></i> Scientific Calculator</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncCalcMinimize" title="Minimize">−</button><button type="button" id="asyncCalcClose" aria-label="Close calculator">&times;</button></span></div>
+    <input id="asyncCalcDisplay" type="text" value="0" aria-label="Calculator display" autocomplete="off">
+    <div id="asyncCalcExpressionPreview" class="calc-expression-preview" aria-label="Formatted calculator expression">0</div>
+    <div class="calc-formula-editor">
+        <label for="asyncCalcLatexInput">LaTeX formula viewer</label>
+        <textarea id="asyncCalcLatexInput" rows="2" spellcheck="false" placeholder="Type LaTeX, e.g. \\frac{1}{2} or \\int_0^1 x^2\\,dx"></textarea>
+        <div id="asyncCalcLatexPreview" class="calc-latex-preview" aria-live="polite">Your formatted formula will appear here.</div>
+    </div>
+    <div id="asyncCalcMathResult" aria-live="polite">Symbolic results will appear here.</div>
+    <div id="asyncCalcSymbolic"><button type="button" data-symbolic="integrate">∫ Integrate expression</button><button type="button" data-symbolic="diff">d/dx Differentiate</button><button type="button" data-symbolic="simplify">⅟ Simplify / fraction</button></div>
+    <div class="calc-mode"><span>Variable</span><input id="asyncCalcVariable" value="x" maxlength="3" aria-label="Calculus variable"><span>Trigonometry mode</span><select id="asyncCalcAngle">
+            <option value="deg">Degrees (DEG)</option>
+            <option value="rad">Radians (RAD)</option>
+        </select></div>
+    <div class="calc-memory">
+        <button data-action="mc">MC</button><button data-action="mr">MR</button><button data-action="mplus">M+</button><button data-action="mminus">M−</button><button data-action="ans">Ans</button>
+    </div>
+    <div id="asyncCalcKeys">
+        <button class="calc-op" data-insert="sin(">sin</button><button class="calc-op" data-insert="cos(">cos</button><button class="calc-op" data-insert="tan(">tan</button><button class="calc-op" data-insert="asin(">sin⁻¹</button><button class="calc-op" data-insert="acos(">cos⁻¹</button>
+        <button class="calc-op" data-insert="atan(">tan⁻¹</button><button class="calc-op" data-insert="sinh(">sinh</button><button class="calc-op" data-insert="cosh(">cosh</button><button class="calc-op" data-insert="tanh(">tanh</button><button class="calc-op" data-insert="pi">π</button>
+        <button class="calc-op" data-insert="sqrt(">√</button><button class="calc-op" data-insert="cbrt(">∛</button><button class="calc-op" data-insert="^2">x²</button><button class="calc-op" data-insert="^3">x³</button><button class="calc-op" data-insert="^">xʸ</button>
+        <button class="calc-op" data-insert="log(">log</button><button class="calc-op" data-insert="ln(">ln</button><button class="calc-op" data-insert="exp(">eˣ</button><button class="calc-op" data-insert="abs(">abs</button><button class="calc-op" data-insert="!">n!</button>
+        <button class="calc-op" data-insert="(">(</button><button class="calc-op" data-insert=")">)</button><button class="calc-op" data-insert="%">%</button><button class="calc-op" data-insert="e">e</button><button class="calc-clear" data-action="back">⌫</button>
+        <button class="calc-number" data-insert="7">7</button><button class="calc-number" data-insert="8">8</button><button class="calc-number" data-insert="9">9</button><button class="calc-op" data-insert="/">÷</button><button class="calc-clear" data-action="clear">AC</button>
+        <button class="calc-number" data-insert="4">4</button><button class="calc-number" data-insert="5">5</button><button class="calc-number" data-insert="6">6</button><button class="calc-op" data-insert="*">×</button><button class="calc-op" data-insert="%">mod</button>
+        <button class="calc-number" data-insert="1">1</button><button class="calc-number" data-insert="2">2</button><button class="calc-number" data-insert="3">3</button><button class="calc-op" data-insert="-">−</button><button class="calc-op" data-insert="^(-1)">1/x</button>
+        <button class="calc-number" data-insert="0">0</button><button class="calc-number" data-insert=".">.</button><button class="calc-op" data-insert="pi">π</button><button class="calc-op" data-insert="+">+</button><button class="calc-equals" data-action="equals">=</button>
+    </div>
+    <div id="asyncCalcStatus">Use sin(30), cos(60), or tan(45). Results follow DEG/RAD mode.</div>
 </section>
 
-<button type="button" id="asyncSoundFab" aria-label="Open ambient sounds" title="Ambient sounds"><i class="bi bi-music-note-beamed"></i></button>
+<button type="button" id="asyncSoundFab" aria-expanded="false" aria-controls="asyncSoundPanel" aria-label="Open ambient sounds" title="Ambient sounds"><i class="bi bi-music-note-beamed"></i></button>
 <section id="asyncSoundPanel" aria-label="Ambient sound player">
- <div class="aux-head" id="asyncSoundDrag"><strong><i class="bi bi-headphones"></i> Reading Ambience</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncSoundMinimize" title="Minimize">−</button><button type="button" id="asyncSoundClose" aria-label="Close sounds">&times;</button></span></div>
- <div style="font-size:12px;color:var(--aux-text);opacity:.75">Choose a continuous background sound while you read.</div>
- <div class="sound-choice"><button type="button" data-sound="rain">🌧️ Rain</button><button type="button" data-sound="ocean">🌊 Ocean waves</button><button type="button" data-sound="forest">🌲 Forest ambience</button><button type="button" data-sound="wind">🍃 Gentle wind</button><button type="button" data-sound="fire">🔥 Fireplace</button></div>
- <label class="sound-volume"><span>Volume</span><input id="asyncSoundVolume" type="range" min="0" max="100" value="28"><span id="asyncSoundVolumeValue">28%</span></label>
- <div class="sound-actions"><button type="button" id="asyncSoundPlay"><i class="bi bi-play-fill"></i> Play sound</button><button type="button" id="asyncSoundStop" style="background:#64748b">Stop</button></div>
- <div id="asyncSoundStatus" aria-live="polite">Select a sound, then press Play. Audio starts only after your action.</div>
+    <div class="aux-head" id="asyncSoundDrag"><strong><i class="bi bi-headphones"></i> Reading Ambience</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncSoundMinimize" title="Minimize">−</button><button type="button" id="asyncSoundClose" aria-label="Close sounds">&times;</button></span></div>
+    <div style="font-size:12px;color:var(--aux-text);opacity:.75">Choose a continuous background sound while you read.</div>
+    <div class="sound-choice"><button type="button" data-sound="rain">🌧️ Rain</button><button type="button" data-sound="ocean">🌊 Ocean waves</button><button type="button" data-sound="forest">🌲 Forest ambience</button><button type="button" data-sound="wind">🍃 Gentle wind</button><button type="button" data-sound="fire">🔥 Fireplace</button></div>
+    <label class="sound-volume"><span>Volume</span><input id="asyncSoundVolume" type="range" min="0" max="100" value="28"><span id="asyncSoundVolumeValue">28%</span></label>
+    <div class="sound-actions"><button type="button" id="asyncSoundPlay"><i class="bi bi-play-fill"></i> Play sound</button><button type="button" id="asyncSoundStop" style="background:#64748b">Stop</button></div>
+    <div id="asyncSoundStatus" aria-live="polite">Select a sound, then press Play. Audio starts only after your action.</div>
 </section>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
@@ -868,8 +1604,24 @@ html[data-theme="dark"] #readingToolsPanel,html[data-theme="dark"] #asyncNotesPa
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/nerdamer.core.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Calculus.min.js"></script>
-<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'}};</script>
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [
+                ['\\(', '\\)']
+            ],
+            displayMath: [
+                ['\\[', '\\]']
+            ]
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
 
 <script>
     (() => {
@@ -1039,7 +1791,11 @@ html[data-theme="dark"] #readingToolsPanel,html[data-theme="dark"] #asyncNotesPa
         document.getElementById('rtOpenTimer').addEventListener('click', () => {
             if (window.asyncCloseOtherTools) window.asyncCloseOtherTools(timerBox);
             timerBox.classList.add('is-visible');
-            timerBox.style.left = '50%'; timerBox.style.top = '50%'; timerBox.style.right = 'auto'; timerBox.style.bottom = 'auto'; timerBox.style.transform = 'translate(-50%,-50%)';
+            timerBox.style.left = '50%';
+            timerBox.style.top = '50%';
+            timerBox.style.right = 'auto';
+            timerBox.style.bottom = 'auto';
+            timerBox.style.transform = 'translate(-50%,-50%)';
             timerBox.setAttribute('aria-hidden', 'false');
             togglePanel(false);
         });
@@ -1275,7 +2031,10 @@ html[data-theme="dark"] #readingToolsPanel,html[data-theme="dark"] #asyncNotesPa
             panel.classList.toggle('is-open', open);
             panel.classList.remove('is-minimized');
             if (open && !panel.dataset.userPositioned) {
-                panel.style.left = '50%'; panel.style.top = '50%'; panel.style.right = 'auto'; panel.style.bottom = 'auto';
+                panel.style.left = '50%';
+                panel.style.top = '50%';
+                panel.style.right = 'auto';
+                panel.style.bottom = 'auto';
                 panel.style.transform = 'translate(-50%,-50%)';
             }
             fab.setAttribute('aria-expanded', String(open));
@@ -1288,7 +2047,10 @@ html[data-theme="dark"] #readingToolsPanel,html[data-theme="dark"] #asyncNotesPa
             }
             togglePanel(!panel.classList.contains('is-open'));
         });
-        document.getElementById('rtClose').addEventListener('click', () => togglePanel(false));
+        document.getElementById('rtClose').addEventListener('click', () => {
+            togglePanel(false);
+            panel.classList.remove('is-minimized');
+        });
         document.getElementById('rtMinimize').addEventListener('click', () => {
             const minimized = panel.classList.toggle('is-minimized');
             document.getElementById('rtMinimize').textContent = minimized ? '□' : '−';
@@ -1462,340 +2224,653 @@ html[data-theme="dark"] #readingToolsPanel,html[data-theme="dark"] #asyncNotesPa
 </script>
 
 <script>
-(() => {
-  'use strict';
-  const byId = id => document.getElementById(id);
-  const notesPanel = byId('asyncNotesPanel'), calcPanel = byId('asyncCalcPanel');
-  const notesFab = byId('asyncNotesFab'), calcFab = byId('asyncCalcFab');
-  const notesKey = 'asyncAcademicPersonalNotes_v1';
-  let notes = [], activeNoteId = null, quill = null, saveTimer = null;
+    (() => {
+        'use strict';
+        const byId = id => document.getElementById(id);
+        const notesPanel = byId('asyncNotesPanel'),
+            calcPanel = byId('asyncCalcPanel');
+        const notesFab = byId('asyncNotesFab'),
+            calcFab = byId('asyncCalcFab');
+        const notesKey = 'asyncAcademicPersonalNotes_v1';
+        let notes = [],
+            activeNoteId = null,
+            quill = null,
+            saveTimer = null;
 
-  const soundPanel = byId('asyncSoundPanel'), soundFab = byId('asyncSoundFab');
-  const timerBox = byId('asyncFloatingTimer');
-  const allToolPanels = [byId('readingToolsPanel'), notesPanel, calcPanel, soundPanel];
-  function closeOtherTools(keep) {
-    allToolPanels.forEach(item => {
-      if (item && item !== keep) {
-        item.classList.remove('is-open');
-        if (item.id === 'readingToolsPanel') byId('readingToolsFab').setAttribute('aria-expanded', 'false');
-      }
-    });
-    if (timerBox && keep !== timerBox) timerBox.classList.remove('is-visible');
-  }
-  window.asyncCloseOtherTools = closeOtherTools;
-  function openPanel(target) {
-    if (target.classList.contains('is-minimized') && target.classList.contains('is-open')) {
-      target.classList.remove('is-minimized');
-      return;
-    }
-    const shouldOpen = !target.classList.contains('is-open');
-    if (shouldOpen) closeOtherTools(target);
-    target.classList.toggle('is-open', shouldOpen);
-    target.classList.remove('is-minimized');
-    if (shouldOpen && !target.dataset.userPositioned) {
-      target.style.left = '50%'; target.style.top = '50%'; target.style.right = 'auto'; target.style.bottom = 'auto';
-      target.style.transform = 'translate(-50%,-50%)';
-    }
-  }
-  notesFab.addEventListener('click', () => {
-    openPanel(notesPanel);
-    if (!quill && window.Quill) initializeNotes();
-    else if (!window.Quill) byId('asyncNotesSaveStatus').textContent = 'Quill could not load. Check your connection.';
-  });
-  calcFab.addEventListener('click', () => openPanel(calcPanel));
-  soundFab.addEventListener('click', () => openPanel(soundPanel));
-  byId('asyncNotesClose').addEventListener('click', () => notesPanel.classList.remove('is-open'));
-  byId('asyncCalcClose').addEventListener('click', () => calcPanel.classList.remove('is-open'));
-  byId('asyncSoundClose').addEventListener('click', () => soundPanel.classList.remove('is-open'));
-  function setMinimize(panel, button) {
-    button.addEventListener('click', () => {
-      const minimized = panel.classList.toggle('is-minimized');
-      button.textContent = minimized ? '□' : '−';
-      button.title = minimized ? 'Restore' : 'Minimize';
-    });
-  }
-  setMinimize(notesPanel, byId('asyncNotesMinimize'));
-  setMinimize(calcPanel, byId('asyncCalcMinimize'));
-  setMinimize(soundPanel, byId('asyncSoundMinimize'));
+        const soundPanel = byId('asyncSoundPanel'),
+            soundFab = byId('asyncSoundFab');
+        const timerBox = byId('asyncFloatingTimer');
+        const readingPanel = byId('readingToolsPanel');
+        const allToolPanels = [readingPanel, notesPanel, calcPanel, soundPanel].filter(Boolean);
 
-  function readNotes() {
-    try {
-      const value = JSON.parse(localStorage.getItem(notesKey) || '[]');
-      return Array.isArray(value) ? value : [];
-    } catch (_) { return []; }
-  }
-  function persistNotes() {
-    try {
-      localStorage.setItem(notesKey, JSON.stringify(notes));
-      byId('asyncNotesSaveStatus').textContent = 'All changes saved';
-    } catch (_) {
-      byId('asyncNotesSaveStatus').textContent = 'Storage is full or unavailable; copy your note to keep it.';
-    }
-  }
-  function refreshNoteList() {
-    const select = byId('asyncNotesList');
-    select.innerHTML = '';
-    notes.forEach(note => {
-      const option = document.createElement('option');
-      option.value = note.id; option.textContent = note.title || 'Untitled note';
-      select.appendChild(option);
-    });
-    if (activeNoteId) select.value = activeNoteId;
-  }
-  function saveActiveNote() {
-    if (!quill || !activeNoteId) return;
-    const note = notes.find(item => item.id === activeNoteId);
-    if (!note) return;
-    note.title = byId('asyncNoteTitle').value.trim() || 'Untitled note';
-    note.html = quill.root.innerHTML;
-    note.delta = quill.getContents();
-    note.updatedAt = Date.now();
-    persistNotes(); refreshNoteList();
-  }
-  function selectNote(id) {
-    activeNoteId = id;
-    const note = notes.find(item => item.id === id);
-    if (!note) return;
-    byId('asyncNoteTitle').value = note.title === 'Untitled note' ? '' : note.title;
-    if (note.delta) quill.setContents(note.delta);
-    else quill.root.innerHTML = note.html || '';
-    refreshNoteList();
-  }
-  function createNote() {
-    const note = { id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random(), title: 'Untitled note', html: '', delta: null, updatedAt: Date.now() };
-    notes.unshift(note); activeNoteId = note.id; persistNotes(); refreshNoteList();
-    byId('asyncNoteTitle').value = ''; quill.setText('');
-    byId('asyncNoteTitle').focus();
-  }
-  function initializeNotes() {
-    quill = new Quill('#asyncQuillEditor', {
-      theme: 'snow',
-      placeholder: 'Write your class notes here…',
-      modules: { toolbar: [['bold','italic','underline','strike'], [{header:[1,2,3,false]}], [{list:'ordered'},{list:'bullet'}], ['blockquote','code-block'], [{color:[]},{background:[]}], ['link'], ['clean']] }
-    });
-    notes = readNotes();
-    if (!notes.length) createNote();
-    else { notes.sort((a,b) => (b.updatedAt || 0) - (a.updatedAt || 0)); selectNote(notes[0].id); }
-    quill.on('text-change', () => {
-      byId('asyncNotesSaveStatus').textContent = 'Saving…';
-      clearTimeout(saveTimer); saveTimer = setTimeout(saveActiveNote, 350);
-    });
-    byId('asyncNoteTitle').addEventListener('input', () => {
-      clearTimeout(saveTimer); saveTimer = setTimeout(saveActiveNote, 350);
-    });
-    byId('asyncNotesList').addEventListener('change', e => { const selectedId = e.target.value; saveActiveNote(); selectNote(selectedId); });
-    byId('asyncNoteNew').addEventListener('click', () => { saveActiveNote(); createNote(); });
-    byId('asyncNoteDelete').addEventListener('click', () => {
-      if (!activeNoteId || !confirm('Delete this saved note? This cannot be undone.')) return;
-      notes = notes.filter(note => note.id !== activeNoteId); activeNoteId = null;
-      if (!notes.length) createNote(); else selectNote(notes[0].id);
-      persistNotes();
-    });
-    window.addEventListener('beforeunload', saveActiveNote);
-  }
+        function setPanelClosed(item) {
+            if (!item) return;
+            item.classList.remove('is-open', 'is-minimized');
+            const minimizeId = {
+                readingToolsPanel: 'rtMinimize',
+                asyncNotesPanel: 'asyncNotesMinimize',
+                asyncCalcPanel: 'asyncCalcMinimize',
+                asyncSoundPanel: 'asyncSoundMinimize'
+            } [item.id];
+            const minimizeButton = minimizeId && byId(minimizeId);
+            if (minimizeButton) {
+                minimizeButton.textContent = '−';
+                minimizeButton.title = 'Minimize';
+            }
+            const fabId = {
+                readingToolsPanel: 'readingToolsFab',
+                asyncNotesPanel: 'asyncNotesFab',
+                asyncCalcPanel: 'asyncCalcFab',
+                asyncSoundPanel: 'asyncSoundFab'
+            } [item.id];
+            if (fabId && byId(fabId)) byId(fabId).setAttribute('aria-expanded', 'false');
+        }
+
+        function closeOtherTools(keep) {
+            allToolPanels.forEach(item => {
+                if (item !== keep) setPanelClosed(item);
+            });
+            if (timerBox && keep !== timerBox) {
+                timerBox.classList.remove('is-visible', 'is-minimized');
+                timerBox.setAttribute('aria-hidden', 'true');
+            }
+        }
+        window.asyncCloseOtherTools = closeOtherTools;
+        // Force a clean closed state on every page load; no tool is restored as open.
+        allToolPanels.forEach(setPanelClosed);
+        if (soundPanel) soundPanel.classList.remove('is-open', 'is-minimized');
+
+        function openPanel(target) {
+            if (!target) return;
+            if (target.classList.contains('is-open') && target.classList.contains('is-minimized')) {
+                target.classList.remove('is-minimized');
+                return;
+            }
+            const shouldOpen = !target.classList.contains('is-open');
+            if (shouldOpen) closeOtherTools(target);
+            target.classList.toggle('is-open', shouldOpen);
+            target.classList.remove('is-minimized');
+            const minimizeId = {
+                readingToolsPanel: 'rtMinimize',
+                asyncNotesPanel: 'asyncNotesMinimize',
+                asyncCalcPanel: 'asyncCalcMinimize',
+                asyncSoundPanel: 'asyncSoundMinimize'
+            } [target.id];
+            const minimizeButton = minimizeId && byId(minimizeId);
+            if (minimizeButton) {
+                minimizeButton.textContent = '−';
+                minimizeButton.title = 'Minimize';
+            }
+            const fabId = {
+                asyncNotesPanel: 'asyncNotesFab',
+                asyncCalcPanel: 'asyncCalcFab',
+                asyncSoundPanel: 'asyncSoundFab',
+                readingToolsPanel: 'readingToolsFab'
+            } [target.id];
+            if (fabId && byId(fabId)) byId(fabId).setAttribute('aria-expanded', String(shouldOpen));
+            if (shouldOpen && !target.dataset.userPositioned) {
+                target.style.left = '50%';
+                target.style.top = '50%';
+                target.style.right = 'auto';
+                target.style.bottom = 'auto';
+                target.style.transform = 'translate(-50%,-50%)';
+            }
+        }
+        notesFab.addEventListener('click', () => {
+            openPanel(notesPanel);
+            if (!quill && window.Quill) initializeNotes();
+            else if (!window.Quill) byId('asyncNotesSaveStatus').textContent = 'Quill could not load. Check your connection.';
+        });
+        calcFab.addEventListener('click', () => openPanel(calcPanel));
+        soundFab.addEventListener('click', () => openPanel(soundPanel));
+        byId('asyncNotesClose').addEventListener('click', () => setPanelClosed(notesPanel));
+        byId('asyncCalcClose').addEventListener('click', () => setPanelClosed(calcPanel));
+        byId('asyncSoundClose').addEventListener('click', () => setPanelClosed(soundPanel));
+
+        function setMinimize(panel, button) {
+            button.addEventListener('click', () => {
+                const minimized = panel.classList.toggle('is-minimized');
+                button.textContent = minimized ? '□' : '−';
+                button.title = minimized ? 'Restore' : 'Minimize';
+            });
+        }
+        setMinimize(notesPanel, byId('asyncNotesMinimize'));
+        setMinimize(calcPanel, byId('asyncCalcMinimize'));
+        setMinimize(soundPanel, byId('asyncSoundMinimize'));
+
+        function readNotes() {
+            try {
+                const value = JSON.parse(localStorage.getItem(notesKey) || '[]');
+                return Array.isArray(value) ? value : [];
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function persistNotes() {
+            try {
+                localStorage.setItem(notesKey, JSON.stringify(notes));
+                byId('asyncNotesSaveStatus').textContent = 'All changes saved';
+            } catch (_) {
+                byId('asyncNotesSaveStatus').textContent = 'Storage is full or unavailable; copy your note to keep it.';
+            }
+        }
+
+        function refreshNoteList() {
+            const select = byId('asyncNotesList');
+            select.innerHTML = '';
+            notes.forEach(note => {
+                const option = document.createElement('option');
+                option.value = note.id;
+                option.textContent = note.title || 'Untitled note';
+                select.appendChild(option);
+            });
+            if (activeNoteId) select.value = activeNoteId;
+        }
+
+        function saveActiveNote() {
+            if (!quill || !activeNoteId) return;
+            const note = notes.find(item => item.id === activeNoteId);
+            if (!note) return;
+            note.title = byId('asyncNoteTitle').value.trim() || 'Untitled note';
+            note.html = quill.root.innerHTML;
+            note.delta = quill.getContents();
+            note.updatedAt = Date.now();
+            persistNotes();
+            refreshNoteList();
+        }
+
+        function selectNote(id) {
+            activeNoteId = id;
+            const note = notes.find(item => item.id === id);
+            if (!note) return;
+            byId('asyncNoteTitle').value = note.title === 'Untitled note' ? '' : note.title;
+            if (note.delta) quill.setContents(note.delta);
+            else quill.root.innerHTML = note.html || '';
+            refreshNoteList();
+        }
+
+        function createNote() {
+            const note = {
+                id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random(),
+                title: 'Untitled note',
+                html: '',
+                delta: null,
+                updatedAt: Date.now()
+            };
+            notes.unshift(note);
+            activeNoteId = note.id;
+            persistNotes();
+            refreshNoteList();
+            byId('asyncNoteTitle').value = '';
+            quill.setText('');
+            byId('asyncNoteTitle').focus();
+        }
+
+        function initializeNotes() {
+            quill = new Quill('#asyncQuillEditor', {
+                theme: 'snow',
+                placeholder: 'Write your class notes here…',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{
+                            header: [1, 2, 3, false]
+                        }],
+                        [{
+                            list: 'ordered'
+                        }, {
+                            list: 'bullet'
+                        }],
+                        ['blockquote', 'code-block'],
+                        [{
+                            color: []
+                        }, {
+                            background: []
+                        }],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
+            notes = readNotes();
+            if (!notes.length) createNote();
+            else {
+                notes.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+                selectNote(notes[0].id);
+            }
+            quill.on('text-change', () => {
+                byId('asyncNotesSaveStatus').textContent = 'Saving…';
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(saveActiveNote, 350);
+            });
+            byId('asyncNoteTitle').addEventListener('input', () => {
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(saveActiveNote, 350);
+            });
+            byId('asyncNotesList').addEventListener('change', e => {
+                const selectedId = e.target.value;
+                saveActiveNote();
+                selectNote(selectedId);
+            });
+            byId('asyncNoteNew').addEventListener('click', () => {
+                saveActiveNote();
+                createNote();
+            });
+            byId('asyncNoteDelete').addEventListener('click', () => {
+                if (!activeNoteId || !confirm('Delete this saved note? This cannot be undone.')) return;
+                notes = notes.filter(note => note.id !== activeNoteId);
+                activeNoteId = null;
+                if (!notes.length) createNote();
+                else selectNote(notes[0].id);
+                persistNotes();
+            });
+            window.addEventListener('beforeunload', saveActiveNote);
+        }
 
 
-  // Drag either floating workspace by its header (mouse, pen, or touch).
-  function makeDraggable(panel, handle) {
-    let drag = null;
-    handle.addEventListener('pointerdown', event => {
-      if (event.target.closest('button, select, input')) return;
-      const rect = panel.getBoundingClientRect();
-      drag = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, left: rect.left, top: rect.top };
-      handle.setPointerCapture(event.pointerId);
-    });
-    handle.addEventListener('pointermove', event => {
-      if (!drag || event.pointerId !== drag.pointerId) return;
-      const left = Math.max(6, Math.min(window.innerWidth - panel.offsetWidth - 6, drag.left + event.clientX - drag.x));
-      const top = Math.max(6, Math.min(window.innerHeight - panel.offsetHeight - 6, drag.top + event.clientY - drag.y));
-      panel.style.left = left + 'px';
-      panel.style.top = top + 'px';
-      panel.style.right = 'auto';
-      panel.style.bottom = 'auto';
-      panel.style.transform = 'none';
-      panel.dataset.userPositioned = '1';
-    });
-    const stop = () => { drag = null; };
-    handle.addEventListener('pointerup', stop);
-    handle.addEventListener('pointercancel', stop);
-    handle.addEventListener('lostpointercapture', stop);
-  }
-  makeDraggable(notesPanel, byId('asyncNotesDrag'));
-  makeDraggable(calcPanel, byId('asyncCalcDrag'));
-  makeDraggable(soundPanel, byId('asyncSoundDrag'));
-  makeDraggable(byId('readingToolsPanel'), byId('rtDrag'));
-  byId('rtMinimize').addEventListener('click', () => {
-    const readingPanel = byId('readingToolsPanel');
-    const minimized = readingPanel.classList.toggle('is-minimized');
-    byId('rtMinimize').textContent = minimized ? '□' : '−';
-  });
-  window.addEventListener('resize', () => {
-    [notesPanel, calcPanel, soundPanel, byId('readingToolsPanel')].forEach(panel => {
-      if (!panel.classList.contains('is-open')) return;
-      if (!panel.dataset.userPositioned) {
-        panel.style.left = '50%'; panel.style.top = '50%';
-        panel.style.right = 'auto'; panel.style.bottom = 'auto';
-        panel.style.transform = 'translate(-50%,-50%)';
-        return;
-      }
-      const rect = panel.getBoundingClientRect();
-      panel.style.left = Math.max(6, Math.min(window.innerWidth - panel.offsetWidth - 6, rect.left)) + 'px';
-      panel.style.top = Math.max(6, Math.min(window.innerHeight - panel.offsetHeight - 6, rect.top)) + 'px';
-      panel.style.right = 'auto'; panel.style.bottom = 'auto'; panel.style.transform = 'none';
-    });
-  });
+        // Drag either floating workspace by its header (mouse, pen, or touch).
+        function makeDraggable(panel, handle) {
+            let drag = null;
+            handle.addEventListener('pointerdown', event => {
+                if (event.target.closest('button, select, input')) return;
+                const rect = panel.getBoundingClientRect();
+                drag = {
+                    pointerId: event.pointerId,
+                    x: event.clientX,
+                    y: event.clientY,
+                    left: rect.left,
+                    top: rect.top
+                };
+                handle.setPointerCapture(event.pointerId);
+            });
+            handle.addEventListener('pointermove', event => {
+                if (!drag || event.pointerId !== drag.pointerId) return;
+                const left = Math.max(6, Math.min(window.innerWidth - panel.offsetWidth - 6, drag.left + event.clientX - drag.x));
+                const top = Math.max(6, Math.min(window.innerHeight - panel.offsetHeight - 6, drag.top + event.clientY - drag.y));
+                panel.style.left = left + 'px';
+                panel.style.top = top + 'px';
+                panel.style.right = 'auto';
+                panel.style.bottom = 'auto';
+                panel.style.transform = 'none';
+                panel.dataset.userPositioned = '1';
+            });
+            const stop = () => {
+                drag = null;
+            };
+            handle.addEventListener('pointerup', stop);
+            handle.addEventListener('pointercancel', stop);
+            handle.addEventListener('lostpointercapture', stop);
+        }
+        makeDraggable(notesPanel, byId('asyncNotesDrag'));
+        makeDraggable(calcPanel, byId('asyncCalcDrag'));
+        makeDraggable(soundPanel, byId('asyncSoundDrag'));
+        makeDraggable(byId('readingToolsPanel'), byId('rtDrag'));
+        byId('rtMinimize').addEventListener('click', () => {
+            const readingPanel = byId('readingToolsPanel');
+            const minimized = readingPanel.classList.toggle('is-minimized');
+            byId('rtMinimize').textContent = minimized ? '□' : '−';
+        });
+        window.addEventListener('resize', () => {
+            [notesPanel, calcPanel, soundPanel, byId('readingToolsPanel')].forEach(panel => {
+                if (!panel.classList.contains('is-open')) return;
+                if (!panel.dataset.userPositioned) {
+                    panel.style.left = '50%';
+                    panel.style.top = '50%';
+                    panel.style.right = 'auto';
+                    panel.style.bottom = 'auto';
+                    panel.style.transform = 'translate(-50%,-50%)';
+                    return;
+                }
+                const rect = panel.getBoundingClientRect();
+                panel.style.left = Math.max(6, Math.min(window.innerWidth - panel.offsetWidth - 6, rect.left)) + 'px';
+                panel.style.top = Math.max(6, Math.min(window.innerHeight - panel.offsetHeight - 6, rect.top)) + 'px';
+                panel.style.right = 'auto';
+                panel.style.bottom = 'auto';
+                panel.style.transform = 'none';
+            });
+        });
 
-  // Scientific calculator powered by math.js (safe expression parser; no eval).
-  const display = byId('asyncCalcDisplay'), angle = byId('asyncCalcAngle'), calcStatus = byId('asyncCalcStatus');
-  let expression = '';
-  let calculatorMemory = 0;
-  let lastAnswer = 0;
-  function showExpression() { display.value = expression || '0'; }
-  function insert(value) { expression += value; showExpression(); display.focus(); }
-  function calculate() {
-    if (!expression.trim()) return;
-    if (!window.math) { calcStatus.textContent = 'Calculator engine did not load. Check your connection.'; return; }
-    try {
-      const toRad = x => angle.value === 'deg' ? x * Math.PI / 180 : x;
-      const fromRad = x => angle.value === 'deg' ? x * 180 / Math.PI : x;
-      const scope = {
-        sin: x => Math.sin(toRad(x)), cos: x => Math.cos(toRad(x)), tan: x => Math.tan(toRad(x)),
-        asin: x => fromRad(Math.asin(x)), acos: x => fromRad(Math.acos(x)), atan: x => fromRad(Math.atan(x)),
-        sqrt: Math.sqrt, cbrt: Math.cbrt, log: Math.log10, ln: Math.log,
-        exp: Math.exp, abs: Math.abs, sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh,
-        pi: Math.PI, e: Math.E
-      };
-      const result = math.evaluate(expression, scope);
-      if (typeof result !== 'number' || !Number.isFinite(result)) throw new Error('Result is not a finite real number.');
-      lastAnswer = Number(result);
-      expression = String(Number(result.toPrecision(12)));
-      showExpression(); calcStatus.textContent = 'Calculated successfully.';
-    } catch (error) { calcStatus.textContent = error.message || 'Invalid expression.'; }
-  }
-  const mathResult = byId('asyncCalcMathResult');
-  function symbolicOperation(kind) {
-    const expr = expression.trim();
-    const variable = (byId('asyncCalcVariable').value.trim() || 'x').replace(/[^a-zA-Z]/g, '');
-    if (!expr) { calcStatus.textContent = 'Enter an expression first, for example x^3 + 2*x.'; return; }
-    if (!window.nerdamer) { calcStatus.textContent = 'Symbolic engine did not load. Check your connection.'; return; }
-    try {
-      const command = kind === 'integrate' ? `integrate(${expr},${variable})` :
-        kind === 'diff' ? `diff(${expr},${variable})` : expr;
-      const result = window.nerdamer(command);
-      const latex = window.nerdamer.convertToLaTeX(result.toString());
-      mathResult.innerHTML = `\\[${latex}\\]`;
-      if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([mathResult]).catch(() => {});
-      calcStatus.textContent = kind === 'integrate' ? `Indefinite integral with respect to ${variable}. Add + C when writing your final answer.` :
-        kind === 'diff' ? `Derivative with respect to ${variable}.` : 'Expression simplified; exact fractions are retained when possible.';
-    } catch (error) {
-      mathResult.textContent = 'Could not solve this symbolic expression.';
-      calcStatus.textContent = error.message || 'Unsupported expression.';
-    }
-  }
-  byId('asyncCalcSymbolic').addEventListener('click', event => {
-    const button = event.target.closest('[data-symbolic]');
-    if (button) symbolicOperation(button.dataset.symbolic);
-  });
-  byId('asyncCalcKeys').addEventListener('click', event => {
-    const button = event.target.closest('button'); if (!button) return;
-    const action = button.dataset.action, value = button.dataset.insert;
-    if (action === 'clear') { expression = ''; mathResult.textContent = 'Symbolic results will appear here.'; calcStatus.textContent = 'Cleared.'; }
-    else if (action === 'back') expression = expression.slice(0, -1);
-    else if (action === 'equals') { calculate(); return; }
-    else if (action === 'mc') { calculatorMemory = 0; calcStatus.textContent = 'Memory cleared.'; }
-    else if (action === 'mr') { expression += String(calculatorMemory); }
-    else if (action === 'mplus' || action === 'mminus') {
-      try {
-        const current = math.evaluate(expression || '0');
-        calculatorMemory += action === 'mplus' ? Number(current) : -Number(current);
-        calcStatus.textContent = 'Memory updated.';
-      } catch (_) { calcStatus.textContent = 'Calculate a valid value first.'; }
-    }
-    else if (action === 'ans') { expression += String(lastAnswer); }
-    else if (value) expression += value;
-    showExpression();
-  });
-  display.addEventListener('input', () => { expression = display.value; });
-  display.addEventListener('keydown', event => {
-    if (event.key === 'Enter') { event.preventDefault(); calculate(); }
-    if (event.key === 'Escape') { expression = ''; showExpression(); }
-  });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') { allToolPanels.forEach(item => item && item.classList.remove('is-open')); if (timerBox) timerBox.classList.remove('is-visible'); }
-  });
-  // Procedural ambient soundscapes: no audio files or third-party media required.
-  let ambienceContext = null, ambienceNodes = [], selectedSound = 'rain', ambienceGain = null;
-  const soundStatus = byId('asyncSoundStatus'), soundVolume = byId('asyncSoundVolume');
-  function stopAmbience() {
-    ambienceNodes.forEach(node => { try { node.stop ? node.stop() : node.disconnect(); } catch (_) {} });
-    ambienceNodes = [];
-    if (ambienceGain) { try { ambienceGain.disconnect(); } catch (_) {} ambienceGain = null; }
-    soundStatus.textContent = 'Sound stopped.';
-    document.querySelectorAll('[data-sound]').forEach(btn => btn.classList.toggle('active', btn.dataset.sound === selectedSound));
-  }
-  function startAmbience() {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) { soundStatus.textContent = 'Web Audio is not supported in this browser.'; return; }
-    if (!ambienceContext) ambienceContext = new AC();
-    ambienceContext.resume().then(() => {
-      stopAmbience();
-      const ctx = ambienceContext, master = ctx.createGain();
-      master.gain.value = Number(soundVolume.value) / 100 * 0.22;
-      master.connect(ctx.destination); ambienceGain = master;
-      const length = ctx.sampleRate * 3, buffer = ctx.createBuffer(1, length, ctx.sampleRate), data = buffer.getChannelData(0);
-      for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
-      const noise = ctx.createBufferSource(); noise.buffer = buffer; noise.loop = true;
-      const filter = ctx.createBiquadFilter(), tone = ctx.createGain();
-      filter.type = 'lowpass'; filter.frequency.value = 1100; filter.Q.value = .7;
-      noise.connect(filter); filter.connect(tone); tone.connect(master); tone.gain.value = 1;
-      noise.start(); ambienceNodes.push(noise);
-      const lfo = ctx.createOscillator(), lfoGain = ctx.createGain();
-      lfo.type = 'sine'; lfo.frequency.value = .12; lfo.connect(lfoGain); lfoGain.connect(tone.gain); lfo.start();
-      ambienceNodes.push(lfo);
-      if (selectedSound === 'rain') { filter.type = 'lowpass'; filter.frequency.value = 2200; lfo.frequency.value = .35; lfoGain.gain.value = .12; }
-      if (selectedSound === 'ocean') { filter.type = 'lowpass'; filter.frequency.value = 650; lfo.frequency.value = .075; lfoGain.gain.value = .55; }
-      if (selectedSound === 'forest') {
-        filter.type = 'bandpass'; filter.frequency.value = 950; lfo.frequency.value = .18; lfoGain.gain.value = .12;
-        const bird = ctx.createOscillator(), birdGain = ctx.createGain();
-        bird.type = 'sine'; bird.frequency.value = 2100; birdGain.gain.value = .012;
-        bird.connect(birdGain); birdGain.connect(master); bird.start(); ambienceNodes.push(bird);
-      }
-      if (selectedSound === 'wind') { filter.type = 'lowpass'; filter.frequency.value = 330; lfo.frequency.value = .045; lfoGain.gain.value = .7; }
-      if (selectedSound === 'fire') { filter.type = 'bandpass'; filter.frequency.value = 1250; filter.Q.value = .45; lfo.frequency.value = 1.7; lfoGain.gain.value = .16; }
-      soundStatus.textContent = 'Playing ' + selectedSound + ' ambience. It loops until you stop it.';
-      byId('asyncSoundPlay').innerHTML = '<i class="bi bi-pause-fill"></i> Restart sound';
-    }).catch(() => { soundStatus.textContent = 'Audio was blocked. Press Play again to allow sound.'; });
-  }
-  document.querySelectorAll('[data-sound]').forEach(button => button.addEventListener('click', () => {
-    selectedSound = button.dataset.sound;
-    document.querySelectorAll('[data-sound]').forEach(item => item.classList.toggle('active', item === button));
-    if (ambienceNodes.length) startAmbience();
-    else soundStatus.textContent = selectedSound + ' selected. Press Play sound.';
-  }));
-  byId('asyncSoundPlay').addEventListener('click', startAmbience);
-  byId('asyncSoundStop').addEventListener('click', stopAmbience);
-  soundVolume.addEventListener('input', () => {
-    byId('asyncSoundVolumeValue').textContent = soundVolume.value + '%';
-    if (ambienceGain) ambienceGain.gain.setTargetAtTime(Number(soundVolume.value) / 100 * .22, ambienceContext.currentTime, .08);
-  });
-  window.addEventListener('beforeunload', stopAmbience);
+        // Scientific calculator powered by math.js (safe expression parser; no eval).
+        const display = byId('asyncCalcDisplay'),
+            angle = byId('asyncCalcAngle'),
+            calcStatus = byId('asyncCalcStatus');
+        let expression = '';
+        let calculatorMemory = 0;
+        let lastAnswer = 0;
 
-  const themeObserver = new MutationObserver(() => {
-    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const rootStyle = document.documentElement.style;
-    rootStyle.setProperty('--aux-glass', dark ? 'rgba(25,32,45,.93)' : 'rgba(255,255,255,.91)');
-    rootStyle.setProperty('--aux-bg', dark ? 'rgba(25,32,45,.97)' : 'rgba(255,255,255,.97)');
-    rootStyle.setProperty('--aux-text', dark ? '#edf2fa' : '#172033');
-    rootStyle.setProperty('--aux-border', dark ? 'rgba(148,163,184,.25)' : 'rgba(100,116,139,.25)');
-    rootStyle.setProperty('--aux-control', dark ? 'rgba(255,255,255,.07)' : 'rgba(15,23,42,.035)');
-    rootStyle.setProperty('--aux-editor-bg', dark ? '#202938' : '#ffffff');
-    rootStyle.setProperty('--aux-editor-text', dark ? '#edf2fa' : '#172033');
-    rootStyle.setProperty('--aux-display-bg', dark ? '#111827' : '#f1f5f9');
-    rootStyle.setProperty('--aux-op-bg', dark ? 'rgba(65,105,225,.16)' : '#eff6ff');
-    rootStyle.setProperty('--rt-bg', dark ? 'rgba(25,32,45,.93)' : 'rgba(255,255,255,.91)');
-    rootStyle.setProperty('--rt-text', dark ? '#edf2fa' : '#172033');
-    rootStyle.setProperty('--rt-border', dark ? 'rgba(148,163,184,.25)' : 'rgba(100,116,139,.25)');
-  });
-  themeObserver.observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
-})();
+        function showExpression() {
+            display.value = expression || '0';
+            updateExpressionPreview();
+        }
+
+        function insert(value) {
+            expression += value;
+            showExpression();
+            display.focus();
+        }
+
+        function calculate() {
+            if (!expression.trim()) return;
+            if (!window.math) {
+                calcStatus.textContent = 'Calculator engine did not load. Check your connection.';
+                return;
+            }
+            try {
+                const toRad = x => angle.value === 'deg' ? x * Math.PI / 180 : x;
+                const fromRad = x => angle.value === 'deg' ? x * 180 / Math.PI : x;
+                const scope = {
+                    sin: x => Math.sin(toRad(x)),
+                    cos: x => Math.cos(toRad(x)),
+                    tan: x => Math.tan(toRad(x)),
+                    asin: x => fromRad(Math.asin(x)),
+                    acos: x => fromRad(Math.acos(x)),
+                    atan: x => fromRad(Math.atan(x)),
+                    sqrt: Math.sqrt,
+                    cbrt: Math.cbrt,
+                    log: Math.log10,
+                    ln: Math.log,
+                    exp: Math.exp,
+                    abs: Math.abs,
+                    sinh: Math.sinh,
+                    cosh: Math.cosh,
+                    tanh: Math.tanh,
+                    pi: Math.PI,
+                    e: Math.E
+                };
+                const result = math.evaluate(expression, scope);
+                if (typeof result !== 'number' || !Number.isFinite(result)) throw new Error('Result is not a finite real number.');
+                lastAnswer = Number(result);
+                expression = String(Number(result.toPrecision(12)));
+                showExpression();
+                calcStatus.textContent = 'Calculated successfully.';
+            } catch (error) {
+                calcStatus.textContent = error.message || 'Invalid expression.';
+            }
+        }
+        const mathResult = byId('asyncCalcMathResult');
+        const expressionPreview = byId('asyncCalcExpressionPreview');
+        const latexInput = byId('asyncCalcLatexInput');
+        const latexPreview = byId('asyncCalcLatexPreview');
+
+        function renderKatex(target, tex, displayMode = true) {
+            if (!target) return;
+            if (window.katex && typeof window.katex.render === 'function') {
+                try {
+                    window.katex.render(tex || ' ', target, {
+                        displayMode,
+                        throwOnError: false,
+                        strict: 'ignore'
+                    });
+                } catch (error) {
+                    target.textContent = error.message || 'Invalid LaTeX formula.';
+                }
+            } else {
+                target.textContent = tex || ' ';
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    target.textContent = `\\[${tex}\\]`;
+                    window.MathJax.typesetPromise([target]).catch(() => {});
+                }
+            }
+        }
+
+        function updateExpressionPreview() {
+            const current = expression.trim();
+            if (!current) {
+                renderKatex(expressionPreview, '0');
+                return;
+            }
+            try {
+                const tex = window.nerdamer ? window.nerdamer.convertToLaTeX(current) : current;
+                renderKatex(expressionPreview, tex);
+            } catch (_) {
+                expressionPreview.textContent = current;
+            }
+        }
+
+        function updateLatexPreview() {
+            const tex = latexInput.value.trim();
+            if (!tex) {
+                latexPreview.textContent = 'Your formatted formula will appear here.';
+                return;
+            }
+            renderKatex(latexPreview, tex);
+        }
+        latexInput.addEventListener('input', updateLatexPreview);
+        updateExpressionPreview();
+
+        function symbolicOperation(kind) {
+            const expr = expression.trim();
+            const variable = (byId('asyncCalcVariable').value.trim() || 'x').replace(/[^a-zA-Z]/g, '');
+            if (!expr) {
+                calcStatus.textContent = 'Enter an expression first, for example x^3 + 2*x.';
+                return;
+            }
+            if (!window.nerdamer) {
+                calcStatus.textContent = 'Symbolic engine did not load. Check your connection.';
+                return;
+            }
+            try {
+                const command = kind === 'integrate' ? `integrate(${expr},${variable})` :
+                    kind === 'diff' ? `diff(${expr},${variable})` : expr;
+                const result = window.nerdamer(command);
+                const latex = window.nerdamer.convertToLaTeX(result.toString());
+                const integrandLatex = window.nerdamer.convertToLaTeX(expr);
+                let resultLatex;
+                if (kind === 'integrate') {
+                    resultLatex = `\\int \\left(${integrandLatex}\\right)\\,d${variable} = ${latex} + C`;
+                } else if (kind === 'diff') {
+                    resultLatex = `\\frac{d}{d${variable}}\\left(${integrandLatex}\\right) = ${latex}`;
+                } else {
+                    resultLatex = latex;
+                }
+                renderKatex(mathResult, resultLatex);
+                calcStatus.textContent = kind === 'integrate' ? `Integral shown with respect to ${variable}; + C is included.` :
+                    kind === 'diff' ? `Derivative with respect to ${variable}.` : 'Expression simplified; exact fractions are retained when possible.';
+            } catch (error) {
+                mathResult.textContent = 'Could not solve this symbolic expression.';
+                calcStatus.textContent = error.message || 'Unsupported expression.';
+            }
+        }
+        byId('asyncCalcSymbolic').addEventListener('click', event => {
+            const button = event.target.closest('[data-symbolic]');
+            if (button) symbolicOperation(button.dataset.symbolic);
+        });
+        byId('asyncCalcKeys').addEventListener('click', event => {
+            const button = event.target.closest('button');
+            if (!button) return;
+            const action = button.dataset.action,
+                value = button.dataset.insert;
+            if (action === 'clear') {
+                expression = '';
+                mathResult.textContent = 'Symbolic results will appear here.';
+                calcStatus.textContent = 'Cleared.';
+            } else if (action === 'back') expression = expression.slice(0, -1);
+            else if (action === 'equals') {
+                calculate();
+                return;
+            } else if (action === 'mc') {
+                calculatorMemory = 0;
+                calcStatus.textContent = 'Memory cleared.';
+            } else if (action === 'mr') {
+                expression += String(calculatorMemory);
+            } else if (action === 'mplus' || action === 'mminus') {
+                try {
+                    const current = math.evaluate(expression || '0');
+                    calculatorMemory += action === 'mplus' ? Number(current) : -Number(current);
+                    calcStatus.textContent = 'Memory updated.';
+                } catch (_) {
+                    calcStatus.textContent = 'Calculate a valid value first.';
+                }
+            } else if (action === 'ans') {
+                expression += String(lastAnswer);
+            } else if (value) expression += value;
+            showExpression();
+        });
+        display.addEventListener('input', () => {
+            expression = display.value;
+            updateExpressionPreview();
+        });
+        display.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                calculate();
+            }
+            if (event.key === 'Escape') {
+                expression = '';
+                showExpression();
+            }
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                allToolPanels.forEach(setPanelClosed);
+                if (timerBox) timerBox.classList.remove('is-visible');
+            }
+        });
+        // Procedural ambient soundscapes: no audio files or third-party media required.
+        let ambienceContext = null,
+            ambienceNodes = [],
+            selectedSound = 'rain',
+            ambienceGain = null;
+        const soundStatus = byId('asyncSoundStatus'),
+            soundVolume = byId('asyncSoundVolume');
+
+        function stopAmbience() {
+            ambienceNodes.forEach(node => {
+                try {
+                    node.stop ? node.stop() : node.disconnect();
+                } catch (_) {}
+            });
+            ambienceNodes = [];
+            if (ambienceGain) {
+                try {
+                    ambienceGain.disconnect();
+                } catch (_) {}
+                ambienceGain = null;
+            }
+            soundStatus.textContent = 'Sound stopped.';
+            document.querySelectorAll('[data-sound]').forEach(btn => btn.classList.toggle('active', btn.dataset.sound === selectedSound));
+        }
+
+        function startAmbience() {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) {
+                soundStatus.textContent = 'Web Audio is not supported in this browser.';
+                return;
+            }
+            if (!ambienceContext) ambienceContext = new AC();
+            ambienceContext.resume().then(() => {
+                stopAmbience();
+                const ctx = ambienceContext,
+                    master = ctx.createGain();
+                master.gain.value = Number(soundVolume.value) / 100 * 0.22;
+                master.connect(ctx.destination);
+                ambienceGain = master;
+                const length = ctx.sampleRate * 3,
+                    buffer = ctx.createBuffer(1, length, ctx.sampleRate),
+                    data = buffer.getChannelData(0);
+                for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+                noise.loop = true;
+                const filter = ctx.createBiquadFilter(),
+                    tone = ctx.createGain();
+                filter.type = 'lowpass';
+                filter.frequency.value = 1100;
+                filter.Q.value = .7;
+                noise.connect(filter);
+                filter.connect(tone);
+                tone.connect(master);
+                tone.gain.value = 1;
+                noise.start();
+                ambienceNodes.push(noise);
+                const lfo = ctx.createOscillator(),
+                    lfoGain = ctx.createGain();
+                lfo.type = 'sine';
+                lfo.frequency.value = .12;
+                lfo.connect(lfoGain);
+                lfoGain.connect(tone.gain);
+                lfo.start();
+                ambienceNodes.push(lfo);
+                if (selectedSound === 'rain') {
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 2200;
+                    lfo.frequency.value = .35;
+                    lfoGain.gain.value = .12;
+                }
+                if (selectedSound === 'ocean') {
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 650;
+                    lfo.frequency.value = .075;
+                    lfoGain.gain.value = .55;
+                }
+                if (selectedSound === 'forest') {
+                    filter.type = 'bandpass';
+                    filter.frequency.value = 950;
+                    lfo.frequency.value = .18;
+                    lfoGain.gain.value = .12;
+                    const bird = ctx.createOscillator(),
+                        birdGain = ctx.createGain();
+                    bird.type = 'sine';
+                    bird.frequency.value = 2100;
+                    birdGain.gain.value = .012;
+                    bird.connect(birdGain);
+                    birdGain.connect(master);
+                    bird.start();
+                    ambienceNodes.push(bird);
+                }
+                if (selectedSound === 'wind') {
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 330;
+                    lfo.frequency.value = .045;
+                    lfoGain.gain.value = .7;
+                }
+                if (selectedSound === 'fire') {
+                    filter.type = 'bandpass';
+                    filter.frequency.value = 1250;
+                    filter.Q.value = .45;
+                    lfo.frequency.value = 1.7;
+                    lfoGain.gain.value = .16;
+                }
+                soundStatus.textContent = 'Playing ' + selectedSound + ' ambience. It loops until you stop it.';
+                byId('asyncSoundPlay').innerHTML = '<i class="bi bi-pause-fill"></i> Restart sound';
+            }).catch(() => {
+                soundStatus.textContent = 'Audio was blocked. Press Play again to allow sound.';
+            });
+        }
+        document.querySelectorAll('[data-sound]').forEach(button => button.addEventListener('click', () => {
+            selectedSound = button.dataset.sound;
+            document.querySelectorAll('[data-sound]').forEach(item => item.classList.toggle('active', item === button));
+            if (ambienceNodes.length) startAmbience();
+            else soundStatus.textContent = selectedSound + ' selected. Press Play sound.';
+        }));
+        byId('asyncSoundPlay').addEventListener('click', startAmbience);
+        byId('asyncSoundStop').addEventListener('click', stopAmbience);
+        soundVolume.addEventListener('input', () => {
+            byId('asyncSoundVolumeValue').textContent = soundVolume.value + '%';
+            if (ambienceGain) ambienceGain.gain.setTargetAtTime(Number(soundVolume.value) / 100 * .22, ambienceContext.currentTime, .08);
+        });
+        window.addEventListener('beforeunload', stopAmbience);
+
+        const themeObserver = new MutationObserver(() => {
+            const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const rootStyle = document.documentElement.style;
+            rootStyle.setProperty('--aux-glass', dark ? 'rgba(25,32,45,.93)' : 'rgba(255,255,255,.91)');
+            rootStyle.setProperty('--aux-bg', dark ? 'rgba(25,32,45,.97)' : 'rgba(255,255,255,.97)');
+            rootStyle.setProperty('--aux-text', dark ? '#edf2fa' : '#172033');
+            rootStyle.setProperty('--aux-border', dark ? 'rgba(148,163,184,.25)' : 'rgba(100,116,139,.25)');
+            rootStyle.setProperty('--aux-control', dark ? 'rgba(255,255,255,.07)' : 'rgba(15,23,42,.035)');
+            rootStyle.setProperty('--aux-editor-bg', dark ? '#202938' : '#ffffff');
+            rootStyle.setProperty('--aux-editor-text', dark ? '#edf2fa' : '#172033');
+            rootStyle.setProperty('--aux-display-bg', dark ? '#111827' : '#f1f5f9');
+            rootStyle.setProperty('--aux-op-bg', dark ? 'rgba(65,105,225,.16)' : '#eff6ff');
+            rootStyle.setProperty('--rt-bg', dark ? 'rgba(25,32,45,.93)' : 'rgba(255,255,255,.91)');
+            rootStyle.setProperty('--rt-text', dark ? '#edf2fa' : '#172033');
+            rootStyle.setProperty('--rt-border', dark ? 'rgba(148,163,184,.25)' : 'rgba(100,116,139,.25)');
+        });
+        themeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+    })();
 </script>
