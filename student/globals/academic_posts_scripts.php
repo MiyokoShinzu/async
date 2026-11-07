@@ -20,6 +20,8 @@
         box-sizing: border-box;
     }
 
+
+
     #readingToolsFab {
         position: fixed;
         right: 24px;
@@ -40,10 +42,14 @@
         transition: .2s ease;
     }
 
+
+
     #readingToolsFab:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 24px rgba(65, 105, 225, .38);
     }
+
+
 
     #readingToolsPanel {
         position: fixed;
@@ -63,10 +69,14 @@
         display: none;
     }
 
+
+
     #readingToolsPanel.is-open {
         display: block;
         animation: rtPanelIn .18s ease-out;
     }
+
+
 
     @keyframes rtPanelIn {
         from {
@@ -80,17 +90,23 @@
         }
     }
 
+
+
     #readingToolsPanel {
         --rt-bg: #fff;
         --rt-text: #172033;
         --rt-border: #e5e7eb;
     }
 
+
+
     html[data-theme="dark"] #readingToolsPanel {
         --rt-bg: #1b202b;
         --rt-text: #f1f5f9;
         --rt-border: #343c4c;
     }
+
+
 
     .rt-header {
         display: flex;
@@ -102,10 +118,14 @@
         border-bottom: 1px solid var(--rt-border);
     }
 
+
+
     .rt-header strong {
         font-size: 15px;
         font-weight: 800;
     }
+
+
 
     .rt-close {
         width: 30px;
@@ -118,9 +138,13 @@
         font-size: 20px;
     }
 
+
+
     .rt-group {
         margin: 0 0 15px;
     }
+
+
 
     .rt-label {
         display: block;
@@ -129,6 +153,8 @@
         font-size: 12px;
         font-weight: 800;
     }
+
+
 
     .rt-muted {
         display: block;
@@ -139,12 +165,16 @@
         line-height: 1.45;
     }
 
+
+
     .rt-button-row {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
         gap: 7px;
     }
+
+
 
     .rt-btn,
     .rt-select {
@@ -158,22 +188,30 @@
         cursor: pointer;
     }
 
+
+
     .rt-btn:hover,
     .rt-btn.is-active {
         border-color: #4169e1;
         color: #4169e1;
     }
 
+
+
     .rt-select {
         width: 100%;
         cursor: pointer;
     }
+
+
 
     .rt-color-row {
         display: flex;
         flex-wrap: wrap;
         gap: 9px;
     }
+
+
 
     .rt-color {
         width: 29px;
@@ -184,16 +222,22 @@
         cursor: pointer;
     }
 
+
+
     .rt-color.is-active {
         outline: 2px solid #4169e1;
         outline-offset: 2px;
     }
+
+
 
     .rt-range {
         width: 100%;
         accent-color: #4169e1;
         cursor: pointer;
     }
+
+
 
     .rt-range-labels {
         display: flex;
@@ -202,6 +246,8 @@
         opacity: .65;
         font-size: 10px;
     }
+
+
 
     .rt-scroll-status {
         margin-top: 8px;
@@ -212,12 +258,18 @@
         font-size: 11px;
     }
 
+
+
     #rtScrollStatus.active {
         color: #16a34a;
         font-weight: 700;
     }
 
+
+
     /* Fullscreen reading layout: hide site navigation and let the article use the screen. */
+
+
     html.async-reading-fullscreen,
     html.async-reading-fullscreen body {
         width: 100% !important;
@@ -225,9 +277,13 @@
         margin: 0 !important;
     }
 
+
+
     html.async-reading-fullscreen body {
         overflow-x: hidden !important;
     }
+
+
 
     html.async-reading-fullscreen .sidebar,
     html.async-reading-fullscreen #sidebar,
@@ -242,6 +298,8 @@
         display: none !important;
     }
 
+
+
     html.async-reading-fullscreen main.main-content {
         width: 100% !important;
         max-width: none !important;
@@ -250,11 +308,15 @@
         padding-top: 18px !important;
     }
 
+
+
     html.async-reading-fullscreen main.main-content>.content-wrapper {
         width: min(1200px, calc(100% - 36px)) !important;
         max-width: 1200px !important;
         margin: 0 auto !important;
     }
+
+
 
     #asyncFloatingTimer {
         position: fixed;
@@ -275,15 +337,21 @@
         font-family: var(--aft-font, inherit);
     }
 
+
+
     #asyncFloatingTimer.is-visible {
         display: block;
     }
+
+
 
     html[data-theme="dark"] #asyncFloatingTimer {
         background: rgba(12, 20, 42, .62);
         border-color: rgba(255, 255, 255, .18);
         color: #fff;
     }
+
+
 
     .aft-header {
         display: flex;
@@ -296,14 +364,20 @@
         touch-action: none;
     }
 
+
+
     .aft-header:active {
         cursor: grabbing;
     }
+
+
 
     .aft-header strong {
         font-size: 13px;
         font-weight: 800;
     }
+
+
 
     #aftClose,
     #aftMinimize {
@@ -317,10 +391,14 @@
         border-radius: 7px;
     }
 
+
+
     #aftMinimize:hover,
     #aftClose:hover {
         background: rgba(255, 255, 255, .16);
     }
+
+
 
     #asyncFloatingTimer .aft-header strong,
     #asyncFloatingTimer .aft-display,
@@ -329,22 +407,30 @@
         color: #fff !important;
     }
 
+
+
     #asyncFloatingTimer.is-minimized {
         width: auto;
         min-width: 175px;
         padding: 10px 12px;
     }
 
+
+
     #asyncFloatingTimer.is-minimized .aft-display {
         padding: 4px 0 0;
         font-size: 25px;
     }
+
+
 
     #asyncFloatingTimer.is-minimized .aft-inputs,
     #asyncFloatingTimer.is-minimized .aft-actions,
     #asyncFloatingTimer.is-minimized #aftStatus {
         display: none;
     }
+
+
 
     .aft-display {
         text-align: center;
@@ -356,11 +442,15 @@
         color: #4169e1;
     }
 
+
+
     .aft-inputs {
         display: flex;
         justify-content: center;
         gap: 12px;
     }
+
+
 
     .aft-inputs label {
         display: grid;
@@ -368,6 +458,8 @@
         font-size: 11px;
         text-align: center;
     }
+
+
 
     .aft-inputs input {
         width: 75px;
@@ -381,11 +473,15 @@
         font: inherit;
     }
 
+
+
     .aft-actions {
         display: flex;
         gap: 7px;
         margin-top: 11px;
     }
+
+
 
     .aft-actions button {
         flex: 1;
@@ -400,10 +496,14 @@
         font-size: 12px;
     }
 
+
+
     .aft-actions button:first-child {
         background: #4169e1;
         color: #fff;
     }
+
+
 
     #aftStatus {
         display: block;
@@ -411,6 +511,8 @@
         text-align: center;
         font-size: 10px;
     }
+
+
 
     #aftAlarmOverlay {
         position: fixed;
@@ -425,9 +527,13 @@
         -webkit-backdrop-filter: blur(7px);
     }
 
+
+
     #aftAlarmOverlay.is-visible {
         display: flex;
     }
+
+
 
     #aftAlarmModal {
         width: min(360px, 100%);
@@ -443,10 +549,14 @@
         font-family: var(--aft-font, system-ui, sans-serif);
     }
 
+
+
     #aftAlarmModal h2,
     #aftAlarmModal p {
         color: #fff;
     }
+
+
 
     #aftAlarmModal .aft-alarm-icon {
         font-size: 38px;
@@ -454,16 +564,22 @@
         margin-bottom: 8px;
     }
 
+
+
     #aftAlarmModal h2 {
         margin: 0 0 7px;
         font-size: 22px;
     }
+
+
 
     #aftAlarmModal p {
         margin: 0 0 18px;
         opacity: .75;
         font-size: 13px;
     }
+
+
 
     #aftStopAlarm {
         width: 100%;
@@ -476,16 +592,24 @@
         cursor: pointer;
     }
 
+
+
     @media(max-width:480px) {
+
+
         #readingToolsFab {
             right: 16px;
             bottom: 16px
         }
 
+
+
         #readingToolsPanel {
             right: 14px;
             bottom: 80px
         }
+
+
 
         #asyncFloatingTimer {
             top: auto;
@@ -494,26 +618,41 @@
             width: min(270px, calc(100vw - 24px));
         }
 
+
+
         #aftAlarmModal {
             padding: 22px 17px;
         }
+
+
     }
 
+
+
     @media(max-width:480px) {
+
+
         #readingToolsFab {
             right: 16px;
             bottom: 16px
         }
 
+
+
         #readingToolsPanel {
             right: 14px;
             bottom: 80px
         }
+
+
     }
 
+
+
     /* Quiet, theme-aware floating study tools */
-    #asyncNotesFab,
-    #asyncCalcFab {
+
+
+    #asyncNotesFab {
         position: fixed;
         right: 22px;
         z-index: 99989;
@@ -533,36 +672,38 @@
         transition: transform .18s ease, box-shadow .18s ease;
     }
 
+
+
     #asyncNotesFab {
         bottom: 82px;
         background: var(--aux-notes-fab, rgba(13, 148, 136, .72));
     }
 
-    #asyncCalcFab {
-        bottom: 138px;
-        background: var(--aux-calc-fab, rgba(65, 105, 225, .72));
-    }
+
+
+
+
 
     #asyncNotesPanel .aux-head {
         background: #0f8f83;
     }
 
-    #asyncCalcPanel .aux-head {
-        background: #4169e1;
-    }
+
+
+
+
 
     #asyncNotesFab:hover,
-    #asyncCalcFab:hover,
-    #asyncNotesFab:focus-visible,
-    #asyncCalcFab:focus-visible {
+    #asyncNotesFab:focus-visible {
         opacity: 1;
         transform: translateY(-2px);
         box-shadow: 0 7px 20px rgba(15, 23, 42, .2);
         outline: none;
     }
 
-    #asyncNotesPanel,
-    #asyncCalcPanel {
+
+
+    #asyncNotesPanel {
         position: fixed;
         right: 22px;
         z-index: 100010;
@@ -578,11 +719,14 @@
         overflow: hidden;
     }
 
-    #asyncNotesPanel.is-open,
-    #asyncCalcPanel.is-open {
+
+
+    #asyncNotesPanel.is-open {
         display: flex;
         flex-direction: column;
     }
+
+
 
     #asyncNotesPanel {
         bottom: 138px;
@@ -590,12 +734,10 @@
         height: min(620px, 76vh);
     }
 
-    #asyncCalcPanel {
-        bottom: 138px;
-        width: min(390px, calc(100vw - 28px));
-        padding: 0 13px 13px;
-        gap: 9px;
-    }
+
+
+
+
 
     .aux-head {
         display: flex;
@@ -611,13 +753,19 @@
         user-select: none;
     }
 
+
+
     .aux-head:active {
         cursor: grabbing;
     }
 
+
+
     .aux-head strong {
         font-size: 13px;
     }
+
+
 
     .aux-head button {
         border: 0;
@@ -628,12 +776,16 @@
         padding: 2px 6px;
     }
 
+
+
     .aux-head .aux-drag-hint {
         opacity: .75;
         font-size: 10px;
         margin-left: auto;
         margin-right: 5px;
     }
+
+
 
     #asyncNotesPanel .notes-toolbar {
         display: flex;
@@ -642,11 +794,11 @@
         border-bottom: 1px solid var(--aux-border);
     }
 
+
+
     #asyncNotesPanel select,
     #asyncNotesPanel input,
-    #asyncNotesPanel button,
-    #asyncCalcPanel button,
-    #asyncCalcPanel select {
+    #asyncNotesPanel button {
         border: 1px solid var(--aux-border);
         border-radius: 8px;
         padding: 8px;
@@ -655,15 +807,20 @@
         background: var(--aux-control);
     }
 
+
+
     #asyncNotesPanel select {
         flex: 1;
         min-width: 0;
     }
 
-    #asyncNotesPanel .notes-toolbar button,
-    #asyncCalcPanel button {
+
+
+    #asyncNotesPanel .notes-toolbar button {
         cursor: pointer;
     }
+
+
 
     #asyncNotesPanel #asyncNoteTitle {
         margin: 10px 12px 0;
@@ -675,6 +832,8 @@
         background: var(--aux-control);
     }
 
+
+
     #asyncQuillEditor {
         flex: 1;
         min-height: 0;
@@ -683,6 +842,8 @@
         color: var(--aux-editor-text);
     }
 
+
+
     #asyncNotesPanel .ql-toolbar.ql-snow {
         border-left: 0;
         border-right: 0;
@@ -690,31 +851,45 @@
         border-color: var(--aux-border);
     }
 
+
+
     #asyncNotesPanel .ql-container.ql-snow {
         border: 0;
         font-size: 14px;
     }
 
+
+
     #asyncNotesPanel .ql-editor {
         color: var(--aux-editor-text);
     }
+
+
 
     #asyncNotesPanel .ql-editor.ql-blank::before {
         color: var(--aux-text);
         opacity: .55;
     }
 
+
+
     #asyncNotesPanel .ql-snow .ql-stroke {
         stroke: var(--aux-text);
     }
+
+
 
     #asyncNotesPanel .ql-snow .ql-fill {
         fill: var(--aux-text);
     }
 
+
+
     #asyncNotesPanel .ql-snow .ql-picker {
         color: var(--aux-text);
     }
+
+
 
     #asyncNotesPanel .notes-footer {
         padding: 8px 12px;
@@ -727,85 +902,45 @@
         gap: 8px;
     }
 
-    #asyncCalcDisplay {
-        width: 100%;
-        padding: 14px 11px;
-        border: 1px solid var(--aux-border);
-        border-radius: 10px;
-        background: var(--aux-display-bg);
-        color: var(--aux-text);
-        font-size: 25px;
-        font-weight: 700;
-        text-align: right;
-        font-variant-numeric: tabular-nums;
-    }
 
-    #asyncCalcPanel .calc-mode {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        color: var(--aux-text);
-        font-size: 11px;
-    }
 
-    #asyncCalcKeys {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 6px;
-    }
 
-    #asyncCalcKeys button {
-        min-height: 39px;
-        padding: 6px 2px;
-        font-weight: 650;
-        font-size: 12px;
-    }
 
-    #asyncCalcKeys button.calc-op {
-        color: var(--aux-accent);
-        background: var(--aux-op-bg);
-    }
 
-    #asyncCalcKeys button.calc-number {
-        font-size: 14px;
-    }
 
-    #asyncCalcKeys button.calc-equals {
-        background: var(--aux-accent);
-        color: #fff;
-        border-color: var(--aux-accent);
-    }
 
-    #asyncCalcKeys button.calc-clear {
-        color: #dc5555;
-    }
 
-    #asyncCalcStatus {
-        min-height: 14px;
-        font-size: 10px;
-        color: var(--aux-text);
-    }
 
-    #asyncCalcPanel .calc-memory {
-        display: flex;
-        gap: 6px;
-    }
 
-    #asyncCalcPanel .calc-memory button {
-        flex: 1;
-        min-height: 30px;
-        padding: 4px;
-        font-size: 10px;
-    }
 
-    #asyncCalcPanel .calc-memory button:hover,
-    #asyncCalcKeys button:hover {
-        filter: brightness(.96);
-    }
 
-    html[data-theme="dark"] #asyncNotesPanel,
-    html[data-theme="dark"] #asyncCalcPanel {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    html[data-theme="dark"] #asyncNotesPanel {
         --aux-bg: rgba(25, 32, 45, .97);
         --aux-text: #edf2fa;
         --aux-border: rgba(148, 163, 184, .25);
@@ -816,52 +951,61 @@
         --aux-op-bg: rgba(65, 105, 225, .16);
     }
 
+
+
     @media(max-width:480px) {
 
-        #asyncNotesFab,
-        #asyncCalcFab {
+
+
+        #asyncNotesFab {
             right: 14px;
             width: 43px;
             height: 43px;
         }
 
+
+
         #asyncNotesFab {
             bottom: 76px;
         }
 
-        #asyncCalcFab {
-            bottom: 128px;
-        }
 
-        #asyncNotesPanel,
-        #asyncCalcPanel {
+
+
+
+
+        #asyncNotesPanel {
             right: 10px;
             width: calc(100vw - 20px);
         }
+
+
 
         #asyncNotesPanel {
             bottom: 128px;
             height: min(72vh, 600px);
         }
 
-        #asyncCalcPanel {
-            bottom: 128px;
-        }
 
-        #asyncCalcKeys {
-            gap: 5px;
-        }
 
-        #asyncCalcKeys button {
-            min-height: 36px;
-        }
+
+
+
+
+
+
+
+
     }
 
 
+
+
     /* ASYNC unified centered study workspace */
+
+
     #readingToolsPanel,
     #asyncNotesPanel,
-    #asyncCalcPanel,
     #asyncSoundPanel {
         display: none !important;
         position: fixed !important;
@@ -882,33 +1026,40 @@
         overflow: auto;
     }
 
+
+
     #readingToolsPanel.is-open,
     #asyncNotesPanel.is-open,
-    #asyncCalcPanel.is-open,
     #asyncSoundPanel.is-open {
         display: flex !important;
         flex-direction: column
     }
 
+
+
     #readingToolsPanel:not(.is-open),
     #asyncNotesPanel:not(.is-open),
-    #asyncCalcPanel:not(.is-open),
     #asyncSoundPanel:not(.is-open) {
         visibility: hidden;
         pointer-events: none
     }
 
+
+
     #readingToolsPanel.is-open,
     #asyncNotesPanel.is-open,
-    #asyncCalcPanel.is-open,
     #asyncSoundPanel.is-open {
         visibility: visible;
         pointer-events: auto
     }
 
+
+
     #readingToolsPanel {
         padding: 16px !important
     }
+
+
 
     #readingToolsPanel .rt-header {
         position: sticky;
@@ -925,14 +1076,20 @@
         user-select: none
     }
 
+
+
     #readingToolsPanel .rt-header strong,
     #readingToolsPanel .rt-close {
         color: #fff !important
     }
 
+
+
     #readingToolsPanel .rt-group {
         margin-bottom: 12px
     }
+
+
 
     #readingToolsPanel .rt-btn,
     #readingToolsPanel .rt-select {
@@ -942,21 +1099,23 @@
         border-color: var(--aux-border)
     }
 
+
+
     #readingToolsPanel .rt-muted {
         color: var(--aux-text)
     }
+
+
 
     #asyncNotesPanel {
         height: min(590px, 76vh) !important;
         width: min(500px, calc(100vw - 28px)) !important
     }
 
-    #asyncCalcPanel {
-        width: min(430px, calc(100vw - 28px)) !important;
-        max-height: 82vh;
-        padding-bottom: 12px !important;
-        gap: 7px !important
-    }
+
+
+
+
 
     #asyncSoundPanel {
         width: min(390px, calc(100vw - 28px)) !important;
@@ -964,8 +1123,9 @@
         gap: 12px
     }
 
+
+
     #asyncNotesPanel.is-minimized,
-    #asyncCalcPanel.is-minimized,
     #asyncSoundPanel.is-minimized,
     #readingToolsPanel.is-minimized {
         width: min(300px, calc(100vw - 28px)) !important;
@@ -974,20 +1134,24 @@
         overflow: hidden !important;
     }
 
+
+
     #asyncNotesPanel.is-minimized>:not(.aux-head),
-    #asyncCalcPanel.is-minimized>:not(.aux-head),
     #asyncSoundPanel.is-minimized>:not(.aux-head),
     #readingToolsPanel.is-minimized>:not(.rt-header) {
         display: none !important
     }
 
+
+
     #asyncNotesPanel.is-minimized .aux-head,
-    #asyncCalcPanel.is-minimized .aux-head,
     #asyncSoundPanel.is-minimized .aux-head,
     #readingToolsPanel.is-minimized .rt-header {
         margin: 0 !important;
         border-radius: 16px !important
     }
+
+
 
     .aux-head,
     #readingToolsPanel .rt-header {
@@ -996,10 +1160,14 @@
         user-select: none
     }
 
+
+
     .aux-head:active,
     #readingToolsPanel .rt-header:active {
         cursor: grabbing
     }
+
+
 
     .aux-window-actions,
     #readingToolsPanel .rt-window-actions {
@@ -1007,6 +1175,8 @@
         align-items: center;
         gap: 3px
     }
+
+
 
     .aux-window-actions button,
     #readingToolsPanel .rt-window-actions button {
@@ -1020,6 +1190,8 @@
         font-size: 17px;
         cursor: pointer
     }
+
+
 
 
     #asyncSoundFab {
@@ -1042,11 +1214,15 @@
         backdrop-filter: blur(12px)
     }
 
+
+
     #asyncSoundPanel .sound-choice {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px
     }
+
+
 
     #asyncSoundPanel .sound-choice button {
         padding: 11px 8px;
@@ -1058,10 +1234,14 @@
         font-size: 12px
     }
 
+
+
     #asyncSoundPanel .sound-choice button.active {
         border-color: #d97706;
         background: rgba(217, 119, 6, .14)
     }
+
+
 
     #asyncSoundPanel .sound-volume {
         display: flex;
@@ -1071,15 +1251,21 @@
         font-size: 12px
     }
 
+
+
     #asyncSoundPanel input[type=range] {
         flex: 1;
         accent-color: #d97706
     }
 
+
+
     #asyncSoundPanel .sound-actions {
         display: flex;
         gap: 8px
     }
+
+
 
     #asyncSoundPanel .sound-actions button {
         flex: 1;
@@ -1091,71 +1277,44 @@
         cursor: pointer
     }
 
+
+
     #asyncSoundStatus {
         font-size: 11px;
         color: var(--aux-text)
     }
 
-    #asyncCalcPanel #asyncCalcDisplay {
-        font-size: clamp(19px, 4vw, 25px);
-        min-width: 0
-    }
 
-    #asyncCalcMathResult {
-        min-height: 38px;
-        max-height: 100px;
-        overflow: auto;
-        padding: 8px 10px;
-        border: 1px solid var(--aux-border);
-        border-radius: 9px;
-        background: var(--aux-display-bg);
-        color: var(--aux-text);
-        font-size: 14px;
-        text-align: center
-    }
 
-    #asyncCalcSymbolic {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px
-    }
 
-    #asyncCalcSymbolic button {
-        padding: 8px 5px;
-        border: 1px solid var(--aux-border);
-        border-radius: 8px;
-        background: var(--aux-op-bg);
-        color: var(--aux-text);
-        font-size: 11px;
-        cursor: pointer
-    }
 
-    #asyncCalcVariable {
-        width: 48px;
-        padding: 5px;
-        border: 1px solid var(--aux-border);
-        border-radius: 6px;
-        background: var(--aux-control);
-        color: var(--aux-text)
-    }
 
-    #asyncCalcPanel #asyncCalcKeys {
-        gap: 5px
-    }
 
-    #asyncCalcPanel #asyncCalcKeys button {
-        min-width: 0;
-        min-height: clamp(31px, 5vh, 39px);
-        font-size: clamp(10px, 1.5vw, 12px)
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     html[data-theme="dark"] #readingToolsPanel,
     html[data-theme="dark"] #asyncNotesPanel,
-    html[data-theme="dark"] #asyncCalcPanel,
     html[data-theme="dark"] #asyncSoundPanel {
         --aux-glass: rgba(25, 32, 45, .93);
         --aux-control: rgba(255, 255, 255, .07)
     }
+
+
 
     #asyncFloatingTimer {
         left: 50%;
@@ -1165,65 +1324,76 @@
         transform: translate(-50%, -50%);
     }
 
+
+
     @media(max-width:480px) {
 
+
+
         #asyncNotesFab,
-        #asyncCalcFab,
         #asyncSoundFab {
             right: 13px;
             width: 42px;
             height: 42px
         }
 
+
+
         #asyncNotesFab {
             bottom: 72px
         }
 
-        #asyncCalcFab {
-            bottom: 122px
-        }
+
+
+
+
 
         #asyncSoundFab {
             bottom: 172px
         }
 
+
+
         #readingToolsPanel,
         #asyncNotesPanel,
-        #asyncCalcPanel,
         #asyncSoundPanel {
             width: calc(100vw - 18px) !important;
             max-height: 84dvh;
             border-radius: 15px !important
         }
 
+
+
         #asyncNotesPanel {
             height: 76dvh !important
         }
 
-        #asyncCalcPanel {
-            padding-left: 9px;
-            padding-right: 9px
-        }
 
-        #asyncCalcPanel #asyncCalcKeys {
-            gap: 4px
-        }
 
-        #asyncCalcPanel #asyncCalcKeys button {
-            min-height: 32px;
-            padding: 3px 1px
-        }
+
+
+
+
+
+
+
+
 
         #readingToolsPanel {
             padding: 12px !important
         }
+
+
     }
 
 
+
+
     /* Unified ASYNC tool appearance: one royal-blue glass style for every tool and launcher. */
+
+
     #readingToolsFab,
     #asyncNotesFab,
-    #asyncCalcFab,
     #asyncSoundFab {
         position: fixed !important;
         right: 22px !important;
@@ -1244,148 +1414,127 @@
         transition: transform .18s ease, box-shadow .18s ease !important;
     }
 
+
+
     #readingToolsFab {
         bottom: 24px !important;
         z-index: 99990
     }
 
+
+
     #asyncNotesFab {
         bottom: 82px !important
     }
 
-    #asyncCalcFab {
-        bottom: 140px !important
-    }
+
+
+
+
 
     #asyncSoundFab {
         bottom: 198px !important
     }
 
+
+
     #readingToolsFab:hover,
     #asyncNotesFab:hover,
-    #asyncCalcFab:hover,
     #asyncSoundFab:hover,
     #readingToolsFab:focus-visible,
     #asyncNotesFab:focus-visible,
-    #asyncCalcFab:focus-visible,
     #asyncSoundFab:focus-visible {
         transform: translateY(-2px);
         box-shadow: 0 10px 25px rgba(37, 76, 180, .36) !important;
         outline: none
     }
 
+
+
     #readingToolsPanel .rt-header,
     .aux-head,
     #asyncNotesPanel .aux-head,
-    #asyncCalcPanel .aux-head,
     #asyncSoundPanel .aux-head {
         background: linear-gradient(110deg, #4169e1, #3157c7) !important;
         color: #fff !important
     }
 
+
+
     #asyncNotesPanel .aux-head strong,
-    #asyncCalcPanel .aux-head strong,
     #asyncSoundPanel .aux-head strong,
     #readingToolsPanel .rt-header strong {
         color: #fff !important
     }
 
+
+
     #asyncNotesPanel .aux-window-actions button,
-    #asyncCalcPanel .aux-window-actions button,
     #asyncSoundPanel .aux-window-actions button,
     #readingToolsPanel .rt-window-actions button {
         background: rgba(255, 255, 255, .16) !important;
         color: #fff !important
     }
 
+
+
     #asyncNotesPanel .aux-head,
-    #asyncCalcPanel .aux-head,
     #asyncSoundPanel .aux-head {
         border-radius: 16px 16px 0 0
     }
 
-    #asyncCalcExpressionPreview,
-    #asyncCalcLatexPreview {
-        min-height: 42px;
-        max-height: 110px;
-        overflow: auto;
-        padding: 9px 11px;
-        border: 1px solid var(--aux-border);
-        border-radius: 9px;
-        background: var(--aux-display-bg);
-        color: var(--aux-text);
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow-wrap: anywhere
-    }
 
-    #asyncCalcExpressionPreview {
-        font-size: 17px
-    }
 
-    .calc-formula-editor {
-        display: grid;
-        gap: 6px;
-        color: var(--aux-text);
-        font-size: 11px
-    }
 
-    .calc-formula-editor label {
-        font-weight: 700
-    }
 
-    #asyncCalcLatexInput {
-        width: 100%;
-        min-height: 48px;
-        resize: vertical;
-        padding: 8px 10px;
-        border: 1px solid var(--aux-border);
-        border-radius: 8px;
-        background: var(--aux-control);
-        color: var(--aux-text);
-        font: 12px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace
-    }
 
-    #asyncCalcLatexPreview {
-        min-height: 52px;
-        font-size: 17px
-    }
 
-    #asyncCalcLatexPreview .katex-display,
-    #asyncCalcExpressionPreview .katex-display {
-        margin: 0
-    }
 
-    #asyncCalcMathResult {
-        max-height: 150px !important;
-        min-height: 48px !important
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     #asyncSoundPanel .sound-actions button {
         background: #4169e1 !important
     }
+
+
 
     #asyncSoundPanel .sound-choice button.active {
         border-color: #4169e1 !important;
         background: rgba(65, 105, 225, .14) !important
     }
 
+
+
     #asyncSoundPanel input[type=range] {
         accent-color: #4169e1 !important
     }
 
+
+
     #asyncNotesPanel .notes-toolbar button,
-    #asyncCalcPanel #asyncCalcSymbolic button,
-    #asyncCalcPanel .calc-memory button,
-    #asyncCalcPanel #asyncCalcKeys button,
     #readingToolsPanel .rt-btn {
         border-radius: 9px
     }
 
-    #asyncCalcPanel #asyncCalcKeys button.calc-equals,
-    #asyncCalcPanel #asyncCalcSymbolic button:hover,
+
+
     #asyncNotesPanel .notes-toolbar button:hover,
     #readingToolsPanel .rt-btn:hover {
         background: #4169e1;
@@ -1393,175 +1542,115 @@
         border-color: #4169e1
     }
 
+
+
     @media(max-width:480px) {
+
+
 
         #readingToolsFab,
         #asyncNotesFab,
-        #asyncCalcFab,
         #asyncSoundFab {
             right: 13px !important;
             width: 44px !important;
             height: 44px !important
         }
 
+
+
         #readingToolsFab {
             bottom: 18px !important
         }
+
+
 
         #asyncNotesFab {
             bottom: 70px !important
         }
 
-        #asyncCalcFab {
-            bottom: 122px !important
-        }
+
+
+
+
 
         #asyncSoundFab {
             bottom: 174px !important
         }
+
+
     }
 
 
-    /* Board-exam scientific calculator controls */
-    #asyncCalcPanel {
-        width: min(470px, calc(100vw - 24px)) !important;
-        max-height: min(90vh, 820px) !important;
-        overflow-y: auto !important
-    }
 
-    #asyncCalcPanel .exam-calc-topbar {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
-        gap: 5px;
-        align-items: center
-    }
 
-    #asyncCalcPanel .exam-calc-topbar button,
-    #asyncCalcPanel .exam-calc-fraction-row button,
-    #asyncCalcPanel .exam-calc-bounds button {
-        min-height: 32px;
-        font-weight: 800;
-        font-size: 10px;
-        letter-spacing: .2px
-    }
 
-    #asyncCalcPanel .exam-calc-topbar button[aria-pressed="true"] {
-        background: #4169e1 !important;
-        color: #fff !important;
-        border-color: #4169e1 !important
-    }
 
-    #asyncCalcModeLabel {
-        font-size: 10px;
-        font-weight: 900;
-        color: var(--aux-accent);
-        text-align: right
-    }
 
-    #asyncCalcModeMenu {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 5px;
-        padding: 8px;
-        border: 1px solid var(--aux-border);
-        border-radius: 9px;
-        background: var(--aux-control)
-    }
 
-    #asyncCalcModeMenu[hidden] {
-        display: none
-    }
 
-    #asyncCalcModeMenu button {
-        text-align: left;
-        min-height: 34px
-    }
 
-    #asyncCalcDisplay {
-        font-family: ui-monospace, Consolas, monospace !important;
-        font-size: clamp(25px, 5vw, 34px) !important;
-        min-height: 64px !important
-    }
 
-    #asyncCalcPanel .exam-calc-fraction-row {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 5px
-    }
 
-    #asyncCalcPanel .exam-calc-bounds {
-        display: grid;
-        grid-template-columns: 1fr 1fr auto;
-        gap: 6px;
-        align-items: end;
-        color: var(--aux-text);
-        font-size: 10px
-    }
 
-    #asyncCalcPanel .exam-calc-bounds label {
-        display: grid;
-        gap: 4px;
-        min-width: 0
-    }
 
-    #asyncCalcPanel .exam-calc-bounds input {
-        width: 100%;
-        min-width: 0;
-        padding: 7px;
-        border: 1px solid var(--aux-border);
-        border-radius: 7px;
-        background: var(--aux-control);
-        color: var(--aux-text)
-    }
 
-    #asyncCalcPanel #asyncCalcSymbolic {
-        grid-template-columns: repeat(3, minmax(0, 1fr))
-    }
 
-    #asyncCalcPanel .calc-mode {
-        flex-wrap: wrap
-    }
 
-    #asyncCalcPanel #asyncCalcKeys {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 6px
-    }
 
-    #asyncCalcPanel #asyncCalcKeys button {
-        min-height: 42px;
-        font-size: 12px
-    }
 
-    #asyncCalcPanel .calc-memory button {
-        min-height: 34px;
-        font-weight: 800
-    }
 
-    @media(max-width:480px) {
-        #asyncCalcPanel {
-            max-height: 88dvh !important
-        }
 
-        #asyncCalcPanel #asyncCalcKeys button {
-            min-height: 37px
-        }
 
-        #asyncCalcPanel .exam-calc-bounds {
-            grid-template-columns: 1fr 1fr
-        }
 
-        #asyncCalcPanel .exam-calc-bounds button {
-            grid-column: 1/-1
-        }
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @media(max-width:480px) {}
+
+
 
 
     #readingToolsFab,
     #asyncNotesFab,
-    #asyncCalcFab,
     #asyncSoundFab {
         display: none !important
     }
+
+
 
     #asyncToolsDock {
         position: fixed;
@@ -1573,6 +1662,8 @@
         align-items: flex-end;
         gap: 10px
     }
+
+
 
     #asyncToolsFab {
         width: 56px;
@@ -1589,11 +1680,15 @@
         transition: transform .48s cubic-bezier(.22, 1, .36, 1), border-radius .48s cubic-bezier(.22, 1, .36, 1), box-shadow .48s cubic-bezier(.22, 1, .36, 1), background .3s ease
     }
 
+
+
     #asyncToolsFab[aria-expanded=true] {
         transform: rotate(90deg) scale(1.06);
         border-radius: 50%;
         box-shadow: 0 12px 30px rgba(37, 76, 180, .4)
     }
+
+
 
     #asyncToolsMenu {
         display: flex;
@@ -1607,12 +1702,16 @@
         transition: opacity .38s cubic-bezier(.22, 1, .36, 1), transform .48s cubic-bezier(.22, 1, .36, 1), visibility .38s
     }
 
+
+
     #asyncToolsMenu.is-visible {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
         transform: translateY(0) scale(1)
     }
+
+
 
     #asyncToolsMenu button {
         display: flex;
@@ -1633,26 +1732,38 @@
         transition: transform .28s cubic-bezier(.22, 1, .36, 1), filter .2s ease, background .2s ease
     }
 
+
+
     #asyncToolsMenu button:nth-child(2) {
         background: rgba(13, 148, 136, .78)
     }
+
+
 
     #asyncToolsMenu button:nth-child(3) {
         background: rgba(124, 58, 237, .78)
     }
 
+
+
     #asyncToolsMenu button:nth-child(4) {
         background: rgba(217, 119, 6, .78)
     }
+
+
 
     #asyncToolsMenu button:nth-child(5) {
         background: rgba(225, 29, 72, .78)
     }
 
+
+
     #asyncToolsMenu button:hover {
         transform: translateX(-4px) scale(1.025);
         filter: brightness(1.08)
     }
+
+
 
     #asyncToolsMenu button i {
         width: 20px;
@@ -1660,9 +1771,10 @@
         font-size: 17px
     }
 
+
+
     #readingToolsPanel,
     #asyncNotesPanel,
-    #asyncCalcPanel,
     #asyncSoundPanel {
         left: 50% !important;
         top: 50% !important;
@@ -1673,12 +1785,15 @@
         max-height: calc(100dvh - 18px) !important
     }
 
+
+
     #readingToolsPanel.is-open,
     #asyncNotesPanel.is-open,
-    #asyncCalcPanel.is-open,
     #asyncSoundPanel.is-open {
         animation: asyncToolPop .2s ease-out
     }
+
+
 
     @keyframes asyncToolPop {
         from {
@@ -1692,47 +1807,38 @@
         }
     }
 
+
+
     #readingToolsPanel[data-user-positioned="1"],
     #asyncNotesPanel[data-user-positioned="1"],
-    #asyncCalcPanel[data-user-positioned="1"],
     #asyncSoundPanel[data-user-positioned="1"] {
         transform: none !important
     }
 
-    #asyncCalcPanel .simple-calc-mode {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 10px;
-        font-weight: 800;
-        color: var(--aux-text)
-    }
 
-    #asyncCalcPanel .simple-calc-help {
-        font-size: 10px;
-        color: var(--aux-text)
-    }
 
-    #asyncCalcPanel #asyncCalcDisplay {
-        font: clamp(24px, 5vw, 34px) ui-monospace, Consolas, monospace !important;
-        min-height: 62px !important
-    }
 
-    #asyncCalcPanel #asyncCalcKeys {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 6px
-    }
 
-    #asyncCalcPanel #asyncCalcKeys button {
-        min-height: 41px;
-        font-size: 13px
-    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     .supplemental-heading {
         font-size: 12px;
         font-weight: 800;
         color: var(--aux-text)
     }
+
+
 
     .supplemental-heading small {
         display: block;
@@ -1742,6 +1848,8 @@
         margin-top: 3px
     }
 
+
+
     #asyncSupplementalSounds {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1749,6 +1857,8 @@
         max-height: 155px;
         overflow: auto
     }
+
+
 
     #asyncSupplementalSounds button {
         padding: 8px 4px;
@@ -1760,6 +1870,8 @@
         cursor: pointer
     }
 
+
+
     #asyncSupplementalSounds button.active {
         background: rgba(16, 185, 129, .18);
         border-color: #10b981;
@@ -1767,19 +1879,24 @@
         font-weight: 800
     }
 
+
+
     #asyncSupplementalSounds button {
         min-height: 34px;
         transition: background .18s ease, border-color .18s ease, transform .18s ease
     }
+
+
 
     #asyncSupplementalSounds button:hover {
         transform: translateY(-1px);
         border-color: #60a5fa
     }
 
+
+
     html[data-theme="dark"] #readingToolsPanel,
     html[data-theme="dark"] #asyncNotesPanel,
-    html[data-theme="dark"] #asyncCalcPanel,
     html[data-theme="dark"] #asyncSoundPanel {
         --aux-text: #f1f5f9 !important;
         --aux-editor-text: #f1f5f9 !important;
@@ -1790,40 +1907,51 @@
         color: #f1f5f9 !important;
     }
 
+
+
     html[data-theme="dark"] #readingToolsPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
     html[data-theme="dark"] #asyncNotesPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
-    html[data-theme="dark"] #asyncCalcPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
     html[data-theme="dark"] #asyncSoundPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li) {
         color: var(--aux-text)
     }
 
+
+
     html[data-theme="dark"] #readingToolsPanel :is(input, select, textarea),
     html[data-theme="dark"] #asyncNotesPanel :is(input, select, textarea),
-    html[data-theme="dark"] #asyncCalcPanel :is(input, select, textarea),
     html[data-theme="dark"] #asyncSoundPanel :is(input, select, textarea) {
         background: #172033 !important;
         color: #f8fafc !important;
         border-color: var(--aux-border) !important
     }
 
+
+
     html[data-theme="dark"] #asyncNotesPanel .ql-editor {
         color: #f1f5f9 !important
     }
+
+
 
     html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker-options {
         background: #172033;
         color: #f1f5f9
     }
 
+
+
     html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker-item {
         color: #f1f5f9
     }
 
-    html[data-theme="dark"] #asyncCalcPanel #asyncCalcKeys button,
+
+
     html[data-theme="dark"] #readingToolsPanel .rt-btn,
     html[data-theme="dark"] #asyncSoundPanel button {
         color: #f8fafc
     }
+
+
 
     html[data-theme="dark"] #asyncFloatingTimer {
         color: #f8fafc !important;
@@ -1831,9 +1959,13 @@
         border-color: rgba(203, 213, 225, .25) !important
     }
 
+
+
     html[data-theme="dark"] #asyncFloatingTimer :is(strong, label, span, div, p) {
         color: #f1f5f9 !important
     }
+
+
 
     html[data-theme="dark"] #asyncFloatingTimer input {
         background: #172033 !important;
@@ -1841,46 +1973,61 @@
         border-color: rgba(203, 213, 225, .28) !important
     }
 
+
+
     html[data-theme="dark"] #readingToolsPanel button:not(.rt-header button),
     html[data-theme="dark"] #asyncNotesPanel button,
-    html[data-theme="dark"] #asyncCalcPanel button,
     html[data-theme="dark"] #asyncSoundPanel button {
         color: #f8fafc
     }
 
+
+
     @media(max-width:520px) {
+
+
         #asyncToolsDock {
             right: 12px;
             bottom: 12px
         }
+
+
 
         #asyncToolsFab {
             width: 50px;
             height: 50px
         }
 
+
+
         #asyncToolsMenu button {
             min-width: 158px;
             padding: 10px 12px
         }
 
+
+
         #readingToolsPanel,
         #asyncNotesPanel,
-        #asyncCalcPanel,
         #asyncSoundPanel {
             width: calc(100vw - 14px) !important;
             max-height: calc(100dvh - 14px) !important
         }
 
-        #asyncCalcPanel #asyncCalcKeys button {
-            min-height: 37px
-        }
+
+
+
+
 
         #asyncSupplementalSounds {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             max-height: 130px
         }
+
+
     }
+
+
 
 
     #asyncPresentationPanel {
@@ -1902,6 +2049,8 @@
         backdrop-filter: blur(20px)
     }
 
+
+
     #asyncPresentationPanel.is-open {
         display: flex;
         flex-direction: column;
@@ -1909,15 +2058,21 @@
         animation: asyncToolPop .22s ease-out
     }
 
+
+
     #asyncPresentationPanel.is-minimized {
         display: none !important
     }
+
+
 
     #asyncPresentationPanel .presentation-actions {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px
     }
+
+
 
     #asyncPresentationPanel .presentation-actions button {
         padding: 11px 9px;
@@ -1928,12 +2083,16 @@
         cursor: pointer
     }
 
+
+
     #asyncPresentationPanel .presentation-actions button.active {
         background: rgba(37, 99, 235, .18);
         border-color: #3b82f6;
         color: var(--aux-text);
         font-weight: 800
     }
+
+
 
     #asyncPresentationOverlay {
         display: none;
@@ -1943,9 +2102,13 @@
         pointer-events: none
     }
 
+
+
     #asyncPresentationOverlay.active {
         display: block
     }
+
+
 
     #asyncPresentationCursor {
         position: fixed;
@@ -1960,6 +2123,8 @@
         display: none
     }
 
+
+
     #asyncPresentationOverlay.mode-pointer #asyncPresentationCursor {
         width: 24px;
         height: 24px;
@@ -1968,19 +2133,27 @@
         box-shadow: 0 0 0 4px rgba(37, 99, 235, .2)
     }
 
+
+
     #asyncPresentationOverlay.mode-laser #asyncPresentationCursor {
         display: block
     }
 
+
+
     #asyncPresentationOverlay.mode-pointer #asyncPresentationCursor {
         display: block
     }
+
+
 
     #asyncPresentationOverlay.mode-spotlight {
         background: rgba(0, 0, 0, .68);
         -webkit-mask: radial-gradient(circle 95px at var(--spot-x, 50%) var(--spot-y, 50%), transparent 0 90px, #000 98px);
         mask: radial-gradient(circle 95px at var(--spot-x, 50%) var(--spot-y, 50%), transparent 0 90px, #000 98px)
     }
+
+
 
     #asyncPresentationOverlay.mode-spotlight #asyncPresentationSpotlight {
         display: block;
@@ -1995,6 +2168,8 @@
         border: 2px solid rgba(255, 255, 255, .85)
     }
 
+
+
     #asyncPresentationCanvas {
         position: absolute;
         inset: 0;
@@ -2004,29 +2179,40 @@
         touch-action: none
     }
 
+
+
     #asyncPresentationOverlay.mode-draw {
         pointer-events: auto;
         cursor: crosshair
     }
+
+
 
     #asyncPresentationOverlay.mode-draw #asyncPresentationCanvas {
         pointer-events: auto;
         cursor: crosshair
     }
 
+
+
     #asyncPresentationPanel[data-user-positioned="1"] {
         transform: none !important
     }
 
+
+
     /* Resize controls for the actual floating tool windows (not the launcher). */
+
+
     #readingToolsPanel,
     #asyncNotesPanel,
-    #asyncCalcPanel,
     #asyncSoundPanel,
     #asyncPresentationPanel,
     #asyncFloatingTimer {
         box-sizing: border-box;
     }
+
+
 
     .async-tool-resize-handle {
         position: absolute;
@@ -2044,9 +2230,10 @@
         transition: opacity .16s ease, background .16s ease;
     }
 
+
+
     #readingToolsPanel:hover .async-tool-resize-handle,
     #asyncNotesPanel:hover .async-tool-resize-handle,
-    #asyncCalcPanel:hover .async-tool-resize-handle,
     #asyncSoundPanel:hover .async-tool-resize-handle,
     #asyncPresentationPanel:hover .async-tool-resize-handle,
     #asyncFloatingTimer:hover .async-tool-resize-handle,
@@ -2057,6 +2244,8 @@
         background: rgba(96, 165, 250, .22);
     }
 
+
+
     .async-tool-resize-handle[data-resize="n"],
     .async-tool-resize-handle[data-resize="s"] {
         left: 14px;
@@ -2065,13 +2254,19 @@
         cursor: ns-resize;
     }
 
+
+
     .async-tool-resize-handle[data-resize="n"] {
         top: 1px;
     }
 
+
+
     .async-tool-resize-handle[data-resize="s"] {
         bottom: 1px;
     }
+
+
 
     .async-tool-resize-handle[data-resize="e"],
     .async-tool-resize-handle[data-resize="w"] {
@@ -2081,13 +2276,19 @@
         cursor: ew-resize;
     }
 
+
+
     .async-tool-resize-handle[data-resize="e"] {
         right: 1px;
     }
 
+
+
     .async-tool-resize-handle[data-resize="w"] {
         left: 1px;
     }
+
+
 
     .async-tool-resize-handle[data-resize="ne"],
     .async-tool-resize-handle[data-resize="nw"],
@@ -2101,11 +2302,15 @@
         box-shadow: 0 1px 5px rgba(15, 23, 42, .18);
     }
 
+
+
     .async-tool-resize-handle[data-resize="ne"] {
         top: 2px;
         right: 2px;
         cursor: nesw-resize;
     }
+
+
 
     .async-tool-resize-handle[data-resize="nw"] {
         top: 2px;
@@ -2113,11 +2318,15 @@
         cursor: nwse-resize;
     }
 
+
+
     .async-tool-resize-handle[data-resize="se"] {
         bottom: 2px;
         right: 2px;
         cursor: nwse-resize;
     }
+
+
 
     .async-tool-resize-handle[data-resize="sw"] {
         bottom: 2px;
@@ -2125,16 +2334,21 @@
         cursor: nesw-resize;
     }
 
+
+
     #readingToolsPanel.is-minimized .async-tool-resize-handle,
     #asyncNotesPanel.is-minimized .async-tool-resize-handle,
-    #asyncCalcPanel.is-minimized .async-tool-resize-handle,
     #asyncSoundPanel.is-minimized .async-tool-resize-handle,
     #asyncPresentationPanel.is-minimized .async-tool-resize-handle,
     #asyncFloatingTimer.is-minimized .async-tool-resize-handle {
         display: none !important;
     }
 
+
+
     @media (max-width: 480px) {
+
+
 
         .async-tool-resize-handle[data-resize="ne"],
         .async-tool-resize-handle[data-resize="nw"],
@@ -2143,16 +2357,24 @@
             width: 20px;
             height: 20px;
         }
+
+
     }
 
 
+
+
     /* macOS traffic-light controls */
+
+
     .mac-window-header,
     #asyncTimerDrag {
         display: flex;
         align-items: center;
         gap: 10px
     }
+
+
 
     .mac-window-controls {
         display: inline-flex !important;
@@ -2162,6 +2384,8 @@
         order: -1;
         margin-right: 7px
     }
+
+
 
     .mac-window-controls .mac-window-btn,
     #readingToolsPanel .rt-window-actions .mac-window-btn {
@@ -2186,22 +2410,32 @@
         transition: filter .15s ease, transform .15s ease;
     }
 
+
+
     .mac-window-btn:hover {
         filter: brightness(1.08);
         transform: scale(1.08)
     }
 
+
+
     .mac-window-btn.mac-close {
         background: #ff5f57 !important
     }
+
+
 
     .mac-window-btn.mac-minimize {
         background: #febc2e !important
     }
 
+
+
     .mac-window-btn.mac-maximize {
         background: #28c840 !important
     }
+
+
 
     .mac-window-btn::after {
         position: absolute;
@@ -2215,42 +2449,62 @@
         transition: opacity .12s ease
     }
 
+
+
     .mac-close::after {
         content: "×"
     }
+
+
 
     .mac-minimize::after {
         content: "−"
     }
 
+
+
     .mac-maximize::after {
         content: "+"
     }
+
+
 
     .mac-window-btn:hover::after {
         opacity: 1
     }
 
+
+
     .mac-window-header>strong {
         flex: 0 1 auto
     }
 
+
+
     .mac-window-header>.aux-drag-hint {
         margin-left: auto
     }
+
+
 
     #readingToolsPanel .rt-window-actions {
         order: -1;
         flex: 0 0 auto
     }
 
+
+
     #asyncTimerDrag>strong {
         flex: 0 1 auto
     }
 
+
+
     #asyncTimerDrag>.aft-tick-toggle {
         margin-left: auto
     }
+
+
 
     #aftTickToggle {
         width: 29px;
@@ -2267,37 +2521,54 @@
         cursor: pointer
     }
 
+
+
     #aftTickToggle[aria-pressed="false"] {
         opacity: .65;
         background: rgba(15, 23, 42, .2)
     }
 
+
+
     /* Match the title bar color with the tool's colored launcher/menu entry. */
+
+
     #readingToolsPanel .rt-header {
         background: #3b82f6 !important
     }
+
+
 
     #asyncNotesPanel .aux-head {
         background: #0d9488 !important
     }
 
-    #asyncCalcPanel .aux-head {
-        background: #7c3aed !important
-    }
+
+
+
+
 
     #asyncSoundPanel .aux-head {
         background: #d97706 !important
     }
 
+
+
     #asyncPresentationPanel .aux-head {
         background: #e11d48 !important
     }
+
+
 
     #asyncFloatingTimer .aft-header {
         background: #3b82f6
     }
 
+
+
     /* Quill formatting buttons: clean spacing and responsive wrapping. */
+
+
     #asyncNotesPanel .ql-toolbar.ql-snow {
         display: flex;
         flex-wrap: wrap;
@@ -2308,6 +2579,8 @@
         box-sizing: border-box
     }
 
+
+
     #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
         display: inline-flex;
         align-items: center;
@@ -2315,6 +2588,8 @@
         gap: 3px;
         margin: 2px 7px 2px 0 !important
     }
+
+
 
     #asyncNotesPanel .ql-toolbar.ql-snow button {
         width: 29px;
@@ -2324,39 +2599,59 @@
         border-radius: 6px
     }
 
+
+
     #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker {
         height: 29px;
         margin: 0 2px
     }
+
+
 
     #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-label {
         padding: 3px 5px;
         border-radius: 6px
     }
 
+
+
     #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-options {
         max-height: 220px;
         overflow: auto
     }
 
+
+
     @media(max-width:480px) {
+
+
         #asyncNotesPanel .ql-toolbar.ql-snow {
             gap: 3px;
             padding: 7px 6px !important
         }
+
+
 
         #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
             gap: 2px;
             margin-right: 4px !important
         }
 
+
+
         #asyncNotesPanel .ql-toolbar.ql-snow button {
             width: 27px;
             height: 27px
         }
+
+
     }
 
+
+
     /* Presentation minimization collapses to an interactive icon toolbar. */
+
+
     #asyncPresentationPanel.is-minimized {
         display: flex !important;
         flex-direction: column;
@@ -2371,9 +2666,13 @@
         border-radius: 13px !important;
     }
 
+
+
     #asyncPresentationPanel.is-minimized>:not(.aux-head):not(.presentation-actions) {
         display: none !important
     }
+
+
 
     #asyncPresentationPanel.is-minimized .aux-head {
         padding: 2px 3px !important;
@@ -2382,14 +2681,20 @@
         background: transparent !important
     }
 
+
+
     #asyncPresentationPanel.is-minimized .aux-head>strong,
     #asyncPresentationPanel.is-minimized .aux-drag-hint {
         display: none !important
     }
 
+
+
     #asyncPresentationPanel.is-minimized .aux-window-actions {
         margin: 0 !important
     }
+
+
 
     #asyncPresentationPanel.is-minimized .presentation-actions {
         display: flex !important;
@@ -2397,6 +2702,8 @@
         justify-content: center;
         gap: 4px !important
     }
+
+
 
     #asyncPresentationPanel.is-minimized .presentation-actions button {
         display: inline-flex;
@@ -2413,17 +2720,25 @@
         border-radius: 8px;
     }
 
+
+
     #asyncPresentationPanel.is-minimized .presentation-actions button i {
         font-size: 15px;
         line-height: 1
     }
+
+
 
     #asyncPresentationPanel.is-minimized .presentation-actions button.active {
         background: rgba(225, 29, 72, .2) !important;
         border-color: #e11d48 !important
     }
 
+
+
     /* Correct light/dark presentation text and controls. */
+
+
     html[data-theme="dark"] #asyncPresentationPanel {
         --aux-text: #f1f5f9 !important;
         --aux-control: rgba(255, 255, 255, .09) !important;
@@ -2433,6 +2748,8 @@
         color: #f1f5f9 !important;
     }
 
+
+
     html[data-theme="dark"] #asyncPresentationPanel>p,
     html[data-theme="dark"] #asyncPresentationPanel label,
     html[data-theme="dark"] #asyncPresentationPanel label span,
@@ -2440,17 +2757,23 @@
         color: #f1f5f9 !important
     }
 
+
+
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
         background: rgba(255, 255, 255, .08) !important;
         border-color: rgba(203, 213, 225, .3) !important;
         color: #f8fafc !important
     }
 
+
+
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
         background: rgba(225, 29, 72, .24) !important;
         border-color: #fb7185 !important;
         color: #fff !important
     }
+
+
 
     html[data-theme="dark"] #asyncPresentationPanel input,
     html[data-theme="dark"] #asyncPresentationPanel select {
@@ -2459,24 +2782,33 @@
         border-color: rgba(203, 213, 225, .3) !important
     }
 
+
+
     html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) {
         color: #f1f5f9 !important
     }
 
+
+
     /* Additional annotation modes can receive pointer/touch drawing input. */
+
+
     #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) {
         pointer-events: auto;
         cursor: crosshair
     }
+
+
 
     #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) #asyncPresentationCanvas {
         pointer-events: auto;
         cursor: crosshair
     }
 
+
+
     #readingToolsPanel.is-maximized .async-tool-resize-handle,
     #asyncNotesPanel.is-maximized .async-tool-resize-handle,
-    #asyncCalcPanel.is-maximized .async-tool-resize-handle,
     #asyncSoundPanel.is-maximized .async-tool-resize-handle,
     #asyncPresentationPanel.is-maximized .async-tool-resize-handle,
     #asyncFloatingTimer.is-maximized .async-tool-resize-handle {
@@ -2484,50 +2816,62 @@
     }
 
 
+
+
     #readingToolsPanel.is-maximized .async-tool-resize-handle,
     #asyncNotesPanel.is-maximized .async-tool-resize-handle,
-    #asyncCalcPanel.is-maximized .async-tool-resize-handle,
     #asyncSoundPanel.is-maximized .async-tool-resize-handle,
     #asyncPresentationPanel.is-maximized .async-tool-resize-handle,
     #asyncFloatingTimer.is-maximized .async-tool-resize-handle {
         display: none !important
     }
 
+
+
     #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) {
         pointer-events: auto;
         cursor: crosshair
     }
 
+
+
     #asyncPresentationOverlay:is(.mode-draw, .mode-highlight, .mode-arrow, .mode-rectangle, .mode-circle, .mode-text, .mode-erase) #asyncPresentationCanvas {
         pointer-events: auto;
         cursor: crosshair
     }
+
+
 
 
     /* Higher-specificity overrides for the controls' original component styles. */
+
+
     #asyncNotesPanel .aux-window-actions .mac-close,
-    #asyncCalcPanel .aux-window-actions .mac-close,
     #asyncSoundPanel .aux-window-actions .mac-close,
     #asyncPresentationPanel .aux-window-actions .mac-close {
         background: #ff5f57 !important;
         color: transparent !important
     }
 
+
+
     #asyncNotesPanel .aux-window-actions .mac-minimize,
-    #asyncCalcPanel .aux-window-actions .mac-minimize,
     #asyncSoundPanel .aux-window-actions .mac-minimize,
     #asyncPresentationPanel .aux-window-actions .mac-minimize {
         background: #febc2e !important;
         color: transparent !important
     }
 
+
+
     #asyncNotesPanel .aux-window-actions .mac-maximize,
-    #asyncCalcPanel .aux-window-actions .mac-maximize,
     #asyncSoundPanel .aux-window-actions .mac-maximize,
     #asyncPresentationPanel .aux-window-actions .mac-maximize {
         background: #28c840 !important;
         color: transparent !important
     }
+
+
 
     #aftClose,
     #aftMinimize,
@@ -2545,17 +2889,25 @@
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3) !important;
     }
 
+
+
     #aftClose {
         background: #ff5f57 !important
     }
+
+
 
     #aftMinimize {
         background: #febc2e !important
     }
 
+
+
     #aftMaximize {
         background: #28c840 !important
     }
+
+
 
 
     /* ============================================================
@@ -2564,7 +2916,11 @@
        blue / teal / purple / orange / red.
        ============================================================ */
 
+
+
     /* Light-theme tinted glass surfaces. */
+
+
     #readingToolsPanel {
         --tool-glass: rgba(219, 234, 254, .70);
         --tool-glass-deep: rgba(191, 219, 254, .45);
@@ -2576,6 +2932,8 @@
         border-color: var(--tool-glass-border) !important;
         color: #172033 !important;
     }
+
+
 
     #asyncNotesPanel {
         --tool-glass: rgba(204, 251, 241, .70);
@@ -2589,17 +2947,10 @@
         color: #123532 !important;
     }
 
-    #asyncCalcPanel {
-        --tool-glass: rgba(237, 233, 254, .73);
-        --tool-glass-deep: rgba(221, 214, 254, .46);
-        --tool-glass-border: rgba(124, 58, 237, .34);
-        --tool-control-glass: rgba(124, 58, 237, .10);
-        --tool-control-hover: rgba(124, 58, 237, .19);
-        --tool-accent: #7c3aed;
-        background: linear-gradient(135deg, var(--tool-glass), var(--tool-glass-deep)) !important;
-        border-color: var(--tool-glass-border) !important;
-        color: #2e1856 !important;
-    }
+
+
+
+
 
     #asyncSoundPanel {
         --tool-glass: rgba(255, 237, 213, .74);
@@ -2613,6 +2964,8 @@
         color: #422006 !important;
     }
 
+
+
     #asyncPresentationPanel {
         --tool-glass: rgba(255, 228, 230, .73);
         --tool-glass-deep: rgba(254, 205, 211, .46);
@@ -2625,10 +2978,13 @@
         color: #4c0519 !important;
     }
 
+
+
     /* Frosted surfaces: retain hue while allowing the page underneath to show. */
+
+
     #readingToolsPanel,
     #asyncNotesPanel,
-    #asyncCalcPanel,
     #asyncSoundPanel,
     #asyncPresentationPanel {
         backdrop-filter: blur(26px) saturate(175%) !important;
@@ -2641,7 +2997,11 @@
         isolation: isolate;
     }
 
+
+
     /* Color-matched translucent header strips. */
+
+
     #readingToolsPanel .rt-header {
         background: linear-gradient(112deg, rgba(59, 130, 246, .86), rgba(37, 99, 235, .68)) !important;
         border: 1px solid rgba(255, 255, 255, .42) !important;
@@ -2651,6 +3011,8 @@
         -webkit-backdrop-filter: blur(18px) saturate(170%);
     }
 
+
+
     #asyncNotesPanel .aux-head {
         background: linear-gradient(112deg, rgba(13, 148, 136, .87), rgba(15, 118, 110, .68)) !important;
         border: 1px solid rgba(255, 255, 255, .42) !important;
@@ -2659,13 +3021,10 @@
         -webkit-backdrop-filter: blur(18px) saturate(170%);
     }
 
-    #asyncCalcPanel .aux-head {
-        background: linear-gradient(112deg, rgba(124, 58, 237, .87), rgba(91, 33, 182, .68)) !important;
-        border: 1px solid rgba(255, 255, 255, .42) !important;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), 0 5px 16px rgba(124, 58, 237, .12);
-        backdrop-filter: blur(18px) saturate(170%);
-        -webkit-backdrop-filter: blur(18px) saturate(170%);
-    }
+
+
+
+
 
     #asyncSoundPanel .aux-head {
         background: linear-gradient(112deg, rgba(217, 119, 6, .88), rgba(180, 83, 9, .68)) !important;
@@ -2675,6 +3034,8 @@
         -webkit-backdrop-filter: blur(18px) saturate(170%);
     }
 
+
+
     #asyncPresentationPanel .aux-head {
         background: linear-gradient(112deg, rgba(225, 29, 72, .87), rgba(190, 18, 60, .68)) !important;
         border: 1px solid rgba(255, 255, 255, .42) !important;
@@ -2682,6 +3043,8 @@
         backdrop-filter: blur(18px) saturate(170%);
         -webkit-backdrop-filter: blur(18px) saturate(170%);
     }
+
+
 
     #asyncFloatingTimer {
         background: linear-gradient(135deg, rgba(59, 130, 246, .48), rgba(30, 64, 175, .32)) !important;
@@ -2693,6 +3056,8 @@
         -webkit-backdrop-filter: blur(24px) saturate(175%) !important;
     }
 
+
+
     #asyncFloatingTimer .aft-header {
         background: linear-gradient(112deg, rgba(59, 130, 246, .64), rgba(37, 99, 235, .44)) !important;
         border: 1px solid rgba(255, 255, 255, .32);
@@ -2703,10 +3068,13 @@
         -webkit-backdrop-filter: blur(16px);
     }
 
+
+
     /* Controls use matching soft colour glass instead of neutral grey. */
+
+
     #readingToolsPanel :is(.rt-btn, .rt-select, select, input:not([type="range"])),
     #asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow),
-    #asyncCalcPanel :is(input, select, #asyncCalcKeys button, .calc-memory button),
     #asyncSoundPanel :is(select, button:not(.mac-window-btn), input:not([type="range"])),
     #asyncPresentationPanel :is(button:not(.mac-window-btn), input:not([type="range"]), select) {
         background-color: var(--tool-control-glass) !important;
@@ -2717,41 +3085,55 @@
         -webkit-backdrop-filter: blur(12px) saturate(155%);
     }
 
+
+
     #readingToolsPanel :is(.rt-btn, .rt-select, select) {
         color: #1e3a8a;
     }
+
+
 
     #asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow) {
         color: #134e4a;
     }
 
-    #asyncCalcPanel :is(input, select, #asyncCalcKeys button, .calc-memory button) {
-        color: #3b0764;
-    }
+
+
+
+
 
     #asyncSoundPanel :is(select, button:not(.mac-window-btn), input:not([type="range"])) {
         color: #78350f;
     }
 
+
+
     #asyncPresentationPanel :is(button:not(.mac-window-btn), input:not([type="range"]), select) {
         color: #881337;
     }
 
+
+
     #readingToolsPanel :is(.rt-btn, select):hover,
     #asyncNotesPanel :is(.notes-toolbar button, input, select):hover,
-    #asyncCalcPanel :is(#asyncCalcKeys button, .calc-memory button):hover,
     #asyncSoundPanel :is(.sound-choice button, .sound-actions button):hover,
     #asyncPresentationPanel .presentation-actions button:hover {
         background-color: var(--tool-control-hover) !important;
         border-color: var(--tool-accent) !important;
     }
 
+
+
     /* Keep the Notes editor translucent and teal-tinted. */
+
+
     #asyncNotesPanel #asyncQuillEditor,
     #asyncNotesPanel .ql-container.ql-snow,
     #asyncNotesPanel .ql-editor {
         background: rgba(13, 148, 136, .045) !important;
     }
+
+
 
     #asyncNotesPanel .ql-toolbar.ql-snow {
         background: rgba(13, 148, 136, .12) !important;
@@ -2759,41 +3141,44 @@
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .58);
     }
 
+
+
     #asyncNotesPanel .ql-snow .ql-stroke {
         stroke: #0f766e;
     }
+
+
 
     #asyncNotesPanel .ql-snow .ql-fill {
         fill: #0f766e;
     }
 
+
+
     #asyncNotesPanel .ql-snow .ql-picker {
         color: #0f766e;
     }
 
-    /* Calculator display remains a soft purple glass readout. */
-    #asyncCalcPanel #asyncCalcDisplay {
-        background: rgba(124, 58, 237, .12) !important;
-        border: 1px solid rgba(124, 58, 237, .28) !important;
-        color: #3b0764 !important;
-        box-shadow: inset 0 2px 8px rgba(91, 33, 182, .08),
-            inset 0 1px 0 rgba(255, 255, 255, .65);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-    }
 
-    #asyncCalcPanel #asyncCalcKeys button.calc-equals {
-        background: linear-gradient(135deg, rgba(124, 58, 237, .92), rgba(91, 33, 182, .82)) !important;
-        color: #fff !important;
-        border-color: rgba(124, 58, 237, .55) !important;
-    }
+
+
+
+
+
+
+
+
 
     /* Sound actions retain the orange identity. */
+
+
     #asyncSoundPanel .sound-choice button.active {
         background: rgba(217, 119, 6, .20) !important;
         border-color: rgba(217, 119, 6, .58) !important;
         color: #78350f !important;
     }
+
+
 
     #asyncSoundPanel .sound-actions button {
         background: linear-gradient(135deg, rgba(217, 119, 6, .88), rgba(180, 83, 9, .76)) !important;
@@ -2802,12 +3187,18 @@
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 4px 12px rgba(180, 83, 9, .15);
     }
 
+
+
     /* Presentation controls remain red/pink-tinted glass. */
+
+
     #asyncPresentationPanel .presentation-actions button {
         background: rgba(225, 29, 72, .10) !important;
         border-color: rgba(225, 29, 72, .25) !important;
         color: #881337 !important;
     }
+
+
 
     #asyncPresentationPanel .presentation-actions button.active {
         background: rgba(225, 29, 72, .23) !important;
@@ -2815,7 +3206,11 @@
         color: #881337 !important;
     }
 
+
+
     /* Dark theme: preserve each hue in deeper tinted glass, not generic charcoal. */
+
+
     html[data-theme="dark"] #readingToolsPanel {
         --tool-glass: rgba(30, 64, 175, .49);
         --tool-glass-deep: rgba(30, 58, 138, .34);
@@ -2826,6 +3221,8 @@
         border-color: var(--tool-glass-border) !important;
         color: #eff6ff !important;
     }
+
+
 
     html[data-theme="dark"] #asyncNotesPanel {
         --tool-glass: rgba(15, 118, 110, .49);
@@ -2838,16 +3235,10 @@
         color: #ecfdf5 !important;
     }
 
-    html[data-theme="dark"] #asyncCalcPanel {
-        --tool-glass: rgba(91, 33, 182, .50);
-        --tool-glass-deep: rgba(76, 29, 149, .36);
-        --tool-glass-border: rgba(196, 181, 253, .30);
-        --tool-control-glass: rgba(124, 58, 237, .18);
-        --tool-control-hover: rgba(124, 58, 237, .29);
-        background: linear-gradient(135deg, var(--tool-glass), var(--tool-glass-deep)) !important;
-        border-color: var(--tool-glass-border) !important;
-        color: #f5f3ff !important;
-    }
+
+
+
+
 
     html[data-theme="dark"] #asyncSoundPanel {
         --tool-glass: rgba(154, 52, 18, .49);
@@ -2860,6 +3251,8 @@
         color: #fff7ed !important;
     }
 
+
+
     html[data-theme="dark"] #asyncPresentationPanel {
         --tool-glass: rgba(159, 18, 57, .49);
         --tool-glass-deep: rgba(136, 19, 55, .36);
@@ -2871,9 +3264,10 @@
         color: #fff1f2 !important;
     }
 
+
+
     html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select, select, input:not([type="range"])),
     html[data-theme="dark"] #asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow),
-    html[data-theme="dark"] #asyncCalcPanel :is(input, select, #asyncCalcKeys button, .calc-memory button),
     html[data-theme="dark"] #asyncSoundPanel :is(select, button:not(.mac-window-btn), input:not([type="range"])),
     html[data-theme="dark"] #asyncPresentationPanel :is(button:not(.mac-window-btn), input:not([type="range"]), select) {
         background-color: var(--tool-control-glass) !important;
@@ -2883,13 +3277,16 @@
             0 3px 10px rgba(0, 0, 0, .10);
     }
 
+
+
     html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select, select),
     html[data-theme="dark"] #asyncNotesPanel :is(input, select, .ql-editor, .ql-picker),
-    html[data-theme="dark"] #asyncCalcPanel :is(input, select, #asyncCalcKeys button, .calc-memory button),
     html[data-theme="dark"] #asyncSoundPanel :is(select, button:not(.mac-window-btn)),
     html[data-theme="dark"] #asyncPresentationPanel :is(button:not(.mac-window-btn), input:not([type="range"]), select) {
         color: #f8fafc !important;
     }
+
+
 
     html[data-theme="dark"] #asyncNotesPanel #asyncQuillEditor,
     html[data-theme="dark"] #asyncNotesPanel .ql-container.ql-snow,
@@ -2898,40 +3295,45 @@
         color: #ecfdf5 !important;
     }
 
+
+
     html[data-theme="dark"] #asyncNotesPanel .ql-toolbar.ql-snow {
         background: rgba(13, 148, 136, .19) !important;
         border-color: rgba(94, 234, 212, .24) !important;
     }
 
+
+
     html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-stroke {
         stroke: #99f6e4;
     }
+
+
 
     html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-fill {
         fill: #99f6e4;
     }
 
+
+
     html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker {
         color: #ccfbf1;
     }
 
-    html[data-theme="dark"] #asyncCalcPanel #asyncCalcDisplay {
-        background: rgba(46, 16, 101, .42) !important;
-        border-color: rgba(196, 181, 253, .27) !important;
-        color: #f5f3ff !important;
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, .18),
-            inset 0 1px 0 rgba(255, 255, 255, .15);
-    }
 
-    html[data-theme="dark"] #asyncCalcPanel #asyncCalcKeys button.calc-equals {
-        background: linear-gradient(135deg, rgba(124, 58, 237, .90), rgba(91, 33, 182, .82)) !important;
-        color: #fff !important;
-    }
+
+
+
+
+
+
 
     html[data-theme="dark"] #asyncSoundPanel .sound-actions button {
         background: linear-gradient(135deg, rgba(217, 119, 6, .90), rgba(180, 83, 9, .78)) !important;
         color: #fff !important;
     }
+
+
 
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
         background: rgba(225, 29, 72, .17) !important;
@@ -2939,13 +3341,19 @@
         color: #fff1f2 !important;
     }
 
+
+
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
         background: rgba(225, 29, 72, .32) !important;
         border-color: rgba(253, 164, 175, .48) !important;
         color: #fff !important;
     }
 
+
+
     /* The minimized Presentation Tools strip retains the same red glass tint. */
+
+
     #asyncPresentationPanel.is-minimized {
         background: linear-gradient(135deg, rgba(225, 29, 72, .24), rgba(190, 18, 60, .16)) !important;
         border-color: rgba(225, 29, 72, .35) !important;
@@ -2954,12 +3362,18 @@
         box-shadow: 0 12px 30px rgba(190, 18, 60, .16), inset 0 1px 0 rgba(255, 255, 255, .4) !important;
     }
 
+
+
     html[data-theme="dark"] #asyncPresentationPanel.is-minimized {
         background: linear-gradient(135deg, rgba(159, 18, 57, .65), rgba(136, 19, 55, .46)) !important;
         border-color: rgba(253, 164, 175, .32) !important;
     }
 
+
+
     /* Timer input fields and controls keep a matching blue glass tint. */
+
+
     #asyncFloatingTimer .aft-inputs input,
     #asyncFloatingTimer .aft-actions button,
     #aftTickToggle {
@@ -2971,10 +3385,14 @@
         -webkit-backdrop-filter: blur(12px);
     }
 
+
+
     #asyncFloatingTimer .aft-actions button:first-child {
         background: linear-gradient(135deg, rgba(59, 130, 246, .88), rgba(37, 99, 235, .72)) !important;
         color: #fff !important;
     }
+
+
 
     html[data-theme="dark"] #asyncFloatingTimer .aft-inputs input,
     html[data-theme="dark"] #asyncFloatingTimer .aft-actions button,
@@ -2984,33 +3402,428 @@
         color: #fff !important;
     }
 
+
+
     /* Same tool colours stay visible on hover without losing the glass surface. */
+
+
     #readingToolsPanel :is(.rt-btn, .rt-select):hover {
         color: #1d4ed8 !important;
     }
+
+
 
     #asyncNotesPanel .notes-toolbar button:hover {
         color: #0f766e !important;
     }
 
-    #asyncCalcPanel #asyncCalcKeys button.calc-op {
-        color: #6d28d9 !important;
-    }
+
+
+
+
 
     #asyncSoundPanel .sound-choice button.active {
         color: #92400e !important;
     }
 
+
+
     #asyncPresentationPanel .presentation-actions button.active {
         color: #be123c !important;
     }
 
+
+
     html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select):hover,
     html[data-theme="dark"] #asyncNotesPanel .notes-toolbar button:hover,
-    html[data-theme="dark"] #asyncCalcPanel #asyncCalcKeys button.calc-op,
     html[data-theme="dark"] #asyncSoundPanel .sound-choice button.active,
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
         color: #fff !important;
+    }
+
+
+    /* Glass icon controls: neutral, monochrome and aligned at the top-right. */
+    .mac-window-controls {
+        order: 0 !important;
+        margin-left: auto !important;
+        margin-right: 0 !important;
+        gap: 6px !important;
+        flex: 0 0 auto !important;
+        align-items: center !important;
+    }
+
+    #readingToolsPanel .rt-window-actions {
+        order: 0 !important;
+        margin-left: auto !important;
+    }
+
+    .mac-window-controls .mac-window-btn,
+    #readingToolsPanel .rt-window-actions .mac-window-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 29px !important;
+        height: 29px !important;
+        min-width: 29px !important;
+        min-height: 29px !important;
+        flex: 0 0 29px !important;
+        padding: 0 !important;
+        border: 1px solid rgba(255, 255, 255, .38) !important;
+        border-radius: 10px !important;
+        background: rgba(255, 255, 255, .17) !important;
+        color: #fff !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .32), 0 3px 9px rgba(15, 23, 42, .10) !important;
+        backdrop-filter: blur(12px) saturate(150%);
+        -webkit-backdrop-filter: blur(12px) saturate(150%);
+        font-size: 13px !important;
+        line-height: 1 !important;
+        cursor: pointer;
+        transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+
+    .mac-window-controls .mac-window-btn i,
+    #readingToolsPanel .rt-window-actions .mac-window-btn i {
+        display: block;
+        font-size: 12px;
+        line-height: 1;
+        color: inherit;
+        pointer-events: none;
+    }
+
+    .mac-window-btn.mac-close,
+    .mac-window-btn.mac-minimize,
+    .mac-window-btn.mac-maximize {
+        background: rgba(255, 255, 255, .17) !important;
+        border-color: rgba(255, 255, 255, .38) !important;
+    }
+
+    .mac-window-btn::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    .mac-window-btn:hover {
+        filter: none !important;
+        background: rgba(255, 255, 255, .29) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .42), 0 5px 12px rgba(15, 23, 42, .14) !important;
+    }
+
+    #asyncTimerDrag>.aft-tick-toggle {
+        margin-left: auto !important;
+    }
+
+    /* Keep the note-writing page white in both themes; the surrounding window
+       and formatting toolbar continue to use the ASYNC glass/theme styling. */
+    #asyncNotesPanel #asyncNoteTitle {
+        background: #fff !important;
+        color: #1f2937 !important;
+        border-color: rgba(100, 116, 139, .28) !important;
+    }
+
+    #asyncNotesPanel #asyncQuillEditor,
+    #asyncNotesPanel .ql-container.ql-snow,
+    #asyncNotesPanel .ql-editor {
+        background: #fff !important;
+        color: #1f2937 !important;
+    }
+
+    #asyncNotesPanel .ql-editor {
+        caret-color: #1f2937;
+    }
+
+    #asyncNotesPanel .ql-editor.ql-blank::before {
+        color: #64748b !important;
+        opacity: .78 !important;
+    }
+
+    /* Resize remains active on all eight hit areas, while only four tiny
+       glass dots are visible to suggest corner resizing. */
+    .async-tool-resize-handle {
+        opacity: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .async-tool-resize-handle[data-resize="n"],
+    .async-tool-resize-handle[data-resize="s"] {
+        left: 18px;
+        right: 18px;
+        height: 10px;
+        width: auto;
+    }
+
+    .async-tool-resize-handle[data-resize="e"],
+    .async-tool-resize-handle[data-resize="w"] {
+        top: 18px;
+        bottom: 18px;
+        width: 10px;
+        height: auto;
+    }
+
+    .async-tool-resize-handle[data-resize="ne"],
+    .async-tool-resize-handle[data-resize="nw"],
+    .async-tool-resize-handle[data-resize="se"],
+    .async-tool-resize-handle[data-resize="sw"] {
+        display: block !important;
+        width: 23px !important;
+        height: 23px !important;
+        opacity: 1 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .async-tool-resize-handle[data-resize="ne"] {
+        top: 0;
+        right: 0;
+    }
+
+    .async-tool-resize-handle[data-resize="nw"] {
+        top: 0;
+        left: 0;
+    }
+
+    .async-tool-resize-handle[data-resize="se"] {
+        bottom: 0;
+        right: 0;
+    }
+
+    .async-tool-resize-handle[data-resize="sw"] {
+        bottom: 0;
+        left: 0;
+    }
+
+    .async-tool-resize-handle[data-resize="ne"]::after,
+    .async-tool-resize-handle[data-resize="nw"]::after,
+    .async-tool-resize-handle[data-resize="se"]::after,
+    .async-tool-resize-handle[data-resize="sw"]::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 3px;
+        left: 3px;
+        border-radius: 50%;
+        background:
+            radial-gradient(circle at 3px 3px, rgba(255, 255, 255, .98) 1.35px, transparent 1.8px),
+            radial-gradient(circle at 8px 8px, rgba(255, 255, 255, .88) 1.35px, transparent 1.8px),
+            radial-gradient(circle at 13px 13px, rgba(255, 255, 255, .75) 1.35px, transparent 1.8px);
+        filter: drop-shadow(0 1px 1px rgba(15, 23, 42, .48));
+        opacity: .76;
+        transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .async-tool-resize-handle[data-resize="ne"]::after {
+        transform: rotate(90deg);
+    }
+
+    .async-tool-resize-handle[data-resize="se"]::after {
+        transform: rotate(180deg);
+    }
+
+    .async-tool-resize-handle[data-resize="sw"]::after {
+        transform: rotate(270deg);
+    }
+
+    .async-tool-resize-handle[data-resize="ne"]:hover::after,
+    .async-tool-resize-handle[data-resize="nw"]:hover::after,
+    .async-tool-resize-handle[data-resize="se"]:hover::after,
+    .async-tool-resize-handle[data-resize="sw"]:hover::after {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+
+    /* Presentation minimization becomes a floating icon-only glass dock. */
+    #asyncPresentationPanel.is-minimized {
+        position: fixed !important;
+        left: auto !important;
+        top: auto !important;
+        right: 90px !important;
+        bottom: 22px !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        width: max-content !important;
+        max-width: min(420px, calc(100vw - 20px)) !important;
+        height: auto !important;
+        max-height: none !important;
+        padding: 8px !important;
+        gap: 0 !important;
+        border-radius: 17px !important;
+        overflow: visible !important;
+        z-index: 100130 !important;
+    }
+
+    #asyncPresentationPanel.is-minimized>.aux-head,
+    #asyncPresentationPanel.is-minimized> :not(.presentation-actions) {
+        display: none !important;
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-actions {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 5px !important;
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button {
+        display: inline-flex !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        border-radius: 11px !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 3px 9px rgba(15, 23, 42, .12) !important;
+        backdrop-filter: blur(14px) saturate(160%);
+        -webkit-backdrop-filter: blur(14px) saturate(160%);
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button i {
+        display: inline-block !important;
+        font-size: 16px !important;
+        line-height: 1 !important;
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button.active {
+        background: rgba(225, 29, 72, .25) !important;
+        border-color: rgba(225, 29, 72, .55) !important;
+        color: #9f1239 !important;
+    }
+
+    html[data-theme="dark"] #asyncPresentationPanel.is-minimized .presentation-actions button.active {
+        color: #fff1f2 !important;
+    }
+
+    @media(max-width: 480px) {
+        #asyncPresentationPanel.is-minimized {
+            right: 70px !important;
+            bottom: 10px !important;
+            max-width: calc(100vw - 80px) !important;
+            padding: 6px !important;
+        }
+
+        #asyncPresentationPanel.is-minimized .presentation-actions {
+            gap: 4px !important;
+        }
+
+        #asyncPresentationPanel.is-minimized .presentation-actions button {
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+            min-height: 32px !important;
+        }
+    }
+
+    /* Soft spring pop: tools scale in, briefly overshoot, then settle. */
+    #readingToolsPanel.is-open,
+    #asyncNotesPanel.is-open,
+    #asyncSoundPanel.is-open,
+    #asyncPresentationPanel.is-open,
+    #asyncFloatingTimer.is-visible {
+        animation: asyncToolSpring .58s cubic-bezier(.16, 1.28, .3, 1) both !important;
+        transform-origin: center center;
+    }
+
+    @keyframes asyncToolSpring {
+        0% {
+            opacity: 0;
+            scale: .76;
+            filter: blur(7px);
+        }
+
+        58% {
+            opacity: 1;
+            scale: 1.045;
+            filter: blur(0);
+        }
+
+        78% {
+            opacity: 1;
+            scale: .985;
+        }
+
+        100% {
+            opacity: 1;
+            scale: 1;
+            filter: blur(0);
+        }
+    }
+
+    #asyncToolsMenu.is-visible button {
+        animation: asyncMenuItemSpring .48s cubic-bezier(.16, 1.28, .3, 1) both;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(1) {
+        animation-delay: 0ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(2) {
+        animation-delay: 35ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(3) {
+        animation-delay: 70ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(4) {
+        animation-delay: 105ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(5) {
+        animation-delay: 140ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(6) {
+        animation-delay: 175ms;
+    }
+
+    @keyframes asyncMenuItemSpring {
+        0% {
+            opacity: 0;
+            transform: translateY(18px) scale(.78);
+            filter: blur(5px);
+        }
+
+        70% {
+            opacity: 1;
+            transform: translateY(-2px) scale(1.035);
+            filter: blur(0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Disable mobile long-press text callouts/selection on the article itself.
+       Editable fields remain selectable and usable. */
+    @media (pointer: coarse) {
+
+        main.main-content>.content-wrapper,
+        main.main-content>.content-wrapper *:not(input):not(textarea):not([contenteditable="true"]) {
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        main.main-content>.content-wrapper input,
+        main.main-content>.content-wrapper textarea,
+        main.main-content>.content-wrapper [contenteditable="true"] {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
     }
 </style>
 
@@ -3019,7 +3832,6 @@
         <div id="asyncToolsMenu" aria-hidden="true">
             <button type="button" data-open-tool="readingToolsPanel"><i class="bi bi-book-half"></i><span>Reading tools</span></button>
             <button type="button" data-open-tool="asyncNotesPanel"><i class="bi bi-journal-text"></i><span>Study notes</span></button>
-            <button type="button" data-open-tool="asyncCalcPanel"><i class="bi bi-calculator"></i><span>Calculator</span></button>
             <button type="button" data-open-tool="asyncSoundPanel"><i class="bi bi-headphones"></i><span>Ambient sounds</span></button>
             <button type="button" data-open-tool="asyncPresentationPanel"><i class="bi bi-easel2"></i><span>Presentation tools</span></button>
             <button type="button" id="asyncDockTimer"><i class="bi bi-stopwatch"></i><span>Timer</span></button>
@@ -3030,7 +3842,7 @@
         <div class="rt-header" id="rtDrag">
             <strong><i class="bi bi-sliders"></i> Reading Tools</strong>
             <span class="rt-window-actions mac-window-controls">
-                <button type="button" class="mac-window-btn mac-close" id="rtClose" title="Close Reading Tools" aria-label="Close Reading Tools"></button>
+                <button type="button" class="mac-window-btn mac-close" id="rtClose" title="Close Reading Tools" aria-label="Close Reading Tools"><i class="bi bi-x-lg"></i></button>
             </span>
         </div>
 
@@ -3107,12 +3919,12 @@
 <div id="asyncFloatingTimer" role="dialog" aria-label="Floating countdown timer" aria-hidden="true">
     <div id="asyncTimerDrag" class="aft-header">
         <strong><i class="bi bi-stopwatch"></i> ASYNC Timer</strong>
-        <span class="aft-window-controls mac-window-controls">
-            <button type="button" class="mac-window-btn mac-close" id="aftClose" aria-label="Close timer" title="Close timer"></button>
-            <button type="button" class="mac-window-btn mac-minimize" id="aftMinimize" aria-label="Minimize timer" title="Minimize timer"></button>
-            <button type="button" class="mac-window-btn mac-maximize" id="aftMaximize" aria-label="Maximize timer" title="Maximize timer"></button>
-        </span>
         <button type="button" id="aftTickToggle" class="aft-tick-toggle" aria-pressed="true" title="Ticking sound on" aria-label="Turn ticking sound off"><i class="bi bi-volume-up-fill"></i></button>
+        <span class="aft-window-controls mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="aftClose" aria-label="Close timer" title="Close timer"><i class="bi bi-x-lg"></i></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="aftMinimize" aria-label="Minimize timer" title="Minimize timer"><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="aftMaximize" aria-label="Maximize timer" title="Maximize timer"><i class="bi bi-arrows-angle-expand"></i></button>
+        </span>
     </div>
     <div class="aft-display" id="aftDisplay">05:00</div>
     <div class="aft-inputs">
@@ -3139,13 +3951,13 @@
 
 <section id="asyncNotesPanel" aria-label="Personal notes">
     <div class="aux-head mac-window-header" id="asyncNotesDrag">
-        <span class="aux-window-actions mac-window-controls">
-            <button type="button" class="mac-window-btn mac-close" id="asyncNotesClose" aria-label="Close My Study Notes" title="Close"></button>
-            <button type="button" class="mac-window-btn mac-minimize" id="asyncNotesMinimize" aria-label="Minimize My Study Notes" title="Minimize"></button>
-            <button type="button" class="mac-window-btn mac-maximize" id="asyncNotesMaximize" aria-label="Maximize My Study Notes" title="Maximize"></button>
-        </span>
         <strong><i class="bi bi-grip-horizontal"></i> My Study Notes</strong>
         <span class="aux-drag-hint">Drag to move</span>
+        <span class="aux-window-actions mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="asyncNotesClose" aria-label="Close My Study Notes" title="Close"><i class="bi bi-x-lg"></i></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="asyncNotesMinimize" aria-label="Minimize My Study Notes" title="Minimize"><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="asyncNotesMaximize" aria-label="Maximize My Study Notes" title="Maximize"><i class="bi bi-arrows-angle-expand"></i></button>
+        </span>
     </div>
     <div class="notes-toolbar">
         <select id="asyncNotesList" aria-label="Saved notes"></select>
@@ -3157,44 +3969,15 @@
     <div class="notes-footer"><span id="asyncNotesSaveStatus">Saved in this browser</span><span>Private to this device/browser</span></div>
 </section>
 
-<section id="asyncCalcPanel" aria-label="Scientific calculator">
-    <div class="aux-head mac-window-header" id="asyncCalcDrag">
-        <span class="aux-window-actions mac-window-controls">
-            <button type="button" class="mac-window-btn mac-close" id="asyncCalcClose" aria-label="Close Scientific Calculator" title="Close"></button>
-            <button type="button" class="mac-window-btn mac-minimize" id="asyncCalcMinimize" aria-label="Minimize Scientific Calculator" title="Minimize"></button>
-            <button type="button" class="mac-window-btn mac-maximize" id="asyncCalcMaximize" aria-label="Maximize Scientific Calculator" title="Maximize"></button>
-        </span>
-        <strong><i class="bi bi-grip-horizontal"></i> Scientific Calculator</strong>
-        <span class="aux-drag-hint">Drag to move</span>
-    </div>
-    <div class="simple-calc-mode"><span>SCIENTIFIC</span><select id="asyncCalcAngle">
-            <option value="deg">DEG</option>
-            <option value="rad">RAD</option>
-        </select></div>
-    <input id="asyncCalcDisplay" type="text" value="0" aria-label="Calculator display" autocomplete="off" spellcheck="false" inputmode="decimal">
-    <small class="simple-calc-help">Fractions: use a/b or (a+b)/(c+d). Powers: use ^, e.g. 2^3.</small>
-    <div class="calc-memory"><button data-action="mc">MC</button><button data-action="mr">MR</button><button data-action="mplus">M+</button><button data-action="mminus">M−</button><button data-action="ans">Ans</button></div>
-    <div id="asyncCalcKeys">
-        <button class="calc-op" data-insert="sin(">sin</button><button class="calc-op" data-insert="cos(">cos</button><button class="calc-op" data-insert="tan(">tan</button><button class="calc-op" data-insert="sqrt(">√</button><button class="calc-op" data-insert="^">xʸ</button>
-        <button class="calc-op" data-insert="asin(">sin⁻¹</button><button class="calc-op" data-insert="acos(">cos⁻¹</button><button class="calc-op" data-insert="atan(">tan⁻¹</button><button class="calc-op" data-insert="log(">log</button><button class="calc-op" data-insert="ln(">ln</button>
-        <button class="calc-op" data-insert="(">(</button><button class="calc-op" data-insert=")">)</button><button class="calc-op" data-insert="/">a/b</button><button class="calc-op" data-insert="^2">x²</button><button class="calc-clear" data-action="back">⌫</button>
-        <button class="calc-number" data-insert="7">7</button><button class="calc-number" data-insert="8">8</button><button class="calc-number" data-insert="9">9</button><button class="calc-op" data-insert="*">×</button><button class="calc-clear" data-action="clear">AC</button>
-        <button class="calc-number" data-insert="4">4</button><button class="calc-number" data-insert="5">5</button><button class="calc-number" data-insert="6">6</button><button class="calc-op" data-insert="-">−</button><button class="calc-op" data-insert="%">%</button>
-        <button class="calc-number" data-insert="1">1</button><button class="calc-number" data-insert="2">2</button><button class="calc-number" data-insert="3">3</button><button class="calc-op" data-insert="+">+</button><button class="calc-equals" data-action="equals">=</button>
-        <button class="calc-number" data-insert="0">0</button><button class="calc-number" data-insert=".">.</button><button class="calc-op" data-insert="pi">π</button><button class="calc-op" data-insert="e">e</button><button class="calc-op" data-insert="!">n!</button>
-    </div>
-    <div id="asyncCalcStatus">Use sin(30), cos(60), or tan(45). Results follow DEG/RAD mode.</div>
-</section>
-
 <section id="asyncSoundPanel" aria-label="Ambient sound player">
     <div class="aux-head mac-window-header" id="asyncSoundDrag">
-        <span class="aux-window-actions mac-window-controls">
-            <button type="button" class="mac-window-btn mac-close" id="asyncSoundClose" aria-label="Close Reading Ambience" title="Close"></button>
-            <button type="button" class="mac-window-btn mac-minimize" id="asyncSoundMinimize" aria-label="Minimize Reading Ambience" title="Minimize"></button>
-            <button type="button" class="mac-window-btn mac-maximize" id="asyncSoundMaximize" aria-label="Maximize Reading Ambience" title="Maximize"></button>
-        </span>
         <strong><i class="bi bi-headphones"></i> Reading Ambience</strong>
         <span class="aux-drag-hint">Drag to move</span>
+        <span class="aux-window-actions mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="asyncSoundClose" aria-label="Close Reading Ambience" title="Close"><i class="bi bi-x-lg"></i></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="asyncSoundMinimize" aria-label="Minimize Reading Ambience" title="Minimize"><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="asyncSoundMaximize" aria-label="Maximize Reading Ambience" title="Maximize"><i class="bi bi-arrows-angle-expand"></i></button>
+        </span>
     </div>
     <div style="font-size:12px;color:var(--aux-text);opacity:.75">Choose a continuous background sound while you read.</div>
     <div class="supplemental-heading">Audio library <small>Upload MP3, OGG, or WAV files to assets/audio/ambient/ on your hosting account.</small></div>
@@ -3233,13 +4016,13 @@
 
 <section id="asyncPresentationPanel" class="async-extra-panel" aria-label="Presentation tools">
     <div class="aux-head mac-window-header" id="asyncPresentationDrag">
-        <span class="aux-window-actions mac-window-controls">
-            <button type="button" class="mac-window-btn mac-close" id="asyncPresentationClose" aria-label="Close Presentation Tools" title="Close"></button>
-            <button type="button" class="mac-window-btn mac-minimize" id="asyncPresentationMinimize" aria-label="Minimize Presentation Tools" title="Minimize"></button>
-            <button type="button" class="mac-window-btn mac-maximize" id="asyncPresentationMaximize" aria-label="Maximize Presentation Tools" title="Maximize"></button>
-        </span>
         <strong><i class="bi bi-easel2"></i> Presentation Tools</strong>
         <span class="aux-drag-hint">Drag to move</span>
+        <span class="aux-window-actions mac-window-controls">
+            <button type="button" class="mac-window-btn mac-close" id="asyncPresentationClose" aria-label="Close Presentation Tools" title="Close"><i class="bi bi-x-lg"></i></button>
+            <button type="button" class="mac-window-btn mac-minimize" id="asyncPresentationMinimize" aria-label="Minimize Presentation Tools" title="Minimize"><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="mac-window-btn mac-maximize" id="asyncPresentationMaximize" aria-label="Maximize Presentation Tools" title="Maximize"><i class="bi bi-arrows-angle-expand"></i></button>
+        </span>
     </div>
     <p style="font-size:12px;color:var(--aux-text)">Use on slides, lessons, or any page. Presentation effects appear over the whole screen.</p>
     <div class="presentation-actions">
@@ -3268,7 +4051,6 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js"></script>
 <script>
     (() => {
         'use strict';
@@ -3883,8 +4665,7 @@
     (() => {
         'use strict';
         const byId = id => document.getElementById(id);
-        const notesPanel = byId('asyncNotesPanel'),
-            calcPanel = byId('asyncCalcPanel');
+        const notesPanel = byId('asyncNotesPanel');
         const toolsFab = byId('asyncToolsFab'),
             toolsMenu = byId('asyncToolsMenu');
         const notesKey = 'asyncAcademicPersonalNotes_v1';
@@ -3897,7 +4678,7 @@
         const timerBox = byId('asyncFloatingTimer');
         const readingPanel = byId('readingToolsPanel');
         const presentationPanel = byId('asyncPresentationPanel');
-        const allToolPanels = [readingPanel, notesPanel, calcPanel, soundPanel, presentationPanel].filter(Boolean);
+        const allToolPanels = [readingPanel, notesPanel, soundPanel, presentationPanel].filter(Boolean);
 
         function setPanelClosed(item) {
             if (!item) return;
@@ -3905,13 +4686,11 @@
             item.classList.remove('is-open', 'is-minimized', 'is-maximized');
             const minimizeId = {
                 asyncNotesPanel: 'asyncNotesMinimize',
-                asyncCalcPanel: 'asyncCalcMinimize',
                 asyncSoundPanel: 'asyncSoundMinimize',
                 asyncPresentationPanel: 'asyncPresentationMinimize'
             } [item.id];
             const minimizeButton = minimizeId && byId(minimizeId);
             if (minimizeButton) {
-                minimizeButton.textContent = '−';
                 minimizeButton.title = 'Minimize';
             }
         }
@@ -3934,6 +4713,30 @@
             if (!target) return;
             if (target.classList.contains('is-open') && target.classList.contains('is-minimized')) {
                 target.classList.remove('is-minimized');
+                if (target.id === 'asyncPresentationPanel') {
+                    let saved = null;
+                    try {
+                        saved = JSON.parse(target.dataset.preMinGeometry || 'null');
+                    } catch (_) {}
+                    if (saved) {
+                        target.style.setProperty('left', Math.max(6, Math.min(window.innerWidth - saved.width - 6, saved.left)) + 'px', 'important');
+                        target.style.setProperty('top', Math.max(6, Math.min(window.innerHeight - saved.height - 6, saved.top)) + 'px', 'important');
+                        target.style.setProperty('right', 'auto', 'important');
+                        target.style.setProperty('bottom', 'auto', 'important');
+                        target.style.setProperty('transform', 'none', 'important');
+                        target.style.setProperty('width', saved.width + 'px', 'important');
+                        target.style.setProperty('height', saved.height + 'px', 'important');
+                        target.style.setProperty('max-width', 'none', 'important');
+                        target.style.setProperty('max-height', 'none', 'important');
+                        target.dataset.userPositioned = '1';
+                    }
+                    delete target.dataset.preMinGeometry;
+                    const restoreButton = byId('asyncPresentationMinimize');
+                    if (restoreButton) {
+                        restoreButton.title = 'Minimize';
+                        restoreButton.setAttribute('aria-label', 'Minimize Presentation Tools');
+                    }
+                }
                 return;
             }
             const shouldOpen = !target.classList.contains('is-open');
@@ -3942,13 +4745,11 @@
             target.classList.remove('is-minimized');
             const minimizeId = {
                 asyncNotesPanel: 'asyncNotesMinimize',
-                asyncCalcPanel: 'asyncCalcMinimize',
                 asyncSoundPanel: 'asyncSoundMinimize',
                 asyncPresentationPanel: 'asyncPresentationMinimize'
             } [target.id];
             const minimizeButton = minimizeId && byId(minimizeId);
             if (minimizeButton) {
-                minimizeButton.textContent = '−';
                 minimizeButton.title = 'Minimize';
             }
             if (shouldOpen) {
@@ -3997,7 +4798,6 @@
             toolsFab.innerHTML = '<i class="bi bi-grid-3x3-gap-fill"></i>';
         });
         byId('asyncNotesClose').addEventListener('click', () => setPanelClosed(notesPanel));
-        byId('asyncCalcClose').addEventListener('click', () => setPanelClosed(calcPanel));
         byId('asyncSoundClose').addEventListener('click', () => setPanelClosed(soundPanel));
         byId('asyncPresentationClose').addEventListener('click', () => setPanelClosed(presentationPanel));
 
@@ -4027,10 +4827,56 @@
         function setMinimize(panel, button) {
             if (!panel || !button) return;
             button.addEventListener('click', () => {
-                const minimized = panel.classList.toggle('is-minimized');
+                const wasMinimized = panel.classList.contains('is-minimized');
+
+                if (panel.classList.contains('is-maximized')) restoreMaximized(panel);
+
+                if (panel.id === 'asyncPresentationPanel') {
+                    if (!wasMinimized) {
+                        const rect = panel.getBoundingClientRect();
+                        panel.dataset.preMinGeometry = JSON.stringify({
+                            left: rect.left,
+                            top: rect.top,
+                            width: rect.width,
+                            height: rect.height
+                        });
+                        panel.classList.add('is-minimized');
+                        panel.style.setProperty('left', 'auto', 'important');
+                        panel.style.setProperty('top', 'auto', 'important');
+                        panel.style.setProperty('right', (window.innerWidth <= 480 ? 70 : 90) + 'px', 'important');
+                        panel.style.setProperty('bottom', (window.innerWidth <= 480 ? 10 : 22) + 'px', 'important');
+                        panel.style.setProperty('transform', 'none', 'important');
+                        panel.style.setProperty('width', 'max-content', 'important');
+                        panel.style.setProperty('height', 'auto', 'important');
+                        panel.style.setProperty('max-width', 'min(420px, calc(100vw - 20px))', 'important');
+                        panel.style.setProperty('max-height', 'none', 'important');
+                    } else {
+                        panel.classList.remove('is-minimized');
+                        let saved = null;
+                        try {
+                            saved = JSON.parse(panel.dataset.preMinGeometry || 'null');
+                        } catch (_) {}
+                        if (saved) {
+                            panel.style.setProperty('left', Math.max(6, Math.min(window.innerWidth - saved.width - 6, saved.left)) + 'px', 'important');
+                            panel.style.setProperty('top', Math.max(6, Math.min(window.innerHeight - saved.height - 6, saved.top)) + 'px', 'important');
+                            panel.style.setProperty('right', 'auto', 'important');
+                            panel.style.setProperty('bottom', 'auto', 'important');
+                            panel.style.setProperty('transform', 'none', 'important');
+                            panel.style.setProperty('width', saved.width + 'px', 'important');
+                            panel.style.setProperty('height', saved.height + 'px', 'important');
+                            panel.style.setProperty('max-width', 'none', 'important');
+                            panel.style.setProperty('max-height', 'none', 'important');
+                            panel.dataset.userPositioned = '1';
+                        }
+                        delete panel.dataset.preMinGeometry;
+                    }
+                } else {
+                    panel.classList.toggle('is-minimized');
+                }
+
+                const minimized = panel.classList.contains('is-minimized');
                 button.title = minimized ? 'Restore' : 'Minimize';
                 button.setAttribute('aria-label', minimized ? 'Restore window' : 'Minimize window');
-                if (panel.classList.contains('is-maximized')) restoreMaximized(panel);
             });
         }
 
@@ -4065,11 +4911,9 @@
             });
         }
         setMinimize(notesPanel, byId('asyncNotesMinimize'));
-        setMinimize(calcPanel, byId('asyncCalcMinimize'));
         setMinimize(soundPanel, byId('asyncSoundMinimize'));
         setMinimize(presentationPanel, byId('asyncPresentationMinimize'));
         setMaximize(notesPanel, byId('asyncNotesMaximize'));
-        setMaximize(calcPanel, byId('asyncCalcMaximize'));
         setMaximize(soundPanel, byId('asyncSoundMaximize'));
         setMaximize(presentationPanel, byId('asyncPresentationMaximize'));
         setMaximize(timerBox, byId('aftMaximize'));
@@ -4239,7 +5083,6 @@
             handle.addEventListener('lostpointercapture', stop);
         }
         makeDraggable(notesPanel, byId('asyncNotesDrag'));
-        makeDraggable(calcPanel, byId('asyncCalcDrag'));
         makeDraggable(soundPanel, byId('asyncSoundDrag'));
         makeDraggable(presentationPanel, byId('asyncPresentationDrag'));
         makeDraggable(byId('readingToolsPanel'), byId('rtDrag'));
@@ -4259,10 +5102,6 @@
                 asyncNotesPanel: {
                     width: 260,
                     height: 230
-                },
-                asyncCalcPanel: {
-                    width: 250,
-                    height: 250
                 },
                 asyncSoundPanel: {
                     width: 255,
@@ -4386,13 +5225,12 @@
         [
             byId('readingToolsPanel'),
             notesPanel,
-            calcPanel,
             soundPanel,
             presentationPanel,
             timerBox
         ].forEach(makeResizable);
         window.addEventListener('resize', () => {
-            [notesPanel, calcPanel, soundPanel, byId('readingToolsPanel')].forEach(panel => {
+            [notesPanel, soundPanel, byId('readingToolsPanel')].forEach(panel => {
                 if (!panel.classList.contains('is-open')) return;
                 if (!panel.dataset.userPositioned) {
                     panel.style.left = '50%';
@@ -4411,101 +5249,6 @@
             });
         });
 
-        // Simple scientific calculator: fractions use / and exponents use ^.
-        const display = byId('asyncCalcDisplay'),
-            angle = byId('asyncCalcAngle'),
-            calcStatus = byId('asyncCalcStatus');
-        let expression = '',
-            calculatorMemory = 0,
-            lastAnswer = 0;
-
-        function showExpression() {
-            display.value = expression || '0';
-        }
-
-        function insert(value) {
-            const a = display.selectionStart ?? expression.length,
-                b = display.selectionEnd ?? a;
-            expression = expression.slice(0, a) + value + expression.slice(b);
-            showExpression();
-            display.focus();
-            const p = a + value.length;
-            display.setSelectionRange(p, p);
-        }
-
-        function calculate() {
-            if (!expression.trim()) return;
-            try {
-                const rad = x => angle.value === 'deg' ? x * Math.PI / 180 : x,
-                    deg = x => angle.value === 'deg' ? x * 180 / Math.PI : x;
-                const scope = {
-                    pi: Math.PI,
-                    e: Math.E,
-                    sin: x => Math.sin(rad(x)),
-                    cos: x => Math.cos(rad(x)),
-                    tan: x => Math.tan(rad(x)),
-                    asin: x => deg(Math.asin(x)),
-                    acos: x => deg(Math.acos(x)),
-                    atan: x => deg(Math.atan(x)),
-                    sqrt: Math.sqrt,
-                    log: Math.log10,
-                    ln: Math.log,
-                    abs: Math.abs
-                };
-                const n = math.evaluate(expression, scope);
-                if (typeof n !== 'number' || !Number.isFinite(n)) throw new Error('Enter a valid numerical expression.');
-                lastAnswer = n;
-                expression = String(Number(n.toPrecision(12)));
-                showExpression();
-                calcStatus.textContent = 'Answer: ' + expression;
-            } catch (e) {
-                calcStatus.textContent = e.message || 'Invalid expression.';
-            }
-        }
-        byId('asyncCalcKeys').addEventListener('click', e => {
-            const k = e.target.closest('button');
-            if (!k) return;
-            const act = k.dataset.action,
-                val = k.dataset.insert;
-            if (act === 'clear') {
-                expression = '';
-                showExpression();
-                calcStatus.textContent = 'Cleared.';
-            } else if (act === 'back') {
-                const a = display.selectionStart ?? expression.length,
-                    b = display.selectionEnd ?? a,
-                    p = a === b ? Math.max(0, a - 1) : a;
-                expression = expression.slice(0, p) + expression.slice(b);
-                showExpression();
-                display.focus();
-                display.setSelectionRange(p, p);
-            } else if (act === 'equals') calculate();
-            else if (act === 'mc') {
-                calculatorMemory = 0;
-                calcStatus.textContent = 'Memory cleared.';
-            } else if (act === 'mr') insert(String(calculatorMemory));
-            else if (act === 'ans') insert(String(lastAnswer));
-            else if (act === 'mplus' || act === 'mminus') {
-                try {
-                    const n = Number(math.evaluate(expression || '0'));
-                    calculatorMemory += act === 'mplus' ? n : -n;
-                    calcStatus.textContent = 'Memory updated.';
-                } catch (_) {
-                    calcStatus.textContent = 'Enter a valid value first.';
-                }
-            } else if (val) insert(val);
-        });
-        display.addEventListener('input', () => expression = display.value);
-        display.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                calculate();
-            }
-            if (e.key === 'Escape') {
-                expression = '';
-                showExpression();
-            }
-        });
         // Five selected ambient presets plus uploaded audio-library tracks.
         let ambienceContext = null,
             ambienceNodes = [],
