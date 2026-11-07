@@ -1420,6 +1420,140 @@
             bottom: 174px !important
         }
     }
+
+
+    /* Board-exam scientific calculator controls */
+    #asyncCalcPanel {
+        width: min(470px, calc(100vw - 24px)) !important;
+        max-height: min(90vh, 820px) !important;
+        overflow-y: auto !important
+    }
+
+    #asyncCalcPanel .exam-calc-topbar {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+        gap: 5px;
+        align-items: center
+    }
+
+    #asyncCalcPanel .exam-calc-topbar button,
+    #asyncCalcPanel .exam-calc-fraction-row button,
+    #asyncCalcPanel .exam-calc-bounds button {
+        min-height: 32px;
+        font-weight: 800;
+        font-size: 10px;
+        letter-spacing: .2px
+    }
+
+    #asyncCalcPanel .exam-calc-topbar button[aria-pressed="true"] {
+        background: #4169e1 !important;
+        color: #fff !important;
+        border-color: #4169e1 !important
+    }
+
+    #asyncCalcModeLabel {
+        font-size: 10px;
+        font-weight: 900;
+        color: var(--aux-accent);
+        text-align: right
+    }
+
+    #asyncCalcModeMenu {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 5px;
+        padding: 8px;
+        border: 1px solid var(--aux-border);
+        border-radius: 9px;
+        background: var(--aux-control)
+    }
+
+    #asyncCalcModeMenu[hidden] {
+        display: none
+    }
+
+    #asyncCalcModeMenu button {
+        text-align: left;
+        min-height: 34px
+    }
+
+    #asyncCalcDisplay {
+        font-family: ui-monospace, Consolas, monospace !important;
+        font-size: clamp(25px, 5vw, 34px) !important;
+        min-height: 64px !important
+    }
+
+    #asyncCalcPanel .exam-calc-fraction-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 5px
+    }
+
+    #asyncCalcPanel .exam-calc-bounds {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 6px;
+        align-items: end;
+        color: var(--aux-text);
+        font-size: 10px
+    }
+
+    #asyncCalcPanel .exam-calc-bounds label {
+        display: grid;
+        gap: 4px;
+        min-width: 0
+    }
+
+    #asyncCalcPanel .exam-calc-bounds input {
+        width: 100%;
+        min-width: 0;
+        padding: 7px;
+        border: 1px solid var(--aux-border);
+        border-radius: 7px;
+        background: var(--aux-control);
+        color: var(--aux-text)
+    }
+
+    #asyncCalcPanel #asyncCalcSymbolic {
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+    }
+
+    #asyncCalcPanel .calc-mode {
+        flex-wrap: wrap
+    }
+
+    #asyncCalcPanel #asyncCalcKeys {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px
+    }
+
+    #asyncCalcPanel #asyncCalcKeys button {
+        min-height: 42px;
+        font-size: 12px
+    }
+
+    #asyncCalcPanel .calc-memory button {
+        min-height: 34px;
+        font-weight: 800
+    }
+
+    @media(max-width:480px) {
+        #asyncCalcPanel {
+            max-height: 88dvh !important
+        }
+
+        #asyncCalcPanel #asyncCalcKeys button {
+            min-height: 37px
+        }
+
+        #asyncCalcPanel .exam-calc-bounds {
+            grid-template-columns: 1fr 1fr
+        }
+
+        #asyncCalcPanel .exam-calc-bounds button {
+            grid-column: 1/-1
+        }
+    }
 </style>
 
 <div id="readingToolsRoot">
@@ -1559,12 +1693,35 @@
 
 <section id="asyncCalcPanel" aria-label="Scientific calculator">
     <div class="aux-head" id="asyncCalcDrag" style="margin:0 -13px 2px"><strong><i class="bi bi-grip-horizontal"></i> Scientific Calculator</strong><span class="aux-drag-hint">Drag to move</span><span class="aux-window-actions"><button type="button" id="asyncCalcMinimize" title="Minimize">−</button><button type="button" id="asyncCalcClose" aria-label="Close calculator">&times;</button></span></div>
-    <input id="asyncCalcDisplay" type="text" value="0" aria-label="Calculator display" autocomplete="off">
+    <div class="exam-calc-topbar">
+        <button type="button" id="asyncCalcMenu" class="exam-calc-menu">MENU</button>
+        <button type="button" id="asyncCalcShift" aria-pressed="false">SHIFT</button>
+        <button type="button" id="asyncCalcAlpha" aria-pressed="false">ALPHA</button>
+        <button type="button" id="asyncCalcSetup">SETUP</button>
+        <span id="asyncCalcModeLabel">COMP</span>
+    </div>
+    <div id="asyncCalcModeMenu" class="exam-calc-menu-panel" hidden>
+        <button type="button" data-calc-mode="COMP">1 Calculate (COMP)</button>
+        <button type="button" data-calc-mode="CALC">2 Calculus</button>
+        <button type="button" data-calc-mode="FORMULA">3 Formula / LaTeX</button>
+    </div>
+    <input id="asyncCalcDisplay" type="text" value="0" aria-label="Calculator display" autocomplete="off" spellcheck="false">
     <div id="asyncCalcExpressionPreview" class="calc-expression-preview" aria-label="Formatted calculator expression">0</div>
     <div class="calc-formula-editor">
         <label for="asyncCalcLatexInput">LaTeX formula viewer</label>
         <textarea id="asyncCalcLatexInput" rows="2" spellcheck="false" placeholder="Type LaTeX, e.g. \\frac{1}{2} or \\int_0^1 x^2\\,dx"></textarea>
         <div id="asyncCalcLatexPreview" class="calc-latex-preview" aria-live="polite">Your formatted formula will appear here.</div>
+    </div>
+    <div class="exam-calc-fraction-row">
+        <button type="button" data-calc-special="fraction">□/□ Fraction</button>
+        <button type="button" data-calc-special="mixed">a b/c</button>
+        <button type="button" data-calc-special="integral">∫ Integral</button>
+        <button type="button" data-calc-special="derivative">d/dx</button>
+    </div>
+    <div class="exam-calc-bounds">
+        <label>Lower bound <input id="asyncCalcLower" type="number" step="any" value="0"></label>
+        <label>Upper bound <input id="asyncCalcUpper" type="number" step="any" value="1"></label>
+        <button type="button" id="asyncCalcDefinite">∫ Definite</button>
     </div>
     <div id="asyncCalcMathResult" aria-live="polite">Symbolic results will appear here.</div>
     <div id="asyncCalcSymbolic"><button type="button" data-symbolic="integrate">∫ Integrate expression</button><button type="button" data-symbolic="diff">d/dx Differentiate</button><button type="button" data-symbolic="simplify">⅟ Simplify / fraction</button></div>
@@ -1576,6 +1733,7 @@
         <button data-action="mc">MC</button><button data-action="mr">MR</button><button data-action="mplus">M+</button><button data-action="mminus">M−</button><button data-action="ans">Ans</button>
     </div>
     <div id="asyncCalcKeys">
+        <button class="calc-op" data-insert="nCr(">nCr</button><button class="calc-op" data-insert="nPr(">nPr</button><button class="calc-op" data-insert="floor(">floor</button><button class="calc-op" data-insert="ceil(">ceil</button><button class="calc-op" data-insert="round(">round</button>
         <button class="calc-op" data-insert="sin(">sin</button><button class="calc-op" data-insert="cos(">cos</button><button class="calc-op" data-insert="tan(">tan</button><button class="calc-op" data-insert="asin(">sin⁻¹</button><button class="calc-op" data-insert="acos(">cos⁻¹</button>
         <button class="calc-op" data-insert="atan(">tan⁻¹</button><button class="calc-op" data-insert="sinh(">sinh</button><button class="calc-op" data-insert="cosh(">cosh</button><button class="calc-op" data-insert="tanh(">tanh</button><button class="calc-op" data-insert="pi">π</button>
         <button class="calc-op" data-insert="sqrt(">√</button><button class="calc-op" data-insert="cbrt(">∛</button><button class="calc-op" data-insert="^2">x²</button><button class="calc-op" data-insert="^3">x³</button><button class="calc-op" data-insert="^">xʸ</button>
@@ -2531,67 +2689,50 @@
             });
         });
 
-        // Scientific calculator powered by math.js (safe expression parser; no eval).
+        // Exam-style scientific calculator. math.js parses expressions; Nerdamer handles symbolic calculus.
         const display = byId('asyncCalcDisplay'),
             angle = byId('asyncCalcAngle'),
             calcStatus = byId('asyncCalcStatus');
-        let expression = '';
-        let calculatorMemory = 0;
-        let lastAnswer = 0;
+        let expression = '',
+            calculatorMemory = 0,
+            lastAnswer = 0,
+            shiftMode = false,
+            alphaMode = false;
+        const mathResult = byId('asyncCalcMathResult');
+        const expressionPreview = byId('asyncCalcExpressionPreview');
+        const latexInput = byId('asyncCalcLatexInput');
+        const latexPreview = byId('asyncCalcLatexPreview');
+        const variableInput = byId('asyncCalcVariable');
 
         function showExpression() {
             display.value = expression || '0';
             updateExpressionPreview();
         }
 
-        function insert(value) {
-            expression += value;
+        function insert(value, cursorOffset = null) {
+            const start = display.selectionStart ?? display.value.length;
+            const end = display.selectionEnd ?? start;
+            const before = expression.slice(0, start),
+                after = expression.slice(end);
+            expression = before + value + after;
             showExpression();
             display.focus();
+            const pos = cursorOffset === null ? start + value.length : start + cursorOffset;
+            display.setSelectionRange(pos, pos);
         }
 
-        function calculate() {
-            if (!expression.trim()) return;
-            if (!window.math) {
-                calcStatus.textContent = 'Calculator engine did not load. Check your connection.';
-                return;
-            }
-            try {
-                const toRad = x => angle.value === 'deg' ? x * Math.PI / 180 : x;
-                const fromRad = x => angle.value === 'deg' ? x * 180 / Math.PI : x;
-                const scope = {
-                    sin: x => Math.sin(toRad(x)),
-                    cos: x => Math.cos(toRad(x)),
-                    tan: x => Math.tan(toRad(x)),
-                    asin: x => fromRad(Math.asin(x)),
-                    acos: x => fromRad(Math.acos(x)),
-                    atan: x => fromRad(Math.atan(x)),
-                    sqrt: Math.sqrt,
-                    cbrt: Math.cbrt,
-                    log: Math.log10,
-                    ln: Math.log,
-                    exp: Math.exp,
-                    abs: Math.abs,
-                    sinh: Math.sinh,
-                    cosh: Math.cosh,
-                    tanh: Math.tanh,
-                    pi: Math.PI,
-                    e: Math.E
-                };
-                const result = math.evaluate(expression, scope);
-                if (typeof result !== 'number' || !Number.isFinite(result)) throw new Error('Result is not a finite real number.');
-                lastAnswer = Number(result);
-                expression = String(Number(result.toPrecision(12)));
-                showExpression();
-                calcStatus.textContent = 'Calculated successfully.';
-            } catch (error) {
-                calcStatus.textContent = error.message || 'Invalid expression.';
-            }
+        function insertFraction() {
+            insert('()/()', 1);
         }
-        const mathResult = byId('asyncCalcMathResult');
-        const expressionPreview = byId('asyncCalcExpressionPreview');
-        const latexInput = byId('asyncCalcLatexInput');
-        const latexPreview = byId('asyncCalcLatexPreview');
+
+        function setMode(mode) {
+            byId('asyncCalcModeLabel').textContent = mode;
+            byId('asyncCalcModeMenu').hidden = true;
+            calcStatus.textContent = mode === 'CALC' ? 'Calculus mode: enter an expression, then choose ∫ or d/dx.' :
+                mode === 'FORMULA' ? 'Formula mode: enter LaTeX in the formula editor below.' : 'COMP mode: standard scientific calculations.';
+            if (mode === 'FORMULA') latexInput.focus();
+            else display.focus();
+        }
 
         function renderKatex(target, tex, displayMode = true) {
             if (!target) return;
@@ -2636,12 +2777,53 @@
             }
             renderKatex(latexPreview, tex);
         }
-        latexInput.addEventListener('input', updateLatexPreview);
-        updateExpressionPreview();
+
+        function buildScope() {
+            const toRad = x => angle.value === 'deg' ? x * Math.PI / 180 : x;
+            const fromRad = x => angle.value === 'deg' ? x * 180 / Math.PI : x;
+            return {
+                sin: x => Math.sin(toRad(x)),
+                cos: x => Math.cos(toRad(x)),
+                tan: x => Math.tan(toRad(x)),
+                asin: x => fromRad(Math.asin(x)),
+                acos: x => fromRad(Math.acos(x)),
+                atan: x => fromRad(Math.atan(x)),
+                sqrt: Math.sqrt,
+                cbrt: Math.cbrt,
+                log: Math.log10,
+                ln: Math.log,
+                exp: Math.exp,
+                abs: Math.abs,
+                sinh: Math.sinh,
+                cosh: Math.cosh,
+                tanh: Math.tanh,
+                pi: Math.PI,
+                e: Math.E,
+                ans: lastAnswer
+            };
+        }
+
+        function calculate() {
+            if (!expression.trim()) return;
+            if (!window.math) {
+                calcStatus.textContent = 'Calculator engine did not load. Check your connection.';
+                return;
+            }
+            try {
+                const result = math.evaluate(expression, buildScope());
+                if (typeof result !== 'number' || !Number.isFinite(result)) throw new Error('Result is not a finite real number.');
+                lastAnswer = Number(result);
+                expression = String(Number(result.toPrecision(12)));
+                showExpression();
+                calcStatus.textContent = 'Calculated successfully.';
+            } catch (error) {
+                calcStatus.textContent = error.message || 'Invalid expression.';
+            }
+        }
 
         function symbolicOperation(kind) {
             const expr = expression.trim();
-            const variable = (byId('asyncCalcVariable').value.trim() || 'x').replace(/[^a-zA-Z]/g, '');
+            const variable = (variableInput.value.trim() || 'x').replace(/[^a-zA-Z]/g, '');
             if (!expr) {
                 calcStatus.textContent = 'Enter an expression first, for example x^3 + 2*x.';
                 return;
@@ -2651,31 +2833,101 @@
                 return;
             }
             try {
-                const command = kind === 'integrate' ? `integrate(${expr},${variable})` :
-                    kind === 'diff' ? `diff(${expr},${variable})` : expr;
-                const result = window.nerdamer(command);
+                const result = window.nerdamer(kind === 'integrate' ? `integrate(${expr},${variable})` :
+                    kind === 'diff' ? `diff(${expr},${variable})` : `simplify(${expr})`);
                 const latex = window.nerdamer.convertToLaTeX(result.toString());
-                const integrandLatex = window.nerdamer.convertToLaTeX(expr);
-                let resultLatex;
-                if (kind === 'integrate') {
-                    resultLatex = `\\int \\left(${integrandLatex}\\right)\\,d${variable} = ${latex} + C`;
-                } else if (kind === 'diff') {
-                    resultLatex = `\\frac{d}{d${variable}}\\left(${integrandLatex}\\right) = ${latex}`;
-                } else {
-                    resultLatex = latex;
-                }
-                renderKatex(mathResult, resultLatex);
-                calcStatus.textContent = kind === 'integrate' ? `Integral shown with respect to ${variable}; + C is included.` :
-                    kind === 'diff' ? `Derivative with respect to ${variable}.` : 'Expression simplified; exact fractions are retained when possible.';
+                const inputLatex = window.nerdamer.convertToLaTeX(expr);
+                const output = kind === 'integrate' ? `\\int \\left(${inputLatex}\\right)\\,d${variable} = ${latex} + C` :
+                    kind === 'diff' ? `\\frac{d}{d${variable}}\\left(${inputLatex}\\right) = ${latex}` : latex;
+                renderKatex(mathResult, output);
+                calcStatus.textContent = kind === 'integrate' ? `Indefinite integral with respect to ${variable}; constant + C included.` :
+                    kind === 'diff' ? `Derivative with respect to ${variable}.` : 'Expression simplified.';
             } catch (error) {
                 mathResult.textContent = 'Could not solve this symbolic expression.';
                 calcStatus.textContent = error.message || 'Unsupported expression.';
             }
         }
+
+        function definiteIntegral() {
+            if (!window.math) {
+                calcStatus.textContent = 'Numerical calculator engine did not load.';
+                return;
+            }
+            const expr = expression.trim(),
+                variable = (variableInput.value.trim() || 'x').replace(/[^a-zA-Z]/g, '');
+            const a = Number(byId('asyncCalcLower').value),
+                b = Number(byId('asyncCalcUpper').value);
+            if (!expr || !Number.isFinite(a) || !Number.isFinite(b)) {
+                calcStatus.textContent = 'Enter an integrand and valid finite bounds.';
+                return;
+            }
+            try {
+                // Composite Simpson's rule, 2,000 subintervals (even number).
+                const n = 2000,
+                    h = (b - a) / n,
+                    scope = buildScope();
+                const f = x => {
+                    scope[variable] = x;
+                    const y = math.evaluate(expr, scope);
+                    if (typeof y !== 'number' || !Number.isFinite(y)) throw new Error('Integrand is not real over these bounds.');
+                    return y;
+                };
+                let total = f(a) + f(b);
+                for (let i = 1; i < n; i++) total += (i % 2 ? 4 : 2) * f(a + i * h);
+                const result = total * h / 3;
+                lastAnswer = result;
+                const tex = window.nerdamer ? window.nerdamer.convertToLaTeX(expr) : expr;
+                renderKatex(mathResult, `\\int_{${a}}^{${b}}\\left(${tex}\\right)\\,d${variable} \\approx ${Number(result.toPrecision(12))}`);
+                calcStatus.textContent = 'Definite integral evaluated numerically using composite Simpson’s rule.';
+            } catch (error) {
+                calcStatus.textContent = error.message || 'Could not evaluate this integral.';
+            }
+        }
+        latexInput.addEventListener('input', updateLatexPreview);
+        updateExpressionPreview();
+
+        byId('asyncCalcMenu').addEventListener('click', () => {
+            const menu = byId('asyncCalcModeMenu');
+            menu.hidden = !menu.hidden;
+        });
+        byId('asyncCalcModeMenu').addEventListener('click', event => {
+            const item = event.target.closest('[data-calc-mode]');
+            if (item) setMode(item.dataset.calcMode);
+        });
+        byId('asyncCalcShift').addEventListener('click', () => {
+            shiftMode = !shiftMode;
+            alphaMode = false;
+            byId('asyncCalcShift').setAttribute('aria-pressed', String(shiftMode));
+            byId('asyncCalcAlpha').setAttribute('aria-pressed', 'false');
+            calcStatus.textContent = shiftMode ? 'SHIFT enabled: inverse and secondary functions are active on supported keys.' : 'SHIFT disabled.';
+        });
+        byId('asyncCalcAlpha').addEventListener('click', () => {
+            alphaMode = !alphaMode;
+            shiftMode = false;
+            byId('asyncCalcAlpha').setAttribute('aria-pressed', String(alphaMode));
+            byId('asyncCalcShift').setAttribute('aria-pressed', 'false');
+            calcStatus.textContent = alphaMode ? 'ALPHA enabled: variable symbols are active on supported keys.' : 'ALPHA disabled.';
+        });
+        byId('asyncCalcSetup').addEventListener('click', () => {
+            const current = angle.value.toUpperCase();
+            const choice = window.prompt('SETUP — choose angle unit: DEG or RAD', current);
+            if (choice && /^(deg|rad)$/i.test(choice.trim())) {
+                angle.value = choice.trim().toLowerCase();
+                calcStatus.textContent = `Angle unit set to ${angle.value.toUpperCase()}.`;
+            }
+        });
+        byId('asyncCalcDefinite').addEventListener('click', definiteIntegral);
         byId('asyncCalcSymbolic').addEventListener('click', event => {
             const button = event.target.closest('[data-symbolic]');
             if (button) symbolicOperation(button.dataset.symbolic);
         });
+        document.querySelectorAll('[data-calc-special]').forEach(button => button.addEventListener('click', () => {
+            const kind = button.dataset.calcSpecial;
+            if (kind === 'fraction') insertFraction();
+            if (kind === 'mixed') insert('0+()/()');
+            if (kind === 'integral') symbolicOperation('integrate');
+            if (kind === 'derivative') symbolicOperation('diff');
+        }));
         byId('asyncCalcKeys').addEventListener('click', event => {
             const button = event.target.closest('button');
             if (!button) return;
@@ -2685,26 +2937,56 @@
                 expression = '';
                 mathResult.textContent = 'Symbolic results will appear here.';
                 calcStatus.textContent = 'Cleared.';
-            } else if (action === 'back') expression = expression.slice(0, -1);
-            else if (action === 'equals') {
+            } else if (action === 'back') {
+                const pos = display.selectionStart ?? expression.length;
+                const end = display.selectionEnd ?? pos;
+                const from = pos === end ? Math.max(0, pos - 1) : pos;
+                expression = expression.slice(0, from) + expression.slice(end);
+                showExpression();
+                display.focus();
+                display.setSelectionRange(from, from);
+                return;
+            } else if (action === 'equals') {
                 calculate();
                 return;
             } else if (action === 'mc') {
                 calculatorMemory = 0;
                 calcStatus.textContent = 'Memory cleared.';
             } else if (action === 'mr') {
-                expression += String(calculatorMemory);
+                insert(String(calculatorMemory));
+                return;
             } else if (action === 'mplus' || action === 'mminus') {
                 try {
-                    const current = math.evaluate(expression || '0');
+                    const current = math.evaluate(expression || '0', buildScope());
                     calculatorMemory += action === 'mplus' ? Number(current) : -Number(current);
                     calcStatus.textContent = 'Memory updated.';
                 } catch (_) {
                     calcStatus.textContent = 'Calculate a valid value first.';
                 }
             } else if (action === 'ans') {
-                expression += String(lastAnswer);
-            } else if (value) expression += value;
+                insert(String(lastAnswer));
+                return;
+            } else if (value) {
+                let actual = value;
+                if (shiftMode) {
+                    const shifted = {
+                        'sin(': 'asin(',
+                        'cos(': 'acos(',
+                        'tan(': 'atan(',
+                        'log(': '10^(',
+                        'ln(': 'e^(',
+                        'sqrt(': 'x^(1/2)',
+                        '^2': '^(-2)'
+                    };
+                    actual = shifted[value] || value;
+                } else if (alphaMode && ['pi', 'e'].includes(value)) actual = value === 'pi' ? 'x' : 'y';
+                insert(actual);
+                shiftMode = false;
+                alphaMode = false;
+                byId('asyncCalcShift').setAttribute('aria-pressed', 'false');
+                byId('asyncCalcAlpha').setAttribute('aria-pressed', 'false');
+                return;
+            }
             showExpression();
         });
         display.addEventListener('input', () => {
@@ -2719,12 +3001,6 @@
             if (event.key === 'Escape') {
                 expression = '';
                 showExpression();
-            }
-        });
-        document.addEventListener('keydown', event => {
-            if (event.key === 'Escape') {
-                allToolPanels.forEach(setPanelClosed);
-                if (timerBox) timerBox.classList.remove('is-visible');
             }
         });
         // Procedural ambient soundscapes: no audio files or third-party media required.
