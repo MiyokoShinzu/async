@@ -2273,4 +2273,129 @@ if (
             scroll-behavior: auto !important;
         }
     }
+
+
+    /* =========================================================
+       OVERFLOW GUARD — keep the topbar inside its layout column
+       while preserving the avatar glow and dropdown shadows.
+    ========================================================= */
+    .topbar,
+    .async-developer-mode .topbar {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .topbar-left,
+    .topbar-user,
+    .topbar-title,
+    .topbar-user-info,
+    .topbar-profile-dropdown {
+        box-sizing: border-box;
+        min-width: 0;
+    }
+
+    .topbar-left {
+        flex: 1 1 auto;
+        max-width: 100%;
+    }
+
+    .topbar-user {
+        flex: 0 1 auto;
+        max-width: 52%;
+        min-width: 0;
+    }
+
+    .topbar-title {
+        max-width: min(38vw, 320px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .async-developer-mode .topbar-title {
+        max-width: min(38vw, 320px);
+        min-width: 0;
+    }
+
+    .developer-typewriter,
+    .developer-typewriter-text {
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: clip;
+    }
+
+    .topbar-user-info {
+        flex: 0 1 auto;
+        max-width: min(34vw, 260px);
+        overflow: hidden;
+    }
+
+    .topbar-name,
+    .topbar-access {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .async-developer-mode .topbar-name {
+        overflow: hidden !important;
+    }
+
+    .async-developer-mode .developer-wave-name {
+        max-width: 100%;
+        overflow: hidden !important;
+    }
+
+    /* Keep the animated circuit layer strictly within the topbar box. */
+    .async-developer-mode .topbar::after {
+        inset: 0;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    @media (max-width: 991px) {
+
+        .topbar,
+        .async-developer-mode .topbar {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+        }
+
+        .topbar-user {
+            max-width: 58%;
+        }
+
+        .async-developer-mode .topbar-title {
+            max-width: 34vw;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .topbar-user {
+            max-width: 60%;
+        }
+
+        .topbar-user-info {
+            max-width: 112px;
+        }
+
+        .async-developer-mode .topbar-title {
+            max-width: 30vw;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .topbar-user {
+            max-width: none;
+        }
+
+        .topbar-user-info {
+            display: none !important;
+        }
+
+        .async-developer-mode .topbar-title {
+            max-width: 34vw;
+        }
+    }
 </style>
