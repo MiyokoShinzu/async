@@ -1596,24 +1596,9 @@
     }
 
     #asyncToolsMenu {
-        position: relative;
         display: flex;
         flex-direction: column;
-        gap: 7px;
-        width: 214px;
-        min-width: 180px;
-        max-width: calc(100vw - 24px);
-        max-height: min(58vh, 520px);
-        min-height: 0;
-        padding: 9px;
-        overflow: visible;
-        border: 1px solid rgba(255, 255, 255, .4);
-        border-radius: 16px;
-        background: rgba(15, 23, 42, .18);
-        box-shadow: 0 12px 28px rgba(15, 23, 42, .18), inset 0 1px 0 rgba(255, 255, 255, .2);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        box-sizing: border-box;
+        gap: 8px;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -1629,148 +1614,11 @@
         transform: translateY(0) scale(1)
     }
 
-    .async-tools-menu-grip {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 7px;
-        flex: 0 0 auto;
-        min-height: 25px;
-        margin: 0 2px 2px;
-        border: 1px dashed rgba(255, 255, 255, .45);
-        border-radius: 8px;
-        background: rgba(15, 23, 42, .18);
-        color: rgba(255, 255, 255, .92);
-        font: 700 10px/1.2 Arial, sans-serif;
-        letter-spacing: .25px;
-        cursor: grab;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: none;
-    }
-
-    .async-tools-menu-grip:active {
-        cursor: grabbing;
-    }
-
-    .async-tools-menu-grip i {
-        font-size: 12px;
-        opacity: .9;
-    }
-
-    .async-tools-menu-items {
-        display: flex;
-        flex: 1 1 auto;
-        flex-direction: column;
-        gap: 8px;
-        min-height: 0;
-        max-height: none;
-        overflow-x: hidden;
-        overflow-y: auto;
-        padding: 1px 2px 2px;
-        scrollbar-width: thin;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle {
-        position: absolute;
-        z-index: 20;
-        display: block;
-        padding: 0;
-        margin: 0;
-        min-width: 0;
-        min-height: 0;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
-        box-shadow: none;
-        opacity: .7;
-        touch-action: none;
-        cursor: default;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle:hover {
-        opacity: 1;
-        filter: none;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="n"],
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="s"] {
-        left: 14px;
-        right: 14px;
-        height: 9px;
-        width: auto;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="n"] {
-        top: -3px;
-        cursor: n-resize;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="s"] {
-        bottom: -3px;
-        cursor: s-resize;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="e"],
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="w"] {
-        top: 14px;
-        bottom: 14px;
-        width: 9px;
-        height: auto;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="e"] {
-        right: -3px;
-        cursor: e-resize;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="w"] {
-        left: -3px;
-        cursor: w-resize;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="ne"],
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="nw"],
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="se"],
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="sw"] {
-        width: 15px;
-        height: 15px;
-        border: 1px solid rgba(255, 255, 255, .62);
-        border-radius: 5px;
-        background: rgba(37, 99, 235, .55);
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="ne"] {
-        right: -4px;
-        top: -4px;
-        cursor: ne-resize;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="nw"] {
-        left: -4px;
-        top: -4px;
-        cursor: nw-resize;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="se"] {
-        right: -4px;
-        bottom: -4px;
-        cursor: se-resize;
-    }
-
-    #asyncToolsMenu .async-menu-resize-handle[data-resize="sw"] {
-        left: -4px;
-        bottom: -4px;
-        cursor: sw-resize;
-    }
-
-    #asyncToolsMenu .async-tools-menu-items>button {
+    #asyncToolsMenu button {
         display: flex;
         align-items: center;
         gap: 11px;
-        width: 100%;
-        min-width: 0;
-        flex: 0 0 auto;
+        min-width: 175px;
         padding: 11px 14px;
         border: 1px solid rgba(255, 255, 255, .48);
         border-radius: 13px;
@@ -1785,28 +1633,28 @@
         transition: transform .28s cubic-bezier(.22, 1, .36, 1), filter .2s ease, background .2s ease
     }
 
-    #asyncToolsMenu .async-tools-menu-items>button:nth-child(2) {
+    #asyncToolsMenu button:nth-child(2) {
         background: rgba(13, 148, 136, .78)
     }
 
-    #asyncToolsMenu .async-tools-menu-items>button:nth-child(3) {
+    #asyncToolsMenu button:nth-child(3) {
         background: rgba(124, 58, 237, .78)
     }
 
-    #asyncToolsMenu .async-tools-menu-items>button:nth-child(4) {
+    #asyncToolsMenu button:nth-child(4) {
         background: rgba(217, 119, 6, .78)
     }
 
-    #asyncToolsMenu .async-tools-menu-items>button:nth-child(5) {
+    #asyncToolsMenu button:nth-child(5) {
         background: rgba(225, 29, 72, .78)
     }
 
-    #asyncToolsMenu .async-tools-menu-items>button:hover {
+    #asyncToolsMenu button:hover {
         transform: translateX(-4px) scale(1.025);
         filter: brightness(1.08)
     }
 
-    #asyncToolsMenu .async-tools-menu-items>button i {
+    #asyncToolsMenu button i {
         width: 20px;
         text-align: center;
         font-size: 17px
@@ -2168,6 +2016,125 @@
 
     #asyncPresentationPanel[data-user-positioned="1"] {
         transform: none !important
+    }
+
+    /* Resize controls for the actual floating tool windows (not the launcher). */
+    #readingToolsPanel,
+    #asyncNotesPanel,
+    #asyncCalcPanel,
+    #asyncSoundPanel,
+    #asyncPresentationPanel,
+    #asyncFloatingTimer {
+        box-sizing: border-box;
+    }
+
+    .async-tool-resize-handle {
+        position: absolute;
+        z-index: 100;
+        display: block;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        background: transparent;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        opacity: .42;
+        transition: opacity .16s ease, background .16s ease;
+    }
+
+    .async-tool-resize-handle:hover,
+    .async-tool-resize-handle:active {
+        opacity: 1;
+        background: rgba(96, 165, 250, .18);
+    }
+
+    .async-tool-resize-handle[data-resize="n"],
+    .async-tool-resize-handle[data-resize="s"] {
+        left: 14px;
+        right: 14px;
+        height: 9px;
+        cursor: ns-resize;
+    }
+
+    .async-tool-resize-handle[data-resize="n"] {
+        top: 1px;
+    }
+
+    .async-tool-resize-handle[data-resize="s"] {
+        bottom: 1px;
+    }
+
+    .async-tool-resize-handle[data-resize="e"],
+    .async-tool-resize-handle[data-resize="w"] {
+        top: 14px;
+        bottom: 14px;
+        width: 9px;
+        cursor: ew-resize;
+    }
+
+    .async-tool-resize-handle[data-resize="e"] {
+        right: 1px;
+    }
+
+    .async-tool-resize-handle[data-resize="w"] {
+        left: 1px;
+    }
+
+    .async-tool-resize-handle[data-resize="ne"],
+    .async-tool-resize-handle[data-resize="nw"],
+    .async-tool-resize-handle[data-resize="se"],
+    .async-tool-resize-handle[data-resize="sw"] {
+        width: 17px;
+        height: 17px;
+        border: 1px solid rgba(255, 255, 255, .58);
+        border-radius: 6px;
+        background: rgba(59, 130, 246, .42);
+        box-shadow: 0 1px 5px rgba(15, 23, 42, .18);
+    }
+
+    .async-tool-resize-handle[data-resize="ne"] {
+        top: 2px;
+        right: 2px;
+        cursor: nesw-resize;
+    }
+
+    .async-tool-resize-handle[data-resize="nw"] {
+        top: 2px;
+        left: 2px;
+        cursor: nwse-resize;
+    }
+
+    .async-tool-resize-handle[data-resize="se"] {
+        bottom: 2px;
+        right: 2px;
+        cursor: nwse-resize;
+    }
+
+    .async-tool-resize-handle[data-resize="sw"] {
+        bottom: 2px;
+        left: 2px;
+        cursor: nesw-resize;
+    }
+
+    #readingToolsPanel.is-minimized .async-tool-resize-handle,
+    #asyncNotesPanel.is-minimized .async-tool-resize-handle,
+    #asyncCalcPanel.is-minimized .async-tool-resize-handle,
+    #asyncSoundPanel.is-minimized .async-tool-resize-handle,
+    #asyncPresentationPanel.is-minimized .async-tool-resize-handle,
+    #asyncFloatingTimer.is-minimized .async-tool-resize-handle {
+        display: none !important;
+    }
+
+    @media (max-width: 480px) {
+
+        .async-tool-resize-handle[data-resize="ne"],
+        .async-tool-resize-handle[data-resize="nw"],
+        .async-tool-resize-handle[data-resize="se"],
+        .async-tool-resize-handle[data-resize="sw"] {
+            width: 20px;
+            height: 20px;
+        }
     }
 </style>
 
@@ -2984,224 +2951,6 @@
             calcPanel = byId('asyncCalcPanel');
         const toolsFab = byId('asyncToolsFab'),
             toolsMenu = byId('asyncToolsMenu');
-        const toolsDock = byId('asyncToolsDock');
-
-        // Turn the launcher menu into a movable and eight-direction resizable panel.
-        // The grab strip moves the complete dock, keeping the launcher attached.
-        (function enableMenuMoveAndResize() {
-            if (!toolsDock || !toolsMenu || toolsMenu.dataset.resizeReady === '1') return;
-            toolsMenu.dataset.resizeReady = '1';
-
-            const originalButtons = Array.from(toolsMenu.querySelectorAll(':scope > button'));
-            const items = document.createElement('div');
-            items.className = 'async-tools-menu-items';
-            originalButtons.forEach(button => items.appendChild(button));
-
-            const grip = document.createElement('div');
-            grip.className = 'async-tools-menu-grip';
-            grip.setAttribute('role', 'button');
-            grip.setAttribute('tabindex', '0');
-            grip.setAttribute('aria-label', 'Drag to move the ASYNC tools menu');
-            grip.title = 'Drag to move the menu. Use the edge and corner grips to resize.';
-            grip.innerHTML = '<i class="bi bi-grip-horizontal" aria-hidden="true"></i><span>DRAG TO MOVE · RESIZE EDGES</span>';
-
-            toolsMenu.appendChild(grip);
-            toolsMenu.appendChild(items);
-
-            const directions = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
-            directions.forEach(direction => {
-                const handle = document.createElement('div');
-                handle.className = 'async-menu-resize-handle';
-                handle.dataset.resize = direction;
-                handle.setAttribute('role', 'separator');
-                handle.setAttribute('aria-label', 'Resize menu ' + direction);
-                handle.title = 'Resize menu';
-                toolsMenu.appendChild(handle);
-            });
-
-            const MIN_WIDTH = 180;
-            const MIN_HEIGHT = 145;
-            const EDGE = 8;
-            const STORAGE_KEY = 'asyncToolsDockLayoutV1';
-
-            function clamp(value, min, max) {
-                return Math.max(min, Math.min(max, value));
-            }
-
-            function dockRect() {
-                return toolsDock.getBoundingClientRect();
-            }
-
-            function applyDockPosition(left, bottom) {
-                const rect = dockRect();
-                const maxLeft = Math.max(EDGE, window.innerWidth - rect.width - EDGE);
-                const maxBottom = Math.max(EDGE, window.innerHeight - rect.height - EDGE);
-                toolsDock.style.left = clamp(left, EDGE, maxLeft) + 'px';
-                toolsDock.style.right = 'auto';
-                toolsDock.style.top = 'auto';
-                toolsDock.style.bottom = clamp(bottom, EDGE, maxBottom) + 'px';
-            }
-
-            function saveLayout() {
-                try {
-                    const rect = dockRect();
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        left: Math.round(rect.left),
-                        bottom: Math.round(window.innerHeight - rect.bottom),
-                        width: Math.round(toolsMenu.getBoundingClientRect().width),
-                        height: Math.round(toolsMenu.getBoundingClientRect().height)
-                    }));
-                } catch (_) {}
-            }
-
-            function restoreLayout() {
-                try {
-                    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-                    if (!saved || typeof saved !== 'object') return;
-                    const maxWidth = Math.max(MIN_WIDTH, window.innerWidth - 2 * EDGE);
-                    const maxHeight = Math.max(MIN_HEIGHT, window.innerHeight - 100);
-                    if (Number.isFinite(saved.width)) {
-                        toolsMenu.style.width = clamp(saved.width, MIN_WIDTH, maxWidth) + 'px';
-                    }
-                    if (Number.isFinite(saved.height)) {
-                        toolsMenu.style.height = clamp(saved.height, MIN_HEIGHT, maxHeight) + 'px';
-                        toolsMenu.style.maxHeight = 'none';
-                    }
-                    if (Number.isFinite(saved.left)) toolsDock.style.left = clamp(saved.left, EDGE, window.innerWidth - MIN_WIDTH - EDGE) + 'px';
-                    if (Number.isFinite(saved.bottom)) toolsDock.style.bottom = clamp(saved.bottom, EDGE, window.innerHeight - 75) + 'px';
-                    if (Number.isFinite(saved.left)) toolsDock.style.right = 'auto';
-                } catch (_) {}
-            }
-
-            function capturePointer(element, event) {
-                try {
-                    element.setPointerCapture(event.pointerId);
-                } catch (_) {}
-            }
-
-            // Move the dock from its top grip; menu clicks remain untouched.
-            grip.addEventListener('pointerdown', event => {
-                if (event.button !== undefined && event.button !== 0) return;
-                event.preventDefault();
-                const rect = dockRect();
-                const startX = event.clientX;
-                const startY = event.clientY;
-                const startLeft = rect.left;
-                const startBottom = window.innerHeight - rect.bottom;
-                let moved = false;
-                capturePointer(grip, event);
-
-                const move = e => {
-                    if (e.pointerId !== event.pointerId) return;
-                    if (Math.abs(e.clientX - startX) + Math.abs(e.clientY - startY) > 2) moved = true;
-                    const nextLeft = startLeft + e.clientX - startX;
-                    const nextBottom = startBottom - (e.clientY - startY);
-                    applyDockPosition(nextLeft, nextBottom);
-                };
-                const finish = e => {
-                    if (e.pointerId !== event.pointerId) return;
-                    grip.removeEventListener('pointermove', move);
-                    grip.removeEventListener('pointerup', finish);
-                    grip.removeEventListener('pointercancel', finish);
-                    if (moved) saveLayout();
-                };
-                grip.addEventListener('pointermove', move);
-                grip.addEventListener('pointerup', finish);
-                grip.addEventListener('pointercancel', finish);
-            });
-
-            // All four edges and all four corners resize the menu.
-            toolsMenu.querySelectorAll('.async-menu-resize-handle').forEach(handle => {
-                handle.addEventListener('pointerdown', event => {
-                    if (event.button !== undefined && event.button !== 0) return;
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    const direction = handle.dataset.resize;
-                    const menuRect = toolsMenu.getBoundingClientRect();
-                    const dock = dockRect();
-                    const startX = event.clientX;
-                    const startY = event.clientY;
-                    const startWidth = menuRect.width;
-                    const startHeight = menuRect.height;
-                    const startLeft = dock.left;
-                    const startBottom = window.innerHeight - dock.bottom;
-                    const fixedRight = dock.right;
-                    const fixedTop = dock.top;
-                    const isWest = direction.includes('w');
-                    const isEast = direction.includes('e');
-                    const isNorth = direction.includes('n');
-                    const isSouth = direction.includes('s');
-
-                    toolsMenu.style.width = startWidth + 'px';
-                    toolsMenu.style.height = startHeight + 'px';
-                    toolsMenu.style.maxHeight = 'none';
-                    applyDockPosition(startLeft, startBottom);
-                    capturePointer(handle, event);
-
-                    const move = e => {
-                        if (e.pointerId !== event.pointerId) return;
-                        const dx = e.clientX - startX;
-                        const dy = e.clientY - startY;
-                        const maxWidth = Math.max(MIN_WIDTH, window.innerWidth - 2 * EDGE);
-                        let width = startWidth;
-                        let height = startHeight;
-                        let left = startLeft;
-                        let bottom = startBottom;
-
-                        if (isWest) {
-                            width = clamp(startWidth - dx, MIN_WIDTH, maxWidth);
-                            left = fixedRight - width;
-                        } else if (isEast) {
-                            width = clamp(startWidth + dx, MIN_WIDTH, maxWidth);
-                        }
-
-                        if (isNorth) {
-                            height = startHeight - dy;
-                            bottom = startBottom;
-                        } else if (isSouth) {
-                            height = startHeight + dy;
-                            bottom = startBottom - (height - startHeight);
-                        }
-
-                        const maxHeight = Math.max(MIN_HEIGHT, isSouth ?
-                            window.innerHeight - fixedTop - 74 :
-                            window.innerHeight - bottom - 74);
-                        height = clamp(height, MIN_HEIGHT, Math.min(620, maxHeight));
-
-                        if (isWest) left = fixedRight - width;
-                        const maxLeft = Math.max(EDGE, window.innerWidth - width - EDGE);
-                        left = clamp(left, EDGE, maxLeft);
-                        bottom = clamp(bottom, EDGE, Math.max(EDGE, window.innerHeight - 74));
-
-                        toolsMenu.style.width = width + 'px';
-                        toolsMenu.style.height = height + 'px';
-                        applyDockPosition(left, bottom);
-                    };
-
-                    const finish = e => {
-                        if (e.pointerId !== event.pointerId) return;
-                        handle.removeEventListener('pointermove', move);
-                        handle.removeEventListener('pointerup', finish);
-                        handle.removeEventListener('pointercancel', finish);
-                        saveLayout();
-                    };
-                    handle.addEventListener('pointermove', move);
-                    handle.addEventListener('pointerup', finish);
-                    handle.addEventListener('pointercancel', finish);
-                });
-            });
-
-            restoreLayout();
-            window.addEventListener('resize', () => {
-                const rect = dockRect();
-                const maxLeft = Math.max(EDGE, window.innerWidth - rect.width - EDGE);
-                const maxBottom = Math.max(EDGE, window.innerHeight - rect.height - EDGE);
-                if (toolsDock.style.left) toolsDock.style.left = clamp(rect.left, EDGE, maxLeft) + 'px';
-                if (toolsDock.style.bottom) toolsDock.style.bottom = clamp(window.innerHeight - rect.bottom, EDGE, maxBottom) + 'px';
-            });
-        })();
-
         const notesKey = 'asyncAcademicPersonalNotes_v1';
         let notes = [],
             activeNoteId = null,
@@ -3498,6 +3247,155 @@
         makeDraggable(soundPanel, byId('asyncSoundDrag'));
         makeDraggable(presentationPanel, byId('asyncPresentationDrag'));
         makeDraggable(byId('readingToolsPanel'), byId('rtDrag'));
+
+        // Resize every floating tool window from any edge or corner.
+        // Moving remains available by dragging each window's title bar.
+        function makeResizable(panel) {
+            if (!panel || panel.dataset.resizable === '1') return;
+            panel.dataset.resizable = '1';
+
+            const directions = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
+            const minSizes = {
+                readingToolsPanel: {
+                    width: 270,
+                    height: 180
+                },
+                asyncNotesPanel: {
+                    width: 260,
+                    height: 230
+                },
+                asyncCalcPanel: {
+                    width: 250,
+                    height: 250
+                },
+                asyncSoundPanel: {
+                    width: 255,
+                    height: 205
+                },
+                asyncPresentationPanel: {
+                    width: 250,
+                    height: 175
+                },
+                asyncFloatingTimer: {
+                    width: 205,
+                    height: 125
+                }
+            };
+            const minSize = minSizes[panel.id] || {
+                width: 230,
+                height: 160
+            };
+
+            directions.forEach(direction => {
+                const handle = document.createElement('div');
+                handle.className = 'async-tool-resize-handle';
+                handle.dataset.resize = direction;
+                handle.setAttribute('aria-hidden', 'true');
+                handle.title = 'Resize window';
+                panel.appendChild(handle);
+
+                handle.addEventListener('pointerdown', event => {
+                    if (event.button !== undefined && event.button !== 0) return;
+                    if (panel.classList.contains('is-minimized')) return;
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const rect = panel.getBoundingClientRect();
+                    const start = {
+                        x: event.clientX,
+                        y: event.clientY,
+                        left: rect.left,
+                        top: rect.top,
+                        right: rect.right,
+                        bottom: rect.bottom,
+                        width: rect.width,
+                        height: rect.height
+                    };
+
+                    const west = direction.includes('w');
+                    const east = direction.includes('e');
+                    const north = direction.includes('n');
+                    const south = direction.includes('s');
+
+                    // Convert centered windows to top-left positioning before resizing.
+                    panel.style.setProperty('left', start.left + 'px', 'important');
+                    panel.style.setProperty('top', start.top + 'px', 'important');
+                    panel.style.setProperty('right', 'auto', 'important');
+                    panel.style.setProperty('bottom', 'auto', 'important');
+                    panel.style.setProperty('transform', 'none', 'important');
+                    panel.style.setProperty('width', start.width + 'px', 'important');
+                    panel.style.setProperty('height', start.height + 'px', 'important');
+                    panel.style.setProperty('max-width', 'none', 'important');
+                    panel.style.setProperty('max-height', 'none', 'important');
+                    panel.dataset.userPositioned = '1';
+
+                    try {
+                        handle.setPointerCapture(event.pointerId);
+                    } catch (_) {}
+
+                    const move = e => {
+                        if (e.pointerId !== event.pointerId) return;
+
+                        const dx = e.clientX - start.x;
+                        const dy = e.clientY - start.y;
+                        const maxWidth = Math.max(minSize.width, window.innerWidth - 12);
+                        const maxHeight = Math.max(minSize.height, window.innerHeight - 12);
+
+                        let width = start.width;
+                        let height = start.height;
+                        let left = start.left;
+                        let top = start.top;
+
+                        if (west) {
+                            width = Math.max(minSize.width, Math.min(maxWidth, start.width - dx));
+                            left = start.right - width;
+                        } else if (east) {
+                            width = Math.max(minSize.width, Math.min(maxWidth, start.width + dx));
+                        }
+
+                        if (north) {
+                            height = Math.max(minSize.height, Math.min(maxHeight, start.height - dy));
+                            top = start.bottom - height;
+                        } else if (south) {
+                            height = Math.max(minSize.height, Math.min(maxHeight, start.height + dy));
+                        }
+
+                        // Keep the complete window inside the visible viewport.
+                        left = Math.max(6, Math.min(window.innerWidth - width - 6, left));
+                        top = Math.max(6, Math.min(window.innerHeight - height - 6, top));
+
+                        panel.style.setProperty('left', left + 'px', 'important');
+                        panel.style.setProperty('top', top + 'px', 'important');
+                        panel.style.setProperty('width', width + 'px', 'important');
+                        panel.style.setProperty('height', height + 'px', 'important');
+                    };
+
+                    const finish = e => {
+                        if (e.pointerId !== event.pointerId) return;
+                        handle.removeEventListener('pointermove', move);
+                        handle.removeEventListener('pointerup', finish);
+                        handle.removeEventListener('pointercancel', finish);
+                        handle.removeEventListener('lostpointercapture', finish);
+                    };
+
+                    handle.addEventListener('pointermove', move);
+                    handle.addEventListener('pointerup', finish);
+                    handle.addEventListener('pointercancel', finish);
+                    handle.addEventListener('lostpointercapture', finish);
+                });
+            });
+        }
+
+        [
+            byId('readingToolsPanel'),
+            notesPanel,
+            calcPanel,
+            soundPanel,
+            presentationPanel,
+            timerBox
+        ].forEach(makeResizable);
+
         byId('rtMinimize').addEventListener('click', () => {
             const readingPanel = byId('readingToolsPanel');
             const minimized = readingPanel.classList.toggle('is-minimized');
