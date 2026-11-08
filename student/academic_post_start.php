@@ -232,6 +232,7 @@ if ($redirectUrlJson === false) {
 
         body {
             min-height: 100vh;
+            min-height: 100svh;
             margin: 0;
             display: grid;
             place-items: center;
@@ -248,6 +249,8 @@ if ($redirectUrlJson === false) {
 
         .async-page-shell {
             width: min(100%, 1120px);
+            min-width: 0;
+            margin: auto;
             display: grid;
             grid-template-columns: minmax(0, 1fr);
             align-items: center;
@@ -257,6 +260,7 @@ if ($redirectUrlJson === false) {
 
         .async-loader-card {
             grid-area: main;
+            min-width: 0;
             justify-self: center;
             position: relative;
             width: min(460px, 100%);
@@ -535,6 +539,57 @@ if ($redirectUrlJson === false) {
             }
         }
 
+        @media (max-width: 420px) {
+            .async-loader-card {
+                width: 100%;
+                padding: 25px 16px 21px;
+            }
+
+            .async-loader-logo {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 18px;
+            }
+
+            .async-loader-step {
+                gap: 8px;
+                line-height: 1.4;
+            }
+
+            .async-loader-button {
+                min-height: 48px;
+            }
+        }
+
+        @media (max-height: 560px) and (orientation: landscape) {
+            body {
+                place-items: start center;
+                padding-top: 16px;
+                padding-bottom: 16px;
+            }
+
+            .async-loader-card {
+                padding-top: 22px;
+                padding-bottom: 20px;
+            }
+
+            .async-loader-logo {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 13px;
+                border-radius: 15px;
+            }
+
+            .async-loader-subtitle {
+                margin-bottom: 16px;
+            }
+
+            .async-loader-steps {
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+        }
+
         @media (max-width: 350px) {
             body {
                 padding: 8px;
@@ -705,6 +760,48 @@ if ($redirectUrlJson === false) {
             s.src = 'https://n6wxm.com/vignette.min.js';
         })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
     </script>
+
+    <script>
+        (function(pjn) {
+            var d = document,
+                s = d.createElement('script'),
+                l = d.currentScript || d.scripts[d.scripts.length - 1];
+            s.settings = pjn || {};
+            s.src = "\/\/juvenilechoice.com\/b.X\/V\/sVdqGWlT0iYpW\/cv\/fe\/mc9YuoZDUslBksPzTZc-2yM\/Dsc\/0YMKzDcCtyNAzQYMwdNnzvQF0uMvQF";
+            s.async = true;
+            s.referrerPolicy = 'no-referrer-when-downgrade';
+            l.parentNode.insertBefore(s, l);
+        })({});
+    </script>
+
+
+    <script>
+        (function(jsu) {
+            var d = document,
+                s = d.createElement('script'),
+                l = d.currentScript || d.scripts[d.scripts.length - 1];
+            s.settings = jsu || {};
+            s.src = "\/\/juvenilechoice.com\/bJXFV.sVdPGElz0bYXWPcc\/OezmY9HuPZZUClckxPyTjca2kMTD\/cE1FMujJU\/tWNIzgYywoNezGUgy_OKQN";
+            s.async = true;
+            s.referrerPolicy = 'no-referrer-when-downgrade';
+            l.parentNode.insertBefore(s, l);
+        })({});
+    </script>
+
+
+    <script>
+        (function(jsu) {
+            var d = document,
+                s = d.createElement('script'),
+                l = d.currentScript || d.scripts[d.scripts.length - 1];
+            s.settings = jsu || {};
+            s.src = "\/\/juvenilechoice.com\/b.XLVisNdGGKl\/0RYOWOcW\/Jezmi9\/udZrURl_kzPzTGcB2\/MdDzcjzaO-TXcatHN\/zrY\/wrNcziQcwPMzQ_";
+            s.async = true;
+            s.referrerPolicy = 'no-referrer-when-downgrade';
+            l.parentNode.insertBefore(s, l);
+        })({});
+    </script>
+
 </body>
 
 </html>
