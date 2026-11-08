@@ -57,7 +57,6 @@ $middleInitial = "";
 $extensionName = "";
 
 $department = "";
-$yearSection = "";
 $email = "";
 $username = "";
 
@@ -74,7 +73,6 @@ $stmt = $mysqli->prepare("
         middle_initial,
         extension_name,
         department,
-        year_section,
         student_id,
         email,
         username,
@@ -121,7 +119,6 @@ $middleInitial = $account["middle_initial"] ?? "";
 $extensionName = $account["extension_name"] ?? "";
 
 $department = $account["department"] ?? "";
-$yearSection = $account["year_section"] ?? "";
 $email = $account["email"] ?? "";
 $username = $account["username"] ?? "";
 
@@ -907,37 +904,6 @@ include "globals/topbar.php";
 
                                 </div>
 
-
-                                <!-- =================================
-                                     YEAR & SECTION
-                                ================================== -->
-
-                                <div class="col-md-4">
-
-                                    <label
-                                        for="year_section"
-                                        class="form-label">
-
-                                        Year & Section
-
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="year_section"
-                                        value="<?= htmlspecialchars($yearSection) ?>"
-                                        readonly>
-
-                                    <small
-                                        class="form-text"
-                                        style="color: var(--text-secondary);">
-
-                                        Admin only.
-
-                                    </small>
-
-                                </div>
 
                             </div>
 

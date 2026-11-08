@@ -317,6 +317,7 @@ $allowed_departments = [
     "Civil Engineering",
     "Electrical Engineering",
     "Electronics and Communications Engineering",
+    "Agricultural and Biosystems Engineering",
     "Geodetic Engineering",
     "Architecture",
     "Chemical Engineering"
@@ -352,6 +353,7 @@ $allowed_sections = [
     "1-A",
     "1-B",
     "1-C",
+    "1-E",
 
     "2-A",
     "2-B",

@@ -329,7 +329,7 @@ date_default_timezone_set('Asia/Manila');
 
             height: 38px;
 
-            border-radius: 10px;
+            border-radius: 0;
 
             display: flex;
 
@@ -337,26 +337,24 @@ date_default_timezone_set('Asia/Manila');
 
             justify-content: center;
 
-            background:
-                linear-gradient(135deg,
-                    var(--academic-blue),
-                    var(--github-blue));
+            background: transparent;
 
-            box-shadow:
-                0 0 25px rgba(47, 129, 247, 0.22);
+            box-shadow: none;
 
-            overflow: hidden;
+            overflow: visible;
 
         }
 
 
         .brand-logo img {
 
-            width: 28px;
+            width: 38px;
 
-            height: 28px;
+            height: 38px;
 
             object-fit: contain;
+
+            display: block;
 
         }
 
@@ -1328,6 +1326,35 @@ date_default_timezone_set('Asia/Manila');
         }
 
 
+        /* Center both consent checkboxes and their descriptions */
+        .consent-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            margin: 8px auto 26px;
+        }
+
+        .consent-group .form-check {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 560px;
+            margin: 0 !important;
+            gap: 10px;
+        }
+
+        .consent-group .form-check-input {
+            float: none;
+            margin: 0;
+        }
+
+        .consent-group .form-check-label {
+            text-align: center;
+        }
+
         /* =====================================================
            REGISTER BUTTON
            ===================================================== */
@@ -1486,6 +1513,56 @@ date_default_timezone_set('Asia/Manila');
 
         }
 
+
+        /* =====================================================
+           TERMS AND CONDITIONS
+           ===================================================== */
+
+        .terms-link {
+            color: var(--blue-light);
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .terms-link:hover {
+            color: #79c0ff;
+        }
+
+        .terms-modal .modal-content {
+            background: #161b22;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .terms-modal .modal-header,
+        .terms-modal .modal-footer {
+            border-color: var(--border);
+        }
+
+        .terms-modal .modal-title {
+            font-weight: 700;
+        }
+
+        .terms-modal .modal-body {
+            color: #c9d1d9;
+            font-size: 13px;
+            line-height: 1.75;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .terms-modal .modal-body h6 {
+            color: var(--blue-light);
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 18px;
+        }
+
+        .terms-modal .btn-close {
+            filter: invert(1);
+        }
 
         /* =====================================================
            RESPONSIVE
@@ -2277,7 +2354,7 @@ date_default_timezone_set('Asia/Manila');
 
                                         </option>
 
-                                        <option value="0-V">
+                                        <option value="1-E">
                                             Prefer not to say
                                         </option>
                                         <option value="1-A">
@@ -2530,25 +2607,52 @@ date_default_timezone_set('Asia/Manila');
                              CONFIRMATION
                              ================================================= -->
 
-                        <div class="form-check mb-4">
+                        <div class="consent-group">
 
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="agree"
-                                name="agree"
-                                required>
+                            <div class="form-check mb-4">
 
-                            <label
-                                class="form-check-label"
-                                for="agree">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="agree"
+                                    name="agree"
+                                    required>
 
-                                I confirm that the information
-                                I provided is accurate.
+                                <label
+                                    class="form-check-label"
+                                    for="agree">
 
-                            </label>
+                                    I confirm that the information
+                                    I provided is accurate.
 
-                        </div>
+                                </label>
+
+                            </div>
+
+                            <!-- TERMS AND CONDITIONS ACCEPTANCE -->
+                            <div class="form-check mb-4">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="accept_terms"
+                                    name="accept_terms"
+                                    value="1"
+                                    required>
+
+                                <label class="form-check-label" for="accept_terms">
+                                    I have read and agree to the
+                                    <a
+                                        href="#termsModal"
+                                        class="terms-link"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#termsModal">
+                                        Terms and Conditions
+                                    </a>
+                                    and acknowledge the website's privacy and advertising disclosures.
+                                </label>
+                            </div>
+
+                        </div><!-- /.consent-group -->
 
 
                         <!-- =================================================
@@ -2628,6 +2732,77 @@ date_default_timezone_set('Asia/Manila');
 
 
     </main>
+
+
+    <!-- =========================================================
+         TERMS AND CONDITIONS MODAL
+         ========================================================= -->
+    <div
+        class="modal fade terms-modal"
+        id="termsModal"
+        tabindex="-1"
+        aria-labelledby="termsModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="termsModalLabel">ETS-Async Terms and Conditions</h5>
+                        <small class="text-secondary">Please read these terms before creating an account.</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p><strong>Effective date:</strong> November 8, 2026</p>
+
+                    <h6>1. About ETS-Async</h6>
+                    <p>ETS-Async is an independently operated personal website created to provide online resources, tools, and learning-related materials. It is not an official website of, affiliated with, endorsed by, or operated by any school, college, university, government agency, company, or other organization. References to educational institutions or departments are for identification and informational purposes only.</p>
+                    <p>This website may contain educational materials, but it is not intended solely for academic purposes. Content may also be provided for general information, personal learning, practice, and other non-commercial or experimental uses.</p>
+
+                    <h6>2. Account Registration and Responsibilities</h6>
+                    <p>You must provide accurate and current information when creating an account. You are responsible for keeping your login credentials confidential and for activity performed through your account. Do not impersonate another person, submit false information, share unauthorized access, or use the website for unlawful, abusive, disruptive, or harmful activities.</p>
+                    <p>Account creation is allowed only after you have actively checked the Terms and Conditions acceptance box. If you do not agree, do not proceed with registration or use account-only features. The website may suspend or restrict accounts involved in misuse, security risks, or violations of these terms.</p>
+
+                    <h6>3. Privacy and Personal Information</h6>
+                    <p>Information submitted during registration, such as your name, student or identification details, email address, department, and account credentials, may be processed to create and manage your account, provide website features, maintain security, and respond to support requests.</p>
+                    <p><strong>We do not sell your personal data.</strong> Personal information is not sold or rented to advertisers or other third parties. Information may be processed by hosting, security, analytics, or technical service providers when necessary to operate and protect the website, or disclosed when required by applicable law. Reasonable measures are used to protect information, but no website or internet transmission can be guaranteed completely secure.</p>
+                    <p>Please do not submit information that is not needed to use the website. Contact the website operator using the details below for privacy-related questions or requests.</p>
+
+                    <h6>4. Advertising and Third-Party Services</h6>
+                    <p>ETS-Async may display advertisements provided by third-party advertising networks, including <strong>Monetag, Adsterra, and Hilltop Ads</strong>. These advertisements help support hosting, maintenance, and the continued operation of the website. Their presence does not mean that ETS-Async endorses the advertised products, services, websites, or claims.</p>
+                    <p>Third-party advertising providers may use cookies, device identifiers, pixels, or similar technologies to deliver, measure, limit, or personalize advertisements, subject to their own policies and settings. These providers operate independently. Please review their privacy policies and use the privacy or advertising controls available in your browser where appropriate.</p>
+                    <p><strong>Advertising disclaimer:</strong> ETS-Async does not select, create, verify, or control every advertisement displayed by these networks, and cannot guarantee the accuracy, safety, legality, or quality of third-party advertisements or destination websites. Browse responsibly. Do not click suspicious advertisements, download unknown files, provide passwords or financial information to unfamiliar websites, or engage with offers that appear misleading. Report concerning advertisements to the website operator.</p>
+
+                    <h6>5. Website Content and Availability</h6>
+                    <p>Website content and features are provided on an “as is” and “as available” basis. Materials may contain errors, become outdated, or be changed or removed without notice. You should independently verify important information and follow the instructions of your school, instructor, or relevant authority where applicable. ETS-Async does not guarantee uninterrupted availability or that all materials will meet a particular academic or professional requirement.</p>
+
+                    <h6>6. Acceptable Use and Intellectual Property</h6>
+                    <p>Do not attempt to disrupt the website, bypass access controls, upload malicious code, scrape or misuse accounts, or infringe the rights of others. Unless otherwise stated, website design, original text, and other original materials belong to their respective owners. Third-party names, logos, and materials remain the property of their respective owners. You must respect applicable copyright and license terms.</p>
+
+                    <h6>7. Changes to These Terms</h6>
+                    <p>These terms may be updated when website features, services, advertising arrangements, or legal requirements change. The revised version will be posted on the website with an updated effective date. Continued use after an update means you acknowledge the revised terms. If a change requires renewed consent, the website may ask you to accept it again.</p>
+
+                    <h6>8. Contact</h6>
+                    <p>For questions, privacy concerns, or reports about advertisements or website content, contact the website operator:</p>
+                    <ul>
+                        <li><strong>Email:</strong> <a href="mailto:evallokarlstephen@gmail.com">evallokarlstephen@gmail.com</a></li>
+                        <li><strong>Contact number:</strong> <a href="tel:09700841996">09700841996</a></li>
+                    </ul>
+
+                    <p class="mb-0">By checking the acceptance box during registration, you confirm that you have read and agree to these Terms and Conditions.</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="agreeTermsFromModal" data-bs-dismiss="modal">
+                        <i class="bi bi-check2-circle me-1"></i> I Agree
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- =========================================================
@@ -3050,6 +3225,20 @@ date_default_timezone_set('Asia/Manila');
 
 
         /* =========================================================
+           TERMS MODAL ACCEPTANCE
+           ========================================================= */
+
+        const agreeTermsFromModal =
+            document.getElementById("agreeTermsFromModal");
+
+        if (agreeTermsFromModal) {
+            agreeTermsFromModal.addEventListener("click", function() {
+                document.getElementById("accept_terms").checked = true;
+            });
+        }
+
+
+        /* =========================================================
            FORM
            ========================================================= */
 
@@ -3183,6 +3372,13 @@ date_default_timezone_set('Asia/Manila');
                     )
                     .checked;
 
+                const acceptTerms =
+                    document
+                    .getElementById(
+                        "accept_terms"
+                    )
+                    .checked;
+
 
                 /* =================================================
                    CLIENT VALIDATION
@@ -3197,6 +3393,15 @@ date_default_timezone_set('Asia/Manila');
 
                     return;
 
+                }
+
+                if (!acceptTerms) {
+                    showMessage(
+                        "You must read and agree to the Terms and Conditions before creating an account.",
+                        "warning"
+                    );
+                    document.getElementById("accept_terms").focus();
+                    return;
                 }
 
 
@@ -3400,7 +3605,9 @@ date_default_timezone_set('Asia/Manila');
 
                         username: username,
 
-                        password: password
+                        password: password,
+
+                        accept_terms: acceptTerms ? "1" : "0"
 
                     });
 

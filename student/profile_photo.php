@@ -112,10 +112,6 @@ $sql = "
 
         extension_name,
 
-        department,
-
-        year_section,
-
         profile_photo
 
     FROM accounts
@@ -217,122 +213,6 @@ $studentName = trim(
         ($student["extension_name"] ?? "")
 
 );
-
-
-
-
-
-/* =========================================================
-
-   DEPARTMENT
-
-========================================================= */
-
-
-
-$department = trim(
-
-    $student["department"] ?? ""
-
-);
-
-
-
-
-
-if ($department === "") {
-
-
-
-    $department = "—";
-}
-
-
-
-
-
-/* =========================================================
-
-   YEAR / SECTION
-
-========================================================= */
-
-
-
-$yearSection = trim(
-
-    $student["year_section"] ?? ""
-
-);
-
-
-
-
-
-$year = "—";
-
-$section = "—";
-
-
-
-
-
-if ($yearSection !== "") {
-
-
-
-    $parts = preg_split(
-
-        '/[-\s]+/',
-
-        $yearSection,
-
-        2
-
-    );
-
-
-
-
-
-    if (
-
-        isset($parts[0]) &&
-
-        trim($parts[0]) !== ""
-
-    ) {
-
-
-
-        $year = trim(
-
-            $parts[0]
-
-        );
-    }
-
-
-
-
-
-    if (
-
-        isset($parts[1]) &&
-
-        trim($parts[1]) !== ""
-
-    ) {
-
-
-
-        $section = trim(
-
-            $parts[1]
-
-        );
-    }
-}
 
 
 
@@ -1161,198 +1041,6 @@ $error =
 
                 </div>
 
-
-
-
-
-                <!-- =================================================
-
-                     STUDENT INFORMATION
-
-                ================================================== -->
-
-
-
-                <div class="student-information">
-
-
-
-
-
-                    <!-- DEPARTMENT -->
-
-
-
-                    <div class="student-info-item">
-
-
-
-                        <span
-
-                            class="student-info-label">
-
-
-
-                            <i
-
-                                class="bi bi-building me-2"></i>
-
-
-
-                            Department
-
-
-
-                        </span>
-
-
-
-
-
-                        <strong>
-
-
-
-                            <?= htmlspecialchars(
-
-                                $department,
-
-                                ENT_QUOTES,
-
-                                'UTF-8'
-
-                            ) ?>
-
-
-
-                        </strong>
-
-
-
-                    </div>
-
-
-
-
-
-                    <!-- YEAR LEVEL -->
-
-
-
-                    <div class="student-info-item">
-
-
-
-                        <span
-
-                            class="student-info-label">
-
-
-
-                            <i
-
-                                class="bi bi-mortarboard-fill me-2"></i>
-
-
-
-                            Year Level
-
-
-
-                        </span>
-
-
-
-
-
-                        <strong>
-
-
-
-                            <?= htmlspecialchars(
-
-                                $year,
-
-                                ENT_QUOTES,
-
-                                'UTF-8'
-
-                            ) ?>
-
-
-
-                        </strong>
-
-
-
-                    </div>
-
-
-
-
-
-                    <!-- SECTION -->
-
-
-
-                    <div class="student-info-item">
-
-
-
-                        <span
-
-                            class="student-info-label">
-
-
-
-                            <i
-
-                                class="bi bi-people-fill me-2"></i>
-
-
-
-                            Section
-
-
-
-                        </span>
-
-
-
-
-
-                        <strong>
-
-
-
-                            <?= htmlspecialchars(
-
-                                $section,
-
-                                ENT_QUOTES,
-
-                                'UTF-8'
-
-                            ) ?>
-
-
-
-                        </strong>
-
-
-
-                    </div>
-
-
-
-
-
-                </div>
-
-
-
-
-
                 <!-- =================================================
 
                      UPLOAD SECTION
@@ -2046,26 +1734,28 @@ $error =
             position: fixed;
             inset: 0;
             z-index: 20000;
-            background: rgba(10, 15, 25, .72);
+            background: rgba(10, 15, 25, .68);
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 16px
+            padding: 16px;
+            color: var(--text-color, #202938);
         }
 
         #photoCropModal.is-open {
-            display: flex
+            display: flex;
         }
 
         .photo-crop-dialog {
             width: min(760px, 100%);
             max-height: 92vh;
             overflow: auto;
-            background: var(--card-bg, #fff);
-            color: var(--text-color, #222);
+            background: var(--surface-color, #ffffff);
+            color: var(--text-color, #202938);
+            border: 1px solid var(--border-color, #dce2ea);
             border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 24px 80px rgba(0, 0, 0, .3)
+            box-shadow: 0 24px 80px var(--shadow-color, rgba(0, 0, 0, .3));
         }
 
         .photo-crop-head {
@@ -2073,21 +1763,26 @@ $error =
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            margin-bottom: 12px
+            margin-bottom: 12px;
+        }
+
+        #photoCropTitle {
+            color: var(--text-color, #202938);
         }
 
         .photo-crop-stage {
             height: min(55vh, 480px);
             min-height: 240px;
-            background: #161b22;
+            background: var(--surface-secondary, #eef2f7);
+            border: 1px solid var(--border-color, #dce2ea);
             border-radius: 12px;
-            overflow: hidden
+            overflow: hidden;
         }
 
         .photo-crop-stage img {
             display: block;
             max-width: 100%;
-            max-height: 100%
+            max-height: 100%;
         }
 
         .photo-crop-actions {
@@ -2095,30 +1790,61 @@ $error =
             justify-content: flex-end;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 16px
+            margin-top: 16px;
         }
 
         .photo-crop-actions button {
-            border: 0;
+            border: 1px solid transparent;
             border-radius: 9px;
             padding: 10px 15px;
-            cursor: pointer
+            cursor: pointer;
+            font: inherit;
+            transition: background .2s ease, color .2s ease, border-color .2s ease;
         }
 
         .photo-crop-cancel {
-            background: #e5e7eb;
-            color: #111827
+            background: var(--surface-secondary, #eef2f7);
+            color: var(--text-color, #202938);
+            border-color: var(--border-color, #dce2ea) !important;
+        }
+
+        .photo-crop-cancel:hover {
+            background: var(--activity-hover-bg, var(--surface-secondary, #eef2f7));
         }
 
         .photo-crop-confirm {
-            background: #2563eb;
-            color: white
+            background: var(--academic-blue, #2563eb);
+            color: #ffffff;
+        }
+
+        .photo-crop-confirm:hover {
+            background: var(--academic-blue-dark, #1d4ed8);
+        }
+
+        .photo-crop-actions button:disabled {
+            opacity: .65;
+            cursor: not-allowed;
         }
 
         .photo-crop-hint {
+            color: var(--text-secondary, #64748b);
             font-size: .9rem;
-            opacity: .75;
-            margin: 8px 0 12px
+            margin: 8px 0 12px;
+        }
+
+        /* Keep Cropper.js controls consistent with the active site theme. */
+        .photo-crop-stage .cropper-modal {
+            background: var(--surface-color, #ffffff);
+            opacity: .55;
+        }
+
+        .photo-crop-stage .cropper-view-box {
+            outline-color: var(--academic-blue, #2563eb);
+        }
+
+        .photo-crop-stage .cropper-line,
+        .photo-crop-stage .cropper-point {
+            background-color: var(--academic-blue, #2563eb);
         }
 
         @media(max-width:520px) {
@@ -2377,6 +2103,124 @@ $error =
         })();
     </script>
 
+
+
+
+    <!-- Centered profile layout -->
+    <style>
+        .main-content .content-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-content .page-header {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .main-content .profile-photo-card {
+            width: 100%;
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .main-content .profile-photo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .main-content .profile-photo-wrapper {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-content .profile-photo-section h4,
+        .main-content .profile-photo-section .student-id {
+            width: 100%;
+            text-align: center;
+        }
+
+        .main-content .student-information {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            text-align: center;
+            gap: 14px;
+        }
+
+        .main-content .student-info-item {
+            flex: 1 1 190px;
+            text-align: center;
+            align-items: center;
+        }
+
+        .main-content .student-info-label {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .main-content .student-info-item strong {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .main-content .profile-upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .main-content .upload-title,
+        .main-content .upload-description {
+            text-align: center;
+        }
+
+        .main-content .profile-upload-section form {
+            width: 100%;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-content .upload-input-wrapper {
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-content .profile-upload-footer {
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-content .upload-preview-container {
+            text-align: center;
+        }
+
+        .main-content .upload-preview {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 767.98px) {
+            .main-content .profile-photo-card {
+                max-width: 100%;
+            }
+
+            .main-content .student-info-item {
+                flex-basis: 100%;
+            }
+        }
+    </style>
 
 </body>
 
