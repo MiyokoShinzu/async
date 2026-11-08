@@ -2008,8 +2008,13 @@ $currentYear = date('Y');
             color: var(--text);
         }
 
-        .section-title { color: var(--text); }
-        .section-description { color: var(--muted); }
+        .section-title {
+            color: var(--text);
+        }
+
+        .section-description {
+            color: var(--muted);
+        }
 
         .resource-card,
         .guideline {
@@ -2024,10 +2029,14 @@ $currentYear = date('Y');
         }
 
         .resource-card h3,
-        .guideline h4 { color: var(--text); }
+        .guideline h4 {
+            color: var(--text);
+        }
 
         .resource-card p,
-        .guideline p { color: var(--muted); }
+        .guideline p {
+            color: var(--muted);
+        }
 
         .ad-network-grid {
             display: grid;
@@ -2054,7 +2063,7 @@ $currentYear = date('Y');
             background: var(--github-bg-soft);
         }
 
-        .ad-network-slot > div {
+        .ad-network-slot>div {
             width: 100%;
             max-width: 100%;
             min-width: 0;
@@ -2070,40 +2079,17 @@ $currentYear = date('Y');
             max-width: 100% !important;
         }
 
-        .ad-network-slot script { max-width: 100%; }
-
-        /* Responsive 728x90 banner container */
-        .ad-network-slot.ad-banner-728 {
-            width: min(100%, 760px);
-            min-height: 126px;
-            margin-inline: auto;
-            align-items: center;
-        }
-
-        .ad-banner-728 .ad-banner-frame {
-            width: 100%;
-            max-width: 728px;
-            min-height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: visible;
-        }
-
-        .ad-banner-728 iframe {
-            display: block;
-            width: 100% !important;
-            max-width: 728px !important;
-            height: 90px !important;
-            border: 0;
+        .ad-network-slot script {
+            max-width: 100%;
         }
 
         @media (max-width: 700px) {
-            .ad-network-grid { grid-template-columns: 1fr; }
-            .ad-network-slot { min-height: 250px; }
-            .ad-network-slot.ad-banner-728 {
-                min-height: 126px;
-                padding: 10px;
+            .ad-network-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ad-network-slot {
+                min-height: 250px;
             }
         }
 
@@ -2637,12 +2623,12 @@ $currentYear = date('Y');
                         <span class="ad-label">Advertisement</span>
                         <div id="async-juvenile-ad-one">
                             <script>
-                                (function(yliil){
+                                (function(yliil) {
                                     var d = document,
                                         s = d.createElement('script'),
                                         l = d.currentScript || d.scripts[d.scripts.length - 1];
                                     s.settings = yliil || {};
-                                    s.src = "//juvenilechoice.com/buX.VesxdxGZlT0lYmW_cG/TeNmq9gucZfUhlxksPSTKcR2LMADCQAw/OjDoEEtaN/zjYBwfNTDQA/4gNjQ_";
+                                    s.src = "//juvenilechoice.com/bEXCVHs.dXGJlD0/Y/Wqc-/ve/m-9OuBZvUilekkPOTacA2SM_Dfci3uNjDIUTtoN/z/Y/w/Ngz/c/0bOnQF";
                                     s.async = true;
                                     s.referrerPolicy = 'no-referrer-when-downgrade';
                                     l.parentNode.insertBefore(s, l);
@@ -2651,19 +2637,21 @@ $currentYear = date('Y');
                         </div>
                     </div>
 
-                    <div class="ad-network-slot ad-banner-728">
+                    <div class="ad-network-slot">
                         <span class="ad-label">Advertisement</span>
-                        <div id="async-banner-ad-728" class="ad-banner-frame">
+                        <div id="async-juvenile-ad-two">
                             <script>
-                                atOptions = {
-                                    'key': '57102c61d8db26fe4dbc2b79d6b703d6',
-                                    'format': 'iframe',
-                                    'height': 90,
-                                    'width': 728,
-                                    'params': {}
-                                };
+                                (function(yliil) {
+                                    var d = document,
+                                        s = d.createElement('script'),
+                                        l = d.currentScript || d.scripts[d.scripts.length - 1];
+                                    s.settings = yliil || {};
+                                    s.src = "//juvenilechoice.com/bvX.Vhsud/GBlf0VYRWbcs/_eVm/9eurZqUwlUkxP/TAck2fMGDdcv0SMwzfc_tlNBzlYpwMNnz-Qm0AM/QQ";
+                                    s.async = true;
+                                    s.referrerPolicy = 'no-referrer-when-downgrade';
+                                    l.parentNode.insertBefore(s, l);
+                                })({})
                             </script>
-                            <script src="https://bauval.org/22/57102c61d8db26fe4dbc2b79d6b703d6"></script>
                         </div>
                     </div>
                 </div>
