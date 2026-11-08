@@ -542,6 +542,8 @@ if ($redirectUrlJson === false) {
             color: #16865d;
         }
 
+        /* Pending steps show an empty marker; the active step becomes a spinner;
+           only completed steps reveal the check mark. */
         .async-step-indicator {
             width: 21px;
             height: 21px;
@@ -550,21 +552,24 @@ if ($redirectUrlJson === false) {
             place-items: center;
             border: 1px solid #d7e1ef;
             border-radius: 50%;
-            color: #16865d;
+            color: transparent;
             font-size: 11px;
             font-weight: 900;
-            background: #e9fbf3;
+            background: rgba(248, 250, 255, .82);
+            transition: background .25s ease, border-color .25s ease, color .25s ease;
         }
 
         .is-active .async-step-indicator {
-            border-color: rgba(23, 105, 210, .35);
-            color: var(--async-blue);
-            background: rgba(54, 185, 237, .13);
-            animation: none;
+            border: 2px solid rgba(23, 105, 210, .24);
+            border-top-color: var(--async-blue);
+            border-right-color: var(--async-cyan);
+            color: transparent;
+            background: rgba(54, 185, 237, .10);
+            animation: async-spin .8s linear infinite;
         }
 
         .is-complete .async-step-indicator {
-            border-color: #b8ead6;
+            border: 1px solid #b8ead6;
             color: #16865d;
             background: #e9fbf3;
             animation: async-check-pop .35s ease both;
