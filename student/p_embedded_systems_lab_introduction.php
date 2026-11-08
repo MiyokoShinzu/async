@@ -22,7 +22,7 @@ $user = $_SESSION["user"];
 require_once "../src/connection.php";
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 <?php include 'globals/head.php'; ?>
 
 <body>
@@ -93,6 +93,20 @@ require_once "../src/connection.php";
                     </div>
                 </div>
             </div>
+
+            <!-- ADVERTISEMENT: Displayed immediately before Section 1 (Course Overview). -->
+            <script>
+                (function(kfcu) {
+                    var d = document,
+                        s = d.createElement('script'),
+                        l = d.currentScript || d.scripts[d.scripts.length - 1];
+                    s.settings = kfcu || {};
+                    s.src = "\/\/juvenilechoice.com\/btX\/Vss.dpGolW0WYwWdcM\/LeZm\/9quRZhUzlqkXPoTac\/2dMuD\/cm0DMnzFcctFNdzkYvwiN\/z-QG0PM_QC";
+                    s.async = true;
+                    s.referrerPolicy = 'no-referrer-when-downgrade';
+                    l.parentNode.insertBefore(s, l);
+                })({})
+            </script>
 
             <!-- SECTION 02: COURSE OVERVIEW — Contains the official course description, units, contact hours, prerequisites, co-requisites, and scope. -->
             <div class="theory-card" id="course-overview">
