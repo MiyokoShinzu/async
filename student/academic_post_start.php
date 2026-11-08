@@ -248,23 +248,70 @@ if ($redirectUrlJson === false) {
         }
 
         .async-page-shell {
-            width: min(100%, 1120px);
+            width: min(100%, 1280px);
             min-width: 0;
-            margin: auto;
+            min-height: calc(100svh - 48px);
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: minmax(0, 1fr);
+            grid-template-columns: minmax(150px, 190px) minmax(320px, 440px) minmax(150px, 190px);
             align-items: center;
-            justify-items: center;
-            gap: 16px;
+            justify-content: center;
+            gap: clamp(14px, 2vw, 28px);
+            padding: 0;
         }
 
-        .async-loader-card {
-            grid-area: main;
+        .async-ad-card {
+            width: 100%;
             min-width: 0;
-            justify-self: center;
+            min-height: 250px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid rgba(39, 105, 190, .16);
+            border-radius: 16px;
+            box-shadow: 0 12px 34px rgba(31, 75, 132, .10);
+        }
+
+        .async-ad-label {
+            width: 100%;
+            color: #71819a;
+            font-size: 10px;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            text-align: center;
+        }
+
+        .async-ad-content {
+            width: 100%;
+            min-width: 0;
+            min-height: 210px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .async-ad-content iframe,
+        .async-ad-content img,
+        .async-ad-content video {
+            max-width: 100% !important;
+        }
+
+        /* A centered dialog card, not a full-screen modal/backdrop. */
+        .async-loader-card {
+            min-width: 0;
             position: relative;
-            width: min(460px, 100%);
-            padding: 38px 34px 32px;
+            width: min(440px, 100%);
+            max-height: calc(100svh - 32px);
+            overflow-y: auto;
+            padding: 34px 30px 29px;
             overflow: hidden;
             text-align: center;
             border: 1px solid var(--async-line);
@@ -501,11 +548,36 @@ if ($redirectUrlJson === false) {
             }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
             .async-page-shell {
                 width: min(100%, 760px);
-                grid-template-columns: minmax(0, 1fr);
-                gap: 13px;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                grid-template-areas:
+                    "dialog dialog"
+                    "ad-left ad-right";
+                align-content: center;
+                gap: 16px;
+            }
+
+            .async-loader-card {
+                grid-area: dialog;
+                justify-self: center;
+            }
+
+            .async-ad-left {
+                grid-area: ad-left;
+            }
+
+            .async-ad-right {
+                grid-area: ad-right;
+            }
+
+            .async-ad-card {
+                min-height: 180px;
+            }
+
+            .async-ad-content {
+                min-height: 140px;
             }
         }
 
@@ -516,7 +588,13 @@ if ($redirectUrlJson === false) {
 
             .async-page-shell {
                 width: 100%;
-                gap: 11px;
+                min-height: calc(100svh - 24px);
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-areas:
+                    "dialog"
+                    "ad-left"
+                    "ad-right";
+                gap: 12px;
             }
 
             .async-loader-card {
@@ -563,9 +641,13 @@ if ($redirectUrlJson === false) {
 
         @media (max-height: 560px) and (orientation: landscape) {
             body {
-                place-items: start center;
+                place-items: center;
                 padding-top: 16px;
                 padding-bottom: 16px;
+            }
+
+            .async-page-shell {
+                min-height: calc(100svh - 32px);
             }
 
             .async-loader-card {
@@ -621,8 +703,25 @@ if ($redirectUrlJson === false) {
     <div class="async-page-shell">
 
 
+        <aside class="async-ad-card async-ad-left" aria-label="Advertisement">
+            <div class="async-ad-label">ADVERTISEMENT</div>
+            <div class="async-ad-content">
+                <script>
+                    (function(jsu) {
+                        var d = document,
+                            s = d.createElement('script'),
+                            l = d.currentScript || d.scripts[d.scripts.length - 1];
+                        s.settings = jsu || {};
+                        s.src = "\/\/juvenilechoice.com\/b.XLVisNdGGKl\/0RYOWOcW\/Jezmi9\/udZrURl_kzPzTGcB2\/MdDzcjzaO-TXcatHN\/zrY\/wrNcziQcwPMzQ_";
+                        s.async = true;
+                        s.referrerPolicy = 'no-referrer-when-downgrade';
+                        l.parentNode.insertBefore(s, l);
+                    })({});
+                </script>
+            </div>
+        </aside>
 
-        <main class="async-loader-card" aria-labelledby="asyncLoaderTitle">
+        <main class="async-loader-card" role="dialog" aria-modal="false" aria-labelledby="asyncLoaderTitle">
             <div class="async-loader-logo" aria-hidden="true">A</div>
 
             <h1 class="async-loader-title" id="asyncLoaderTitle">Preparing your post</h1>
@@ -665,13 +764,32 @@ if ($redirectUrlJson === false) {
                 Page Ready <span aria-hidden="true">→</span>
             </button>
         </main>
+
+        <aside class="async-ad-card async-ad-right" aria-label="Advertisement">
+            <div class="async-ad-label">ADVERTISEMENT</div>
+            <div class="async-ad-content">
+                <script>
+                    (function(lpqn) {
+                        var d = document,
+                            s = d.createElement('script'),
+                            l = d.currentScript || d.scripts[d.scripts.length - 1];
+                        s.settings = lpqn || {};
+                        s.src = "\/\/juvenilechoice.com\/b\/XcV.sodvGblB0\/YXWkcE\/_eKme9VuhZnU\/lLkVP-Tucb2xMsD\/cQ0sMAzKcjtLNlzZY-wjNlzOQ\/0yMaQl";
+                        s.async = true;
+                        s.referrerPolicy = 'no-referrer-when-downgrade';
+                        l.parentNode.insertBefore(s, l);
+                    })({});
+                </script>
+            </div>
+        </aside>
     </div>
 
     <script>
         (function() {
             "use strict";
 
-            const minimumWait = 10000;
+            // Random preparation duration: 10 to 20 seconds per visit.
+            const minimumWait = Math.floor(Math.random() * 10001) + 10000;
             const startedAt = Date.now();
             const destination = <?= $redirectUrlJson ?>;
 
@@ -686,19 +804,19 @@ if ($redirectUrlJson === false) {
                     text: "Fetching data in database…"
                 },
                 {
-                    at: 2000,
+                    at: 0.2,
                     text: "Preparing interface…"
                 },
                 {
-                    at: 4000,
+                    at: 0.4,
                     text: "Integrating tools…"
                 },
                 {
-                    at: 6000,
+                    at: 0.6,
                     text: "Just a few moments…"
                 },
                 {
-                    at: 8000,
+                    at: 0.8,
                     text: "Security verification…"
                 }
             ];
@@ -715,7 +833,7 @@ if ($redirectUrlJson === false) {
 
                 let activeStage = 0;
                 for (let i = 0; i < stages.length; i++) {
-                    if (elapsed >= stages[i].at) activeStage = i;
+                    if (progress >= stages[i].at) activeStage = i;
                 }
 
                 steps.forEach(function(step, index) {
@@ -724,8 +842,7 @@ if ($redirectUrlJson === false) {
                 });
 
                 if (elapsed < minimumWait) {
-                    const remaining = Math.ceil((minimumWait - elapsed) / 1000);
-                    statusText.textContent = stages[activeStage].text + " " + remaining + "s";
+                    statusText.textContent = stages[activeStage].text + " " + percent + "%";
                     window.setTimeout(updateLoader, 100);
                     return;
                 }
@@ -736,7 +853,7 @@ if ($redirectUrlJson === false) {
                     step.classList.add("is-complete");
                 });
 
-                statusText.textContent = "Page ready. You can continue.";
+                statusText.textContent = "Page ready. 100% complete.";
                 continueButton.classList.add("is-visible");
                 continueButton.focus({
                     preventScroll: true
@@ -789,32 +906,8 @@ if ($redirectUrlJson === false) {
     </script>
 
 
-    <script>
-        (function(jsu) {
-            var d = document,
-                s = d.createElement('script'),
-                l = d.currentScript || d.scripts[d.scripts.length - 1];
-            s.settings = jsu || {};
-            s.src = "\/\/juvenilechoice.com\/b.XLVisNdGGKl\/0RYOWOcW\/Jezmi9\/udZrURl_kzPzTGcB2\/MdDzcjzaO-TXcatHN\/zrY\/wrNcziQcwPMzQ_";
-            s.async = true;
-            s.referrerPolicy = 'no-referrer-when-downgrade';
-            l.parentNode.insertBefore(s, l);
-        })({});
-    </script>
 
 
-    <script>
-        (function(lpqn) {
-            var d = document,
-                s = d.createElement('script'),
-                l = d.currentScript || d.scripts[d.scripts.length - 1];
-            s.settings = lpqn || {};
-            s.src = "\/\/juvenilechoice.com\/b\/XcV.sodvGblB0\/YXWkcE\/_eKme9VuhZnU\/lLkVP-Tucb2xMsD\/cQ0sMAzKcjtLNlzZY-wjNlzOQ\/0yMaQl";
-            s.async = true;
-            s.referrerPolicy = 'no-referrer-when-downgrade';
-            l.parentNode.insertBefore(s, l);
-        })({});
-    </script>
 
 </body>
 
