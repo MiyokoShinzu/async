@@ -372,15 +372,4 @@ $academicAccessToken =
         }
     );
 </script>
-<script>
-(function(gptwkeg){
-var d = document,
-    s = d.createElement('script'),
-    l = d.currentScript || d.scripts[d.scripts.length - 1];
-s.settings = gptwkeg || {};
-s.src = "\/\/juvenilechoice.com\/bsXvV\/s.dhGdlX0qYIWlcC\/qeEm\/9duXZeUmlGkFP\/Tzch2\/MHDOQMw\/OcD-EgtTNNzfY\/wANLDRAK4eNIQO";
-s.async = true;
-s.referrerPolicy = 'no-referrer-when-downgrade';
-l.parentNode.insertBefore(s, l);
-})({})
-</script>
+
