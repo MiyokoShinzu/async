@@ -2008,13 +2008,8 @@ $currentYear = date('Y');
             color: var(--text);
         }
 
-        .section-title {
-            color: var(--text);
-        }
-
-        .section-description {
-            color: var(--muted);
-        }
+        .section-title { color: var(--text); }
+        .section-description { color: var(--muted); }
 
         .resource-card,
         .guideline {
@@ -2029,14 +2024,10 @@ $currentYear = date('Y');
         }
 
         .resource-card h3,
-        .guideline h4 {
-            color: var(--text);
-        }
+        .guideline h4 { color: var(--text); }
 
         .resource-card p,
-        .guideline p {
-            color: var(--muted);
-        }
+        .guideline p { color: var(--muted); }
 
         .ad-network-grid {
             display: grid;
@@ -2063,7 +2054,7 @@ $currentYear = date('Y');
             background: var(--github-bg-soft);
         }
 
-        .ad-network-slot>div {
+        .ad-network-slot > div {
             width: 100%;
             max-width: 100%;
             min-width: 0;
@@ -2079,9 +2070,7 @@ $currentYear = date('Y');
             max-width: 100% !important;
         }
 
-        .ad-network-slot script {
-            max-width: 100%;
-        }
+        .ad-network-slot script { max-width: 100%; }
 
         /* Responsive 728x90 banner container */
         .ad-network-slot.ad-banner-728 {
@@ -2110,14 +2099,8 @@ $currentYear = date('Y');
         }
 
         @media (max-width: 700px) {
-            .ad-network-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .ad-network-slot {
-                min-height: 250px;
-            }
-
+            .ad-network-grid { grid-template-columns: 1fr; }
+            .ad-network-slot { min-height: 250px; }
             .ad-network-slot.ad-banner-728 {
                 min-height: 126px;
                 padding: 10px;
@@ -2654,7 +2637,7 @@ $currentYear = date('Y');
                         <span class="ad-label">Advertisement</span>
                         <div id="async-juvenile-ad-one">
                             <script>
-                                (function(yliil) {
+                                (function(yliil){
                                     var d = document,
                                         s = d.createElement('script'),
                                         l = d.currentScript || d.scripts[d.scripts.length - 1];
