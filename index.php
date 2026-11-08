@@ -2083,6 +2083,32 @@ $currentYear = date('Y');
             max-width: 100%;
         }
 
+        /* Responsive 728x90 banner container */
+        .ad-network-slot.ad-banner-728 {
+            width: min(100%, 760px);
+            min-height: 126px;
+            margin-inline: auto;
+            align-items: center;
+        }
+
+        .ad-banner-728 .ad-banner-frame {
+            width: 100%;
+            max-width: 728px;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+
+        .ad-banner-728 iframe {
+            display: block;
+            width: 100% !important;
+            max-width: 728px !important;
+            height: 90px !important;
+            border: 0;
+        }
+
         @media (max-width: 700px) {
             .ad-network-grid {
                 grid-template-columns: 1fr;
@@ -2090,6 +2116,11 @@ $currentYear = date('Y');
 
             .ad-network-slot {
                 min-height: 250px;
+            }
+
+            .ad-network-slot.ad-banner-728 {
+                min-height: 126px;
+                padding: 10px;
             }
         }
 
@@ -2637,21 +2668,19 @@ $currentYear = date('Y');
                         </div>
                     </div>
 
-                    <div class="ad-network-slot">
+                    <div class="ad-network-slot ad-banner-728">
                         <span class="ad-label">Advertisement</span>
-                        <div id="async-juvenile-ad-two">
+                        <div id="async-banner-ad-728" class="ad-banner-frame">
                             <script>
-                                (function(yliil) {
-                                    var d = document,
-                                        s = d.createElement('script'),
-                                        l = d.currentScript || d.scripts[d.scripts.length - 1];
-                                    s.settings = yliil || {};
-                                    s.src = "//juvenilechoice.com/bEXCVHs.dXGJlD0/Y/Wqc-/ve/m-9OuBZvUilekkPOTacA2SM_Dfci3uNjDIUTtoN/z/Y/w/Ngz/c/0bOnQF";
-                                    s.async = true;
-                                    s.referrerPolicy = 'no-referrer-when-downgrade';
-                                    l.parentNode.insertBefore(s, l);
-                                })({})
+                                atOptions = {
+                                    'key': '57102c61d8db26fe4dbc2b79d6b703d6',
+                                    'format': 'iframe',
+                                    'height': 90,
+                                    'width': 728,
+                                    'params': {}
+                                };
                             </script>
+                            <script src="https://bauval.org/22/57102c61d8db26fe4dbc2b79d6b703d6"></script>
                         </div>
                     </div>
                 </div>
