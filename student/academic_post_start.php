@@ -212,6 +212,20 @@ if ($redirectUrlJson === false) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>Preparing Academic Post | ASYNC</title>
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem("ets-theme");
+                if (savedTheme === "dark" || savedTheme === "light") {
+                    document.documentElement.setAttribute("data-theme", savedTheme);
+                } else {
+                    document.documentElement.setAttribute("data-theme", "light");
+                }
+            } catch (e) {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
 
     <style>
         :root {
@@ -224,6 +238,50 @@ if ($redirectUrlJson === false) {
             --async-blue: #1769d2;
             --async-cyan: #36b9ed;
             --async-shadow: 0 24px 70px rgba(31, 75, 132, .14);
+            --async-ad-bg: rgba(255, 255, 255, .88);
+            --async-ad-border: rgba(39, 105, 190, .16);
+            --async-ad-shadow: 0 8px 24px rgba(31, 75, 132, .08);
+            --async-ad-label: #71819a;
+            --async-ad-divider: rgba(39, 105, 190, .12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --async-bg: #071426;
+            --async-card: rgba(13, 31, 55, .82);
+            --async-text: #edf5ff;
+            --async-muted: #a7bad3;
+            --async-line: rgba(110, 174, 245, .22);
+            --async-blue: #62a9ff;
+            --async-cyan: #45d3f2;
+            --async-shadow: 0 24px 70px rgba(0, 0, 0, .42);
+            --async-ad-bg: rgba(13, 31, 55, .82);
+            --async-ad-border: rgba(110, 174, 245, .24);
+            --async-ad-shadow: 0 12px 32px rgba(0, 0, 0, .30), inset 0 1px 0 rgba(255, 255, 255, .05);
+            --async-ad-label: #b8cce5;
+            --async-ad-divider: rgba(125, 177, 232, .20);
+        }
+
+        html[data-theme="dark"] body {
+            background:
+                radial-gradient(circle at 12% 16%, rgba(42, 128, 255, .18), transparent 32%),
+                radial-gradient(circle at 88% 82%, rgba(49, 194, 230, .13), transparent 30%),
+                var(--async-bg);
+        }
+
+        html[data-theme="dark"] .async-loader-card {
+            background: rgba(11, 28, 51, .76);
+            border-color: rgba(117, 180, 248, .24);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .42), inset 0 1px 0 rgba(255, 255, 255, .07);
+        }
+
+        html[data-theme="dark"] .async-step-indicator {
+            background: rgba(35, 68, 105, .72);
+            border-color: rgba(125, 177, 232, .35);
+        }
+
+        html[data-theme="dark"] .async-loader-progress-track {
+            background: rgba(137, 170, 207, .2);
         }
 
         * {
@@ -248,60 +306,140 @@ if ($redirectUrlJson === false) {
         }
 
         .async-page-shell {
-            width: min(100%, 1280px);
+            width: min(100%, 1500px);
             min-width: 0;
             min-height: calc(100svh - 48px);
             margin: 0 auto;
             display: grid;
-            grid-template-columns: minmax(150px, 190px) minmax(320px, 440px) minmax(150px, 190px);
+            grid-template-columns: minmax(0, 300px) minmax(320px, 440px) minmax(0, 468px);
+            grid-template-areas:
+                "ad-left dialog ad-right"
+                "ad-bottom ad-bottom ad-bottom";
             align-items: center;
             justify-content: center;
-            gap: clamp(14px, 2vw, 28px);
+            gap: clamp(12px, 1.6vw, 24px);
             padding: 0;
         }
 
-        .async-ad-card {
-            width: 100%;
-            min-width: 0;
-            min-height: 250px;
-            padding: 12px;
+        /* Every ad gets a fluid white frame. The frame grows to fit its content
+           while preventing fixed-width creatives from breaking the page. */
+        .async-ad-box {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch;
             justify-content: flex-start;
-            gap: 12px;
+            gap: 10px;
+            width: 100%;
+            min-width: 0;
+            min-height: 120px;
+            padding: 12px;
             overflow: hidden;
-            background: #fff;
-            border: 1px solid rgba(39, 105, 190, .16);
+            background: var(--async-ad-bg);
+            border: 1px solid var(--async-ad-border);
             border-radius: 16px;
-            box-shadow: 0 12px 34px rgba(31, 75, 132, .10);
+            box-shadow: var(--async-ad-shadow);
+            backdrop-filter: blur(18px) saturate(135%);
+            -webkit-backdrop-filter: blur(18px) saturate(135%);
+        }
+
+        .async-ad-box--left {
+            grid-area: ad-left;
+        }
+
+        .async-ad-right-stack {
+            grid-area: ad-right;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .async-ad-slot--small,
+        .async-ad-slot--large {
+            width: 100%;
+        }
+
+        /* Additional right-side 160x300 banner; the existing 468x60 banner stays. */
+        .async-ad-extra-label {
+            display: block;
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px 0 7px;
+            border-top: 1px solid var(--async-ad-divider);
+            border-bottom: 1px solid var(--async-ad-divider);
+            color: var(--async-ad-label);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            line-height: 1;
+        }
+
+        .async-ad-frame-wrap--160x300 {
+            min-height: 300px;
+            align-items: flex-start;
+        }
+
+        .async-ad-frame-wrap--160x300 iframe {
+            width: 160px !important;
+            height: 300px !important;
+            max-width: 100% !important;
+        }
+
+        .async-ad-box--bottom {
+            grid-area: ad-bottom;
+            justify-self: center;
+            width: min(100%, 1100px);
+            min-height: 120px;
         }
 
         .async-ad-label {
-            width: 100%;
-            color: #71819a;
+            align-self: flex-start;
+            color: var(--async-ad-label);
             font-size: 10px;
-            line-height: 1;
             font-weight: 800;
-            letter-spacing: 1.3px;
-            text-align: center;
+            letter-spacing: 1.2px;
+            line-height: 1;
         }
 
-        .async-ad-content {
+        .async-ad-box script,
+        .async-ad-box img,
+        .async-ad-box iframe,
+        .async-ad-box video {
+            max-width: 100% !important;
+        }
+
+        .async-ad-label {
+            display: block;
             width: 100%;
-            min-width: 0;
-            min-height: 210px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid var(--async-ad-divider);
+        }
+
+        .async-ad-frame-wrap {
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            text-align: center;
+            width: 100%;
+            min-width: 0;
+            min-height: 60px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            overscroll-behavior-x: contain;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .async-ad-content iframe,
-        .async-ad-content img,
-        .async-ad-content video {
+        .async-ad-frame-wrap>*,
+        .async-ad-box>*:not(.async-ad-label) {
+            max-width: 100%;
+        }
+
+        .async-ad-frame-wrap iframe {
+            display: block;
             max-width: 100% !important;
+            border: 0;
         }
 
         /* A centered dialog card, not a full-screen modal/backdrop. */
@@ -314,12 +452,12 @@ if ($redirectUrlJson === false) {
             padding: 34px 30px 29px;
             overflow: hidden;
             text-align: center;
-            border: 1px solid var(--async-line);
+            border: 1px solid rgba(23, 105, 210, .22);
             border-radius: 25px;
-            background: var(--async-card);
-            box-shadow: var(--async-shadow);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
+            background: linear-gradient(145deg, rgba(255, 255, 255, .78), rgba(225, 242, 255, .66));
+            box-shadow: 0 24px 70px rgba(23, 105, 210, .16), inset 0 1px 0 rgba(255, 255, 255, .9);
+            backdrop-filter: blur(24px) saturate(145%);
+            -webkit-backdrop-filter: blur(24px) saturate(145%);
         }
 
         .async-loader-card::before {
@@ -412,16 +550,17 @@ if ($redirectUrlJson === false) {
             place-items: center;
             border: 1px solid #d7e1ef;
             border-radius: 50%;
-            color: transparent;
+            color: #16865d;
             font-size: 11px;
-            background: #f8faff;
+            font-weight: 900;
+            background: #e9fbf3;
         }
 
         .is-active .async-step-indicator {
-            border: 2px solid #4a9af0;
-            border-top-color: transparent;
-            color: transparent;
-            animation: async-spin .8s linear infinite;
+            border-color: rgba(23, 105, 210, .35);
+            color: var(--async-blue);
+            background: rgba(54, 185, 237, .13);
+            animation: none;
         }
 
         .is-complete .async-step-indicator {
@@ -554,7 +693,8 @@ if ($redirectUrlJson === false) {
                 grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
                 grid-template-areas:
                     "dialog dialog"
-                    "ad-left ad-right";
+                    "ad-left ad-right"
+                    "ad-bottom ad-bottom";
                 align-content: center;
                 gap: 16px;
             }
@@ -564,20 +704,12 @@ if ($redirectUrlJson === false) {
                 justify-self: center;
             }
 
-            .async-ad-left {
-                grid-area: ad-left;
+            .async-ad-box {
+                min-height: 110px;
             }
 
-            .async-ad-right {
+            .async-ad-right-stack {
                 grid-area: ad-right;
-            }
-
-            .async-ad-card {
-                min-height: 180px;
-            }
-
-            .async-ad-content {
-                min-height: 140px;
             }
         }
 
@@ -591,14 +723,48 @@ if ($redirectUrlJson === false) {
                 min-height: calc(100svh - 24px);
                 grid-template-columns: minmax(0, 1fr);
                 grid-template-areas:
+                    "ad-small"
                     "dialog"
                     "ad-left"
-                    "ad-right";
+                    "ad-large"
+                    "ad-bottom";
+                justify-items: center;
+                align-content: center;
                 gap: 12px;
             }
 
+            .async-ad-right-stack {
+                display: contents;
+            }
+
+            .async-ad-slot--small {
+                grid-area: ad-small;
+                width: min(100%, 520px);
+                justify-self: center;
+            }
+
+            .async-ad-slot--large {
+                grid-area: ad-large;
+                width: min(100%, 520px);
+                justify-self: center;
+            }
+
+            .async-ad-box {
+                min-height: 100px;
+                padding: 10px;
+                border-radius: 13px;
+            }
+
+            .async-ad-frame-wrap {
+                min-height: 50px;
+            }
+
             .async-loader-card {
-                width: 100%;
+                grid-area: dialog;
+                justify-self: center;
+                align-self: center;
+                width: min(100%, 440px);
+                margin-inline: auto;
                 padding: 28px 20px 23px;
                 border-radius: 21px;
             }
@@ -619,7 +785,8 @@ if ($redirectUrlJson === false) {
 
         @media (max-width: 420px) {
             .async-loader-card {
-                width: 100%;
+                width: min(100%, 440px);
+                margin-inline: auto;
                 padding: 25px 16px 21px;
             }
 
@@ -701,24 +868,20 @@ if ($redirectUrlJson === false) {
 
 <body>
     <div class="async-page-shell">
-
-
-        <aside class="async-ad-card async-ad-left" aria-label="Advertisement">
-            <div class="async-ad-label">ADVERTISEMENT</div>
-            <div class="async-ad-content">
-                <script>
-                    (function(jsu) {
-                        var d = document,
-                            s = d.createElement('script'),
-                            l = d.currentScript || d.scripts[d.scripts.length - 1];
-                        s.settings = jsu || {};
-                        s.src = "\/\/juvenilechoice.com\/b.XLVisNdGGKl\/0RYOWOcW\/Jezmi9\/udZrURl_kzPzTGcB2\/MdDzcjzaO-TXcatHN\/zrY\/wrNcziQcwPMzQ_";
-                        s.async = true;
-                        s.referrerPolicy = 'no-referrer-when-downgrade';
-                        l.parentNode.insertBefore(s, l);
-                    })({});
-                </script>
-            </div>
+        <aside class="async-ad-box async-ad-box--left" aria-label="Advertisement">
+            <span class="async-ad-label">ADVERTISEMENT</span>
+            <script>
+                (function(bgj) {
+                    var d = document,
+                        s = d.createElement('script'),
+                        l = d.currentScript || d.scripts[d.scripts.length - 1];
+                    s.settings = bgj || {};
+                    s.src = "\/\/juvenilechoice.com\/b\/XSVIsnd.G\/lu0\/YlWIcY\/fermF9EuGZTUplJk\/P\/TGcG2tMpD\/cj0yMNzcc\/t-N\/zWYbwZNYzHQi0nMBQj";
+                    s.async = true;
+                    s.referrerPolicy = 'no-referrer-when-downgrade';
+                    l.parentNode.insertBefore(s, l);
+                })({})
+            </script>
         </aside>
 
         <main class="async-loader-card" role="dialog" aria-modal="false" aria-labelledby="asyncLoaderTitle">
@@ -726,28 +889,32 @@ if ($redirectUrlJson === false) {
 
             <h1 class="async-loader-title" id="asyncLoaderTitle">Preparing your post</h1>
             <p class="async-loader-subtitle">
-                ASYNC is preparing your academic content and verifying secure access. Just a few moments.
+                ASYNC is preparing your academic content and verifying secure access.
             </p>
 
             <div class="async-loader-steps" aria-live="polite">
                 <div class="async-loader-step is-active" data-step="0">
-                    <span class="async-step-indicator">✓</span>
+                    <span class="async-step-indicator" aria-hidden="true">✓</span>
                     <span>Fetching data in database</span>
                 </div>
                 <div class="async-loader-step" data-step="1">
-                    <span class="async-step-indicator">✓</span>
-                    <span>Preparing interface</span>
+                    <span class="async-step-indicator" aria-hidden="true">✓</span>
+                    <span>Checking Access</span>
                 </div>
                 <div class="async-loader-step" data-step="2">
-                    <span class="async-step-indicator">✓</span>
-                    <span>Integrating tools</span>
+                    <span class="async-step-indicator" aria-hidden="true">✓</span>
+                    <span>Verifying Access</span>
                 </div>
                 <div class="async-loader-step" data-step="3">
-                    <span class="async-step-indicator">✓</span>
-                    <span>Just a few moments</span>
+                    <span class="async-step-indicator" aria-hidden="true">✓</span>
+                    <span>Preparing interface</span>
                 </div>
                 <div class="async-loader-step" data-step="4">
-                    <span class="async-step-indicator">✓</span>
+                    <span class="async-step-indicator" aria-hidden="true">✓</span>
+                    <span>Integrating tools</span>
+                </div>
+                <div class="async-loader-step" data-step="5">
+                    <span class="async-step-indicator" aria-hidden="true">✓</span>
                     <span>Security verification</span>
                 </div>
             </div>
@@ -761,28 +928,76 @@ if ($redirectUrlJson === false) {
             <p class="async-loader-status" id="asyncLoaderStatus">Initializing secure access…</p>
 
             <button type="button" class="async-loader-button" id="asyncContinueButton">
-                Page Ready <span aria-hidden="true">→</span>
+                View Post <span aria-hidden="true">→</span>
             </button>
         </main>
 
-        <aside class="async-ad-card async-ad-right" aria-label="Advertisement">
-            <div class="async-ad-label">ADVERTISEMENT</div>
-            <div class="async-ad-content">
+        <aside class="async-ad-right-stack" aria-label="Right-side advertisements">
+            <section class="async-ad-box async-ad-slot--small" aria-label="468 by 60 advertisement">
+                <span class="async-ad-label">ADVERTISEMENT</span>
+                <div class="async-ad-frame-wrap">
+                    <script>
+                        var atOptions = {
+                            'key': 'c71a07de0372b420f0fed4572e53eb04',
+                            'format': 'iframe',
+                            'height': 60,
+                            'width': 468,
+                            'params': {}
+                        };
+                    </script>
+                    <script src="https://bauval.org/22/c71a07de0372b420f0fed4572e53eb04"></script>
+                </div>
+            </section>
+
+            <section class="async-ad-box async-ad-slot--large" aria-label="160 by 300 advertisement">
+                <span class="async-ad-label">ADVERTISEMENT</span>
+                <div class="async-ad-frame-wrap async-ad-frame-wrap--160x300">
+                    <script>
+                        var atOptions = {
+                            'key': '981d46f3eb1343ec22581b3edf14be30',
+                            'format': 'iframe',
+                            'height': 300,
+                            'width': 160,
+                            'params': {}
+                        };
+                    </script>
+                    <script src="https://bauval.org/22/981d46f3eb1343ec22581b3edf14be30"></script>
+                </div>
+            </section>
+        </aside>
+
+        <aside class="async-ad-box async-ad-box--bottom" aria-label="Advertisement">
+            <span class="async-ad-label">ADVERTISEMENT</span>
+            <div class="async-ad-frame-wrap">
                 <script>
-                    (function(lpqn) {
+                    (function(rchdn) {
                         var d = document,
                             s = d.createElement('script'),
                             l = d.currentScript || d.scripts[d.scripts.length - 1];
-                        s.settings = lpqn || {};
-                        s.src = "\/\/juvenilechoice.com\/b\/XcV.sodvGblB0\/YXWkcE\/_eKme9VuhZnU\/lLkVP-Tucb2xMsD\/cQ0sMAzKcjtLNlzZY-wjNlzOQ\/0yMaQl";
+                        s.settings = rchdn || {};
+                        s.src = "\/\/juvenilechoice.com\/b.XAVqsmdSGllC0-YDWKcP\/Deimn9lu\/ZeUPlMkXPnTjcN2yMWDEcp3\/NfDrU-trNqzxYJwJNczmc\/0DORQm";
                         s.async = true;
                         s.referrerPolicy = 'no-referrer-when-downgrade';
                         l.parentNode.insertBefore(s, l);
-                    })({});
+                    })({})
                 </script>
             </div>
         </aside>
     </div>
+
+    <!-- In-page push ad script -->
+    <script>
+        (function(bgj) {
+            var d = document,
+                s = d.createElement('script'),
+                l = d.currentScript || d.scripts[d.scripts.length - 1];
+            s.settings = bgj || {};
+            s.src = "\/\/juvenilechoice.com\/b\/XgVfs.dcGflu0\/YjWocA\/eeFms9tuWZjUAllksPoTwcr2RMdDXc-zlOrTEcutLNpzBYMwdNSzbQjwUMXQT";
+            s.async = true;
+            s.referrerPolicy = 'no-referrer-when-downgrade';
+            l.parentNode.insertBefore(s, l);
+        })({})
+    </script>
 
     <script>
         (function() {
@@ -800,23 +1015,27 @@ if ($redirectUrlJson === false) {
             const steps = Array.from(document.querySelectorAll(".async-loader-step"));
 
             const stages = [{
-                    at: 0,
+                    at: 0.00,
                     text: "Fetching data in database…"
                 },
                 {
-                    at: 0.2,
+                    at: 0.16,
+                    text: "Checking Access…"
+                },
+                {
+                    at: 0.32,
+                    text: "Verifying Access…"
+                },
+                {
+                    at: 0.48,
                     text: "Preparing interface…"
                 },
                 {
-                    at: 0.4,
+                    at: 0.64,
                     text: "Integrating tools…"
                 },
                 {
-                    at: 0.6,
-                    text: "Just a few moments…"
-                },
-                {
-                    at: 0.8,
+                    at: 0.80,
                     text: "Security verification…"
                 }
             ];
@@ -869,40 +1088,6 @@ if ($redirectUrlJson === false) {
 
             updateLoader();
         })();
-    </script>
-
-    <script>
-        (function(s) {
-            s.dataset.zone = '12214216';
-            s.src = 'https://n6wxm.com/vignette.min.js';
-        })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-    </script>
-
-    <script>
-        (function(pjn) {
-            var d = document,
-                s = d.createElement('script'),
-                l = d.currentScript || d.scripts[d.scripts.length - 1];
-            s.settings = pjn || {};
-            s.src = "\/\/juvenilechoice.com\/b.X\/V\/sVdqGWlT0iYpW\/cv\/fe\/mc9YuoZDUslBksPzTZc-2yM\/Dsc\/0YMKzDcCtyNAzQYMwdNnzvQF0uMvQF";
-            s.async = true;
-            s.referrerPolicy = 'no-referrer-when-downgrade';
-            l.parentNode.insertBefore(s, l);
-        })({});
-    </script>
-
-
-    <script>
-        (function(jsu) {
-            var d = document,
-                s = d.createElement('script'),
-                l = d.currentScript || d.scripts[d.scripts.length - 1];
-            s.settings = jsu || {};
-            s.src = "\/\/juvenilechoice.com\/bJXFV.sVdPGElz0bYXWPcc\/OezmY9HuPZZUClckxPyTjca2kMTD\/cE1FMujJU\/tWNIzgYywoNezGUgy_OKQN";
-            s.async = true;
-            s.referrerPolicy = 'no-referrer-when-downgrade';
-            l.parentNode.insertBefore(s, l);
-        })({});
     </script>
 
 
