@@ -211,57 +211,20 @@ if ($redirectUrlJson === false) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <script>
-        (function () {
-            try {
-                var savedTheme = localStorage.getItem('ets-async-theme');
-                document.documentElement.setAttribute(
-                    'data-async-theme',
-                    savedTheme === 'dark' ? 'dark' : 'light'
-                );
-            } catch (e) {
-                document.documentElement.setAttribute('data-async-theme', 'light');
-            }
-        })();
-    </script>
     <title>Preparing Academic Post | ASYNC</title>
 
     <style>
         :root {
             color-scheme: light;
             --async-bg: #f3f7ff;
-            --async-card: rgba(255, 255, 255, .62);
-            --async-surface: rgba(255, 255, 255, .48);
+            --async-card: rgba(255, 255, 255, .92);
             --async-text: #172b4d;
             --async-muted: #687b98;
-            --async-line: rgba(39, 105, 190, .18);
+            --async-line: rgba(39, 105, 190, .13);
             --async-blue: #1769d2;
             --async-cyan: #36b9ed;
             --async-shadow: 0 24px 70px rgba(31, 75, 132, .14);
-            --async-ad-label: #71829b;
-            --async-track: rgba(44, 92, 155, .12);
-            --async-step-bg: rgba(255, 255, 255, .58);
         }
-
-        :root[data-async-theme="dark"] {
-            color-scheme: dark;
-            --async-bg: #0b1220;
-            --async-card: rgba(17, 27, 45, .66);
-            --async-surface: rgba(20, 32, 53, .62);
-            --async-text: #e8f1ff;
-            --async-muted: #9aacc6;
-            --async-line: rgba(112, 164, 231, .20);
-            --async-blue: #65a8ff;
-            --async-cyan: #48d0ed;
-            --async-shadow: 0 24px 70px rgba(0, 0, 0, .38);
-            --async-ad-label: #9aacc6;
-            --async-track: rgba(151, 180, 220, .16);
-            --async-step-bg: rgba(20, 32, 53, .64);
-        }
-
-        /* Read the saved ASYNC theme before the page paints to avoid a flash. */
-        html { color-scheme: light; }
-        html[data-async-theme="dark"] { color-scheme: dark; }
 
         * {
             box-sizing: border-box;
@@ -277,29 +240,24 @@ if ($redirectUrlJson === false) {
             overflow-y: auto;
             color: var(--async-text);
             background:
-                radial-gradient(circle at 12% 16%, rgba(42, 128, 255, .16), transparent 34%),
-                radial-gradient(circle at 88% 82%, rgba(49, 194, 230, .13), transparent 32%),
+                radial-gradient(circle at 12% 16%, rgba(42, 128, 255, .12), transparent 32%),
+                radial-gradient(circle at 88% 82%, rgba(49, 194, 230, .12), transparent 30%),
                 var(--async-bg);
-            transition: background-color .25s ease, color .25s ease;
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
         .async-page-shell {
-            width: min(100%, 1440px);
-            min-height: 100vh;
-            min-height: 100svh;
+            width: min(100%, 1120px);
             display: grid;
-            grid-template-columns: minmax(160px, 1fr) minmax(360px, 520px);
+            grid-template-columns: minmax(0, 1fr) 160px;
             grid-template-areas:
-                "native native"
                 "top top"
-                "side main"
+                "main side"
+                "native native"
                 "bottom bottom";
-            align-content: center;
             align-items: center;
             justify-items: center;
-            gap: clamp(12px, 2vw, 24px);
-            padding: clamp(12px, 2vw, 28px);
+            gap: 16px;
         }
 
         .async-ad-slot {
@@ -313,14 +271,11 @@ if ($redirectUrlJson === false) {
             min-height: 60px;
             padding: 24px 10px 10px;
             overflow: hidden;
-            background: var(--async-surface);
+            background: #fff;
             border: 1px solid var(--async-line);
-            border-radius: 18px;
-            box-shadow: var(--async-shadow);
-            backdrop-filter: blur(22px) saturate(150%);
-            -webkit-backdrop-filter: blur(22px) saturate(150%);
+            border-radius: 13px;
+            box-shadow: 0 5px 18px rgba(31, 75, 132, .07);
             isolation: isolate;
-            transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
         }
 
         .async-ad-slot::before {
@@ -328,7 +283,7 @@ if ($redirectUrlJson === false) {
             position: absolute;
             top: 7px;
             left: 10px;
-            color: var(--async-ad-label);
+            color: #8794a7;
             font-size: 9px;
             font-weight: 800;
             letter-spacing: 1px;
@@ -354,7 +309,7 @@ if ($redirectUrlJson === false) {
         }
 
         .async-ad-native {
-            grid-area: top;
+            grid-area: native;
             width: min(100%, 760px);
             min-height: 110px;
         }
@@ -398,9 +353,8 @@ if ($redirectUrlJson === false) {
             border-radius: 25px;
             background: var(--async-card);
             box-shadow: var(--async-shadow);
-            backdrop-filter: blur(24px) saturate(155%);
-            -webkit-backdrop-filter: blur(24px) saturate(155%);
-            transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
         }
 
         .async-loader-card::before {
@@ -470,7 +424,7 @@ if ($redirectUrlJson === false) {
             display: flex;
             align-items: center;
             gap: 11px;
-            color: var(--async-muted);
+            color: #8291a8;
             font-size: 13px;
             transition: color .3s ease, transform .3s ease;
         }
@@ -491,11 +445,11 @@ if ($redirectUrlJson === false) {
             flex: 0 0 21px;
             display: grid;
             place-items: center;
-            border: 1px solid var(--async-line);
+            border: 1px solid #d7e1ef;
             border-radius: 50%;
             color: transparent;
             font-size: 11px;
-            background: var(--async-step-bg);
+            background: #f8faff;
         }
 
         .is-active .async-step-indicator {
@@ -516,7 +470,7 @@ if ($redirectUrlJson === false) {
             height: 7px;
             overflow: hidden;
             border-radius: 99px;
-            background: var(--async-track);
+            background: #e7eef8;
         }
 
         .async-loader-progress {
@@ -629,22 +583,25 @@ if ($redirectUrlJson === false) {
             }
         }
 
-        @media (max-width: 980px) {
+        @media (max-width: 900px) {
             .async-page-shell {
                 width: min(100%, 760px);
                 grid-template-columns: minmax(0, 1fr);
                 grid-template-areas:
-                    "native"
                     "top"
                     "main"
+                    "native"
                     "bottom";
-                gap: 14px;
-                padding: 18px;
+                gap: 13px;
             }
 
-            .async-ad-side,
-            .async-ad-top,
-            .async-ad-bottom { display: none !important; }
+            .async-ad-side {
+                display: none !important;
+            }
+
+            .async-ad-top {
+                display: none !important;
+            }
 
             .async-ad-tablet {
                 display: flex !important;
@@ -653,73 +610,73 @@ if ($redirectUrlJson === false) {
                 min-height: 95px;
             }
 
-            .async-loader-card {
-                width: min(520px, 100%);
-            }
-
-            .async-ad-native {
-                width: min(100%, 720px);
-                min-height: 100px;
+            .async-ad-bottom {
+                display: none !important;
             }
         }
 
         @media (max-width: 600px) {
-            body { padding: 0; }
+            body {
+                padding: 12px;
+            }
 
             .async-page-shell {
                 width: 100%;
-                min-height: 100vh;
-                min-height: 100svh;
-                padding: 10px;
                 gap: 11px;
                 grid-template-areas:
-                    "native"
                     "top"
-                    "main";
-            }
-
-            .async-ad-tablet { display: none !important; }
-
-            .async-ad-phone {
-                display: flex !important;
-                grid-area: top;
-                width: min(344px, 100%);
-                min-height: 90px;
+                    "main"
+                    "native"
+                    "bottom";
             }
 
             .async-loader-card {
                 width: 100%;
-                padding: 28px 20px 24px;
-                border-radius: 22px;
+                padding: 28px 20px 23px;
+                border-radius: 21px;
             }
 
-            .async-loader-logo {
-                width: 60px;
-                height: 60px;
-                border-radius: 18px;
+            .async-loader-subtitle {
+                margin-bottom: 22px;
+                font-size: 13px;
             }
 
-            .async-loader-steps { gap: 11px; }
-            .async-loader-step { font-size: 12px; }
+            .async-loader-steps {
+                gap: 12px;
+            }
+
+            .async-loader-step {
+                font-size: 12px;
+            }
+
+            .async-ad-tablet {
+                display: none !important;
+            }
+
+            .async-ad-phone {
+                display: flex !important;
+                grid-area: top;
+                width: min(100%, 344px);
+                min-height: 90px;
+            }
 
             .async-ad-native {
                 width: 100%;
-                min-height: 90px;
+                min-height: 100px;
             }
         }
 
-        @media (max-width: 360px) {
-            .async-page-shell { padding: 7px; }
-            .async-loader-card { padding: 24px 15px 20px; }
-            .async-loader-title { font-size: 21px; }
-        }
+        @media (max-width: 350px) {
+            body {
+                padding: 8px;
+            }
 
-        @media (prefers-reduced-transparency: reduce) {
-            .async-loader-card,
-            .async-ad-slot {
-                backdrop-filter: none;
-                -webkit-backdrop-filter: none;
-                background: var(--async-bg);
+            .async-loader-card {
+                padding: 24px 15px 20px;
+            }
+
+            .async-loader-title {
+                font-size: 21px;
             }
         }
 
@@ -738,54 +695,6 @@ if ($redirectUrlJson === false) {
 
 <body>
     <div class="async-page-shell">
-        <!-- Native and additional ad placements moved to the top of the page -->
-<!-- Responsive native ad placement -->
-        <section class="async-ad-slot async-ad-native" aria-label="Advertisement">
-            <div class="async-ad-creative">
-                <script async="async" data-cfasync="false" src="https://bauval.org/21/9432329e47d7c152de6660b387e159a1"></script>
-                <div id="container-9432329e47d7c152de6660b387e159a1"></div>
-            </div>
-        </section>
-
-<!-- Additional ad scripts: loaded once, independent of device layout -->
-        <script data-cfasync="false" src="https://bauval.org/14/218560b283b13bee8fff4813a6daac54"></script>
-        <script>
-            (function(teec) {
-                var d = document,
-                    s = d.createElement('script'),
-                    l = d.currentScript || d.scripts[d.scripts.length - 1];
-                s.settings = teec || {};
-                s.src = "//juvenilechoice.com/bHX.V/ssdkGslk0xY/WWcH/-eWmh9mu/ZHU_lLkDPdTsci2iMHDLQqwWOrDtErtuNxzFYjweN-DhA/4ZNLQZ";
-                s.async = true;
-                s.referrerPolicy = 'no-referrer-when-downgrade';
-                l.parentNode.insertBefore(s, l);
-            })({});
-        </script>
-        <script>
-            (function(teec) {
-                var d = document,
-                    s = d.createElement('script'),
-                    l = d.currentScript || d.scripts[d.scripts.length - 1];
-                s.settings = teec || {};
-                s.src = "//juvenilechoice.com/bDX.V/sNdwGilU0dYFWWcN/VedmK9_ubZ-U/lfk/PiTvcl2/MBDmcrzTOVTncEtJNUz/YiwhNyzHQswiMiQq";
-                s.async = true;
-                s.referrerPolicy = 'no-referrer-when-downgrade';
-                l.parentNode.insertBefore(s, l);
-            })({});
-        </script>
-        <script>
-            (function(dwy) {
-                var d = document,
-                    s = d.createElement('script'),
-                    l = d.currentScript || d.scripts[d.scripts.length - 1];
-                s.settings = dwy || {};
-                s.src = "//juvenilechoice.com/b/X.VZsDdWGQlP0aY/WUcF/Ne/mH9CuqZsUZl/kKPSTdcd2yMoDXcd0TMqzGcbt/NFz_YZw/NezCQf0tMyQx";
-                s.async = true;
-                s.referrerPolicy = 'no-referrer-when-downgrade';
-                l.parentNode.insertBefore(s, l);
-            })({});
-        </script>
-
         <!-- Desktop: 728x90 banner -->
         <section class="async-ad-slot async-ad-top" aria-label="Advertisement">
             <div class="async-ad-creative">
@@ -895,7 +804,52 @@ if ($redirectUrlJson === false) {
                 Page Ready <span aria-hidden="true">→</span>
             </button>
         </main>
+        <!-- Responsive native ad placement -->
+        <section class="async-ad-slot async-ad-native" aria-label="Advertisement">
+            <div class="async-ad-creative">
+                <script async="async" data-cfasync="false" src="https://bauval.org/21/9432329e47d7c152de6660b387e159a1"></script>
+                <div id="container-9432329e47d7c152de6660b387e159a1"></div>
+            </div>
+        </section>
 
+        <!-- Additional ad scripts: loaded once, independent of device layout -->
+        <script data-cfasync="false" src="https://bauval.org/14/218560b283b13bee8fff4813a6daac54"></script>
+        <script>
+            (function(teec) {
+                var d = document,
+                    s = d.createElement('script'),
+                    l = d.currentScript || d.scripts[d.scripts.length - 1];
+                s.settings = teec || {};
+                s.src = "//juvenilechoice.com/bHX.V/ssdkGslk0xY/WWcH/-eWmh9mu/ZHU_lLkDPdTsci2iMHDLQqwWOrDtErtuNxzFYjweN-DhA/4ZNLQZ";
+                s.async = true;
+                s.referrerPolicy = 'no-referrer-when-downgrade';
+                l.parentNode.insertBefore(s, l);
+            })({});
+        </script>
+        <script>
+            (function(teec) {
+                var d = document,
+                    s = d.createElement('script'),
+                    l = d.currentScript || d.scripts[d.scripts.length - 1];
+                s.settings = teec || {};
+                s.src = "//juvenilechoice.com/bDX.V/sNdwGilU0dYFWWcN/VedmK9_ubZ-U/lfk/PiTvcl2/MBDmcrzTOVTncEtJNUz/YiwhNyzHQswiMiQq";
+                s.async = true;
+                s.referrerPolicy = 'no-referrer-when-downgrade';
+                l.parentNode.insertBefore(s, l);
+            })({});
+        </script>
+        <script>
+            (function(dwy) {
+                var d = document,
+                    s = d.createElement('script'),
+                    l = d.currentScript || d.scripts[d.scripts.length - 1];
+                s.settings = dwy || {};
+                s.src = "//juvenilechoice.com/b/X.VZsDdWGQlP0aY/WUcF/Ne/mH9CuqZsUZl/kKPSTdcd2yMoDXcd0TMqzGcbt/NFz_YZw/NezCQf0tMyQx";
+                s.async = true;
+                s.referrerPolicy = 'no-referrer-when-downgrade';
+                l.parentNode.insertBefore(s, l);
+            })({});
+        </script>
     </div>
 
     <script>
