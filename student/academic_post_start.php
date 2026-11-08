@@ -212,7 +212,7 @@ if ($redirectUrlJson === false) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <script>
-        (function() {
+        (function () {
             try {
                 var savedTheme = localStorage.getItem('ets-async-theme');
                 document.documentElement.setAttribute(
@@ -260,13 +260,8 @@ if ($redirectUrlJson === false) {
         }
 
         /* Read the saved ASYNC theme before the page paints to avoid a flash. */
-        html {
-            color-scheme: light;
-        }
-
-        html[data-async-theme="dark"] {
-            color-scheme: dark;
-        }
+        html { color-scheme: light; }
+        html[data-async-theme="dark"] { color-scheme: dark; }
 
         * {
             box-sizing: border-box;
@@ -649,9 +644,7 @@ if ($redirectUrlJson === false) {
 
             .async-ad-side,
             .async-ad-top,
-            .async-ad-bottom {
-                display: none !important;
-            }
+            .async-ad-bottom { display: none !important; }
 
             .async-ad-tablet {
                 display: flex !important;
@@ -671,9 +664,7 @@ if ($redirectUrlJson === false) {
         }
 
         @media (max-width: 600px) {
-            body {
-                padding: 0;
-            }
+            body { padding: 0; }
 
             .async-page-shell {
                 width: 100%;
@@ -687,9 +678,7 @@ if ($redirectUrlJson === false) {
                     "main";
             }
 
-            .async-ad-tablet {
-                display: none !important;
-            }
+            .async-ad-tablet { display: none !important; }
 
             .async-ad-phone {
                 display: flex !important;
@@ -710,13 +699,8 @@ if ($redirectUrlJson === false) {
                 border-radius: 18px;
             }
 
-            .async-loader-steps {
-                gap: 11px;
-            }
-
-            .async-loader-step {
-                font-size: 12px;
-            }
+            .async-loader-steps { gap: 11px; }
+            .async-loader-step { font-size: 12px; }
 
             .async-ad-native {
                 width: 100%;
@@ -725,21 +709,12 @@ if ($redirectUrlJson === false) {
         }
 
         @media (max-width: 360px) {
-            .async-page-shell {
-                padding: 7px;
-            }
-
-            .async-loader-card {
-                padding: 24px 15px 20px;
-            }
-
-            .async-loader-title {
-                font-size: 21px;
-            }
+            .async-page-shell { padding: 7px; }
+            .async-loader-card { padding: 24px 15px 20px; }
+            .async-loader-title { font-size: 21px; }
         }
 
         @media (prefers-reduced-transparency: reduce) {
-
             .async-loader-card,
             .async-ad-slot {
                 backdrop-filter: none;
@@ -764,7 +739,7 @@ if ($redirectUrlJson === false) {
 <body>
     <div class="async-page-shell">
         <!-- Native and additional ad placements moved to the top of the page -->
-        <!-- Responsive native ad placement -->
+<!-- Responsive native ad placement -->
         <section class="async-ad-slot async-ad-native" aria-label="Advertisement">
             <div class="async-ad-creative">
                 <script async="async" data-cfasync="false" src="https://bauval.org/21/9432329e47d7c152de6660b387e159a1"></script>
@@ -772,7 +747,7 @@ if ($redirectUrlJson === false) {
             </div>
         </section>
 
-        <!-- Additional ad scripts: loaded once, independent of device layout -->
+<!-- Additional ad scripts: loaded once, independent of device layout -->
         <script data-cfasync="false" src="https://bauval.org/14/218560b283b13bee8fff4813a6daac54"></script>
         <script>
             (function(teec) {
