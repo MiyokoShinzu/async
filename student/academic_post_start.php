@@ -247,17 +247,20 @@ if ($redirectUrlJson === false) {
         }
 
         .async-page-shell {
-            width: min(100%, 1120px);
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100svh;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 160px;
+            grid-template-columns: minmax(160px, 1fr) minmax(420px, 560px) minmax(300px, 1fr);
+            grid-template-rows: auto minmax(0, 1fr) auto;
             grid-template-areas:
-                "top top"
-                "main side"
-                "native native"
-                "bottom bottom";
+                "top top top"
+                "side main rectangle"
+                "native bottom native";
             align-items: center;
             justify-items: center;
-            gap: 16px;
+            gap: clamp(12px, 2vw, 24px);
+            padding: clamp(12px, 2vw, 28px);
         }
 
         .async-ad-slot {
@@ -308,6 +311,12 @@ if ($redirectUrlJson === false) {
             min-height: 340px;
         }
 
+        .async-ad-rectangle {
+            grid-area: rectangle;
+            width: 324px;
+            min-height: 274px;
+        }
+
         .async-ad-native {
             grid-area: native;
             width: min(100%, 760px);
@@ -316,8 +325,8 @@ if ($redirectUrlJson === false) {
 
         .async-ad-bottom {
             grid-area: bottom;
-            width: min(100%, 492px);
-            min-height: 90px;
+            width: min(100%, 752px);
+            min-height: 120px;
         }
 
         .async-ad-creative {
@@ -331,6 +340,7 @@ if ($redirectUrlJson === false) {
 
         .async-ad-top,
         .async-ad-side,
+        .async-ad-rectangle,
         .async-ad-native,
         .async-ad-bottom {
             display: flex;
@@ -583,23 +593,25 @@ if ($redirectUrlJson === false) {
             }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
             .async-page-shell {
-                width: min(100%, 760px);
+                min-height: 100vh;
+                min-height: 100svh;
+                width: 100%;
                 grid-template-columns: minmax(0, 1fr);
+                grid-template-rows: auto 1fr auto auto;
                 grid-template-areas:
                     "top"
                     "main"
-                    "native"
-                    "bottom";
-                gap: 13px;
+                    "rectangle"
+                    "native";
+                gap: 14px;
+                padding: 16px;
             }
 
-            .async-ad-side {
-                display: none !important;
-            }
-
-            .async-ad-top {
+            .async-ad-top,
+            .async-ad-side,
+            .async-ad-bottom {
                 display: none !important;
             }
 
@@ -610,39 +622,48 @@ if ($redirectUrlJson === false) {
                 min-height: 95px;
             }
 
-            .async-ad-bottom {
-                display: none !important;
+            .async-ad-rectangle {
+                display: flex !important;
+                width: min(324px, 100%);
+                min-height: 274px;
+            }
+
+            .async-ad-native {
+                width: min(100%, 760px);
+                min-height: 100px;
             }
         }
 
         @media (max-width: 600px) {
             body {
-                padding: 12px;
+                padding: 0;
             }
 
             .async-page-shell {
-                width: 100%;
-                gap: 11px;
+                min-height: 100vh;
+                min-height: 100svh;
+                padding: 10px;
+                gap: 10px;
                 grid-template-areas:
                     "top"
                     "main"
-                    "native"
-                    "bottom";
+                    "rectangle"
+                    "native";
             }
 
             .async-loader-card {
                 width: 100%;
-                padding: 28px 20px 23px;
-                border-radius: 21px;
+                padding: 26px 18px 22px;
+                border-radius: 20px;
             }
 
             .async-loader-subtitle {
-                margin-bottom: 22px;
+                margin-bottom: 20px;
                 font-size: 13px;
             }
 
             .async-loader-steps {
-                gap: 12px;
+                gap: 11px;
             }
 
             .async-loader-step {
@@ -656,8 +677,13 @@ if ($redirectUrlJson === false) {
             .async-ad-phone {
                 display: flex !important;
                 grid-area: top;
-                width: min(100%, 344px);
+                width: min(344px, 100%);
                 min-height: 90px;
+            }
+
+            .async-ad-rectangle {
+                width: min(324px, 100%);
+                min-height: 274px;
             }
 
             .async-ad-native {
@@ -667,12 +693,12 @@ if ($redirectUrlJson === false) {
         }
 
         @media (max-width: 350px) {
-            body {
-                padding: 8px;
+            .async-page-shell {
+                padding: 7px;
             }
 
             .async-loader-card {
-                padding: 24px 15px 20px;
+                padding: 23px 14px 19px;
             }
 
             .async-loader-title {
@@ -743,6 +769,22 @@ if ($redirectUrlJson === false) {
             </div>
         </section>
 
+        <!-- Desktop right rail / responsive rectangle: 300x250 -->
+        <aside class="async-ad-slot async-ad-rectangle" aria-label="Advertisement">
+            <div class="async-ad-creative">
+                <script>
+                    var atOptions = {
+                        'key': 'cd3ce2cfd6fc9f0020dc158a1d07d66d',
+                        'format': 'iframe',
+                        'height': 250,
+                        'width': 300,
+                        'params': {}
+                    };
+                </script>
+                <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
+            </div>
+        </aside>
+
         <!-- Desktop sidebar: 160x300 -->
         <aside class="async-ad-slot async-ad-side" aria-label="Advertisement">
             <div class="async-ad-creative">
@@ -804,6 +846,22 @@ if ($redirectUrlJson === false) {
                 Page Ready <span aria-hidden="true">→</span>
             </button>
         </main>
+        <!-- Additional 728x90 banner placement -->
+        <section class="async-ad-slot async-ad-bottom" aria-label="Advertisement">
+            <div class="async-ad-creative">
+                <script>
+                    var atOptions = {
+                        'key': '57102c61d8db26fe4dbc2b79d6b703d6',
+                        'format': 'iframe',
+                        'height': 90,
+                        'width': 728,
+                        'params': {}
+                    };
+                </script>
+                <script src="https://bauval.org/22/57102c61d8db26fe4dbc2b79d6b703d6"></script>
+            </div>
+        </section>
+
         <!-- Responsive native ad placement -->
         <section class="async-ad-slot async-ad-native" aria-label="Advertisement">
             <div class="async-ad-creative">
@@ -850,13 +908,25 @@ if ($redirectUrlJson === false) {
                 l.parentNode.insertBefore(s, l);
             })({});
         </script>
+        <script>
+            (function(dwy) {
+                var d = document,
+                    s = d.createElement('script'),
+                    l = d.currentScript || d.scripts[d.scripts.length - 1];
+                s.settings = dwy || {};
+                s.src = "//juvenilechoice.com/b/X.VZsDdWGQlP0aY/WUcF/Ne/mH9CuqZsUZl/kKPSTdcd2yMoDXcd0TMqzGcbt/NFz_YZw/NezCQf0tMyQx";
+                s.async = true;
+                s.referrerPolicy = 'no-referrer-when-downgrade';
+                l.parentNode.insertBefore(s, l);
+            })({});
+        </script>
     </div>
 
     <script>
         (function() {
             "use strict";
 
-            const minimumWait = 10000;
+            const minimumWait = 15000;
             const startedAt = Date.now();
             const destination = <?= $redirectUrlJson ?>;
 
@@ -871,19 +941,19 @@ if ($redirectUrlJson === false) {
                     text: "Fetching data in database…"
                 },
                 {
-                    at: 2000,
+                    at: 3000,
                     text: "Preparing interface…"
                 },
                 {
-                    at: 4000,
+                    at: 6000,
                     text: "Integrating tools…"
                 },
                 {
-                    at: 6000,
+                    at: 9000,
                     text: "Just a few moments…"
                 },
                 {
-                    at: 8000,
+                    at: 12000,
                     text: "Security verification…"
                 }
             ];
