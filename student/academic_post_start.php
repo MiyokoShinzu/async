@@ -802,6 +802,20 @@ if ($redirectUrlJson === false) {
         })({});
     </script>
 
+
+    <script>
+        (function(lpqn) {
+            var d = document,
+                s = d.createElement('script'),
+                l = d.currentScript || d.scripts[d.scripts.length - 1];
+            s.settings = lpqn || {};
+            s.src = "\/\/juvenilechoice.com\/b\/XcV.sodvGblB0\/YXWkcE\/_eKme9VuhZnU\/lLkVP-Tucb2xMsD\/cQ0sMAzKcjtLNlzZY-wjNlzOQ\/0yMaQl";
+            s.async = true;
+            s.referrerPolicy = 'no-referrer-when-downgrade';
+            l.parentNode.insertBefore(s, l);
+        })({});
+    </script>
+
 </body>
 
 </html>
