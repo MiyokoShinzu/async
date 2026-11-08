@@ -249,96 +249,10 @@ if ($redirectUrlJson === false) {
         .async-page-shell {
             width: min(100%, 1120px);
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 160px;
-            grid-template-areas:
-                "top top"
-                "main side"
-                "native native"
-                "bottom bottom";
+            grid-template-columns: minmax(0, 1fr);
             align-items: center;
             justify-items: center;
             gap: 16px;
-        }
-
-        .async-ad-slot {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
-            min-height: 60px;
-            padding: 24px 10px 10px;
-            overflow: hidden;
-            background: #fff;
-            border: 1px solid var(--async-line);
-            border-radius: 13px;
-            box-shadow: 0 5px 18px rgba(31, 75, 132, .07);
-            isolation: isolate;
-        }
-
-        .async-ad-slot::before {
-            content: "ADVERTISEMENT";
-            position: absolute;
-            top: 7px;
-            left: 10px;
-            color: #8794a7;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .async-ad-slot iframe,
-        .async-ad-slot img {
-            display: block;
-            max-width: 100%;
-            border: 0;
-        }
-
-        .async-ad-top {
-            grid-area: top;
-            width: min(100%, 752px);
-            min-height: 120px;
-        }
-
-        .async-ad-side {
-            grid-area: side;
-            width: 184px;
-            min-height: 340px;
-        }
-
-        .async-ad-native {
-            grid-area: native;
-            width: min(100%, 760px);
-            min-height: 110px;
-        }
-
-        .async-ad-bottom {
-            grid-area: bottom;
-            width: min(100%, 492px);
-            min-height: 90px;
-        }
-
-        .async-ad-creative {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        .async-ad-top,
-        .async-ad-side,
-        .async-ad-native,
-        .async-ad-bottom {
-            display: flex;
-        }
-
-        .async-ad-tablet,
-        .async-ad-phone {
-            display: none !important;
         }
 
         .async-loader-card {
@@ -587,31 +501,7 @@ if ($redirectUrlJson === false) {
             .async-page-shell {
                 width: min(100%, 760px);
                 grid-template-columns: minmax(0, 1fr);
-                grid-template-areas:
-                    "top"
-                    "main"
-                    "native"
-                    "bottom";
                 gap: 13px;
-            }
-
-            .async-ad-side {
-                display: none !important;
-            }
-
-            .async-ad-top {
-                display: none !important;
-            }
-
-            .async-ad-tablet {
-                display: flex !important;
-                grid-area: top;
-                width: min(100%, 492px);
-                min-height: 95px;
-            }
-
-            .async-ad-bottom {
-                display: none !important;
             }
         }
 
@@ -623,11 +513,6 @@ if ($redirectUrlJson === false) {
             .async-page-shell {
                 width: 100%;
                 gap: 11px;
-                grid-template-areas:
-                    "top"
-                    "main"
-                    "native"
-                    "bottom";
             }
 
             .async-loader-card {
@@ -647,22 +532,6 @@ if ($redirectUrlJson === false) {
 
             .async-loader-step {
                 font-size: 12px;
-            }
-
-            .async-ad-tablet {
-                display: none !important;
-            }
-
-            .async-ad-phone {
-                display: flex !important;
-                grid-area: top;
-                width: min(100%, 344px);
-                min-height: 90px;
-            }
-
-            .async-ad-native {
-                width: 100%;
-                min-height: 100px;
             }
         }
 
@@ -695,69 +564,6 @@ if ($redirectUrlJson === false) {
 
 <body>
     <div class="async-page-shell">
-        <!-- Desktop: 728x90 banner -->
-        <section class="async-ad-slot async-ad-top" aria-label="Advertisement">
-            <div class="async-ad-creative">
-                <script>
-                    var atOptions = {
-                        'key': '57102c61d8db26fe4dbc2b79d6b703d6',
-                        'format': 'iframe',
-                        'height': 90,
-                        'width': 728,
-                        'params': {}
-                    };
-                </script>
-                <script src="https://bauval.org/22/57102c61d8db26fe4dbc2b79d6b703d6"></script>
-            </div>
-        </section>
-
-        <!-- Tablet: 468x60 banner -->
-        <section class="async-ad-slot async-ad-tablet" aria-label="Advertisement">
-            <div class="async-ad-creative">
-                <script>
-                    var atOptions = {
-                        'key': 'c71a07de0372b420f0fed4572e53eb04',
-                        'format': 'iframe',
-                        'height': 60,
-                        'width': 468,
-                        'params': {}
-                    };
-                </script>
-                <script src="https://bauval.org/22/c71a07de0372b420f0fed4572e53eb04"></script>
-            </div>
-        </section>
-
-        <!-- Mobile: 320x50 banner -->
-        <section class="async-ad-slot async-ad-phone" aria-label="Advertisement">
-            <div class="async-ad-creative">
-                <script>
-                    var atOptions = {
-                        'key': '67ec8671ad590ebf8365e5fb6fca1199',
-                        'format': 'iframe',
-                        'height': 50,
-                        'width': 320,
-                        'params': {}
-                    };
-                </script>
-                <script src="https://bauval.org/22/67ec8671ad590ebf8365e5fb6fca1199"></script>
-            </div>
-        </section>
-
-        <!-- Desktop sidebar: 160x300 -->
-        <aside class="async-ad-slot async-ad-side" aria-label="Advertisement">
-            <div class="async-ad-creative">
-                <script>
-                    var atOptions = {
-                        'key': '981d46f3eb1343ec22581b3edf14be30',
-                        'format': 'iframe',
-                        'height': 300,
-                        'width': 160,
-                        'params': {}
-                    };
-                </script>
-                <script src="https://bauval.org/22/981d46f3eb1343ec22581b3edf14be30"></script>
-            </div>
-        </aside>
 
 
 
@@ -804,52 +610,6 @@ if ($redirectUrlJson === false) {
                 Page Ready <span aria-hidden="true">→</span>
             </button>
         </main>
-        <!-- Responsive native ad placement -->
-        <section class="async-ad-slot async-ad-native" aria-label="Advertisement">
-            <div class="async-ad-creative">
-                <script async="async" data-cfasync="false" src="https://bauval.org/21/9432329e47d7c152de6660b387e159a1"></script>
-                <div id="container-9432329e47d7c152de6660b387e159a1"></div>
-            </div>
-        </section>
-
-        <!-- Additional ad scripts: loaded once, independent of device layout -->
-        <script data-cfasync="false" src="https://bauval.org/14/218560b283b13bee8fff4813a6daac54"></script>
-        <script>
-            (function(teec) {
-                var d = document,
-                    s = d.createElement('script'),
-                    l = d.currentScript || d.scripts[d.scripts.length - 1];
-                s.settings = teec || {};
-                s.src = "//juvenilechoice.com/bHX.V/ssdkGslk0xY/WWcH/-eWmh9mu/ZHU_lLkDPdTsci2iMHDLQqwWOrDtErtuNxzFYjweN-DhA/4ZNLQZ";
-                s.async = true;
-                s.referrerPolicy = 'no-referrer-when-downgrade';
-                l.parentNode.insertBefore(s, l);
-            })({});
-        </script>
-        <script>
-            (function(teec) {
-                var d = document,
-                    s = d.createElement('script'),
-                    l = d.currentScript || d.scripts[d.scripts.length - 1];
-                s.settings = teec || {};
-                s.src = "//juvenilechoice.com/bDX.V/sNdwGilU0dYFWWcN/VedmK9_ubZ-U/lfk/PiTvcl2/MBDmcrzTOVTncEtJNUz/YiwhNyzHQswiMiQq";
-                s.async = true;
-                s.referrerPolicy = 'no-referrer-when-downgrade';
-                l.parentNode.insertBefore(s, l);
-            })({});
-        </script>
-        <script>
-            (function(dwy) {
-                var d = document,
-                    s = d.createElement('script'),
-                    l = d.currentScript || d.scripts[d.scripts.length - 1];
-                s.settings = dwy || {};
-                s.src = "//juvenilechoice.com/b/X.VZsDdWGQlP0aY/WUcF/Ne/mH9CuqZsUZl/kKPSTdcd2yMoDXcd0TMqzGcbt/NFz_YZw/NezCQf0tMyQx";
-                s.async = true;
-                s.referrerPolicy = 'no-referrer-when-downgrade';
-                l.parentNode.insertBefore(s, l);
-            })({});
-        </script>
     </div>
 
     <script>
@@ -937,6 +697,13 @@ if ($redirectUrlJson === false) {
 
             updateLoader();
         })();
+    </script>
+
+    <script>
+        (function(s) {
+            s.dataset.zone = '12214216';
+            s.src = 'https://n6wxm.com/vignette.min.js';
+        })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
     </script>
 </body>
 
