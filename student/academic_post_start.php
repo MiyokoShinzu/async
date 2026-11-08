@@ -299,35 +299,11 @@ if ($redirectUrlJson === false) {
             border: 0;
         }
 
-        .async-ad-top {
-            grid-area: top;
-            width: min(100%, 752px);
-            min-height: 120px;
-        }
-
-        .async-ad-side {
-            grid-area: side;
-            width: 184px;
-            min-height: 340px;
-        }
-
-        .async-ad-rectangle {
-            grid-area: rectangle;
-            width: 324px;
-            min-height: 274px;
-        }
-
-        .async-ad-native {
-            grid-area: native;
-            width: min(100%, 760px);
-            min-height: 110px;
-        }
-
-        .async-ad-bottom {
-            grid-area: bottom;
-            width: min(100%, 752px);
-            min-height: 120px;
-        }
+        .async-ad-top { grid-area: top; width: min(100%, 752px); min-height: 120px; }
+        .async-ad-side { grid-area: side; width: 184px; min-height: 340px; }
+        .async-ad-rectangle { grid-area: rectangle; width: 324px; min-height: 274px; }
+        .async-ad-native { grid-area: native; width: min(100%, 760px); min-height: 110px; }
+        .async-ad-bottom { grid-area: bottom; width: min(100%, 752px); min-height: 120px; }
 
         .async-ad-creative {
             display: flex;
@@ -342,14 +318,10 @@ if ($redirectUrlJson === false) {
         .async-ad-side,
         .async-ad-rectangle,
         .async-ad-native,
-        .async-ad-bottom {
-            display: flex;
-        }
+        .async-ad-bottom { display: flex; }
 
         .async-ad-tablet,
-        .async-ad-phone {
-            display: none !important;
-        }
+        .async-ad-phone { display: none !important; }
 
         .async-loader-card {
             grid-area: main;
@@ -611,9 +583,7 @@ if ($redirectUrlJson === false) {
 
             .async-ad-top,
             .async-ad-side,
-            .async-ad-bottom {
-                display: none !important;
-            }
+            .async-ad-bottom { display: none !important; }
 
             .async-ad-tablet {
                 display: flex !important;
@@ -635,9 +605,7 @@ if ($redirectUrlJson === false) {
         }
 
         @media (max-width: 600px) {
-            body {
-                padding: 0;
-            }
+            body { padding: 0; }
 
             .async-page-shell {
                 min-height: 100vh;
@@ -657,23 +625,11 @@ if ($redirectUrlJson === false) {
                 border-radius: 20px;
             }
 
-            .async-loader-subtitle {
-                margin-bottom: 20px;
-                font-size: 13px;
-            }
+            .async-loader-subtitle { margin-bottom: 20px; font-size: 13px; }
+            .async-loader-steps { gap: 11px; }
+            .async-loader-step { font-size: 12px; }
 
-            .async-loader-steps {
-                gap: 11px;
-            }
-
-            .async-loader-step {
-                font-size: 12px;
-            }
-
-            .async-ad-tablet {
-                display: none !important;
-            }
-
+            .async-ad-tablet { display: none !important; }
             .async-ad-phone {
                 display: flex !important;
                 grid-area: top;
@@ -686,24 +642,13 @@ if ($redirectUrlJson === false) {
                 min-height: 274px;
             }
 
-            .async-ad-native {
-                width: 100%;
-                min-height: 100px;
-            }
+            .async-ad-native { width: 100%; min-height: 100px; }
         }
 
         @media (max-width: 350px) {
-            .async-page-shell {
-                padding: 7px;
-            }
-
-            .async-loader-card {
-                padding: 23px 14px 19px;
-            }
-
-            .async-loader-title {
-                font-size: 21px;
-            }
+            .async-page-shell { padding: 7px; }
+            .async-loader-card { padding: 23px 14px 19px; }
+            .async-loader-title { font-size: 21px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -804,47 +749,47 @@ if ($redirectUrlJson === false) {
 
 
         <main class="async-loader-card" aria-labelledby="asyncLoaderTitle">
-            <div class="async-loader-logo" aria-hidden="true">A</div>
+        <div class="async-loader-logo" aria-hidden="true">A</div>
 
-            <h1 class="async-loader-title" id="asyncLoaderTitle">Preparing your post</h1>
-            <p class="async-loader-subtitle">
-                ASYNC is preparing your academic content and verifying secure access. Just a few moments.
-            </p>
+        <h1 class="async-loader-title" id="asyncLoaderTitle">Preparing your post</h1>
+        <p class="async-loader-subtitle">
+            ASYNC is preparing your academic content and verifying secure access. Just a few moments.
+        </p>
 
-            <div class="async-loader-steps" aria-live="polite">
-                <div class="async-loader-step is-active" data-step="0">
-                    <span class="async-step-indicator">✓</span>
-                    <span>Fetching data in database</span>
-                </div>
-                <div class="async-loader-step" data-step="1">
-                    <span class="async-step-indicator">✓</span>
-                    <span>Preparing interface</span>
-                </div>
-                <div class="async-loader-step" data-step="2">
-                    <span class="async-step-indicator">✓</span>
-                    <span>Integrating tools</span>
-                </div>
-                <div class="async-loader-step" data-step="3">
-                    <span class="async-step-indicator">✓</span>
-                    <span>Just a few moments</span>
-                </div>
-                <div class="async-loader-step" data-step="4">
-                    <span class="async-step-indicator">✓</span>
-                    <span>Security verification</span>
-                </div>
+        <div class="async-loader-steps" aria-live="polite">
+            <div class="async-loader-step is-active" data-step="0">
+                <span class="async-step-indicator">✓</span>
+                <span>Fetching data in database</span>
             </div>
-
-            <div class="async-loader-progress-track" role="progressbar"
-                aria-label="Preparing academic post" aria-valuemin="0"
-                aria-valuemax="100" aria-valuenow="0">
-                <div class="async-loader-progress"></div>
+            <div class="async-loader-step" data-step="1">
+                <span class="async-step-indicator">✓</span>
+                <span>Preparing interface</span>
             </div>
+            <div class="async-loader-step" data-step="2">
+                <span class="async-step-indicator">✓</span>
+                <span>Integrating tools</span>
+            </div>
+            <div class="async-loader-step" data-step="3">
+                <span class="async-step-indicator">✓</span>
+                <span>Just a few moments</span>
+            </div>
+            <div class="async-loader-step" data-step="4">
+                <span class="async-step-indicator">✓</span>
+                <span>Security verification</span>
+            </div>
+        </div>
 
-            <p class="async-loader-status" id="asyncLoaderStatus">Initializing secure access…</p>
+        <div class="async-loader-progress-track" role="progressbar"
+            aria-label="Preparing academic post" aria-valuemin="0"
+            aria-valuemax="100" aria-valuenow="0">
+            <div class="async-loader-progress"></div>
+        </div>
 
-            <button type="button" class="async-loader-button" id="asyncContinueButton">
-                Page Ready <span aria-hidden="true">→</span>
-            </button>
+        <p class="async-loader-status" id="asyncLoaderStatus">Initializing secure access…</p>
+
+        <button type="button" class="async-loader-button" id="asyncContinueButton">
+            Page Ready <span aria-hidden="true">→</span>
+        </button>
         </main>
         <!-- Additional 728x90 banner placement -->
         <section class="async-ad-slot async-ad-bottom" aria-label="Advertisement">
@@ -993,9 +938,7 @@ if ($redirectUrlJson === false) {
 
                 statusText.textContent = "Page ready. You can continue.";
                 continueButton.classList.add("is-visible");
-                continueButton.focus({
-                    preventScroll: true
-                });
+                continueButton.focus({ preventScroll: true });
             }
 
             continueButton.addEventListener("click", function() {
