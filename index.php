@@ -1942,62 +1942,13 @@ $currentYear = date('Y');
 
 
         /* =====================================================
-           DISPLAY ADVERTISEMENT SLOT
+           RESPONSIVE NATIVE AD CONTAINERS
         ====================================================== */
         .ad-section {
             position: relative;
             z-index: 1;
             padding: 24px 0 34px;
             background: var(--github-bg);
-        }
-
-        .ad-slot {
-            width: min(100%, 340px);
-            min-height: 278px;
-            margin: 0 auto;
-            padding: 10px 12px 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 8px;
-            border: 1px solid var(--github-border);
-            border-radius: 12px;
-            background: var(--github-bg-soft);
-        }
-
-        .ad-label {
-            align-self: flex-start;
-            color: var(--muted);
-            font-size: 10px;
-            line-height: 1.2;
-            letter-spacing: .12em;
-            text-transform: uppercase;
-        }
-
-        .ad-frame {
-            width: 300px;
-            max-width: 100%;
-            min-height: 250px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        body[data-theme="light"] .ad-section {
-            background: #f6f8fa;
-        }
-
-        body[data-theme="light"] .ad-slot {
-            background: #ffffff;
-            border-color: #d0d7de;
-        }
-
-        @media (max-width: 380px) {
-            .ad-slot {
-                width: 100%;
-            }
         }
 
         /* =====================================================
@@ -2043,7 +1994,7 @@ $currentYear = date('Y');
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 18px;
             width: 100%;
-            margin-top: 18px;
+            margin-top: 0;
         }
 
         .ad-network-slot {
@@ -2590,27 +2541,11 @@ $currentYear = date('Y');
 
 
         <!-- =====================================================
-             DISPLAY ADVERTISEMENT
-             Centered between the hero and platform sections.
+             NATIVE ADVERTISEMENTS
+             Two responsive JuvenileChoice native ad placements.
         ====================================================== -->
-        <section class="ad-section" aria-label="Advertisement">
+        <section class="ad-section" aria-label="Advertisements">
             <div class="container-main">
-                <div class="ad-slot">
-                    <span class="ad-label">Advertisement</span>
-                    <div id="async-display-ad" class="ad-frame">
-                        <script>
-                            atOptions = {
-                                'key': 'cd3ce2cfd6fc9f0020dc158a1d07d66d',
-                                'format': 'iframe',
-                                'height': 250,
-                                'width': 300,
-                                'params': {}
-                            };
-                        </script>
-                        <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
-                    </div>
-                </div>
-
                 <div class="ad-network-grid">
                     <div class="ad-network-slot">
                         <span class="ad-label">Advertisement</span>
