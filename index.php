@@ -1269,15 +1269,6 @@ $currentYear = date('Y');
         }
 
 
-        .section-light {
-
-            color: #24292f;
-
-            background:
-                var(--surface);
-        }
-
-
         .section-heading {
 
             max-width: 700px;
@@ -1330,13 +1321,6 @@ $currentYear = date('Y');
             line-height: 1.75;
 
             font-size: 15px;
-        }
-
-
-        .section-light .section-description {
-
-            color:
-                #57606a;
         }
 
 
@@ -1958,158 +1942,6 @@ $currentYear = date('Y');
 
 
         /* =====================================================
-           LIGHT / DARK THEME TOGGLE
-        ====================================================== */
-
-        .theme-toggle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-height: 38px;
-            padding: 8px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            border-radius: 8px;
-            color: var(--text);
-            background: rgba(255, 255, 255, 0.05);
-            font: inherit;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.11);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        body[data-theme="light"] {
-            --github-bg: #f6f8fa;
-            --github-bg-soft: #ffffff;
-            --github-card: #ffffff;
-            --github-border: #d0d7de;
-            --text: #24292f;
-            --muted: #57606a;
-            --surface: #eef2f6;
-            --surface-border: #d0d7de;
-            background: var(--github-bg);
-            color: var(--text);
-        }
-
-        body[data-theme="light"] .navbar-custom {
-            background: rgba(255, 255, 255, 0.88);
-            border-bottom-color: rgba(31, 35, 40, 0.12);
-        }
-
-        body[data-theme="light"] .brand,
-        body[data-theme="light"] .nav-links a:hover,
-        body[data-theme="light"] .mini-title,
-        body[data-theme="light"] .activity-title,
-        body[data-theme="light"] .workflow-card h3,
-        body[data-theme="light"] .floating-value {
-            color: #24292f;
-        }
-
-        body[data-theme="light"] .nav-login {
-            color: #24292f !important;
-            border-color: rgba(31, 35, 40, 0.18);
-            background: rgba(31, 35, 40, 0.04);
-        }
-
-        body[data-theme="light"] .nav-login:hover {
-            background: rgba(31, 35, 40, 0.08);
-            border-color: rgba(31, 35, 40, 0.3);
-        }
-
-        body[data-theme="light"] .dashboard-3d {
-            border-color: #d0d7de;
-            background: linear-gradient(145deg, #ffffff, #eef2f6);
-            box-shadow: 0 30px 70px rgba(31, 35, 40, 0.16), 0 0 50px rgba(37, 99, 235, 0.06);
-        }
-
-        body[data-theme="light"] .dashboard-top,
-        body[data-theme="light"] .dashboard-sidebar {
-            background: rgba(31, 35, 40, 0.035);
-            border-color: rgba(31, 35, 40, 0.1);
-        }
-
-        body[data-theme="light"] .side-item {
-            color: #57606a;
-        }
-
-        body[data-theme="light"] .side-item.active {
-            color: #1f5fc4;
-            background: rgba(37, 99, 235, 0.12);
-        }
-
-        body[data-theme="light"] .progress-card,
-        body[data-theme="light"] .activity {
-            background: rgba(255, 255, 255, 0.82);
-            border-color: #d8dee4;
-        }
-
-        body[data-theme="light"] .progress-bar-custom {
-            background: #e1e4e8;
-        }
-
-        body[data-theme="light"] .activity-title {
-            color: #24292f;
-        }
-
-        body[data-theme="light"] .floating-card {
-            background: rgba(255, 255, 255, 0.94);
-            border-color: rgba(31, 35, 40, 0.12);
-            box-shadow: 0 20px 40px rgba(31, 35, 40, 0.14);
-        }
-
-        body[data-theme="light"] .section:not(.section-light) {
-            background: #f6f8fa;
-        }
-
-        body[data-theme="light"] .section:not(.section-light) .section-title,
-        body[data-theme="light"] .section:not(.section-light) .workflow-card h3 {
-            color: #24292f;
-        }
-
-        body[data-theme="light"] .workflow-card {
-            background: #ffffff;
-            border-color: #d0d7de;
-        }
-
-        body[data-theme="light"] .final-cta {
-            background: linear-gradient(135deg, #eef4ff, #f6f8fa);
-            border-color: #d0d7de;
-        }
-
-        body[data-theme="light"] footer {
-            background: #ffffff;
-            border-top-color: #d0d7de;
-        }
-
-        body[data-theme="light"] .footer-brand span {
-            color: #24292f;
-        }
-
-        body[data-theme="light"] .theme-toggle {
-            color: #24292f;
-            border-color: rgba(31, 35, 40, 0.18);
-            background: rgba(31, 35, 40, 0.04);
-        }
-
-        body[data-theme="light"] .theme-toggle:hover {
-            background: rgba(31, 35, 40, 0.09);
-            border-color: rgba(31, 35, 40, 0.3);
-        }
-
-        @media (max-width: 480px) {
-            .theme-toggle {
-                padding: 7px 9px;
-                gap: 5px;
-                font-size: 12px;
-            }
-        }
-
-        /* =====================================================
            DISPLAY ADVERTISEMENT SLOT
         ====================================================== */
         .ad-section {
@@ -2165,6 +1997,92 @@ $currentYear = date('Y');
         @media (max-width: 380px) {
             .ad-slot {
                 width: 100%;
+            }
+        }
+
+        /* =====================================================
+           DARK SECTION CARDS + RESPONSIVE AD CONTAINERS
+        ====================================================== */
+        .section {
+            background: var(--github-bg);
+            color: var(--text);
+        }
+
+        .section-title {
+            color: var(--text);
+        }
+
+        .section-description {
+            color: var(--muted);
+        }
+
+        .resource-card,
+        .guideline {
+            color: var(--text);
+            background: var(--github-card);
+            border-color: var(--github-border);
+        }
+
+        .resource-card:hover {
+            border-color: var(--blue-light);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+        }
+
+        .resource-card h3,
+        .guideline h4 {
+            color: var(--text);
+        }
+
+        .resource-card p,
+        .guideline p {
+            color: var(--muted);
+        }
+
+        .ad-network-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            width: 100%;
+            margin-top: 18px;
+        }
+
+        .ad-network-slot {
+            width: 100%;
+            min-width: 0;
+            min-height: 120px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            overflow: hidden;
+            border: 1px solid var(--github-border);
+            border-radius: 12px;
+            background: var(--github-bg-soft);
+        }
+
+        .ad-network-slot>div {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-network-slot script {
+            max-width: 100%;
+        }
+
+        @media (max-width: 700px) {
+            .ad-network-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ad-network-slot {
+                min-height: 100px;
             }
         }
 
@@ -2258,12 +2176,6 @@ $currentYear = date('Y');
                     <a href="#guidelines">
                         Guidelines
                     </a>
-
-                    <button type="button" class="theme-toggle" id="themeToggle"
-                        aria-label="Switch to light theme" aria-pressed="false">
-                        <i class="bi bi-sun-fill" id="themeToggleIcon" aria-hidden="true"></i>
-                        <span id="themeToggleLabel">Light mode</span>
-                    </button>
 
                     <a href="login.php"
                         class="nav-login">
@@ -2698,6 +2610,44 @@ $currentYear = date('Y');
                         <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
                     </div>
                 </div>
+
+                <div class="ad-network-grid">
+                    <div class="ad-network-slot">
+                        <span class="ad-label">Advertisement</span>
+                        <div id="async-juvenile-ad-one">
+                            <script>
+                                (function(yliil) {
+                                    var d = document,
+                                        s = d.createElement('script'),
+                                        l = d.currentScript || d.scripts[d.scripts.length - 1];
+                                    s.settings = yliil || {};
+                                    s.src = "//juvenilechoice.com/buX.VesxdxGZlT0lYmW_cG/TeNmq9gucZfUhlxksPSTKcR2LMADCQAw/OjDoEEtaN/zjYBwfNTDQA/4gNjQ_";
+                                    s.async = true;
+                                    s.referrerPolicy = 'no-referrer-when-downgrade';
+                                    l.parentNode.insertBefore(s, l);
+                                })({})
+                            </script>
+                        </div>
+                    </div>
+
+                    <div class="ad-network-slot">
+                        <span class="ad-label">Advertisement</span>
+                        <div id="async-juvenile-ad-two">
+                            <script>
+                                (function(yliil) {
+                                    var d = document,
+                                        s = d.createElement('script'),
+                                        l = d.currentScript || d.scripts[d.scripts.length - 1];
+                                    s.settings = yliil || {};
+                                    s.src = "//juvenilechoice.com/bEXCVHs.dXGJlD0/Y/Wqc-/ve/m-9OuBZvUilekkPOTacA2SM_Dfci3uNjDIUTtoN/z/Y/w/Ngz/c/0bOnQF";
+                                    s.async = true;
+                                    s.referrerPolicy = 'no-referrer-when-downgrade';
+                                    l.parentNode.insertBefore(s, l);
+                                })({})
+                            </script>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -2706,7 +2656,7 @@ $currentYear = date('Y');
              PLATFORM
         ====================================================== -->
 
-        <section class="section section-light"
+        <section class="section"
             id="platform">
 
             <div class="container-main">
@@ -2933,7 +2883,7 @@ $currentYear = date('Y');
              GUIDELINES
         ====================================================== -->
 
-        <section class="section section-light"
+        <section class="section"
             id="guidelines">
 
             <div class="container-main">
@@ -3624,58 +3574,6 @@ $currentYear = date('Y');
 
 
         /* =====================================================
-           LIGHT / DARK THEME TOGGLE
-        ====================================================== */
-
-        const themeToggle = document.querySelector('#themeToggle');
-        const themeToggleIcon = document.querySelector('#themeToggleIcon');
-        const themeToggleLabel = document.querySelector('#themeToggleLabel');
-
-        function applyTheme(theme) {
-            const isLight = theme === 'light';
-            document.body.setAttribute('data-theme', isLight ? 'light' : 'dark');
-
-            if (themeToggle) {
-                themeToggle.setAttribute('aria-pressed', String(isLight));
-                themeToggle.setAttribute('aria-label', isLight ? 'Switch to dark theme' : 'Switch to light theme');
-            }
-            if (themeToggleIcon) {
-                themeToggleIcon.className = isLight ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
-            }
-            if (themeToggleLabel) {
-                themeToggleLabel.textContent = isLight ? 'Dark mode' : 'Light mode';
-            }
-
-            const navbar = document.querySelector('.navbar-custom');
-            if (navbar) {
-                navbar.style.background = isLight ?
-                    (window.scrollY > 30 ? 'rgba(255, 255, 255, 0.96)' : 'rgba(255, 255, 255, 0.88)') :
-                    (window.scrollY > 30 ? 'rgba(13, 17, 23, 0.94)' : 'rgba(13, 17, 23, 0.82)');
-            }
-        }
-
-        let savedTheme = 'dark';
-        try {
-            savedTheme = localStorage.getItem('ets-async-theme') || 'dark';
-        } catch (error) {
-            savedTheme = 'dark';
-        }
-        applyTheme(savedTheme);
-
-        if (themeToggle) {
-            themeToggle.addEventListener('click', function() {
-                const nextTheme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-                applyTheme(nextTheme);
-                try {
-                    localStorage.setItem('ets-async-theme', nextTheme);
-                } catch (error) {
-                    // Theme switching still works for this page if storage is unavailable.
-                }
-            });
-        }
-
-
-        /* =====================================================
            NAVBAR SCROLL EFFECT
         ====================================================== */
 
@@ -3687,16 +3585,9 @@ $currentYear = date('Y');
             'scroll',
             function() {
 
-                const isLight = document.body.getAttribute('data-theme') === 'light';
-                if (isLight) {
-                    navbar.style.background = window.scrollY > 30 ?
-                        'rgba(255, 255, 255, 0.96)' :
-                        'rgba(255, 255, 255, 0.88)';
-                } else {
-                    navbar.style.background = window.scrollY > 30 ?
-                        'rgba(13, 17, 23, 0.94)' :
-                        'rgba(13, 17, 23, 0.82)';
-                }
+                navbar.style.background = window.scrollY > 30 ?
+                    'rgba(13, 17, 23, 0.94)' :
+                    'rgba(13, 17, 23, 0.82)';
 
             }
         );
