@@ -2163,39 +2163,6 @@
         display: block;
     }
 
-    #asyncPresentationMagnifier {
-        display: none;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 170px;
-        height: 170px;
-        border: 3px solid #2563eb;
-        border-radius: 50%;
-        overflow: hidden;
-        background: rgba(255, 255, 255, .12);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
-        transform: translate(22px, 22px);
-    }
-
-    #asyncPresentationOverlay.mode-magnifier #asyncPresentationMagnifier {
-        display: block;
-    }
-
-    #asyncPresentationMagnifierContent {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font: 800 22px/1.25 system-ui;
-        background: rgba(15, 23, 42, .78);
-        text-align: center;
-        padding: 12px;
-        overflow: hidden;
-    }
-
     #asyncPresentationOverlay.mode-ruler {
         cursor: crosshair;
     }
@@ -4582,6 +4549,674 @@
         width: min(260px, calc(100vw - 30px));
         z-index: 100150;
     }
+
+
+    /* Spin wheel lives inside Presentation Tools. */
+    #asyncPresentationPanel .presentation-wheel-tool {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+        padding: 13px;
+        border: 1px solid var(--aux-border);
+        border-radius: 15px;
+        background: var(--aux-glass, rgba(255, 255, 255, .72));
+    }
+
+    /* Compact centered wheel dialog; the backdrop only dims the page. */
+    .wheel-modal {
+        --aux-text: #172033;
+        --aux-glass: rgba(255, 255, 255, .97);
+        --aux-control: rgba(241, 245, 249, .96);
+        --aux-border: rgba(148, 163, 184, .38);
+        position: fixed;
+        inset: 0;
+        z-index: 100250;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: rgba(8, 15, 32, .34);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .25s ease, visibility .25s ease;
+    }
+
+    html[data-theme="dark"] .wheel-modal {
+        --aux-text: #f1f5f9;
+        --aux-glass: rgba(25, 32, 45, .98);
+        --aux-control: rgba(45, 55, 72, .96);
+        --aux-border: rgba(148, 163, 184, .25);
+        background: rgba(2, 6, 23, .48);
+    }
+
+    .wheel-modal.is-visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .wheel-modal-card {
+        width: min(440px, calc(100vw - 32px));
+        max-height: min(78vh, 680px);
+        overflow: auto;
+        padding: 16px;
+        border: 1px solid var(--aux-border);
+        border-radius: 20px;
+        background: var(--aux-glass);
+        color: var(--aux-text);
+        box-shadow: 0 18px 55px rgba(0, 0, 0, .24);
+        transform: translateY(18px) scale(.96);
+        transition: transform .3s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .wheel-modal.is-visible .wheel-modal-card {
+        transform: translateY(0) scale(1);
+    }
+
+    .wheel-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--aux-text);
+    }
+
+    .wheel-modal-header div {
+        display: grid;
+        gap: 3px;
+    }
+
+    .wheel-modal-header strong {
+        font-size: 16px;
+    }
+
+    .wheel-modal-header span {
+        font-size: 11px;
+        opacity: .72;
+    }
+
+    #rtWheelModalClose {
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        border: 0;
+        border-radius: 50%;
+        background: var(--aux-control);
+        color: var(--aux-text);
+        cursor: pointer;
+    }
+
+    .wheel-modal .presentation-wheel-tool {
+        border: 0;
+        padding: 12px 0 0;
+        background: transparent;
+    }
+
+    .wheel-modal .presentation-wheel-heading,
+    .wheel-modal .wheel-modal-header,
+    .wheel-modal #rtWheelResult {
+        color: var(--aux-text);
+    }
+
+    .wheel-modal #rtWheelItems {
+        background: var(--aux-control);
+        color: var(--aux-text);
+        border-color: var(--aux-border);
+    }
+
+    .wheel-modal #rtWheelItems::placeholder {
+        color: var(--aux-text);
+        opacity: .58;
+    }
+
+    @media (max-width:520px) {
+        .wheel-modal {
+            padding: 12px;
+        }
+
+        .wheel-modal-card {
+            width: min(410px, calc(100vw - 24px));
+            max-height: 82vh;
+            padding: 14px;
+        }
+
+        .wheel-modal .presentation-wheel-stage {
+            width: min(270px, 68vw);
+        }
+    }
+
+    .wheel-modal .presentation-wheel-stage {
+        width: min(310px, min(68vw, 38vh));
+    }
+
+    #rtWheelCanvas {
+        transform-origin: center;
+    }
+
+    @media (prefers-reduced-motion:no-preference) {
+        .wheel-modal #rtWheelCanvas {
+            animation: wheelIdleFloat 4s ease-in-out infinite;
+        }
+    }
+
+    @keyframes wheelIdleFloat {
+
+        0%,
+        100% {
+            filter: drop-shadow(0 5px 8px rgba(15, 23, 42, .12))
+        }
+
+        50% {
+            filter: drop-shadow(0 10px 14px rgba(15, 23, 42, .22))
+        }
+    }
+
+    .presentation-wheel-heading {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        color: var(--aux-text);
+    }
+
+    .presentation-wheel-heading strong {
+        font-size: 13px;
+    }
+
+    .presentation-wheel-heading span {
+        font-size: 11px;
+        opacity: .72;
+    }
+
+    #rtWheelItems {
+        width: 100%;
+        min-height: 82px;
+        resize: vertical;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--aux-border);
+        background: var(--aux-control);
+        color: var(--aux-text);
+        font: inherit;
+        font-size: 12px;
+    }
+
+    .presentation-wheel-stage {
+        position: relative;
+        width: min(230px, 100%);
+        aspect-ratio: 1;
+        margin: 5px auto 0;
+    }
+
+    #rtWheelPointer {
+        position: absolute;
+        z-index: 2;
+        left: 50%;
+        top: -5px;
+        transform: translateX(-50%);
+        border-left: 13px solid transparent;
+        border-right: 13px solid transparent;
+        border-top: 27px solid #e11d48;
+        filter: drop-shadow(0 3px 3px #0005);
+    }
+
+    #rtWheelCanvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border-radius: 50%;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, .22);
+    }
+
+    #rtWheelSpin {
+        width: 100%;
+        border: 0;
+        border-radius: 10px;
+        padding: 11px 14px;
+        background: linear-gradient(135deg, #e11d48, #be123c);
+        color: #fff;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    #rtWheelSpin:disabled {
+        opacity: .6;
+        cursor: wait;
+    }
+
+    #rtWheelResult {
+        color: var(--aux-text);
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .wheel-winner-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100300;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: rgba(8, 15, 32, .62);
+        backdrop-filter: blur(9px);
+        -webkit-backdrop-filter: blur(9px);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .25s ease, visibility .25s ease;
+    }
+
+    .wheel-winner-overlay.is-visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .wheel-winner-card {
+        position: relative;
+        width: min(430px, 100%);
+        padding: 32px 25px 25px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, .55);
+        border-radius: 24px;
+        background: linear-gradient(145deg, #fff, #fff7f8);
+        color: #172033;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, .3);
+        transform: translateY(20px) scale(.88);
+        transition: transform .42s cubic-bezier(.16, 1.3, .3, 1);
+        overflow: hidden;
+    }
+
+    .wheel-winner-overlay.is-visible .wheel-winner-card {
+        transform: translateY(0) scale(1);
+    }
+
+    .wheel-winner-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #475569;
+        cursor: pointer;
+    }
+
+    .wheel-winner-burst {
+        font-size: 44px;
+        margin-bottom: 8px;
+        animation: wheelWinnerBounce .8s ease both;
+    }
+
+    .wheel-winner-eyebrow {
+        color: #e11d48;
+        font-size: 10px;
+        letter-spacing: 2px;
+        font-weight: 900;
+    }
+
+    .wheel-winner-card h2 {
+        margin: 8px 0 15px;
+        font-size: 23px;
+        font-weight: 900;
+    }
+
+    .wheel-winner-name {
+        padding: 16px 12px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #ffe4e9, #fff1f2);
+        color: #be123c;
+        font-size: clamp(22px, 6vw, 32px);
+        font-weight: 900;
+        overflow-wrap: anywhere;
+        box-shadow: inset 0 1px 0 #fff;
+    }
+
+    .wheel-winner-done {
+        margin-top: 20px;
+        padding: 11px 25px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #e11d48, #be123c);
+        color: #fff;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 7px 18px rgba(225, 29, 72, .25);
+    }
+
+    @keyframes wheelWinnerBounce {
+        0% {
+            transform: scale(.3) rotate(-20deg);
+            opacity: 0
+        }
+
+        65% {
+            transform: scale(1.2) rotate(8deg);
+            opacity: 1
+        }
+
+        100% {
+            transform: scale(1) rotate(0)
+        }
+    }
+
+    @media (max-width:520px) {
+        .wheel-winner-card {
+            padding: 28px 18px 20px;
+        }
+    }
+
+    /* Final study-tool interaction and appearance fixes. */
+    #asyncToolsDock {
+        pointer-events: none !important;
+    }
+
+    #asyncToolsFab,
+    #asyncToolsMenu.is-visible {
+        pointer-events: auto !important;
+    }
+
+    #asyncToolsMenu:not(.is-visible) {
+        pointer-events: none !important;
+    }
+
+    /* Reading Tools has a fixed, non-resizable window size. */
+    #readingToolsPanel .async-tool-resize-handle {
+        display: none !important;
+        pointer-events: none !important;
+    }
+
+    /* Match every tool header to its launcher/menu icon color. */
+    #readingToolsPanel .rt-header {
+        background: #3b82f6 !important;
+    }
+
+    #asyncNotesPanel .aux-head {
+        background: #0d9488 !important;
+    }
+
+    #asyncSoundPanel .aux-head {
+        background: #d97706 !important;
+    }
+
+    #asyncFloatingTimer .aft-header {
+        background: #3b82f6 !important;
+    }
+
+    #asyncPresentationPanel .aux-head {
+        background: #e11d48 !important;
+    }
+
+    #asyncPresentationPanel .presentation-text-value {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 48px;
+        padding: 8px 5px;
+        color: var(--aux-text);
+        font-size: 11px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+    }
+
+
+
+    /* Keep Ambient Sounds and Timer on the same theme-aware glass surface. */
+    #asyncSoundPanel,
+    #asyncFloatingTimer {
+        background: var(--aux-glass, rgba(255, 255, 255, .91)) !important;
+        border: 1px solid var(--aux-border, rgba(100, 116, 139, .25)) !important;
+        border-radius: 19px !important;
+        box-shadow: 0 22px 65px rgba(15, 23, 42, .23), inset 0 1px 0 rgba(255, 255, 255, .32) !important;
+        -webkit-backdrop-filter: blur(22px) saturate(150%) !important;
+        backdrop-filter: blur(22px) saturate(150%) !important;
+    }
+
+    html[data-theme="dark"] #asyncSoundPanel,
+    html[data-theme="dark"] #asyncFloatingTimer {
+        background: var(--aux-glass, rgba(25, 32, 45, .93)) !important;
+        border-color: var(--aux-border, rgba(148, 163, 184, .25)) !important;
+    }
+
+
+    /* Final tool identity colors: Timer blue, Ambient Sounds orange. */
+    #asyncFloatingTimer .aft-header {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+    }
+
+    #asyncDockTimer {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+        color: #fff !important;
+        border-color: rgba(147, 197, 253, .65) !important;
+    }
+
+    #asyncFloatingTimer .aft-display {
+        color: #1d4ed8 !important;
+        text-shadow: 0 1px 12px rgba(59, 130, 246, .16);
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer .aft-display {
+        color: #bfdbfe !important;
+    }
+
+    #asyncSoundPanel .aux-head {
+        background: linear-gradient(135deg, #f59e0b, #c2410c) !important;
+    }
+
+    #asyncSoundFab {
+        background: linear-gradient(135deg, #f59e0b, #c2410c) !important;
+        border-color: rgba(253, 186, 116, .75) !important;
+    }
+
+    #asyncSoundPanel .sound-actions button:first-child {
+        background: linear-gradient(135deg, #f59e0b, #c2410c) !important;
+    }
+
+    #asyncSoundPanel .sound-choice button.is-playing {
+        border: 2px solid #f59e0b !important;
+        background: linear-gradient(135deg, rgba(245, 158, 11, .28), rgba(194, 65, 12, .16)) !important;
+        color: #9a3412 !important;
+        font-weight: 800 !important;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, .14), 0 7px 18px rgba(194, 65, 12, .18) !important;
+        transform: translateY(-1px);
+        position: relative;
+    }
+
+    #asyncSoundPanel .sound-choice button.is-playing::after {
+        content: '  • PLAYING';
+        font-size: 9px;
+        letter-spacing: .04em;
+    }
+
+    html[data-theme="dark"] #asyncSoundPanel .sound-choice button.is-playing {
+        color: #ffedd5 !important;
+        border-color: #fbbf24 !important;
+    }
+
+    #asyncPresentationSettings .sound-volume {
+        flex-wrap: wrap;
+    }
+
+    #asyncPresentationSettings #rtFont {
+        max-width: 100%;
+    }
+
+
+
+    /* Final refinement: readable timer layout in light mode and violet ambient identity. */
+    #asyncFloatingTimer {
+        --timer-text: #172554;
+        --timer-muted: #334155;
+        --timer-control-bg: rgba(219, 234, 254, .78);
+        --timer-control-border: rgba(59, 130, 246, .32);
+        color: var(--timer-text) !important;
+        padding: 13px !important;
+        min-width: 235px !important;
+    }
+
+    #asyncFloatingTimer .aft-header {
+        display: flex !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        gap: 7px !important;
+        min-height: 42px;
+        padding: 7px 8px !important;
+    }
+
+    #asyncFloatingTimer .aft-header strong {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #fff !important;
+        font-size: 12px !important;
+    }
+
+    #asyncFloatingTimer .aft-display {
+        color: #1d4ed8 !important;
+        font-size: clamp(30px, 12cqi, 42px) !important;
+        line-height: 1.25 !important;
+        padding: 15px 2px 13px !important;
+        text-shadow: none !important;
+        overflow: visible !important;
+    }
+
+    #asyncFloatingTimer .aft-inputs {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px !important;
+        width: 100%;
+    }
+
+    #asyncFloatingTimer .aft-inputs label {
+        color: #334155 !important;
+        font-size: 11px !important;
+        font-weight: 700;
+    }
+
+    #asyncFloatingTimer .aft-inputs input {
+        width: 100% !important;
+        max-width: none !important;
+        min-height: 38px;
+        background: var(--timer-control-bg) !important;
+        border: 1px solid var(--timer-control-border) !important;
+        color: #172554 !important;
+        -webkit-text-fill-color: #172554 !important;
+        font-size: 15px !important;
+        font-weight: 700;
+    }
+
+    #asyncFloatingTimer .aft-actions {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px !important;
+        width: 100%;
+    }
+
+    #asyncFloatingTimer .aft-actions button {
+        min-height: 38px !important;
+        padding: 7px 5px !important;
+        background: var(--timer-control-bg) !important;
+        border: 1px solid var(--timer-control-border) !important;
+        color: #1e3a8a !important;
+        font-size: 12px !important;
+        font-weight: 700;
+    }
+
+    #asyncFloatingTimer .aft-actions button:first-child {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+        color: #fff !important;
+    }
+
+    #asyncFloatingTimer #aftStatus {
+        color: #475569 !important;
+        line-height: 1.4;
+    }
+
+    #asyncFloatingTimer #aftTickToggle {
+        color: #fff !important;
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer {
+        --timer-text: #eff6ff;
+        --timer-muted: #cbd5e1;
+        --timer-control-bg: rgba(30, 64, 175, .42);
+        --timer-control-border: rgba(147, 197, 253, .34);
+        color: #eff6ff !important;
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer .aft-display {
+        color: #bfdbfe !important;
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer .aft-inputs label,
+    html[data-theme="dark"] #asyncFloatingTimer #aftStatus {
+        color: #dbeafe !important;
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer .aft-inputs input {
+        color: #f8fafc !important;
+        -webkit-text-fill-color: #f8fafc !important;
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer .aft-actions button {
+        color: #eff6ff !important;
+    }
+
+    html[data-theme="dark"] #asyncFloatingTimer .aft-actions button:first-child {
+        color: #fff !important;
+    }
+
+    /* Ambient Sounds uses violet consistently in both themes and on its launcher. */
+    #asyncSoundPanel .aux-head,
+    #asyncSoundFab {
+        background: linear-gradient(135deg, #8b5cf6, #6d28d9) !important;
+        border-color: rgba(196, 181, 253, .68) !important;
+        color: #fff !important;
+    }
+
+    #asyncSoundPanel {
+        --tool-glass: rgba(139, 92, 246, .16);
+        --tool-glass-deep: rgba(109, 40, 217, .09);
+        --tool-glass-border: rgba(139, 92, 246, .30);
+        --tool-control-glass: rgba(139, 92, 246, .11);
+        --tool-control-hover: rgba(139, 92, 246, .20);
+        border-color: rgba(139, 92, 246, .30) !important;
+    }
+
+    #asyncSoundPanel .sound-choice button.active,
+    #asyncSoundPanel .sound-choice button.is-playing {
+        border: 2px solid #8b5cf6 !important;
+        background: linear-gradient(135deg, rgba(139, 92, 246, .25), rgba(109, 40, 217, .13)) !important;
+        color: #5b21b6 !important;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, .14), 0 7px 18px rgba(109, 40, 217, .15) !important;
+    }
+
+    #asyncSoundPanel .sound-actions button,
+    #asyncSoundPanel .sound-actions button:first-child {
+        background: linear-gradient(135deg, #8b5cf6, #6d28d9) !important;
+        border-color: rgba(196, 181, 253, .55) !important;
+        color: #fff !important;
+    }
+
+    html[data-theme="dark"] #asyncSoundPanel {
+        --tool-glass: rgba(109, 40, 217, .35);
+        --tool-glass-deep: rgba(76, 29, 149, .26);
+        --tool-glass-border: rgba(196, 181, 253, .28);
+        --tool-control-glass: rgba(139, 92, 246, .20);
+        --tool-control-hover: rgba(139, 92, 246, .30);
+        border-color: rgba(196, 181, 253, .28) !important;
+    }
+
+    html[data-theme="dark"] #asyncSoundPanel .sound-choice button.active,
+    html[data-theme="dark"] #asyncSoundPanel .sound-choice button.is-playing {
+        color: #ede9fe !important;
+    }
+
+    html[data-theme="dark"] #asyncSoundPanel .sound-actions button {
+        color: #fff !important;
+    }
 </style>
 
 <div id="readingToolsRoot">
@@ -4650,18 +5285,6 @@
         </div>
 
         <div class="rt-group">
-            <label class="rt-label" for="rtFont">Font family</label>
-            <select class="rt-select" id="rtFont">
-                <option value="">Default font</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="Georgia, serif">Georgia</option>
-                <option value="'Times New Roman', serif">Times New Roman</option>
-                <option value="Verdana, sans-serif">Verdana</option>
-                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-            </select>
-        </div>
-
-        <div class="rt-group">
             <span class="rt-label">Auto-scroll speed</span>
             <input class="rt-range" type="range" id="rtScrollSpeed" min="1" max="10" value="3">
             <div class="rt-range-labels"><span>Slow</span><span>Fast</span></div>
@@ -4684,8 +5307,8 @@
         <strong><i class="bi bi-stopwatch"></i> ASYNC Timer</strong>
         <button type="button" id="aftTickToggle" class="aft-tick-toggle" aria-pressed="true" title="Ticking sound on" aria-label="Turn ticking sound off"><i class="bi bi-volume-up-fill"></i></button>
         <span class="aft-window-controls window-icon-controls">
-            <button type="button" class="window-icon-btn window-close" id="aftClose" aria-label="Close timer" title="Close timer"><i class="bi bi-x-lg"></i></button>
             <button type="button" class="window-icon-btn window-minimize" id="aftMinimize" aria-label="Minimize timer" title="Minimize timer"><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="window-icon-btn window-close" id="aftClose" aria-label="Close timer" title="Close timer"><i class="bi bi-x-lg"></i></button>
         </span>
     </div>
     <div class="aft-display" id="aftDisplay">05:00</div>
@@ -4735,8 +5358,8 @@
         <strong><i class="bi bi-headphones"></i> Reading Ambience</strong>
         <span class="aux-drag-hint">Drag to move</span>
         <span class="aux-window-actions window-icon-controls">
-            <button type="button" class="window-icon-btn window-close" id="asyncSoundClose" aria-label="Close Reading Ambience" title="Close"><i class="bi bi-x-lg"></i></button>
             <button type="button" class="window-icon-btn window-minimize" id="asyncSoundMinimize" aria-label="Minimize Reading Ambience" title="Minimize"><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="window-icon-btn window-close" id="asyncSoundClose" aria-label="Close Reading Ambience" title="Close"><i class="bi bi-x-lg"></i></button>
         </span>
     </div>
     <div style="font-size:12px;color:var(--aux-text);opacity:.75">Choose a continuous background sound while you read.</div>
@@ -4793,30 +5416,71 @@
         <button type="button" data-present-mode="rectangle" title="Draw rectangle"><i class="bi bi-square"></i> Rectangle</button>
         <button type="button" data-present-mode="circle" title="Draw circle"><i class="bi bi-circle"></i> Circle</button>
         <button type="button" data-present-mode="erase" title="Eraser"><i class="bi bi-eraser"></i> Eraser</button>
-        <button type="button" data-present-mode="magnifier" title="Magnifier"><i class="bi bi-search"></i> Magnifier</button>
         <button type="button" data-present-mode="crosshair" title="Crosshair"><i class="bi bi-crosshair"></i> Crosshair</button>
-        <button type="button" data-present-mode="ruler" title="Ruler"><i class="bi bi-rulers"></i> Ruler</button>
+        <button type="button" id="asyncPresentationTextDown" title="Decrease page text size"><i class="bi bi-zoom-out"></i> Text −</button>
+        <button type="button" id="asyncPresentationTextUp" title="Increase page text size"><i class="bi bi-zoom-in"></i> Text +</button>
+        <span id="asyncPresentationTextValue" class="presentation-text-value" aria-live="polite">100%</span>
         <button type="button" id="asyncPresentationClear" title="Clear annotations"><i class="bi bi-trash3"></i> Clear</button>
         <button type="button" id="asyncPresentationExit" title="Exit presentation mode"><i class="bi bi-x-circle"></i> Exit</button>
+        <button type="button" id="rtWheelOpen" title="Open Spin the Wheel" aria-label="Open Spin the Wheel"><i class="bi bi-disc"></i> Spin Wheel</button>
     </div>
     <div class="presentation-settings-wrap">
         <button type="button" id="asyncPresentationSettingsToggle" class="presentation-settings-toggle" aria-expanded="false" aria-controls="asyncPresentationSettings">
             <i class="bi bi-gear-fill"></i><span class="visually-hidden">Tool settings</span>
         </button>
         <div id="asyncPresentationSettings" class="presentation-settings" hidden>
+            <label class="sound-volume"><span>Font family</span>
+                <select class="rt-select" id="rtFont" style="min-width:190px;padding:8px;border-radius:9px;background:var(--aux-control);color:var(--aux-text);border:1px solid var(--aux-border)">
+                    <option value="">Default font</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="Verdana, sans-serif">Verdana</option>
+                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="Tahoma, sans-serif">Tahoma</option>
+                    <option value="'Palatino Linotype', serif">Palatino</option>
+                    <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                    <option value="system-ui, sans-serif">System UI</option>
+                </select>
+            </label>
             <label class="sound-volume"><span>Tool size</span><input id="asyncPresentationSize" type="range" min="6" max="48" value="14"><span id="asyncPresentationSizeValue">14px</span></label>
             <label class="sound-volume"><span>Tool color</span><input id="asyncPresentationColor" type="color" value="#2563eb"></label>
         </div>
     </div>
     <div id="asyncPresentationStatus" style="font-size:11px;color:var(--aux-text)">Choose Laser, Pointer, Spotlight, or Draw to begin.</div>
 </section>
+<div id="rtWheelModal" class="wheel-modal" aria-hidden="true">
+    <div class="wheel-modal-card" role="dialog" aria-modal="true" aria-labelledby="rtWheelModalTitle">
+        <div class="wheel-modal-header">
+            <div><strong id="rtWheelModalTitle"><i class="bi bi-disc"></i> Spin the Wheel</strong><span>Add entries separated by commas or new lines</span></div>
+            <button type="button" id="rtWheelModalClose" aria-label="Close Spin the Wheel"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="presentation-wheel-tool" id="rtWheelTool">
+            <textarea id="rtWheelItems" rows="4" placeholder="Group 1&#10;Group 2, Group 3"></textarea>
+            <div class="presentation-wheel-stage" id="rtWheelStage">
+                <div id="rtWheelPointer" aria-hidden="true"></div>
+                <canvas id="rtWheelCanvas" width="440" height="440"></canvas>
+            </div>
+            <button type="button" id="rtWheelSpin"><i class="bi bi-arrow-repeat"></i> Spin the Wheel</button>
+            <div id="rtWheelResult" aria-live="polite">Add at least two items, then spin.</div>
+        </div>
+    </div>
+</div>
+<div id="rtWheelWinnerOverlay" class="wheel-winner-overlay" aria-hidden="true">
+    <div class="wheel-winner-card" role="dialog" aria-modal="true" aria-labelledby="rtWheelWinnerTitle">
+        <button type="button" id="rtWheelWinnerClose" class="wheel-winner-close" aria-label="Close result"><i class="bi bi-x-lg"></i></button>
+        <div class="wheel-winner-burst" aria-hidden="true">🎉</div>
+        <div class="wheel-winner-eyebrow">THE WHEEL HAS SPOKEN</div>
+        <h2 id="rtWheelWinnerTitle">We have a winner!</h2>
+        <div id="rtWheelWinnerName" class="wheel-winner-name"></div>
+        <button type="button" id="rtWheelWinnerDone" class="wheel-winner-done">Awesome!</button>
+    </div>
+</div>
 <div id="asyncPresentationOverlay" aria-hidden="true">
     <div id="asyncPresentationSpotlight"></div>
     <div id="asyncPresentationCursor"></div>
     <div id="asyncPresentationCrosshair"><span></span><span></span></div>
-    <div id="asyncPresentationMagnifier" aria-hidden="true">
-        <div id="asyncPresentationMagnifierContent"></div>
-    </div>
     <canvas id="asyncPresentationCanvas"></canvas>
 </div>
 
@@ -5099,6 +5763,7 @@
                 ...defaults
             };
         }
+        prefs.scale = Math.min(1.9, Math.max(1, Number(prefs.scale) || 1));
 
         // Cache each element's original font size so repeated adjustments never compound.
         const textElements = post ? post.querySelectorAll(
@@ -5272,7 +5937,7 @@
 
         document.getElementById('rtTextDown').addEventListener('click', () => {
             prefs.nativeTheme = false;
-            prefs.scale = Math.max(.7, +(prefs.scale - .1).toFixed(2));
+            prefs.scale = Math.max(1, +(prefs.scale - .1).toFixed(2));
             save();
             apply();
         });
@@ -5288,6 +5953,24 @@
             save();
             apply();
         });
+
+        // Presentation toolbar shortcuts share the article text-size setting.
+        const presentationTextValue = document.getElementById('asyncPresentationTextValue');
+        const syncPresentationTextValue = () => {
+            if (presentationTextValue) {
+                presentationTextValue.textContent = document.getElementById('rtTextSizeValue')?.textContent || '100%';
+            }
+        };
+        document.getElementById('asyncPresentationTextDown')?.addEventListener('click', () => {
+            document.getElementById('rtTextDown')?.click();
+            syncPresentationTextValue();
+        });
+        document.getElementById('asyncPresentationTextUp')?.addEventListener('click', () => {
+            document.getElementById('rtTextUp')?.click();
+            syncPresentationTextValue();
+        });
+        syncPresentationTextValue();
+
 
         document.querySelectorAll('#rtPageColors .rt-color').forEach(btn => btn.addEventListener('click', () => {
             prefs.nativeTheme = false;
@@ -5348,6 +6031,141 @@
             status.classList.remove('active');
         });
         document.getElementById('rtScrollStop').addEventListener('click', () => stopScroll());
+
+        // Spin wheel opens as a centered presentation-tool popup.
+        const wheelModal = document.getElementById('rtWheelModal');
+        const openWheelModal = () => {
+            if (!wheelModal) return;
+            wheelModal.classList.add('is-visible');
+            wheelModal.setAttribute('aria-hidden', 'false');
+            document.getElementById('rtWheelItems')?.focus();
+        };
+        const closeWheelModal = () => {
+            if (!wheelModal || wheelBusy) return;
+            wheelModal.classList.remove('is-visible');
+            wheelModal.setAttribute('aria-hidden', 'true');
+            document.getElementById('rtWheelOpen')?.focus();
+        };
+        document.getElementById('rtWheelOpen')?.addEventListener('click', openWheelModal);
+        document.getElementById('rtWheelModalClose')?.addEventListener('click', closeWheelModal);
+        wheelModal?.addEventListener('click', event => {
+            if (event.target === wheelModal) closeWheelModal();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && wheelModal?.classList.contains('is-visible')) closeWheelModal();
+        });
+
+        // Spin wheel: accepts newline- or comma-separated entries.
+        const wheelInput = document.getElementById('rtWheelItems');
+        const wheelCanvas = document.getElementById('rtWheelCanvas');
+        const wheelCtx = wheelCanvas ? wheelCanvas.getContext('2d') : null;
+        const wheelSpinButton = document.getElementById('rtWheelSpin');
+        const wheelResult = document.getElementById('rtWheelResult');
+        const wheelWinnerOverlay = document.getElementById('rtWheelWinnerOverlay');
+        const wheelWinnerName = document.getElementById('rtWheelWinnerName');
+        const closeWheelWinner = () => {
+            if (wheelWinnerOverlay) {
+                wheelWinnerOverlay.classList.remove('is-visible');
+                wheelWinnerOverlay.setAttribute('aria-hidden', 'true');
+            }
+        };
+        const showWheelWinner = name => {
+            if (!wheelWinnerOverlay || !wheelWinnerName) return;
+            wheelWinnerName.textContent = name;
+            wheelWinnerOverlay.classList.add('is-visible');
+            wheelWinnerOverlay.setAttribute('aria-hidden', 'false');
+            document.getElementById('rtWheelWinnerDone')?.focus();
+        };
+        document.getElementById('rtWheelWinnerClose')?.addEventListener('click', closeWheelWinner);
+        document.getElementById('rtWheelWinnerDone')?.addEventListener('click', closeWheelWinner);
+        wheelWinnerOverlay?.addEventListener('click', event => {
+            if (event.target === wheelWinnerOverlay) closeWheelWinner();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeWheelWinner();
+        });
+        let wheelRotation = 0,
+            wheelBusy = false;
+        const wheelColors = ['#2563eb', '#0d9488', '#d97706', '#7c3aed', '#e11d48', '#0891b2', '#65a30d', '#9333ea'];
+
+        function getWheelItems() {
+            return (wheelInput.value || '').split(/[\n,]+/).map(item => item.trim()).filter(Boolean);
+        }
+
+        function drawWheel() {
+            if (!wheelCtx) return;
+            const items = getWheelItems();
+            const cx = 220,
+                cy = 220,
+                radius = 214;
+            wheelCtx.clearRect(0, 0, 440, 440);
+            if (!items.length) {
+                wheelCtx.beginPath();
+                wheelCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+                wheelCtx.fillStyle = '#e5e7eb';
+                wheelCtx.fill();
+                wheelCtx.fillStyle = '#475569';
+                wheelCtx.font = 'bold 25px Arial';
+                wheelCtx.textAlign = 'center';
+                wheelCtx.fillText('Your items', cx, cy + 8);
+                return;
+            }
+            const slice = Math.PI * 2 / items.length;
+            items.forEach((item, i) => {
+                const a = -Math.PI / 2 + i * slice;
+                wheelCtx.beginPath();
+                wheelCtx.moveTo(cx, cy);
+                wheelCtx.arc(cx, cy, radius, a, a + slice);
+                wheelCtx.closePath();
+                wheelCtx.fillStyle = wheelColors[i % wheelColors.length];
+                wheelCtx.fill();
+                wheelCtx.strokeStyle = '#fff';
+                wheelCtx.lineWidth = 3;
+                wheelCtx.stroke();
+                wheelCtx.save();
+                wheelCtx.translate(cx, cy);
+                wheelCtx.rotate(a + slice / 2);
+                wheelCtx.textAlign = 'right';
+                wheelCtx.fillStyle = '#fff';
+                wheelCtx.font = `bold ${Math.max(13, Math.min(21, 230 / items.length))}px Arial`;
+                const label = item.length > 22 ? item.slice(0, 20) + '…' : item;
+                wheelCtx.shadowColor = '#0008';
+                wheelCtx.shadowBlur = 3;
+                wheelCtx.fillText(label, radius - 18, 7);
+                wheelCtx.restore();
+            });
+            wheelCtx.beginPath();
+            wheelCtx.arc(cx, cy, 19, 0, Math.PI * 2);
+            wheelCtx.fillStyle = '#fff';
+            wheelCtx.fill();
+        }
+        if (wheelInput) wheelInput.addEventListener('input', drawWheel);
+        if (wheelSpinButton) wheelSpinButton.addEventListener('click', () => {
+            const items = getWheelItems();
+            if (wheelBusy) return;
+            if (items.length < 2) {
+                wheelResult.textContent = 'Please enter at least two items.';
+                return;
+            }
+            wheelBusy = true;
+            wheelSpinButton.disabled = true;
+            const winner = Math.floor(Math.random() * items.length);
+            const sliceDegrees = 360 / items.length;
+            const target = 360 * (5 + Math.floor(Math.random() * 3)) + (360 - (winner + 0.5) * sliceDegrees);
+            wheelRotation += target;
+            wheelCanvas.style.animation = 'none';
+            wheelCanvas.style.transition = 'transform 5s cubic-bezier(.12,.72,.12,1)';
+            wheelCanvas.style.transform = `rotate(${wheelRotation}deg)`;
+            wheelResult.textContent = 'Spinning…';
+            window.setTimeout(() => {
+                wheelResult.textContent = 'Winner selected!';
+                wheelCanvas.style.animation = '';
+                showWheelWinner(items[winner]);
+                wheelBusy = false;
+                wheelSpinButton.disabled = false;
+            }, 5100);
+        });
+        drawWheel();
 
         document.getElementById('rtResetAll').addEventListener('click', () => {
             stopScroll();
@@ -5996,7 +6814,6 @@
         }
 
         [
-            byId('readingToolsPanel'),
             notesPanel,
             presentationPanel
         ].forEach(makeResizable);
@@ -6139,7 +6956,8 @@
                 lfo.start();
                 ambienceNodes.push(lfo);
 
-                soundStatus.textContent = selectedSound.charAt(0).toUpperCase() + selectedSound.slice(1) + ' ambience is playing. The library player can run independently.';
+                document.querySelectorAll('#asyncSoundPanel [data-sound]').forEach(item => item.classList.toggle('is-playing', item.dataset.sound === selectedSound));
+                soundStatus.textContent = selectedSound.charAt(0).toUpperCase() + selectedSound.slice(1) + ' ambience is playing.';
                 byId('asyncSoundPlay').innerHTML = '<i class="bi bi-arrow-repeat"></i> Restart ambience';
             } catch (_) {
                 soundStatus.textContent = 'Ambient audio could not start. Press Play ambience again.';
@@ -6147,13 +6965,17 @@
         }
         document.querySelectorAll('[data-sound]').forEach(button => button.addEventListener('click', () => {
             selectedSound = button.dataset.sound;
-            document.querySelectorAll('[data-sound]').forEach(item => item.classList.toggle('active', item === button));
+            document.querySelectorAll('#asyncSoundPanel [data-sound]').forEach(item => {
+                item.classList.toggle('active', item === button);
+                item.classList.remove('is-playing');
+            });
             soundStatus.textContent = selectedSound + ' selected. Press Play ambience.';
         }));
         byId('asyncSoundPlay').addEventListener('click', startAmbience);
         byId('asyncSoundStop').addEventListener('click', () => {
             stopMainAmbience(false);
             stopLibraryAudio();
+            document.querySelectorAll('#asyncSoundPanel [data-sound]').forEach(item => item.classList.remove('is-playing'));
             soundStatus.textContent = 'All ambience and library music stopped.';
         });
         soundVolume.addEventListener('input', () => {
@@ -6205,9 +7027,7 @@
             rectangle: 'Rectangle: drag to draw a box.',
             circle: 'Circle: drag to draw an ellipse.',
             erase: 'Eraser: swipe over annotations to remove them.',
-            magnifier: 'Magnifier: move over page content to inspect it with a 2× lens.',
             crosshair: 'Crosshair: use the full-screen guides to align or point things out.',
-            ruler: 'Ruler: drag across the page to measure screen distance in pixels.'
         };
 
         function setPresentMode(mode) {
@@ -6276,13 +7096,8 @@
                 top = Math.min(lastPoint.y, y),
                 width = Math.abs(x - lastPoint.x),
                 height = Math.abs(y - lastPoint.y);
-            if (presentMode === 'arrow' || presentMode === 'ruler') {
+            if (presentMode === 'arrow') {
                 drawArrow(lastPoint.x, lastPoint.y, x, y);
-                if (presentMode === 'ruler') {
-                    const d = Math.hypot(x - lastPoint.x, y - lastPoint.y);
-                    presentCtx.font = '12px Arial';
-                    presentCtx.fillText(`${d.toFixed(0)} px`, x + 8, y - 8);
-                }
             } else if (presentMode === 'rectangle') presentCtx.strokeRect(left, top, width, height);
             else if (presentMode === 'circle') {
                 presentCtx.beginPath();
@@ -6297,15 +7112,6 @@
             presentCursor.style.top = event.clientY + 'px';
             presentOverlay.style.setProperty('--spot-x', event.clientX + 'px');
             presentOverlay.style.setProperty('--spot-y', event.clientY + 'px');
-            const magnifier = byId('asyncPresentationMagnifier');
-            const magnifierContent = byId('asyncPresentationMagnifierContent');
-            if (presentMode === 'magnifier' && magnifier && magnifierContent) {
-                magnifier.style.left = Math.min(event.clientX + 22, innerWidth - 185) + 'px';
-                magnifier.style.top = Math.min(event.clientY + 22, innerHeight - 185) + 'px';
-                const target = document.elementFromPoint(event.clientX, event.clientY);
-                const label = target && target !== presentOverlay ? (target.innerText || target.getAttribute('alt') || target.getAttribute('aria-label') || target.tagName || 'Page content') : 'Page content';
-                magnifierContent.textContent = (label.trim().replace(/\s+/g, ' ').slice(0, 90) || 'Page content') + '  ·  2×';
-            }
             if (presentMode === 'crosshair') {
                 const cross = byId('asyncPresentationCrosshair');
                 cross.style.setProperty('--x', event.clientX + 'px');
@@ -6314,7 +7120,7 @@
                 cross.children[1].style.left = event.clientX + 'px';
             }
             if (!presentDrawing || !lastPoint) return;
-            if (['arrow', 'rectangle', 'circle', 'ruler'].includes(presentMode)) {
+            if (['arrow', 'rectangle', 'circle'].includes(presentMode)) {
                 previewShape(event.clientX, event.clientY);
                 return;
             }
@@ -6339,25 +7145,13 @@
             };
         });
         presentCanvas.addEventListener('pointerdown', event => {
-            if (!['draw', 'arrow', 'rectangle', 'circle', 'erase', 'ruler'].includes(presentMode)) return;
-            if (presentMode === 'ruler') {
-                presentDrawing = true;
-                lastPoint = {
-                    x: event.clientX,
-                    y: event.clientY
-                };
-                shapeBaseImage = presentCtx.getImageData(0, 0, presentCanvas.width, presentCanvas.height);
-                try {
-                    presentCanvas.setPointerCapture(event.pointerId);
-                } catch (_) {}
-                return;
-            }
+            if (!['draw', 'arrow', 'rectangle', 'circle', 'erase'].includes(presentMode)) return;
             presentDrawing = true;
             lastPoint = {
                 x: event.clientX,
                 y: event.clientY
             };
-            if (['arrow', 'rectangle', 'circle', 'ruler'].includes(presentMode)) shapeBaseImage = presentCtx.getImageData(0, 0, presentCanvas.width, presentCanvas.height);
+            if (['arrow', 'rectangle', 'circle'].includes(presentMode)) shapeBaseImage = presentCtx.getImageData(0, 0, presentCanvas.width, presentCanvas.height);
             try {
                 presentCanvas.setPointerCapture(event.pointerId);
             } catch (_) {}

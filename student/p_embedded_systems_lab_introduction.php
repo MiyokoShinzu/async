@@ -22,7 +22,7 @@ $user = $_SESSION["user"];
 require_once "../src/connection.php";
 ?>
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <?php include 'globals/head.php'; ?>
 
 <body>
@@ -72,6 +72,7 @@ require_once "../src/connection.php";
                         <a href="#troubleshooting-guide"><span>17</span><strong>Troubleshooting Guide</strong><i class="bi bi-arrow-up-right"></i></a>
                         <a href="#lab-checklist"><span>18</span><strong>Laboratory Checklists</strong><i class="bi bi-arrow-up-right"></i></a>
                         <a href="#review-questions"><span>19</span><strong>Review Questions and Answers</strong><i class="bi bi-arrow-up-right"></i></a>
+                        <a href="#group-activity"><span>20</span><strong>Embedded Systems Group Activity</strong><i class="bi bi-arrow-up-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -95,18 +96,23 @@ require_once "../src/connection.php";
             </div>
 
             <!-- ADVERTISEMENT: Displayed immediately before Section 1 (Course Overview). -->
-            <script>
-                (function(kfcu) {
-                    var d = document,
-                        s = d.createElement('script'),
-                        l = d.currentScript || d.scripts[d.scripts.length - 1];
-                    s.settings = kfcu || {};
-                    s.src = "\/\/juvenilechoice.com\/btX\/Vss.dpGolW0WYwWdcM\/LeZm\/9quRZhUzlqkXPoTac\/2dMuD\/cm0DMnzFcctFNdzkYvwiN\/z-QG0PM_QC";
-                    s.async = true;
-                    s.referrerPolicy = 'no-referrer-when-downgrade';
-                    l.parentNode.insertBefore(s, l);
-                })({})
-            </script>
+            <div class="sponsored-card" aria-label="Advertisement">
+                <div class="ad-label">Advertisement</div>
+                <div class="sponsored-ad-slot">
+                    <script>
+                        (function(kfcu) {
+                            var d = document,
+                                s = d.createElement('script'),
+                                l = d.currentScript || d.scripts[d.scripts.length - 1];
+                            s.settings = kfcu || {};
+                            s.src = "\/\/juvenilechoice.com\/btX\/Vss.dpGolW0WYwWdcM\/LeZm\/9quRZhUzlqkXPoTac\/2dMuD\/cm0DMnzFcctFNdzkYvwiN\/z-QG0PM_QC";
+                            s.async = true;
+                            s.referrerPolicy = 'no-referrer-when-downgrade';
+                            l.parentNode.insertBefore(s, l);
+                        })({})
+                    </script>
+                </div>
+            </div>
 
             <!-- SECTION 02: COURSE OVERVIEW — Contains the official course description, units, contact hours, prerequisites, co-requisites, and scope. -->
             <div class="theory-card" id="course-overview">
@@ -218,115 +224,6 @@ require_once "../src/connection.php";
                         <li><strong>Conclusion</strong> – a summary of what was accomplished and learned.</li>
                     </ol>
 
-                    <div class="section-label">3.2 Laboratory Report Grading Rubric (5-Point Likert Scale)</div>
-                    <p>Evaluate each of the nine report components using the five-point Likert scale below. Select one rating per component based on the evidence submitted. Convert the rating into weighted points using the formula provided after the table.</p>
-                    <div class="report-rubric-wrap">
-                        <table class="report-rubric likert-rubric">
-                            <thead>
-                                <tr>
-                                    <th>Report Component</th>
-                                    <th>Weight</th>
-                                    <th>5 – Excellent</th>
-                                    <th>4 – Very Good</th>
-                                    <th>3 – Satisfactory</th>
-                                    <th>2 – Needs Improvement</th>
-                                    <th>1 – Poor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>1. Title and Activity Number</strong></td>
-                                    <td>5</td>
-                                    <td>Title and number are complete, accurate, and clearly presented.</td>
-                                    <td>Accurate with one minor omission.</td>
-                                    <td>Identifiable but has some missing details.</td>
-                                    <td>Unclear or contains several errors.</td>
-                                    <td>Missing or unrelated.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>2. Objectives</strong></td>
-                                    <td>10</td>
-                                    <td>Specific, measurable, and fully aligned with the experiment.</td>
-                                    <td>Clear and aligned, with minor gaps.</td>
-                                    <td>Generally relevant but partly vague.</td>
-                                    <td>Unclear, incomplete, or weakly aligned.</td>
-                                    <td>Missing or unrelated to the activity.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>3. Materials and Equipment</strong></td>
-                                    <td>10</td>
-                                    <td>All materials, components, tools, and software are accurately listed.</td>
-                                    <td>Nearly complete; only a minor item is omitted.</td>
-                                    <td>Most items are listed, with some omissions.</td>
-                                    <td>Several important items are missing or inaccurate.</td>
-                                    <td>Missing or largely incorrect.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>4. Theoretical Background</strong></td>
-                                    <td>10</td>
-                                    <td>Accurate, relevant explanation demonstrates strong understanding.</td>
-                                    <td>Accurate explanation with minor gaps.</td>
-                                    <td>Basic explanation; some concepts lack clarity.</td>
-                                    <td>Limited or partly inaccurate explanation.</td>
-                                    <td>Missing or fundamentally incorrect.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>5. Procedure</strong></td>
-                                    <td>15</td>
-                                    <td>Complete, logical, clear, and reproducible steps reflect actual work.</td>
-                                    <td>Well organized with minor missing details.</td>
-                                    <td>Understandable but some steps lack detail.</td>
-                                    <td>Disorganized or missing several important steps.</td>
-                                    <td>Missing or cannot be followed.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>6. Circuit Diagram and Program Code</strong></td>
-                                    <td>15</td>
-                                    <td>Diagram and code are correct, complete, readable, and properly labeled.</td>
-                                    <td>Functional and clear, with minor errors or omissions.</td>
-                                    <td>Generally understandable but has noticeable issues.</td>
-                                    <td>Major connection, code, or labeling errors.</td>
-                                    <td>Missing, unusable, or unrelated.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>7. Results and Observations</strong></td>
-                                    <td>15</td>
-                                    <td>Complete, authentic evidence and observations directly support the results.</td>
-                                    <td>Relevant evidence with minor omissions.</td>
-                                    <td>Some evidence is present but lacks detail.</td>
-                                    <td>Insufficient, unclear, or weakly supported evidence.</td>
-                                    <td>Missing or fabricated evidence.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>8. Analysis and Discussion</strong></td>
-                                    <td>15</td>
-                                    <td>Insightfully interprets results and explains behavior, errors, and troubleshooting.</td>
-                                    <td>Sound interpretation with minor gaps.</td>
-                                    <td>Basic interpretation with limited explanation.</td>
-                                    <td>Mostly descriptive, unclear, or contains errors.</td>
-                                    <td>Missing or shows no meaningful analysis.</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>9. Conclusion</strong></td>
-                                    <td>5</td>
-                                    <td>Clearly addresses all objectives and summarizes key learning.</td>
-                                    <td>Addresses objectives with minor omissions.</td>
-                                    <td>Provides a general conclusion but lacks specificity.</td>
-                                    <td>Weakly related to objectives or unsupported.</td>
-                                    <td>Missing or unrelated.</td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th>TOTAL WEIGHT</th>
-                                    <th>100</th>
-                                    <th colspan="5">Choose one Likert rating for each component.</th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <div class="result-box"><strong>Likert rating and weighted-score computation</strong><span>5 = Excellent; 4 = Very Good; 3 = Satisfactory; 2 = Needs Improvement; 1 = Poor. Compute each component's points using: <strong>Weighted Points = (Selected Likert Rating ÷ 5) × Component Weight</strong>. Add the nine weighted scores to obtain the laboratory report score out of 100. Example: a rating of 4 for a component weighted 10 points earns (4 ÷ 5) × 10 = 8 points.</span></div>
-
                     <div class="result-box">
                         <strong>Documentation reminder</strong>
                         <span>Use your own observations and outputs. Give credit to references or code sources when required, and never fabricate measurements, screenshots, or experimental results.</span>
@@ -395,67 +292,24 @@ require_once "../src/connection.php";
                     <p>A circuit diagram is a visual representation of an electrical or electronic circuit. It uses symbols and connecting lines to show the components and the electrical relationships between them. In embedded systems, circuit diagrams help students understand how a microcontroller is connected to input devices, output devices, sensors, and power sources.</p>
                     <p>A schematic diagram focuses on the electrical function and connections of a circuit. A wiring or breadboard layout, on the other hand, shows more closely where physical wires and components are placed. Both representations are useful, but they serve different purposes.</p>
 
-                    <div class="section-label">6.1 Common Schematic Symbols and Their Functions</div>
-                    <div class="application-grid">
-                        <div class="application-item"><i class="bi bi-lightning-charge"></i><strong>Power Supply</strong><span>Indicates the source and polarity of electrical power supplied to a circuit.</span></div>
-                        <div class="application-item"><i class="bi bi-circle"></i><strong>Ground (GND)</strong><span>Identifies the common reference node or return connection in a circuit.</span></div>
-                        <div class="application-item"><i class="bi bi-resistor"></i><strong>Resistor</strong><span>Represents a component that limits current or establishes voltage relationships.</span></div>
-                        <div class="application-item"><i class="bi bi-lightbulb"></i><strong>LED</strong><span>Represents a light-emitting diode used as a visual output indicator.</span></div>
-                        <div class="application-item"><i class="bi bi-toggle-on"></i><strong>Switch</strong><span>Represents a device that opens or closes an electrical connection.</span></div>
-                        <div class="application-item"><i class="bi bi-cpu"></i><strong>Microcontroller</strong><span>Represents the controller and identifies the pins connected to external circuitry.</span></div>
+                    <div class="section-label">6.1 Guidelines for Creating a Circuit Diagram</div>
+                    <p>Prepare a clear, complete, and readable circuit diagram before assembling the circuit. Use the labelled sample diagram below as a visual reference. Every component and connection must be identifiable without guessing.</p>
+                    <div class="schematic-panel circuit-reference-panel">
+                        <div class="schematic-heading"><strong>Labelled Circuit Diagram Reference</strong><span>Reference image supplied for this laboratory</span></div>
+                        <div class="circuit-reference-image"><iframe src="https://drive.google.com/file/d/1NNXSH31qZgxZYAJraHPVn8J4cITWcyhn/preview" title="Labelled circuit diagram reference" loading="lazy" allow="autoplay"></iframe></div>
                     </div>
-
-                    <div class="section-label">6.2 Example: Arduino LED Circuit</div>
-                    <p>The following simplified connection illustrates an LED controlled by an Arduino digital output. A current-limiting resistor is connected in series with the LED to limit current.</p>
-                    <div class="schematic-panel">
-                        <div class="schematic-heading">
-                            <strong>Basic LED Output Connection</strong>
-                            <span>Conceptual schematic</span>
-                        </div>
-                        <svg class="schematic-svg" viewBox="0 0 760 220" role="img" aria-label="Schematic showing Arduino digital pin 13 connected through a resistor and LED to ground">
-                            <defs>
-                                <marker id="schematicArrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-                                    <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1" />
-                                </marker>
-                            </defs>
-                            <g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="25" y="65" width="150" height="90" rx="9" class="schematic-board" />
-                                <path d="M175 110 H240" />
-                                <path d="M240 110 H270" />
-                                <path d="M270 95 L285 110 L270 125 L285 140 L300 125 L315 110 L300 95 L285 110" class="schematic-component" />
-                                <path d="M315 110 H390" />
-                                <path d="M390 110 H420" />
-                                <path d="M420 91 L420 129 M420 91 L450 110 L420 129" class="schematic-component" />
-                                <path d="M450 110 H500" />
-                                <path d="M500 110 V145" />
-                                <path d="M480 145 H520 M486 153 H514 M493 161 H507" />
-                                <path d="M430 78 L447 62 M438 88 L455 72" marker-end="url(#schematicArrow)" />
-                            </g>
-                            <g class="schematic-label">
-                                <text x="100" y="95" text-anchor="middle">ARDUINO</text>
-                                <text x="100" y="119" text-anchor="middle">UNO</text>
-                                <text x="100" y="139" text-anchor="middle">D13</text>
-                                <text x="292" y="78" text-anchor="middle">220 Ω</text>
-                                <text x="435" y="78" text-anchor="middle">LED</text>
-                                <text x="500" y="184" text-anchor="middle">GND</text>
-                                <text x="205" y="98" text-anchor="middle">Output</text>
-                            </g>
-                            <g class="schematic-node">
-                                <circle cx="175" cy="110" r="4" />
-                                <circle cx="500" cy="110" r="4" />
-                            </g>
-                        </svg>
-                        <p class="schematic-caption">Arduino digital pin 13 → 220 Ω current-limiting resistor → LED anode; LED cathode → GND. Confirm the LED polarity and the board's electrical limits before wiring.</p>
-                    </div>
-
-                    <div class="section-label">6.3 Guidelines for Reading Circuit Diagrams</div>
-                    <ol class="numbered-list">
-                        <li>Identify the power supply and ground reference first.</li>
-                        <li>Locate the microcontroller and identify the pin numbers used.</li>
-                        <li>Trace each connection from one component terminal to another.</li>
-                        <li>Check component symbols, labels, values, and polarity markings.</li>
-                        <li>Compare the schematic with the physical wiring before applying power.</li>
+                    <ol class="numbered-list circuit-guidelines-list">
+                        <li><strong>Label every component.</strong> Include the component name, reference label (such as R1, LED1, SW1, or U1), value or model, and pin names where applicable.</li>
+                        <li><strong>Identify every connection point.</strong> Label microcontroller pins (for example, D2, D3, D13, A0, 5V, and GND) and identify module terminals such as VCC, GND, SDA, SCL, TRIG, and ECHO.</li>
+                        <li><strong>Use clear, direct wiring.</strong> Draw wires as straight horizontal or vertical lines where possible. Avoid unnecessary crossings, overlapping labels, tangled routes, and ambiguous junctions.</li>
+                        <li><strong>Show junctions correctly.</strong> Use a junction dot where wires are electrically connected. If wires cross without connecting, make that distinction clear.</li>
+                        <li><strong>Apply consistent wire colors.</strong> Use red for VCC/positive supply, black for GND, blue for digital signal lines, yellow for analog signal lines, and green for communication or control lines (such as I2C, SPI, UART, or PWM). Add a legend and keep the same meaning throughout the diagram.</li>
+                        <li><strong>Show polarity and component orientation.</strong> Mark LED anode/cathode, diode direction, electrolytic capacitor polarity, transistor pin labels, and other orientation-sensitive connections.</li>
+                        <li><strong>Include power information.</strong> State the supply voltage (for example, +5 V) and make sure all connected modules use compatible voltage levels. Do not assume every module is 5 V tolerant.</li>
+                        <li><strong>Keep the diagram consistent with the actual build.</strong> Pin numbers, component values, wire colors, and connections in the diagram must match the physical circuit and the submitted program.</li>
+                        <li><strong>Check readability before submission.</strong> Use a clean layout, readable text, adequate spacing, and a descriptive title. Export a sharp image or PDF rather than a blurry screenshot.</li>
                     </ol>
+                    <div class="result-box"><strong>Required wire-color convention</strong><span><b>Red:</b> VCC / positive supply &nbsp; <b>Black:</b> GND &nbsp; <b>Blue:</b> digital signals &nbsp; <b>Yellow:</b> analog signals &nbsp; <b>Green:</b> communication/control signals. These are laboratory documentation conventions for low-voltage DC circuits; always verify the actual pin labels and circuit before connecting power.</span></div>
 
                     <div class="result-box warning-box">
                         <strong><i class="bi bi-exclamation-triangle"></i> Before building the circuit</strong>
@@ -475,7 +329,7 @@ require_once "../src/connection.php";
                 <div class="theory-body">
                     <p>Laboratory rules and regulations establish the standards of conduct that students must follow when performing experiments and practical activities. These guidelines promote discipline, responsibility, proper equipment handling, and an organized learning environment.</p>
 
-                    <div class="section-label">1.1 General Laboratory Rules</div>
+                    <div class="section-label">7.1 General Laboratory Rules</div>
                     <ol class="numbered-list">
                         <li>Attend laboratory sessions on time and follow the instructor's instructions.</li>
                         <li>Wear appropriate clothing and keep your working area clean and organized.</li>
@@ -489,7 +343,7 @@ require_once "../src/connection.php";
                         <li>Return all borrowed tools and materials after completing the activity.</li>
                     </ol>
 
-                    <div class="section-label">1.2 Laboratory Equipment Guidelines</div>
+                    <div class="section-label">7.2 Laboratory Equipment Guidelines</div>
                     <ol class="numbered-list">
                         <li>Inspect the Arduino Uno and other development boards before use.</li>
                         <li>Check circuit connections before supplying power.</li>
@@ -500,7 +354,7 @@ require_once "../src/connection.php";
                         <li>Use computers and programming software only for authorized laboratory activities.</li>
                     </ol>
 
-                    <div class="section-label">1.3 Student Responsibilities</div>
+                    <div class="section-label">7.3 Student Responsibilities</div>
                     <p>Students are expected to demonstrate responsibility, cooperation, honesty, and proper laboratory behavior. They must complete assigned activities, document their observations, submit laboratory outputs on time, and ensure that all equipment is properly stored after use.</p>
                 </div>
             </div>
@@ -516,7 +370,7 @@ require_once "../src/connection.php";
                 <div class="theory-body">
                     <p>Laboratory safety procedures are essential practices designed to prevent accidents, equipment damage, and electrical hazards during laboratory activities. Since embedded systems experiments involve electrical circuits, electronic components, and powered development boards, students must understand the proper safety measures before performing any experiment.</p>
 
-                    <div class="section-label">2.1 Electrical Safety</div>
+                    <div class="section-label">8.1 Electrical Safety</div>
                     <ol class="numbered-list">
                         <li>Always disconnect the power supply before assembling or modifying a circuit.</li>
                         <li>Never touch exposed electrical connections with wet hands.</li>
@@ -527,7 +381,7 @@ require_once "../src/connection.php";
                         <li>Do not work with damaged power cables, adapters, or electrical equipment.</li>
                     </ol>
 
-                    <div class="section-label">2.2 Electronic Component Safety</div>
+                    <div class="section-label">8.2 Electronic Component Safety</div>
                     <ol class="numbered-list">
                         <li>Handle integrated circuits and microcontrollers carefully to prevent electrostatic discharge (ESD).</li>
                         <li>Observe the correct polarity when connecting LEDs, capacitors, and other polarized components.</li>
@@ -537,7 +391,7 @@ require_once "../src/connection.php";
                         <li>Store sensitive electronic components in appropriate containers.</li>
                     </ol>
 
-                    <div class="section-label">2.3 Computer and Equipment Safety</div>
+                    <div class="section-label">8.3 Computer and Equipment Safety</div>
                     <ol class="numbered-list">
                         <li>Ensure that computers and laboratory equipment are properly grounded.</li>
                         <li>Do not disconnect USB cables while uploading programs unless necessary.</li>
@@ -546,7 +400,7 @@ require_once "../src/connection.php";
                         <li>Report overheating, unusual odors, sparks, or damaged equipment immediately.</li>
                     </ol>
 
-                    <div class="section-label">2.4 Emergency Procedures</div>
+                    <div class="section-label">8.4 Emergency Procedures</div>
                     <ol class="numbered-list">
                         <li>Immediately disconnect the power source if an electrical problem occurs and it is safe to do so.</li>
                         <li>Inform the laboratory instructor about any accident or equipment malfunction.</li>
@@ -590,114 +444,69 @@ require_once "../src/connection.php";
                     <div class="statement-number">MATERIALS</div>
                 </div>
                 <div class="theory-body">
-                    <p>Laboratory materials and equipment are essential tools used in designing, assembling, programming, and testing embedded systems. Students will become familiar with electronic components, development boards, circuit-building tools, measuring instruments, and programming environments.</p>
+                    <p>Laboratory materials and equipment are essential tools used in designing, assembling, programming, and testing embedded systems. Students will become familiar with development boards, electronic components, and measuring instruments.</p>
 
-                    <div class="section-label">3.1 Microcontroller and Development Boards</div>
-                    <div class="material-photo-grid">
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://images.unsplash.com/photo-1634452021892-eaabbdc4a0bf?auto=format&fit=crop&w=900&q=85" alt="Arduino Uno R3 microcontroller development board" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Arduino Uno R3</strong>
-                                <p>A microcontroller development board used for programming, controlling electronic components, and implementing basic embedded applications.</p><a href="https://unsplash.com/photos/a-close-up-of-a-piece-of-electronic-equipment-aro_CIkEhNw" target="_blank" rel="noopener noreferrer">Image source: Unsplash (Unsplash License)</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/USB-cable.jpg?width=900" alt="USB cable used to connect a development board to a computer" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>USB Cable</strong>
-                                <p>Connects the Arduino Uno to a computer for program uploading and, where supported, board power.</p><a href="https://commons.wikimedia.org/wiki/File:USB-cable.jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bench_power_supply.jpg?width=900" alt="Adjustable bench power supply for electronics testing" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Power Supply</strong>
-                                <p>Provides the required electrical power for embedded system circuits and experiments. Use only a compatible, correctly rated supply.</p><a href="https://commons.wikimedia.org/wiki/File:Bench_power_supply.jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons</a>
-                            </div>
-                        </article>
+                    <div class="section-label">9.1 Microcontroller and Development Boards</div>
+                    <div class="materials-list material-reference-list">
+                        <span>Arduino Uno R3 <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIkoClSIp6tOl9SYcVuIrms6FIwJrRLgivW_uJWOk4uw&amp;s=10" data-caption="Arduino Uno R3" aria-label="Show Arduino Uno R3 picture" title="Show picture"><i class="bi bi-image"></i></button></span>
+                        <span>Arduino uploader / programming interface <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEsz-eTC07gDvFoxlO2fRHAjUn13tXV4zciYb04e7Gmg&amp;s=10" data-caption="Arduino uploader" aria-label="Show Arduino uploader picture" title="Show picture"><i class="bi bi-image"></i></button></span>
+                        <span>Bench power supply <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSa1S0HkWno3o4Xp3I1XpHayTl1BOhNXh6zpFkTa7Q3HA&amp;s=10" data-caption="Bench power supply" aria-label="Show bench power supply picture" title="Show picture"><i class="bi bi-image"></i></button></span>
                     </div>
 
-                    <div class="section-label">3.2 Electronic Components</div>
-                    <div class="material-photo-grid">
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Electronics-White-Breadboard.jpg?width=700" alt="Solderless electronics breadboard" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Breadboard</strong>
-                                <p>Used for assembling temporary electronic circuits without soldering.</p><a href="https://commons.wikimedia.org/wiki/File:Electronics-White-Breadboard.jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons (Public Domain)</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Resistor,_LED,_Capacitor.jpg?width=900" alt="Resistor, LED, and capacitor electronic components" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Resistors</strong>
-                                <p>Limit current and help control voltage in electronic circuits.</p><a href="https://commons.wikimedia.org/wiki/File:Resistor,_LED,_Capacitor.jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Electronic-Component-Red-LED.jpg?width=900" alt="LED component" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>LEDs</strong>
-                                <p>Provide visual indicators for circuit outputs.</p><a href="https://commons.wikimedia.org/wiki/File:Electronic-Component-Red-LED.jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons (CC BY-SA 4.0)</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cross_section_of_a_low-cost_pushbutton_switch.png?width=900" alt="Electronic circuit with input components and jumper connections" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Push Buttons</strong>
-                                <p>Provide manual input signals to a microcontroller.</p><a href="https://commons.wikimedia.org/wiki/File:Cross_section_of_a_low-cost_pushbutton_switch.png" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons (CC BY-SA 4.0)</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Jumper_Wires_with_Crocodile_Clips.jpg?width=900" alt="A collection of jumper wires" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Jumper Wires</strong>
-                                <p>Connect electronic components and development board pins.</p><a href="https://commons.wikimedia.org/wiki/File:Jumper_Wires_with_Crocodile_Clips.jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bench_power_supply.jpg?width=900" alt="Electrolytic capacitor component" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Capacitors</strong>
-                                <p>Store electrical charge and assist in filtering and timing circuits.</p><a href="https://commons.wikimedia.org/wiki/File:Bench_power_supply.jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons</a>
-                            </div>
-                        </article>
+                    <div class="section-label">9.2 Electronic Components</div>
+                    <p>Common components used in the laboratory include breadboards, resistors, LEDs, push buttons, jumper wires, potentiometers, and other modules. Identify each component by its label, value, polarity, and pin configuration before connecting it to the circuit.</p>
+                    <div class="materials-list material-reference-list">
+                        <span>Solderless breadboard <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvlx9QMSbmY2gJcgL9lZNsrF9poBaU9uvPohXZmxhBeQ&amp;s=10" data-caption="Breadboard" aria-label="Show breadboard picture" title="Show picture"><i class="bi bi-image"></i></button></span>
+                        <span>LEDs <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0K2-zN3Sd-J36EzFkXHiKy2zUkzeI7AP3yaV3dY1Evg&amp;s=10" data-caption="LEDs" aria-label="Show LEDs picture" title="Show picture"><i class="bi bi-image"></i></button></span>
+                        <span>Jumper wires <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqftSva2gAhhVqfUXBH7bVxdzCpxIQXpQ3sKxWClEo9A&amp;s=10" data-caption="Jumper wires" aria-label="Show jumper wires picture" title="Show picture"><i class="bi bi-image"></i></button></span>
+                        <span>Potentiometers and resistors <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDqbmhdOA8roIVKWD_Obp4O_rwsE0FWTqiqjcOJXgB0w&amp;s=10" data-caption="Potentiometers and resistors" aria-label="Show potentiometers and resistors picture" title="Show picture"><i class="bi bi-image"></i></button></span>
+                        <span>Push buttons and switches <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRm_8s6A6GOA-SGe03gV2w7Z-36X8HIukR8AO2Fe-O4g&amp;s=10" data-caption="Push buttons and switches" aria-label="Show push buttons and switches picture" title="Show picture"><i class="bi bi-image"></i></button></span>
+                        <span>Actuators <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-rb-lUMqN76B1KvMnNkh0itkjonKNsT-CTyTU9xpJCA&amp;s=10" data-caption="Actuators" aria-label="Show actuators picture" title="Show picture"><i class="bi bi-image"></i></button></span>
                     </div>
 
-                    <div class="section-label">3.3 Measuring and Testing Instruments</div>
-                    <div class="material-photo-grid">
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Digital_Multimeter_(To_measure_Voltage,_Current_and_Resistance).jpg?width=900" alt="Digital multimeter for measuring voltage current and resistance" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Digital Multimeter</strong>
-                                <p>Measures voltage, current, resistance, and electrical continuity.</p><a href="https://commons.wikimedia.org/wiki/File:Digital_Multimeter_(To_measure_Voltage,_Current_and_Resistance).jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons category</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Digital_oscilloscope_in_use.jpg?width=900" alt="Digital oscilloscope displaying an electrical waveform" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Oscilloscope</strong>
-                                <p>Displays electrical signals and allows students to observe waveform characteristics.</p><a href="https://commons.wikimedia.org/wiki/File:Digital_oscilloscope_in_use.jpg" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons</a>
-                            </div>
-                        </article>
+                    <div class="section-label">9.3 Measuring and Testing Instruments</div>
+                    <div class="materials-list material-reference-list">
+                        <span>Digital multimeter <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9o0BgSEUhuB68RaGKtpTAtg1vzPdFOE8HOJS1kcHbrQ&amp;s=10" data-caption="Digital multimeter" aria-label="Show digital multimeter picture" title="Show picture"><i class="bi bi-image"></i></button></span>
+                        <span>Oscilloscope <button type="button" class="material-image-trigger" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpFeChAv5pz0EXnPNm7DQbDCUPcT0Kl2S40C3BVwaBLA&amp;s=10" data-caption="Oscilloscope" aria-label="Show oscilloscope picture" title="Show picture"><i class="bi bi-image"></i></button></span>
                     </div>
 
-                    <div class="section-label">3.4 Software and Development Tools</div>
-                    <div class="material-photo-grid">
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Arduino_IDE.png?width=700" alt="Arduino integrated development environment" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Arduino IDE</strong>
-                                <p>Used to write, compile, and upload programs to the Arduino Uno.</p><a href="https://commons.wikimedia.org/wiki/Category:Arduino_IDE" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons category</a>
-                            </div>
-                        </article>
-                        <article class="material-photo-card">
-                            <div class="material-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Laptop_computer.jpg?width=700" alt="Laptop computer used for programming" loading="lazy"></div>
-                            <div class="material-photo-content"><strong>Desktop Computer or Laptop</strong>
-                                <p>Used for programming, circuit documentation, simulation, and laboratory exercises.</p><a href="https://commons.wikimedia.org/wiki/Category:Laptop_computers" target="_blank" rel="noopener noreferrer">Image source: Wikimedia Commons category</a>
-                            </div>
-                        </article>
+                    <div class="materials-image-citations">
+                        <strong>Image references</strong>
+                        <p>The following image links were supplied for this learning material. The original image creators and publication pages are not identified by the thumbnail URLs; consult the linked image source for attribution or reuse details.</p>
+                        <ol>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvlx9QMSbmY2gJcgL9lZNsrF9poBaU9uvPohXZmxhBeQ&amp;s=10" target="_blank" rel="noopener noreferrer">Breadboard image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0K2-zN3Sd-J36EzFkXHiKy2zUkzeI7AP3yaV3dY1Evg&amp;s=10" target="_blank" rel="noopener noreferrer">LEDs image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqftSva2gAhhVqfUXBH7bVxdzCpxIQXpQ3sKxWClEo9A&amp;s=10" target="_blank" rel="noopener noreferrer">Jumper wires image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDqbmhdOA8roIVKWD_Obp4O_rwsE0FWTqiqjcOJXgB0w&amp;s=10" target="_blank" rel="noopener noreferrer">Potentiometers and resistors image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRm_8s6A6GOA-SGe03gV2w7Z-36X8HIukR8AO2Fe-O4g&amp;s=10" target="_blank" rel="noopener noreferrer">Push buttons and switches image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-rb-lUMqN76B1KvMnNkh0itkjonKNsT-CTyTU9xpJCA&amp;s=10" target="_blank" rel="noopener noreferrer">Actuators image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9o0BgSEUhuB68RaGKtpTAtg1vzPdFOE8HOJS1kcHbrQ&amp;s=10" target="_blank" rel="noopener noreferrer">Digital multimeter image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpFeChAv5pz0EXnPNm7DQbDCUPcT0Kl2S40C3BVwaBLA&amp;s=10" target="_blank" rel="noopener noreferrer">Oscilloscope image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIkoClSIp6tOl9SYcVuIrms6FIwJrRLgivW_uJWOk4uw&amp;s=10" target="_blank" rel="noopener noreferrer">Arduino Uno R3 image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEsz-eTC07gDvFoxlO2fRHAjUn13tXV4zciYb04e7Gmg&amp;s=10" target="_blank" rel="noopener noreferrer">Arduino uploader image</a></li>
+                            <li><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSa1S0HkWno3o4Xp3I1XpHayTl1BOhNXh6zpFkTa7Q3HA&amp;s=10" target="_blank" rel="noopener noreferrer">Bench power supply image</a></li>
+                        </ol>
                     </div>
 
-                    <div class="section-label">3.5 Additional Laboratory Supplies</div>
+                    <dialog class="material-image-modal" id="materialImageModal" aria-labelledby="materialImageCaption">
+                        <div class="material-image-modal-header">
+                            <strong id="materialImageCaption">Material picture</strong>
+                            <button type="button" id="closeMaterialImageModal" class="material-modal-close" aria-label="Close picture"><i class="bi bi-x-lg"></i></button>
+                        </div>
+                        <div class="material-image-modal-body"><img id="materialImagePreview" src="" alt=""></div>
+                        <div class="material-image-modal-footer"><a id="materialImageSourceLink" href="#" target="_blank" rel="noopener noreferrer">Open image source</a></div>
+                    </dialog>
+
+                    <div class="section-label">9.4 Additional Laboratory Supplies</div>
                     <div class="materials-list">
                         <span><i class="bi bi-check2-circle"></i> Wire cutters and wire strippers</span>
                         <span><i class="bi bi-check2-circle"></i> Long-nose pliers</span>
                         <span><i class="bi bi-check2-circle"></i> Screwdrivers</span>
                         <span><i class="bi bi-check2-circle"></i> Component organizers</span>
                         <span><i class="bi bi-check2-circle"></i> Electrical tape</span>
-                        <span><i class="bi bi-check2-circle"></i> Anti-static wrist strap</span>
                         <span><i class="bi bi-check2-circle"></i> Laboratory notebook</span>
                         <span><i class="bi bi-check2-circle"></i> Printed circuit diagrams and activity sheets</span>
                     </div>
-                    <p class="materials-image-note">Photographs are sourced from Wikimedia Commons. Each image links to its source page for licensing and attribution details. Some photos illustrate a group of related components rather than a single isolated item.</p>
                 </div>
             </div>
 
@@ -862,12 +671,8 @@ void loop() {
                         <li><strong>Controlling the Blink Rate of an LED</strong><span>Modify the delay values in the program and observe how changing the HIGH and LOW durations affects the blinking rate.</span></li>
                         <li><strong>Push-Button Input Using INPUT_PULLUP</strong><span>Connect a push button to digital pin D2 and use digitalRead() to detect button presses and releases.</span></li>
                         <li><strong>LED Control Using a Push Button</strong><span>Combine digital input and output so that pressing a push button controls an LED connected to an output pin.</span></li>
-                        <li><strong>Multiple LED Sequencing</strong><span>Connect multiple LEDs to separate digital output pins and create a sequential lighting pattern using digitalWrite().</span></li>
-                        <li><strong>Pulse-Width Modulation (PWM) and LED Brightness Control</strong><span>Use analogWrite() on PWM pin D3 to vary the LED brightness. Observe the square-wave output and compare different duty-cycle settings.</span></li>
-                        <li><strong>Reading an Analog Input with a Potentiometer</strong><span>Connect a potentiometer to analog input A0, read its value using analogRead(), and display the readings through the Serial Monitor.</span></li>
-                        <li><strong>Controlling LED Brightness Using a Potentiometer</strong><span>Read the potentiometer value from A0, map the reading to the 0–255 PWM range, and control LED brightness through a PWM output.</span></li>
-                        <li><strong>Basic Sensor Interfacing and Serial Monitoring</strong><span>Connect an available analog sensor, read its output using analogRead(), and display the sensor readings in the Serial Monitor. Document the observed changes under different conditions.</span></li>
                     </ol>
+                    <div class="result-box warning-box"><strong>Instructor's note</strong><span>The experiments listed are subject to change, modification, or rearrangement by the instructor depending on course coverage, available equipment, student progress, and laboratory conditions. Additional experiments may be assigned as the course progresses.</span></div>
                     <div class="result-box"><strong>Required output for every experiment</strong><span>Submit the experiment title and objective, circuit diagram, list of components, Arduino source code, actual circuit or simulation screenshots, test results, observations, and conclusion. Follow your instructor's specific submission format.</span></div>
                     <div class="result-box warning-box"><strong>Hardware reminder</strong><span>Use a current-limiting resistor with each standard LED. Do not connect motors or other high-current loads directly to Arduino GPIO pins. The final sensor activity depends on the sensor model and components supplied in your laboratory.</span></div>
                 </div>
@@ -959,27 +764,27 @@ void loop() {
                 <div class="theory-body">
                     <p>The following references provide additional information about the Arduino Uno, microcontroller programming, board specifications, and the electronic components introduced in this laboratory material.</p>
                     <ol class="reference-list">
-                        <li><strong>Commission on Higher Education (CHED).</strong> (2017). <em>CHED Memorandum Order No. 87, Series of 2017: Policies, Standards and Guidelines for the Bachelor of Science in Computer Engineering (BSCpE) Program Effective Academic Year 2018–2019.</em><a href="https://www.ustp.edu.ph/wp-content/uploads/2023/07/BS_CPE_CMO-87-s.-2017-BS-Computer-Engineering.pdf" target="_blank" rel="noopener noreferrer">Read CMO No. 87, s. 2017 (PDF)</a><span>Program-specific policies, standards, and guidelines for the BS Computer Engineering program.</span></li>
-                        <li><strong>Commission on Higher Education (CHED).</strong> (2017). <em>CHED Memorandum Order No. 86, Series of 2017: Policies, Standards and Guidelines for Requirements Common to All Bachelor of Science in Engineering and Bachelor of Engineering Technology Programs.</em><a href="https://ched.gov.ph/wp-content/uploads/2018/04/CMO-86-S.-2017-PSG-on-Requirements-Common-to-all-BS-Engg-Degree-and-Bachelor-of-Engineering-Trchnology.pdf" target="_blank" rel="noopener noreferrer">Read CMO No. 86, s. 2017 (PDF)</a><span>Common engineering-program requirements and outcomes-based education guidance.</span></li>
-                        <li><strong>Commission on Higher Education (CHED).</strong> (2012). <em>CHED Memorandum Order No. 37, Series of 2012: Policies, Standards and Guidelines in the Establishment of an Outcomes-Based Education (OBE) System in Higher Education Institutions Offering Engineering Programs.</em><a href="https://cms-cdn.e.gov.ph/CHED/pdf/2012-CMO-NO37.pdf" target="_blank" rel="noopener noreferrer">Read CMO No. 37, s. 2012 (PDF)</a><span>Outcomes-based education guidance for institutions offering engineering programs.</span></li>
+                        <li><strong>Commission on Higher Education (CHED).</strong> (2017). <em>CHED Memorandum Order No. 87, Series of 2017: Policies, Standards and Guidelines for the Bachelor of Science in Computer Engineering (BSCpE) Program Effective Academic Year 2018–2019.</em><span>Program-specific policies, standards, and guidelines for the BS Computer Engineering program.</span></li>
+                        <li><strong>Commission on Higher Education (CHED).</strong> (2017). <em>CHED Memorandum Order No. 86, Series of 2017: Policies, Standards and Guidelines for Requirements Common to All Bachelor of Science in Engineering and Bachelor of Engineering Technology Programs.</em><span>Common engineering-program requirements and outcomes-based education guidance.</span></li>
+                        <li><strong>Commission on Higher Education (CHED).</strong> (2012). <em>CHED Memorandum Order No. 37, Series of 2012: Policies, Standards and Guidelines in the Establishment of an Outcomes-Based Education (OBE) System in Higher Education Institutions Offering Engineering Programs.</em><span>Outcomes-based education guidance for institutions offering engineering programs.</span></li>
                         <li>
                             <strong>Arduino.</strong> (n.d.). <em>Arduino Uno Rev3 – Documentation.</em>
-                            <a href="https://docs.arduino.cc/hardware/uno-rev3/" target="_blank" rel="noopener noreferrer">https://docs.arduino.cc/hardware/uno-rev3/</a>
+
                             <span>Official board documentation, technical specifications, and pin information.</span>
                         </li>
                         <li>
                             <strong>Arduino.</strong> (n.d.). <em>Arduino Language Reference.</em>
-                            <a href="https://docs.arduino.cc/language-reference/" target="_blank" rel="noopener noreferrer">https://docs.arduino.cc/language-reference/</a>
+
                             <span>Reference for Arduino programming language syntax, functions, and constants.</span>
                         </li>
                         <li>
                             <strong>Arduino.</strong> (n.d.). <em>Arduino IDE 2 Documentation.</em>
-                            <a href="https://docs.arduino.cc/software/ide-v2/" target="_blank" rel="noopener noreferrer">https://docs.arduino.cc/software/ide-v2/</a>
+
                             <span>Guidance for installing and using the Arduino development environment.</span>
                         </li>
                         <li>
                             <strong>Microchip Technology Inc.</strong> (n.d.). <em>ATmega328P – 8-bit AVR Microcontroller Data Sheet.</em>
-                            <a href="https://www.microchip.com/en-us/product/ATmega328P" target="_blank" rel="noopener noreferrer">https://www.microchip.com/en-us/product/ATmega328P</a>
+
                             <span>Manufacturer information and technical documentation for the microcontroller used by the Arduino Uno R3.</span>
                         </li>
                     </ol>
@@ -1079,11 +884,11 @@ void loop() {
                 </div>
             </div>
 
-            <!-- SECTION 19: REVIEW QUESTIONS — Provides ten self-check questions with answers revealed individually by a button. -->
+            <!-- SECTION 19: REVIEW QUESTIONS — Provides five self-check questions with answers revealed individually by a button. -->
             <div class="theory-card" id="review-questions">
                 <div class="theory-header">
                     <div>
-                        <h4>19. Review Questions and Answers</h4>
+                        <h4>19. Five Review Questions and Answers</h4>
                     </div>
                     <div class="theory-badge"><i class="bi bi-patch-question"></i> SELF-ASSESSMENT</div>
                 </div>
@@ -1091,50 +896,65 @@ void loop() {
                     <p>Answer each question first before revealing the suggested answer. Use these questions to check your understanding of the topics introduced in this laboratory.</p>
                     <div class="review-question-list">
                         <article class="review-question">
-                            <div class="review-question-heading"><strong>1. What is the primary purpose of a microcontroller development board such as the Arduino Uno?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
+                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>1. What is the primary purpose of a microcontroller development board such as the Arduino Uno?</strong></div>
                             <div class="review-answer" hidden>It provides a programmable platform for reading inputs, processing instructions, and controlling outputs connected to electronic circuits.</div>
                         </article>
                         <article class="review-question">
-                            <div class="review-question-heading"><strong>2. Why is a current-limiting resistor normally connected in series with an LED?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
+                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>2. Why is a current-limiting resistor normally connected in series with an LED?</strong></div>
                             <div class="review-answer" hidden>It limits the current flowing through the LED and helps prevent damage to the LED and the driving pin.</div>
                         </article>
                         <article class="review-question">
-                            <div class="review-question-heading"><strong>3. What is the difference between a digital input and a digital output?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
+                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>3. What is the difference between a digital input and a digital output?</strong></div>
                             <div class="review-answer" hidden>A digital input reads a logic state from an external device, while a digital output sets a pin to a logic HIGH or LOW state.</div>
                         </article>
                         <article class="review-question">
-                            <div class="review-question-heading"><strong>4. When INPUT_PULLUP is used, what logic state is commonly read when the button is pressed and connected to ground?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
+                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>4. When INPUT_PULLUP is used, what logic state is commonly read when the button is pressed and connected to ground?</strong></div>
                             <div class="review-answer" hidden>The input reads LOW because pressing the button connects the pin to ground. When released, the internal pull-up holds it HIGH.</div>
                         </article>
                         <article class="review-question">
-                            <div class="review-question-heading"><strong>5. What does PWM stand for, and how can it control LED brightness?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
+                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>5. What does PWM stand for, and how can it control LED brightness?</strong></div>
                             <div class="review-answer" hidden>PWM means Pulse Width Modulation. It changes the proportion of time a signal stays HIGH during each period (duty cycle), changing the LED's perceived brightness.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><strong>6. What is the usual analogWrite() value range on an Arduino Uno?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
-                            <div class="review-answer" hidden>The usual 8-bit range is 0 to 255: 0 represents 0% duty cycle and 255 represents 100% duty cycle.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><strong>7. Why should the circuit be checked before connecting the power supply?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
-                            <div class="review-answer" hidden>Checking helps identify wiring errors, reversed polarity, short circuits, and incorrect voltage connections that could damage components or cause hazards.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><strong>8. What is the purpose of the Serial Monitor during sensor experiments?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
-                            <div class="review-answer" hidden>It displays data sent by the Arduino, allowing students to observe sensor readings, debug code, and monitor program behavior.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><strong>9. What should you do first when an LED circuit does not work?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
-                            <div class="review-answer" hidden>Disconnect power, then systematically inspect LED polarity, resistor placement, breadboard connections, ground, pin selection, and the program.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><strong>10. Why should laboratory results include observations and analysis, not only a photograph of the circuit?</strong><button type="button" class="answer-toggle" aria-expanded="false">View answer</button></div>
-                            <div class="review-answer" hidden>Observations and analysis show what happened, whether the result met the objective, and whether the student understands the relationship between the circuit, code, and measured behavior.</div>
                         </article>
                     </div>
                 </div>
             </div>
 
+            <!-- SECTION 20: GROUP ACTIVITY -->
+            <div class="theory-card" id="group-activity">
+                <div class="theory-header">
+                    <div>
+                        <h4>20. Embedded Systems Group Activity</h4>
+                        <p>Form a team and create an identity connected to embedded systems.</p>
+                    </div>
+                    <div class="theory-badge"><i class="bi bi-people-fill"></i> TEAM FORMATION</div>
+                </div>
+                <div class="theory-body">
+                    <div class="result-box"><strong>Activity: Build Your Embedded Systems Team</strong><span>The class will be organized into exactly eight (8) groups. Each group must work together to choose a unique team name related to embedded systems, microcontrollers, electronics, or automation.</span></div>
+                    <h5>Instructions</h5>
+                    <ol class="numbered-list">
+                        <li>Organize the class into eight (8) groups. The instructor will guide the distribution of members.</li>
+                        <li>Discuss the concepts and technologies introduced in this laboratory.</li>
+                        <li>Choose one creative and appropriate group name inspired by embedded systems, such as microcontrollers, circuits, sensors, processors, robotics, or automation.</li>
+                        <li>Make sure the chosen name is unique and agreed upon by all group members.</li>
+                        <li>Select one representative to present the group name and briefly explain its meaning or connection to embedded systems.</li>
+                    </ol>
+                    <h5>Group Output</h5>
+                    <ul class="numbered-list">
+                        <li>Group number (1 to 8)</li>
+                        <li>Chosen group name</li>
+                        <li>Names of all group members</li>
+                        <li>A short explanation of why the name is related to embedded systems</li>
+                    </ul>
+                    <p class="materials-image-note">Reminder: Each group should choose a respectful, classroom-appropriate name. The instructor may ask groups to revise duplicate or unrelated names.</p>
+                </div>
+            </div>
+
         </div>
+        <footer class="async-lab-footer">
+            <p><strong>Post made by Engr. Karl Stephen O. Evallo</strong></p>
+            <p>In collaboration with <strong>Engineering and Technological Solutions</strong></p>
+            <small>&copy; <span id="labCopyrightYear"></span> Engineering and Technological Solutions. All rights reserved.</small>
+        </footer>
     </main>
 
     <style>
@@ -1509,6 +1329,36 @@ void loop() {
                 top: 138px;
                 width: min(340px, calc(100vw - 24px));
             }
+        }
+
+        .async-lab-footer {
+            margin: 32px 0 0;
+            padding: 24px 18px;
+            text-align: center;
+            border-top: 1px solid var(--theory-border);
+            color: var(--theory-muted);
+            background: var(--theory-hover);
+            border-radius: 12px
+        }
+
+        .async-lab-footer p {
+            margin: 4px 0
+        }
+
+        .async-lab-footer small {
+            display: block;
+            margin-top: 10px
+        }
+
+        .review-question-heading {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px
+        }
+
+        .review-question-heading .answer-toggle {
+            order: -1
         }
 
         .report-rubric-wrap {
@@ -2492,114 +2342,157 @@ void loop() {
             line-height: 1.6;
         }
 
-        /* Responsive photo cards for laboratory materials */
-        .material-photo-grid {
+        /* Image preview buttons and modal for Section 9 materials */
+        .material-reference-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 16px;
-            margin: 14px 0 24px
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 9px;
+            margin: 12px 0 22px
         }
 
-        .material-photo-card {
-            min-width: 0;
-            overflow: hidden;
-            border: 1px solid var(--border-color, rgba(128, 128, 128, .22));
-            border-radius: 14px;
-            background: var(--card-bg, var(--surface, rgba(128, 128, 128, .045)));
-            box-shadow: 0 5px 18px rgba(0, 0, 0, .045);
+        .material-reference-list>span {
             display: flex;
-            flex-direction: column
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 12px;
+            border: 1px solid var(--theory-border);
+            border-radius: 10px;
+            background: var(--theory-hover);
+            min-width: 0
         }
 
-        .material-photo {
-            height: 158px;
-            overflow: hidden;
-            background: var(--soft-bg, rgba(128, 128, 128, .10))
+        .material-image-trigger {
+            flex: 0 0 auto;
+            width: 34px;
+            height: 34px;
+            border: 1px solid var(--theory-border);
+            border-radius: 9px;
+            background: var(--theory-bg);
+            color: var(--theory-blue);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: background .2s, transform .2s
         }
 
-        .material-photo img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform .35s ease
+        .material-image-trigger:hover {
+            background: color-mix(in srgb, var(--theory-blue) 12%, var(--theory-bg));
+            transform: translateY(-1px)
         }
 
-        .material-photo-card:hover .material-photo img {
-            transform: scale(1.045)
+        .material-image-citations {
+            margin: 18px 0;
+            padding: 14px 16px;
+            border: 1px solid var(--theory-border);
+            border-radius: 12px;
+            background: var(--theory-hover);
+            font-size: .82rem
         }
 
-        .material-photo-content {
-            padding: 13px 14px 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            flex: 1
+        .material-image-citations p {
+            margin: 6px 0 8px;
+            color: var(--theory-muted);
+            line-height: 1.55
         }
 
-        .material-photo-content strong {
-            font-size: .98rem;
-            color: var(--text-color, inherit)
-        }
-
-        .material-photo-content p {
-            font-size: .88rem;
-            line-height: 1.55;
+        .material-image-citations ol {
             margin: 0;
-            color: var(--muted-color, inherit);
-            opacity: .88
+            padding-left: 22px;
+            columns: 2;
+            column-gap: 28px
         }
 
-        .material-photo-content a {
-            font-size: .72rem;
-            line-height: 1.4;
-            margin-top: auto;
-            padding-top: 5px;
-            color: var(--primary-color, #64748b);
+        .material-image-citations li {
+            break-inside: avoid;
+            margin: 4px 0
+        }
+
+        .material-image-citations a {
+            color: var(--theory-blue);
             text-decoration: underline;
             text-underline-offset: 2px
         }
 
-        .materials-image-note {
-            font-size: .78rem;
-            opacity: .72;
-            margin: 12px 0 0
+        .material-image-modal {
+            width: min(92vw, 760px);
+            max-width: 760px;
+            max-height: 88vh;
+            padding: 0;
+            border: 1px solid var(--theory-border);
+            border-radius: 16px;
+            background: var(--theory-bg);
+            color: var(--theory-text);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .35)
+        }
+
+        .material-image-modal::backdrop {
+            background: rgba(0, 0, 0, .72);
+            backdrop-filter: blur(3px)
+        }
+
+        .material-image-modal-header,
+        .material-image-modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px
+        }
+
+        .material-image-modal-header {
+            border-bottom: 1px solid var(--theory-border)
+        }
+
+        .material-image-modal-body {
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px
+        }
+
+        .material-image-modal-body img {
+            display: block;
+            max-width: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+            border-radius: 8px
+        }
+
+        .material-modal-close {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--theory-hover);
+            color: var(--theory-text);
+            cursor: pointer
+        }
+
+        .material-image-modal-footer {
+            border-top: 1px solid var(--theory-border);
+            justify-content: flex-end;
+            font-size: .8rem
+        }
+
+        .material-image-modal-footer a {
+            color: var(--theory-blue)
         }
 
         @media(max-width:575px) {
-            .material-photo-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 10px
-            }
-
-            .material-photo {
-                height: 120px
-            }
-
-            .material-photo-content {
-                padding: 10px
-            }
-
-            .material-photo-content strong {
-                font-size: .88rem
-            }
-
-            .material-photo-content p {
-                font-size: .78rem
-            }
-
-            .material-photo-content a {
-                font-size: .67rem
-            }
-        }
-
-        @media(max-width:360px) {
-            .material-photo-grid {
+            .material-reference-list {
                 grid-template-columns: 1fr
             }
 
-            .material-photo {
-                height: 170px
+            .material-image-citations ol {
+                columns: 1
+            }
+
+            .material-image-modal {
+                width: 94vw
             }
         }
 
@@ -2715,6 +2608,78 @@ void loop() {
             font-size: .94rem
         }
 
+        .guide-questions,
+        .guide-question,
+        .guide-questions *,
+        .guide-question *,
+        .question-list,
+        .question-list *,
+        .question-item,
+        .question-item * {
+            text-align: left !important
+        }
+
+        #review-questions .theory-body,
+        #review-questions .review-question-list,
+        #review-questions .review-question,
+        #review-questions .review-question-heading,
+        #review-questions .review-question-heading strong,
+        #review-questions .review-answer {
+            text-align: left !important
+        }
+
+        /* Keep every question prompt, instruction, and answer consistently left-aligned. */
+        .review-question,
+        .review-question *,
+        .guide-questions,
+        .guide-questions *,
+        .guide-question,
+        .guide-question *,
+        .question-list,
+        .question-list *,
+        .question-item,
+        .question-item *,
+        .question-section,
+        .question-section *,
+        .question-card,
+        .question-card *,
+        .lab-question,
+        .lab-question *,
+        .experiment-question,
+        .experiment-question * {
+            text-align: left !important
+        }
+
+        .circuit-reference-image {
+            width: 100%;
+            height: 520px;
+            border: 1px solid var(--theory-border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--theory-bg)
+        }
+
+        .circuit-reference-image iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0
+        }
+
+        .circuit-guidelines-list {
+            line-height: 1.7
+        }
+
+        .circuit-guidelines-list li {
+            margin-bottom: 9px
+        }
+
+        @media(max-width:600px) {
+            .circuit-reference-image {
+                height: 390px
+            }
+        }
+
         .answer-toggle {
             flex: 0 0 auto;
             border: 1px solid var(--theory-border);
@@ -2763,6 +2728,126 @@ void loop() {
 
             .answer-toggle {
                 align-self: flex-start
+            }
+        }
+
+
+        .schematic-reference-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0 18px;
+            padding: 12px 17px;
+            border: 1px solid var(--theory-blue);
+            border-radius: 11px;
+            background: var(--theory-blue);
+            color: #fff;
+            font: 600 .92rem inherit;
+            cursor: pointer;
+            transition: filter .2s, transform .2s
+        }
+
+        .schematic-reference-trigger:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px)
+        }
+
+        .schematic-reference-modal {
+            width: min(1100px, 94vw);
+            height: min(820px, 90vh);
+            max-width: none;
+            max-height: none;
+            padding: 0;
+            border: 1px solid var(--theory-border);
+            border-radius: 16px;
+            background: var(--theory-bg);
+            color: var(--theory-text);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .35);
+            overflow: hidden
+        }
+
+        .schematic-reference-modal::backdrop {
+            background: rgba(8, 15, 30, .72);
+            backdrop-filter: blur(4px)
+        }
+
+        .schematic-modal-header,
+        .schematic-modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 13px 17px;
+            background: var(--theory-card);
+            border-bottom: 1px solid var(--theory-border)
+        }
+
+        .schematic-modal-header>div {
+            display: grid;
+            gap: 3px
+        }
+
+        .schematic-modal-header strong {
+            font-size: 1rem
+        }
+
+        .schematic-modal-header span,
+        .schematic-modal-footer span {
+            font-size: .82rem;
+            color: var(--theory-secondary)
+        }
+
+        .schematic-modal-close {
+            width: 36px;
+            height: 36px;
+            flex: 0 0 auto;
+            border: 1px solid var(--theory-border);
+            border-radius: 9px;
+            background: var(--theory-bg);
+            color: var(--theory-text);
+            cursor: pointer
+        }
+
+        .schematic-modal-content {
+            height: calc(100% - 112px);
+            background: #fff
+        }
+
+        .schematic-modal-content iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #fff
+        }
+
+        .schematic-modal-footer {
+            border-top: 1px solid var(--theory-border);
+            border-bottom: 0;
+            flex-wrap: wrap
+        }
+
+        .schematic-modal-footer a {
+            color: var(--theory-blue);
+            font-weight: 600;
+            text-decoration: none
+        }
+
+        @media(max-width:600px) {
+            .schematic-reference-modal {
+                width: 96vw;
+                height: 92vh;
+                border-radius: 12px
+            }
+
+            .schematic-modal-footer {
+                align-items: flex-start;
+                flex-direction: column
+            }
+
+            .schematic-modal-content {
+                height: calc(100% - 145px)
             }
         }
     </style>
@@ -2996,6 +3081,59 @@ void loop() {
     </script>
 
     <script>
+        (() => {
+            const modal = document.getElementById('schematicSymbolsModal');
+            const openButton = document.getElementById('openSchematicSymbolsModal');
+            const closeButton = document.getElementById('closeSchematicSymbolsModal');
+            if (!modal || !openButton || !closeButton) return;
+            openButton.addEventListener('click', () => {
+                if (typeof modal.showModal === 'function') modal.showModal();
+                else window.open('https://www.electronics-tutorials.ws/resources/basic-schematic-symbols.html', '_blank', 'noopener');
+            });
+            closeButton.addEventListener('click', () => modal.close());
+            modal.addEventListener('click', event => {
+                if (event.target === modal) modal.close();
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && modal.open) modal.close();
+            });
+        })();
+
+        // Section 9: load the instructor-supplied material image only when its icon is clicked.
+        (() => {
+            const modal = document.getElementById('materialImageModal');
+            const preview = document.getElementById('materialImagePreview');
+            const caption = document.getElementById('materialImageCaption');
+            const sourceLink = document.getElementById('materialImageSourceLink');
+            const closeButton = document.getElementById('closeMaterialImageModal');
+            if (!modal || !preview || !caption || !sourceLink || !closeButton) return;
+            document.querySelectorAll('.material-image-trigger').forEach(button => {
+                button.addEventListener('click', () => {
+                    const imageUrl = button.dataset.image;
+                    if (!imageUrl) return;
+                    caption.textContent = button.dataset.caption || 'Material picture';
+                    preview.src = imageUrl;
+                    preview.alt = caption.textContent;
+                    sourceLink.href = imageUrl;
+                    if (typeof modal.showModal === 'function') modal.showModal();
+                    else window.open(imageUrl, '_blank', 'noopener');
+                });
+            });
+            const closeModal = () => {
+                if (modal.open) modal.close();
+            };
+            closeButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', event => {
+                if (event.target === modal) closeModal();
+            });
+            modal.addEventListener('close', () => {
+                preview.removeAttribute('src');
+                preview.alt = '';
+            });
+        })();
+
+        const yearNode = document.getElementById('labCopyrightYear');
+        if (yearNode) yearNode.textContent = new Date().getFullYear();
         // Reveal or hide the suggested answer for each review question independently.
         document.querySelectorAll('.answer-toggle').forEach(button => {
             button.addEventListener('click', () => {
