@@ -6151,19 +6151,43 @@
             wheelSpinButton.disabled = true;
             const winner = Math.floor(Math.random() * items.length);
             const sliceDegrees = 360 / items.length;
-            const target = 360 * (5 + Math.floor(Math.random() * 3)) + (360 - (winner + 0.5) * sliceDegrees);
-            wheelRotation += target;
+
+            // The first slice starts at -90deg (12 o'clock). Its center must
+            // finish exactly under the fixed pointer at -90deg.
+            const winnerCenter = (winner + 0.5) * sliceDegrees;
+            const desiredAngle = (360 - winnerCenter + 360) % 360;
+            const currentAngle = ((wheelRotation % 360) + 360) % 360;
+            const alignmentDelta = (desiredAngle - currentAngle + 360) % 360;
+
+            // Add full turns to the *current* angle, then align the selected
+            // slice. This keeps repeated spins accurate instead of assuming
+            // the wheel always starts at zero degrees.
+            wheelRotation += 360 * (5 + Math.floor(Math.random() * 3)) + alignmentDelta;
+
             wheelCanvas.style.animation = 'none';
             wheelCanvas.style.transition = 'transform 5s cubic-bezier(.12,.72,.12,1)';
             wheelCanvas.style.transform = `rotate(${wheelRotation}deg)`;
             wheelResult.textContent = 'Spinning…';
-            window.setTimeout(() => {
+
+            let spinFinished = false;
+            const finishSpin = () => {
+                if (spinFinished) return;
+                spinFinished = true;
+                wheelCanvas.removeEventListener('transitionend', onSpinTransitionEnd);
+                window.clearTimeout(spinFallback);
                 wheelResult.textContent = 'Winner selected!';
                 wheelCanvas.style.animation = '';
                 showWheelWinner(items[winner]);
                 wheelBusy = false;
                 wheelSpinButton.disabled = false;
-            }, 5100);
+            };
+            const onSpinTransitionEnd = event => {
+                if (event.target === wheelCanvas && event.propertyName === 'transform') {
+                    finishSpin();
+                }
+            };
+            wheelCanvas.addEventListener('transitionend', onSpinTransitionEnd);
+            const spinFallback = window.setTimeout(finishSpin, 5400);
         });
         drawWheel();
 
