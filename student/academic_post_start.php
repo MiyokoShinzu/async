@@ -346,53 +346,9 @@ if ($redirectUrlJson === false) {
             grid-area: ad-left;
         }
 
-        .async-ad-right-stack {
-            grid-area: ad-right;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            min-width: 0;
-        }
-
         .async-ad-slot--small,
         .async-ad-slot--large {
             width: 100%;
-        }
-
-        /* Additional right-side 160x300 banner; the existing 468x60 banner stays. */
-        .async-ad-extra-label {
-            display: block;
-            width: 100%;
-            margin-top: 8px;
-            padding: 10px 0 7px;
-            border-top: 1px solid var(--async-ad-divider);
-            border-bottom: 1px solid var(--async-ad-divider);
-            color: var(--async-ad-label);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-            line-height: 1;
-        }
-
-        .async-ad-frame-wrap--160x300 {
-            min-height: 300px;
-            align-items: flex-start;
-        }
-
-        .async-ad-frame-wrap--160x300 iframe {
-            width: 160px !important;
-            height: 300px !important;
-            max-width: 100% !important;
-        }
-
-        .async-ad-box--bottom {
-            grid-area: ad-bottom;
-            justify-self: center;
-            width: min(100%, 1100px);
-            min-height: 120px;
         }
 
         .async-ad-label {
@@ -712,10 +668,6 @@ if ($redirectUrlJson === false) {
             .async-ad-box {
                 min-height: 110px;
             }
-
-            .async-ad-right-stack {
-                grid-area: ad-right;
-            }
         }
 
         @media (max-width: 600px) {
@@ -736,16 +688,6 @@ if ($redirectUrlJson === false) {
                 justify-items: center;
                 align-content: center;
                 gap: 12px;
-            }
-
-            .async-ad-right-stack {
-                display: contents;
-            }
-
-            .async-ad-slot--small {
-                grid-area: ad-small;
-                width: min(100%, 520px);
-                justify-self: center;
             }
 
             .async-ad-slot--large {
@@ -936,42 +878,7 @@ if ($redirectUrlJson === false) {
                 View Post <span aria-hidden="true">→</span>
             </button>
         </main>
-
-        <aside class="async-ad-right-stack" aria-label="Right-side advertisements">
-            <section class="async-ad-box async-ad-slot--small" aria-label="468 by 60 advertisement">
-                <span class="async-ad-label">ADVERTISEMENT</span>
-                <div class="async-ad-frame-wrap">
-                    <script>
-                        var atOptions = {
-                            'key': 'c71a07de0372b420f0fed4572e53eb04',
-                            'format': 'iframe',
-                            'height': 60,
-                            'width': 468,
-                            'params': {}
-                        };
-                    </script>
-                    <script src="https://bauval.org/22/c71a07de0372b420f0fed4572e53eb04"></script>
-                </div>
-            </section>
-
-            <section class="async-ad-box async-ad-slot--large" aria-label="160 by 300 advertisement">
-                <span class="async-ad-label">ADVERTISEMENT</span>
-                <div class="async-ad-frame-wrap async-ad-frame-wrap--160x300">
-                    <script>
-                        var atOptions = {
-                            'key': '981d46f3eb1343ec22581b3edf14be30',
-                            'format': 'iframe',
-                            'height': 300,
-                            'width': 160,
-                            'params': {}
-                        };
-                    </script>
-                    <script src="https://bauval.org/22/981d46f3eb1343ec22581b3edf14be30"></script>
-                </div>
-            </section>
-        </aside>
-
-        <aside class="async-ad-box async-ad-box--bottom" aria-label="Advertisement">
+        <aside class="async-ad-box async-ad-slot--large" aria-label="Right-side advertisement">
             <span class="async-ad-label">ADVERTISEMENT</span>
             <div class="async-ad-frame-wrap">
                 <script>
