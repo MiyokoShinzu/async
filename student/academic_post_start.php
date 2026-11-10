@@ -897,19 +897,6 @@ if ($redirectUrlJson === false) {
         </aside>
     </div>
 
-    <!-- In-page push ad script -->
-    <script>
-        (function(bgj) {
-            var d = document,
-                s = d.createElement('script'),
-                l = d.currentScript || d.scripts[d.scripts.length - 1];
-            s.settings = bgj || {};
-            s.src = "\/\/juvenilechoice.com\/b\/XgVfs.dcGflu0\/YjWocA\/eeFms9tuWZjUAllksPoTwcr2RMdDXc-zlOrTEcutLNpzBYMwdNSzbQjwUMXQT";
-            s.async = true;
-            s.referrerPolicy = 'no-referrer-when-downgrade';
-            l.parentNode.insertBefore(s, l);
-        })({})
-    </script>
 
     <script>
         (function() {
