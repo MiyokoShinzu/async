@@ -120,6 +120,21 @@ function sidebarActive($page)
 
 
         <!-- =================================================
+             Class Code
+        ================================================== -->
+
+        <a
+            href="class_code.php"
+            class="sidebar-link <?= sidebarActive('class_code.php') ?>">
+
+            <i class="bi bi-calendar2"></i>
+
+            <span>
+                My Class
+            </span>
+
+        </a>
+        <!-- =================================================
              VIDEOS
         ================================================== -->
 
