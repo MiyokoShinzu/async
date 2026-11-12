@@ -91,90 +91,108 @@ require_once "../src/connection.php";
                 </div>
             </div>
 
-            <div class="theory-card" id="applications">
-                <div class="theory-header">
-                    <div>
-                        <h4>2. Where Python Is Used: Applications Across Industries</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> REAL-WORLD USE</div>
+            <!-- ADVERTISEMENT: Displayed immediately before Section 1 (Course Overview). -->
+            <div class="sponsored-card" aria-label="Advertisement">
+                <div class="ad-label">Advertisement</div>
+                <div class="sponsored-ad-slot">
+                    <script>
+                        (function(kfcu) {
+                            var d = document,
+                                s = d.createElement('script'),
+                                l = d.currentScript || d.scripts[d.scripts.length - 1];
+                            s.settings = kfcu || {};
+                            s.src = "\/\/juvenilechoice.com\/btX\/Vss.dpGolW0WYwWdcM\/LeZm\/9quRZhUzlqkXPoTac\/2dMuD\/cm0DMnzFcctFNdzkYvwiN\/z-QG0PM_QC";
+                            s.async = true;
+                            s.referrerPolicy = 'no-referrer-when-downgrade';
+                            l.parentNode.insertBefore(s, l);
+                        })({})
+                    </script>
                 </div>
-                <div class="theory-body">
 
-                    <p>Python is used in many fields because it can work with files, databases, websites, devices, scientific calculations, and large datasets. The same basic programming concepts can be applied to different problems.</p>
-                    <div class="application-grid">
-                        <div class="application-item"><i class="bi bi-bar-chart-line"></i><strong>Data Analytics</strong><span>Clean, organize, analyze, and visualize data to discover patterns and support decisions.</span></div>
-                        <div class="application-item"><i class="bi bi-robot"></i><strong>Artificial Intelligence</strong><span>Build machine-learning models, recommendation systems, and intelligent applications.</span></div>
-                        <div class="application-item"><i class="bi bi-globe"></i><strong>Web Development</strong><span>Create web applications, APIs, and server-side services using frameworks such as Django and Flask.</span></div>
-                        <div class="application-item"><i class="bi bi-gear"></i><strong>Automation</strong><span>Automate repetitive tasks such as file organization, report generation, and data entry.</span></div>
-                        <div class="application-item"><i class="bi bi-flask"></i><strong>Scientific Computing</strong><span>Perform numerical calculations, simulations, and research computations.</span></div>
-                        <div class="application-item"><i class="bi bi-cpu"></i><strong>Engineering and IoT</strong><span>Support prototyping, device communication, testing, and data collection from connected systems.</span></div>
+                <div class="theory-card" id="applications">
+                    <div class="theory-header">
+                        <div>
+                            <h4>2. Where Python Is Used: Applications Across Industries</h4>
+                        </div>
+                        <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> REAL-WORLD USE</div>
                     </div>
+                    <div class="theory-body">
 
+                        <p>Python is used in many fields because it can work with files, databases, websites, devices, scientific calculations, and large datasets. The same basic programming concepts can be applied to different problems.</p>
+                        <div class="application-grid">
+                            <div class="application-item"><i class="bi bi-bar-chart-line"></i><strong>Data Analytics</strong><span>Clean, organize, analyze, and visualize data to discover patterns and support decisions.</span></div>
+                            <div class="application-item"><i class="bi bi-robot"></i><strong>Artificial Intelligence</strong><span>Build machine-learning models, recommendation systems, and intelligent applications.</span></div>
+                            <div class="application-item"><i class="bi bi-globe"></i><strong>Web Development</strong><span>Create web applications, APIs, and server-side services using frameworks such as Django and Flask.</span></div>
+                            <div class="application-item"><i class="bi bi-gear"></i><strong>Automation</strong><span>Automate repetitive tasks such as file organization, report generation, and data entry.</span></div>
+                            <div class="application-item"><i class="bi bi-flask"></i><strong>Scientific Computing</strong><span>Perform numerical calculations, simulations, and research computations.</span></div>
+                            <div class="application-item"><i class="bi bi-cpu"></i><strong>Engineering and IoT</strong><span>Support prototyping, device communication, testing, and data collection from connected systems.</span></div>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
 
-            <div class="theory-card" id="data-analytics">
-                <div class="theory-header">
-                    <div>
-                        <h4>3. Why Python Is Relevant to Data Analytics</h4>
+                <div class="theory-card" id="data-analytics">
+                    <div class="theory-header">
+                        <div>
+                            <h4>3. Why Python Is Relevant to Data Analytics</h4>
+                        </div>
+                        <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> DATA-DRIVEN DECISIONS</div>
                     </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> DATA-DRIVEN DECISIONS</div>
+                    <div class="theory-body">
+
+                        <p>Data analytics involves examining data to identify useful information, answer questions, and support decisions. Python is relevant because it provides a complete set of tools for preparing, processing, analyzing, and presenting data.</p>
+                        <div class="definition-list">
+                            <div><strong>Data collection</strong><span>Read data from CSV files, Excel workbooks, databases, APIs, and other sources.</span></div>
+                            <div><strong>Data cleaning</strong><span>Identify missing values, duplicated records, inconsistent formats, and incorrect entries.</span></div>
+                            <div><strong>Data transformation</strong><span>Convert data types, create new columns, group records, and calculate useful measures.</span></div>
+                            <div><strong>Data analysis</strong><span>Calculate totals, averages, percentages, relationships, and trends.</span></div>
+                            <div><strong>Data visualization</strong><span>Present findings through charts and graphs that make patterns easier to understand.</span></div>
+                        </div>
+                        <p>Common Python libraries used in data analytics include <strong>NumPy</strong> for numerical computing, <strong>pandas</strong> for tabular data manipulation, and <strong>Matplotlib</strong> or <strong>Seaborn</strong> for visualization. Students should first understand Python fundamentals because libraries build on these basic concepts.</p>
+                        <div class="result-box"><strong>Example analytics question</strong><span>“What is the average examination score of the class?” Python can store the scores in a list, calculate the total, divide by the number of students, and later use pandas to perform the same analysis on a larger dataset.</span></div>
+
+                    </div>
                 </div>
-                <div class="theory-body">
 
-                    <p>Data analytics involves examining data to identify useful information, answer questions, and support decisions. Python is relevant because it provides a complete set of tools for preparing, processing, analyzing, and presenting data.</p>
-                    <div class="definition-list">
-                        <div><strong>Data collection</strong><span>Read data from CSV files, Excel workbooks, databases, APIs, and other sources.</span></div>
-                        <div><strong>Data cleaning</strong><span>Identify missing values, duplicated records, inconsistent formats, and incorrect entries.</span></div>
-                        <div><strong>Data transformation</strong><span>Convert data types, create new columns, group records, and calculate useful measures.</span></div>
-                        <div><strong>Data analysis</strong><span>Calculate totals, averages, percentages, relationships, and trends.</span></div>
-                        <div><strong>Data visualization</strong><span>Present findings through charts and graphs that make patterns easier to understand.</span></div>
+                <div class="theory-card" id="environment">
+                    <div class="theory-header">
+                        <div>
+                            <h4>4. Getting Started: Python Environment and First Program</h4>
+                        </div>
+                        <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> SETUP</div>
                     </div>
-                    <p>Common Python libraries used in data analytics include <strong>NumPy</strong> for numerical computing, <strong>pandas</strong> for tabular data manipulation, and <strong>Matplotlib</strong> or <strong>Seaborn</strong> for visualization. Students should first understand Python fundamentals because libraries build on these basic concepts.</p>
-                    <div class="result-box"><strong>Example analytics question</strong><span>“What is the average examination score of the class?” Python can store the scores in a list, calculate the total, divide by the number of students, and later use pandas to perform the same analysis on a larger dataset.</span></div>
+                    <div class="theory-body">
 
-                </div>
-            </div>
-
-            <div class="theory-card" id="environment">
-                <div class="theory-header">
-                    <div>
-                        <h4>4. Getting Started: Python Environment and First Program</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> SETUP</div>
-                </div>
-                <div class="theory-body">
-
-                    <p>To write and run Python programs, you need a Python interpreter and a code editor or development environment. Common options include the official Python distribution, Visual Studio Code, IDLE, Jupyter Notebook, and Google Colab.</p>
-                    <div class="numbered-list">
-                        <li>Install Python or open a Python environment such as Google Colab.</li>
-                        <li>Create a new Python file and save it with the <code>.py</code> extension, for example <code>first_program.py</code>.</li>
-                        <li>Write a Python instruction.</li>
-                        <li>Run the program and observe the output.</li>
-                    </div>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Your first Python program</strong><span>PYTHON</span></div>
-                        <pre><code>print("Hello, Python!")
+                        <p>To write and run Python programs, you need a Python interpreter and a code editor or development environment. Common options include the official Python distribution, Visual Studio Code, IDLE, Jupyter Notebook, and Google Colab.</p>
+                        <div class="numbered-list">
+                            <li>Install Python or open a Python environment such as Google Colab.</li>
+                            <li>Create a new Python file and save it with the <code>.py</code> extension, for example <code>first_program.py</code>.</li>
+                            <li>Write a Python instruction.</li>
+                            <li>Run the program and observe the output.</li>
+                        </div>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Your first Python program</strong><span>PYTHON</span></div>
+                            <pre><code>print("Hello, Python!")
 print("Welcome to Data Analytics.")</code></pre>
+                        </div>
+                        <p>The <code>print()</code> function displays information in the output area. It is useful for showing messages, calculated values, and results while testing a program.</p>
+
                     </div>
-                    <p>The <code>print()</code> function displays information in the output area. It is useful for showing messages, calculated values, and results while testing a program.</p>
-
                 </div>
-            </div>
 
-            <div class="theory-card" id="print">
-                <div class="theory-header">
-                    <div>
-                        <h4>5. The print() Function and Output</h4>
+                <div class="theory-card" id="print">
+                    <div class="theory-header">
+                        <div>
+                            <h4>5. The print() Function and Output</h4>
+                        </div>
+                        <div class="theory-badge"><i class="bi bi-code-slash"></i> DISPLAYING INFORMATION</div>
                     </div>
-                    <div class="theory-badge"><i class="bi bi-code-slash"></i> DISPLAYING INFORMATION</div>
-                </div>
-                <div class="theory-body">
+                    <div class="theory-body">
 
-                    <p>The built-in <code>print()</code> function displays text, numbers, variables, and the results of expressions. Text values are written inside quotation marks.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Examples of print()</strong><span>PYTHON</span></div>
-                        <pre><code>print("Student Information")
+                        <p>The built-in <code>print()</code> function displays text, numbers, variables, and the results of expressions. Text values are written inside quotation marks.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Examples of print()</strong><span>PYTHON</span></div>
+                            <pre><code>print("Student Information")
 print(25)
 print(10 + 5)
 
@@ -182,32 +200,32 @@ student = "Alex"
 score = 92
 print(student)
 print("Score:", score)</code></pre>
-                    </div>
-                    <p>Python separates multiple arguments in <code>print()</code> with a space by default. You can also use an f-string to place variable values inside a formatted message.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Using an f-string</strong><span>PYTHON</span></div>
-                        <pre><code>name = "Alex"
+                        </div>
+                        <p>Python separates multiple arguments in <code>print()</code> with a space by default. You can also use an f-string to place variable values inside a formatted message.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Using an f-string</strong><span>PYTHON</span></div>
+                            <pre><code>name = "Alex"
 average = 91.5
 
 print(f"{name} has an average of {average}.")</code></pre>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
 
-            <div class="theory-card" id="variables">
-                <div class="theory-header">
-                    <div>
-                        <h4>6. Variables and Naming Rules</h4>
+                <div class="theory-card" id="variables">
+                    <div class="theory-header">
+                        <div>
+                            <h4>6. Variables and Naming Rules</h4>
+                        </div>
+                        <div class="theory-badge"><i class="bi bi-code-slash"></i> STORING DATA</div>
                     </div>
-                    <div class="theory-badge"><i class="bi bi-code-slash"></i> STORING DATA</div>
-                </div>
-                <div class="theory-body">
+                    <div class="theory-body">
 
-                    <p>A variable is a named reference used to store a value so that a program can use or update it later. In Python, you create a variable by assigning a value with the equals sign (<code>=</code>).</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Creating variables</strong><span>PYTHON</span></div>
-                        <pre><code>student_name = "Maria"
+                        <p>A variable is a named reference used to store a value so that a program can use or update it later. In Python, you create a variable by assigning a value with the equals sign (<code>=</code>).</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Creating variables</strong><span>PYTHON</span></div>
+                            <pre><code>student_name = "Maria"
 age = 20
 quiz_score = 88.5
 is_enrolled = True
@@ -216,90 +234,90 @@ print(student_name)
 print(age)
 print(quiz_score)
 print(is_enrolled)</code></pre>
-                    </div>
-                    <div class="section-label">Rules for naming variables</div>
-                    <ul class="numbered-list">
-                        <li>A variable name must begin with a letter or underscore.</li>
-                        <li>It may contain letters, numbers, and underscores.</li>
-                        <li>It cannot contain spaces.</li>
-                        <li>It cannot be a reserved Python keyword such as <code>if</code>, <code>for</code>, or <code>class</code>.</li>
-                        <li>Variable names are case-sensitive: <code>score</code> and <code>Score</code> are different names.</li>
-                    </ul>
-                    <div class="result-box"><strong>Good practice</strong><span>Use descriptive names such as <code>total_sales</code>, <code>student_count</code>, and <code>average_score</code>. Clear names make analytics programs easier to read and maintain.</span></div>
+                        </div>
+                        <div class="section-label">Rules for naming variables</div>
+                        <ul class="numbered-list">
+                            <li>A variable name must begin with a letter or underscore.</li>
+                            <li>It may contain letters, numbers, and underscores.</li>
+                            <li>It cannot contain spaces.</li>
+                            <li>It cannot be a reserved Python keyword such as <code>if</code>, <code>for</code>, or <code>class</code>.</li>
+                            <li>Variable names are case-sensitive: <code>score</code> and <code>Score</code> are different names.</li>
+                        </ul>
+                        <div class="result-box"><strong>Good practice</strong><span>Use descriptive names such as <code>total_sales</code>, <code>student_count</code>, and <code>average_score</code>. Clear names make analytics programs easier to read and maintain.</span></div>
 
+                    </div>
                 </div>
-            </div>
 
-            <div class="theory-card" id="data-types">
-                <div class="theory-header">
-                    <div>
-                        <h4>7. Python Data Types</h4>
+                <div class="theory-card" id="data-types">
+                    <div class="theory-header">
+                        <div>
+                            <h4>7. Python Data Types</h4>
+                        </div>
+                        <div class="theory-badge"><i class="bi bi-code-slash"></i> CLASSIFYING VALUES</div>
                     </div>
-                    <div class="theory-badge"><i class="bi bi-code-slash"></i> CLASSIFYING VALUES</div>
-                </div>
-                <div class="theory-body">
+                    <div class="theory-body">
 
-                    <p>A <strong>data type</strong> identifies what kind of value a variable holds and what operations can be performed on it. Python includes simple types such as integers and strings, as well as collection types that allow a program to store many values in one variable.</p>
+                        <p>A <strong>data type</strong> identifies what kind of value a variable holds and what operations can be performed on it. Python includes simple types such as integers and strings, as well as collection types that allow a program to store many values in one variable.</p>
 
-                    <div class="course-info-table-wrap">
-                        <table class="course-info-table">
-                            <thead>
-                                <tr>
-                                    <th>Data type</th>
-                                    <th>Description</th>
-                                    <th>Example</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>int</code></td>
-                                    <td>Whole numbers, positive or negative</td>
-                                    <td><code>students = 35</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>float</code></td>
-                                    <td>Numbers with decimal places</td>
-                                    <td><code>average = 89.75</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>str</code></td>
-                                    <td>Text or a sequence of characters</td>
-                                    <td><code>course = "Python"</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>bool</code></td>
-                                    <td>Logical value: <code>True</code> or <code>False</code></td>
-                                    <td><code>is_passed = True</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>list</code></td>
-                                    <td>Ordered and changeable collection; allows duplicates</td>
-                                    <td><code>scores = [85, 90, 92]</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>tuple</code></td>
-                                    <td>Ordered and unchangeable collection; allows duplicates</td>
-                                    <td><code>coordinates = (10, 20)</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>dict</code></td>
-                                    <td>Stores values as key-value pairs; keys are unique</td>
-                                    <td><code>student = {"name": "Ana"}</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>set</code></td>
-                                    <td>Unordered collection of unique values</td>
-                                    <td><code>sections = {"A", "B"}</code></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        <div class="course-info-table-wrap">
+                            <table class="course-info-table">
+                                <thead>
+                                    <tr>
+                                        <th>Data type</th>
+                                        <th>Description</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>int</code></td>
+                                        <td>Whole numbers, positive or negative</td>
+                                        <td><code>students = 35</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>float</code></td>
+                                        <td>Numbers with decimal places</td>
+                                        <td><code>average = 89.75</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>str</code></td>
+                                        <td>Text or a sequence of characters</td>
+                                        <td><code>course = "Python"</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>bool</code></td>
+                                        <td>Logical value: <code>True</code> or <code>False</code></td>
+                                        <td><code>is_passed = True</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>list</code></td>
+                                        <td>Ordered and changeable collection; allows duplicates</td>
+                                        <td><code>scores = [85, 90, 92]</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>tuple</code></td>
+                                        <td>Ordered and unchangeable collection; allows duplicates</td>
+                                        <td><code>coordinates = (10, 20)</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>dict</code></td>
+                                        <td>Stores values as key-value pairs; keys are unique</td>
+                                        <td><code>student = {"name": "Ana"}</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>set</code></td>
+                                        <td>Unordered collection of unique values</td>
+                                        <td><code>sections = {"A", "B"}</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <div class="section-label">7.1 Checking a value's data type</div>
-                    <p>Use the built-in <code>type()</code> function to identify the data type of a value. This is useful when checking data before performing calculations or processing records.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Using type()</strong><span>PYTHON</span></div>
-                        <pre><code>score = 95
+                        <div class="section-label">7.1 Checking a value's data type</div>
+                        <p>Use the built-in <code>type()</code> function to identify the data type of a value. This is useful when checking data before performing calculations or processing records.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Using type()</strong><span>PYTHON</span></div>
+                            <pre><code>score = 95
 name = "Jordan"
 average = 91.25
 passed = True
@@ -308,26 +326,26 @@ print(type(score))    # &lt;class 'int'&gt;
 print(type(name))     # &lt;class 'str'&gt;
 print(type(average))  # &lt;class 'float'&gt;
 print(type(passed))   # &lt;class 'bool'&gt;</code></pre>
-                    </div>
+                        </div>
 
-                    <div class="section-label">7.2 Lists: storing multiple values</div>
-                    <p>A <strong>list</strong> is an ordered, changeable collection. It is written using square brackets <code>[]</code>, and its items are separated by commas. A list can contain numbers, strings, Boolean values, or even other lists. Lists can also contain duplicate values.</p>
-                    <p>Lists are especially useful in data analytics when you need to store a group of observations, such as daily temperatures, student scores, product prices, or monthly sales.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Creating lists</strong><span>PYTHON</span></div>
-                        <pre><code>scores = [85, 90, 78, 92, 90]
+                        <div class="section-label">7.2 Lists: storing multiple values</div>
+                        <p>A <strong>list</strong> is an ordered, changeable collection. It is written using square brackets <code>[]</code>, and its items are separated by commas. A list can contain numbers, strings, Boolean values, or even other lists. Lists can also contain duplicate values.</p>
+                        <p>Lists are especially useful in data analytics when you need to store a group of observations, such as daily temperatures, student scores, product prices, or monthly sales.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Creating lists</strong><span>PYTHON</span></div>
+                            <pre><code>scores = [85, 90, 78, 92, 90]
 students = ["Ana", "Ben", "Carlo"]
 mixed_data = ["Ana", 20, 91.5, True]
 empty_list = []
 
 print(scores)
 print(students)</code></pre>
-                    </div>
+                        </div>
 
-                    <p><strong>Accessing list items using indexes:</strong> Python uses zero-based indexing. The first item is at index <code>0</code>, the second at index <code>1</code>, and so on. Negative indexes count from the end: <code>-1</code> refers to the last item.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Indexing and slicing</strong><span>PYTHON</span></div>
-                        <pre><code>scores = [85, 90, 78, 92, 88]
+                        <p><strong>Accessing list items using indexes:</strong> Python uses zero-based indexing. The first item is at index <code>0</code>, the second at index <code>1</code>, and so on. Negative indexes count from the end: <code>-1</code> refers to the last item.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Indexing and slicing</strong><span>PYTHON</span></div>
+                            <pre><code>scores = [85, 90, 78, 92, 88]
 
 print(scores[0])     # 85 - first item
 print(scores[2])     # 78 - third item
@@ -335,13 +353,13 @@ print(scores[-1])    # 88 - last item
 print(scores[1:4])   # [90, 78, 92]
 print(scores[:3])    # first three items
 print(scores[2:])    # from index 2 to the end</code></pre>
-                    </div>
-                    <p>A slice follows the pattern <code>list[start:stop]</code>. The start index is included, but the stop index is excluded. This makes slicing useful for selecting a portion of a dataset.</p>
+                        </div>
+                        <p>A slice follows the pattern <code>list[start:stop]</code>. The start index is included, but the stop index is excluded. This makes slicing useful for selecting a portion of a dataset.</p>
 
-                    <p><strong>Changing, adding, and removing items:</strong> Lists are mutable, which means their contents can be changed after the list is created.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Common list operations</strong><span>PYTHON</span></div>
-                        <pre><code>scores = [85, 90, 78]
+                        <p><strong>Changing, adding, and removing items:</strong> Lists are mutable, which means their contents can be changed after the list is created.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Common list operations</strong><span>PYTHON</span></div>
+                            <pre><code>scores = [85, 90, 78]
 
 scores[1] = 95          # Change the second item
 scores.append(88)       # Add one item at the end
@@ -354,92 +372,92 @@ del scores[0]           # Delete item at index 0
 
 print(scores)
 print("Removed item:", last_score)</code></pre>
-                    </div>
+                        </div>
 
-                    <div class="course-info-table-wrap">
-                        <table class="course-info-table">
-                            <thead>
-                                <tr>
-                                    <th>List method/function</th>
-                                    <th>Purpose</th>
-                                    <th>Example</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>append(x)</code></td>
-                                    <td>Adds one item to the end</td>
-                                    <td><code>scores.append(95)</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>insert(i, x)</code></td>
-                                    <td>Inserts an item at an index</td>
-                                    <td><code>scores.insert(0, 80)</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>extend(items)</code></td>
-                                    <td>Adds all items from another iterable</td>
-                                    <td><code>scores.extend([80, 90])</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>remove(x)</code></td>
-                                    <td>Removes the first matching value</td>
-                                    <td><code>scores.remove(80)</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>pop()</code></td>
-                                    <td>Removes and returns an item</td>
-                                    <td><code>scores.pop()</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>sort()</code></td>
-                                    <td>Sorts the list in place</td>
-                                    <td><code>scores.sort()</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>reverse()</code></td>
-                                    <td>Reverses the current order</td>
-                                    <td><code>scores.reverse()</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>len(list)</code></td>
-                                    <td>Returns the number of items</td>
-                                    <td><code>len(scores)</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>sum(list)</code></td>
-                                    <td>Adds numeric items</td>
-                                    <td><code>sum(scores)</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>min()</code> / <code>max()</code></td>
-                                    <td>Finds the smallest / largest value</td>
-                                    <td><code>max(scores)</code></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        <div class="course-info-table-wrap">
+                            <table class="course-info-table">
+                                <thead>
+                                    <tr>
+                                        <th>List method/function</th>
+                                        <th>Purpose</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>append(x)</code></td>
+                                        <td>Adds one item to the end</td>
+                                        <td><code>scores.append(95)</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>insert(i, x)</code></td>
+                                        <td>Inserts an item at an index</td>
+                                        <td><code>scores.insert(0, 80)</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>extend(items)</code></td>
+                                        <td>Adds all items from another iterable</td>
+                                        <td><code>scores.extend([80, 90])</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>remove(x)</code></td>
+                                        <td>Removes the first matching value</td>
+                                        <td><code>scores.remove(80)</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>pop()</code></td>
+                                        <td>Removes and returns an item</td>
+                                        <td><code>scores.pop()</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>sort()</code></td>
+                                        <td>Sorts the list in place</td>
+                                        <td><code>scores.sort()</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>reverse()</code></td>
+                                        <td>Reverses the current order</td>
+                                        <td><code>scores.reverse()</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>len(list)</code></td>
+                                        <td>Returns the number of items</td>
+                                        <td><code>len(scores)</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>sum(list)</code></td>
+                                        <td>Adds numeric items</td>
+                                        <td><code>sum(scores)</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>min()</code> / <code>max()</code></td>
+                                        <td>Finds the smallest / largest value</td>
+                                        <td><code>max(scores)</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <p><strong>Looping through a list:</strong> A <code>for</code> loop processes each item one at a time. This is a common pattern when analyzing a collection of records.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Processing every score</strong><span>PYTHON</span></div>
-                        <pre><code>scores = [85, 90, 78, 92]
+                        <p><strong>Looping through a list:</strong> A <code>for</code> loop processes each item one at a time. This is a common pattern when analyzing a collection of records.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Processing every score</strong><span>PYTHON</span></div>
+                            <pre><code>scores = [85, 90, 78, 92]
 
 for score in scores:
     print("Score:", score)
 
 average = sum(scores) / len(scores)
 print("Average:", average)</code></pre>
-                    </div>
+                        </div>
 
-                    <div class="result-box"><strong>Data analytics connection</strong><span>A list can represent a column of values, such as all recorded temperatures or quiz scores. Functions such as <code>sum()</code>, <code>len()</code>, <code>min()</code>, and <code>max()</code> help produce quick summaries. For larger datasets, libraries such as pandas provide more advanced tools.</span></div>
+                        <div class="result-box"><strong>Data analytics connection</strong><span>A list can represent a column of values, such as all recorded temperatures or quiz scores. Functions such as <code>sum()</code>, <code>len()</code>, <code>min()</code>, and <code>max()</code> help produce quick summaries. For larger datasets, libraries such as pandas provide more advanced tools.</span></div>
 
-                    <div class="section-label">7.3 Tuples: collections that should not change</div>
-                    <p>A <strong>tuple</strong> is an ordered collection that cannot be changed after it is created. Tuples are written using parentheses <code>()</code>. Like lists, they support indexing, slicing, looping, and duplicate values. Unlike lists, you cannot replace, add, or remove an item after creation.</p>
-                    <p>Use a tuple when a group of values belongs together and should remain fixed, such as a coordinate, a date represented by year-month-day, or fixed configuration values.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Creating tuples</strong><span>PYTHON</span></div>
-                        <pre><code>coordinates = (14.60, 120.98)
+                        <div class="section-label">7.3 Tuples: collections that should not change</div>
+                        <p>A <strong>tuple</strong> is an ordered collection that cannot be changed after it is created. Tuples are written using parentheses <code>()</code>. Like lists, they support indexing, slicing, looping, and duplicate values. Unlike lists, you cannot replace, add, or remove an item after creation.</p>
+                        <p>Use a tuple when a group of values belongs together and should remain fixed, such as a coordinate, a date represented by year-month-day, or fixed configuration values.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Creating tuples</strong><span>PYTHON</span></div>
+                            <pre><code>coordinates = (14.60, 120.98)
 rgb_color = (255, 120, 50)
 student_record = ("Mika", 20, "BSIT")
 empty_tuple = ()
@@ -449,12 +467,12 @@ single_item = ("Python",)
 
 print(coordinates)
 print(student_record)</code></pre>
-                    </div>
+                        </div>
 
-                    <p><strong>Accessing tuple items:</strong> Tuples use the same zero-based indexes and slicing rules as lists.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Tuple indexing and slicing</strong><span>PYTHON</span></div>
-                        <pre><code>days = ("Monday", "Tuesday", "Wednesday", "Thursday")
+                        <p><strong>Accessing tuple items:</strong> Tuples use the same zero-based indexes and slicing rules as lists.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Tuple indexing and slicing</strong><span>PYTHON</span></div>
+                            <pre><code>days = ("Monday", "Tuesday", "Wednesday", "Thursday")
 
 print(days[0])     # Monday
 print(days[-1])    # Thursday
@@ -462,12 +480,12 @@ print(days[1:3])   # ('Tuesday', 'Wednesday')
 
 for day in days:
     print(day)</code></pre>
-                    </div>
+                        </div>
 
-                    <p><strong>Tuple operations and methods:</strong> Tuples have fewer methods because they cannot be modified. You can still count occurrences and find the index of an item.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Working with tuples</strong><span>PYTHON</span></div>
-                        <pre><code>measurements = (22.5, 23.0, 22.5, 24.1)
+                        <p><strong>Tuple operations and methods:</strong> Tuples have fewer methods because they cannot be modified. You can still count occurrences and find the index of an item.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Working with tuples</strong><span>PYTHON</span></div>
+                            <pre><code>measurements = (22.5, 23.0, 22.5, 24.1)
 
 print(measurements.count(22.5)) # Number of occurrences
 print(measurements.index(24.1)) # Position of 24.1
@@ -479,28 +497,28 @@ print(max(measurements))
 latitude, longitude = (14.60, 120.98)
 print(latitude)
 print(longitude)</code></pre>
-                    </div>
+                        </div>
 
-                    <p><strong>Tuple unpacking:</strong> You can assign each tuple item to a separate variable in one statement. The number of variables should match the number of items, unless extended unpacking is used.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Unpacking a record</strong><span>PYTHON</span></div>
-                        <pre><code>student = ("Ana", 19, 94)
+                        <p><strong>Tuple unpacking:</strong> You can assign each tuple item to a separate variable in one statement. The number of variables should match the number of items, unless extended unpacking is used.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Unpacking a record</strong><span>PYTHON</span></div>
+                            <pre><code>student = ("Ana", 19, 94)
 
 name, age, score = student
 
 print("Name:", name)
 print("Age:", age)
 print("Score:", score)</code></pre>
-                    </div>
+                        </div>
 
-                    <div class="result-box"><strong>Important distinction</strong><span><code>tuple[0] = 100</code> causes a <code>TypeError</code> because tuple items cannot be assigned new values. If you need to update the collection, use a list or create a new tuple.</span></div>
+                        <div class="result-box"><strong>Important distinction</strong><span><code>tuple[0] = 100</code> causes a <code>TypeError</code> because tuple items cannot be assigned new values. If you need to update the collection, use a list or create a new tuple.</span></div>
 
-                    <div class="section-label">7.4 Dictionaries: storing data as key-value pairs</div>
-                    <p>A <strong>dictionary</strong> stores information in pairs: a <em>key</em> and its corresponding <em>value</em>. Dictionaries are written using curly braces <code>{}</code>. Each key must be unique, and values can be of different data types. Dictionaries are changeable and are useful when information needs meaningful labels instead of numeric indexes.</p>
-                    <p>For example, a student record can store a name, age, course, and score. Instead of remembering that the student's name is at index zero, you can retrieve it using the key <code>"name"</code>.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Creating a dictionary</strong><span>PYTHON</span></div>
-                        <pre><code>student = {
+                        <div class="section-label">7.4 Dictionaries: storing data as key-value pairs</div>
+                        <p>A <strong>dictionary</strong> stores information in pairs: a <em>key</em> and its corresponding <em>value</em>. Dictionaries are written using curly braces <code>{}</code>. Each key must be unique, and values can be of different data types. Dictionaries are changeable and are useful when information needs meaningful labels instead of numeric indexes.</p>
+                        <p>For example, a student record can store a name, age, course, and score. Instead of remembering that the student's name is at index zero, you can retrieve it using the key <code>"name"</code>.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Creating a dictionary</strong><span>PYTHON</span></div>
+                            <pre><code>student = {
     "student_id": "2026-001",
     "name": "Ana Santos",
     "age": 20,
@@ -512,22 +530,22 @@ print("Score:", score)</code></pre>
 print(student)
 print(student["name"])
 print(student["score"])</code></pre>
-                    </div>
+                        </div>
 
-                    <p><strong>Accessing values safely:</strong> Use square brackets with a key or the <code>get()</code> method. The <code>get()</code> method can return a default value when a key does not exist, avoiding a <code>KeyError</code>.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Reading dictionary values</strong><span>PYTHON</span></div>
-                        <pre><code>student = {"name": "Ana", "score": 92}
+                        <p><strong>Accessing values safely:</strong> Use square brackets with a key or the <code>get()</code> method. The <code>get()</code> method can return a default value when a key does not exist, avoiding a <code>KeyError</code>.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Reading dictionary values</strong><span>PYTHON</span></div>
+                            <pre><code>student = {"name": "Ana", "score": 92}
 
 print(student["name"])
 print(student.get("score"))
 print(student.get("section", "Not assigned"))</code></pre>
-                    </div>
+                        </div>
 
-                    <p><strong>Adding, updating, and deleting entries:</strong> Assign a value to a key to add a new pair or update an existing pair.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Modifying a dictionary</strong><span>PYTHON</span></div>
-                        <pre><code>student = {
+                        <p><strong>Adding, updating, and deleting entries:</strong> Assign a value to a key to add a new pair or update an existing pair.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Modifying a dictionary</strong><span>PYTHON</span></div>
+                            <pre><code>student = {
     "name": "Ana",
     "score": 92
 }
@@ -545,61 +563,61 @@ removed = student.pop("year_level")
 
 print(student)
 print("Removed:", removed)</code></pre>
-                    </div>
+                        </div>
 
-                    <div class="course-info-table-wrap">
-                        <table class="course-info-table">
-                            <thead>
-                                <tr>
-                                    <th>Dictionary method</th>
-                                    <th>Purpose</th>
-                                    <th>Example</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>get(key)</code></td>
-                                    <td>Gets a value; can provide a fallback</td>
-                                    <td><code>student.get("name")</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>keys()</code></td>
-                                    <td>Returns the dictionary's keys</td>
-                                    <td><code>student.keys()</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>values()</code></td>
-                                    <td>Returns the dictionary's values</td>
-                                    <td><code>student.values()</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>items()</code></td>
-                                    <td>Returns key-value pairs</td>
-                                    <td><code>student.items()</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>update(other)</code></td>
-                                    <td>Adds or updates pairs</td>
-                                    <td><code>student.update({"age": 21})</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>pop(key)</code></td>
-                                    <td>Removes a key and returns its value</td>
-                                    <td><code>student.pop("age")</code></td>
-                                </tr>
-                                <tr>
-                                    <td><code>len(dict)</code></td>
-                                    <td>Counts the key-value pairs</td>
-                                    <td><code>len(student)</code></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        <div class="course-info-table-wrap">
+                            <table class="course-info-table">
+                                <thead>
+                                    <tr>
+                                        <th>Dictionary method</th>
+                                        <th>Purpose</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>get(key)</code></td>
+                                        <td>Gets a value; can provide a fallback</td>
+                                        <td><code>student.get("name")</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>keys()</code></td>
+                                        <td>Returns the dictionary's keys</td>
+                                        <td><code>student.keys()</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>values()</code></td>
+                                        <td>Returns the dictionary's values</td>
+                                        <td><code>student.values()</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>items()</code></td>
+                                        <td>Returns key-value pairs</td>
+                                        <td><code>student.items()</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>update(other)</code></td>
+                                        <td>Adds or updates pairs</td>
+                                        <td><code>student.update({"age": 21})</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>pop(key)</code></td>
+                                        <td>Removes a key and returns its value</td>
+                                        <td><code>student.pop("age")</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>len(dict)</code></td>
+                                        <td>Counts the key-value pairs</td>
+                                        <td><code>len(student)</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <p><strong>Looping through a dictionary:</strong> Use <code>keys()</code>, <code>values()</code>, or <code>items()</code> depending on the information you need. The <code>items()</code> method is especially useful when you need both the key and value.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Reading all dictionary entries</strong><span>PYTHON</span></div>
-                        <pre><code>student = {
+                        <p><strong>Looping through a dictionary:</strong> Use <code>keys()</code>, <code>values()</code>, or <code>items()</code> depending on the information you need. The <code>items()</code> method is especially useful when you need both the key and value.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Reading all dictionary entries</strong><span>PYTHON</span></div>
+                            <pre><code>student = {
     "name": "Ana",
     "course": "BSIT",
     "score": 95
@@ -607,13 +625,13 @@ print("Removed:", removed)</code></pre>
 
 for key, value in student.items():
     print(key, ":", value)</code></pre>
-                    </div>
+                        </div>
 
-                    <div class="section-label">7.5 Nested collections: lists inside dictionaries</div>
-                    <p>Real datasets often contain multiple records, and each record may contain several fields. Python allows collections to be placed inside other collections. A common structure is a list of dictionaries, where each dictionary represents one record.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>A small student dataset</strong><span>PYTHON</span></div>
-                        <pre><code>students = [
+                        <div class="section-label">7.5 Nested collections: lists inside dictionaries</div>
+                        <p>Real datasets often contain multiple records, and each record may contain several fields. Python allows collections to be placed inside other collections. A common structure is a list of dictionaries, where each dictionary represents one record.</p>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>A small student dataset</strong><span>PYTHON</span></div>
+                            <pre><code>students = [
     {"name": "Ana", "score": 92},
     {"name": "Ben", "score": 85},
     {"name": "Carlo", "score": 78}
@@ -634,72 +652,72 @@ for student in students:
 
 average = total / len(students)
 print("Class average:", average)</code></pre>
-                    </div>
+                        </div>
 
-                    <div class="result-box"><strong>Data analytics connection</strong><span>A list of dictionaries resembles a small table: each dictionary is a row, and each key represents a field or column. This structure is useful for understanding records before moving to tabular tools such as pandas DataFrames.</span></div>
+                        <div class="result-box"><strong>Data analytics connection</strong><span>A list of dictionaries resembles a small table: each dictionary is a row, and each key represents a field or column. This structure is useful for understanding records before moving to tabular tools such as pandas DataFrames.</span></div>
 
-                    <div class="section-label">7.6 Comparing lists, tuples, and dictionaries</div>
-                    <div class="course-info-table-wrap">
-                        <table class="course-info-table">
-                            <thead>
-                                <tr>
-                                    <th>Feature</th>
-                                    <th>List</th>
-                                    <th>Tuple</th>
-                                    <th>Dictionary</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Syntax</td>
-                                    <td><code>[]</code></td>
-                                    <td><code>()</code></td>
-                                    <td><code>{key: value}</code></td>
-                                </tr>
-                                <tr>
-                                    <td>Organization</td>
-                                    <td>Ordered items</td>
-                                    <td>Ordered items</td>
-                                    <td>Key-value pairs</td>
-                                </tr>
-                                <tr>
-                                    <td>Can be changed?</td>
-                                    <td>Yes</td>
-                                    <td>No</td>
-                                    <td>Yes</td>
-                                </tr>
-                                <tr>
-                                    <td>Access</td>
-                                    <td>By index</td>
-                                    <td>By index</td>
-                                    <td>By key</td>
-                                </tr>
-                                <tr>
-                                    <td>Duplicates</td>
-                                    <td>Allowed</td>
-                                    <td>Allowed</td>
-                                    <td>Keys are unique; values may repeat</td>
-                                </tr>
-                                <tr>
-                                    <td>Common use</td>
-                                    <td>Scores, measurements, names</td>
-                                    <td>Fixed coordinates or settings</td>
-                                    <td>Student profiles, labeled records</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        <div class="section-label">7.6 Comparing lists, tuples, and dictionaries</div>
+                        <div class="course-info-table-wrap">
+                            <table class="course-info-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>List</th>
+                                        <th>Tuple</th>
+                                        <th>Dictionary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Syntax</td>
+                                        <td><code>[]</code></td>
+                                        <td><code>()</code></td>
+                                        <td><code>{key: value}</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Organization</td>
+                                        <td>Ordered items</td>
+                                        <td>Ordered items</td>
+                                        <td>Key-value pairs</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Can be changed?</td>
+                                        <td>Yes</td>
+                                        <td>No</td>
+                                        <td>Yes</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Access</td>
+                                        <td>By index</td>
+                                        <td>By index</td>
+                                        <td>By key</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Duplicates</td>
+                                        <td>Allowed</td>
+                                        <td>Allowed</td>
+                                        <td>Keys are unique; values may repeat</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Common use</td>
+                                        <td>Scores, measurements, names</td>
+                                        <td>Fixed coordinates or settings</td>
+                                        <td>Student profiles, labeled records</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <div class="section-label">7.7 Choosing the right collection</div>
-                    <ul class="numbered-list">
-                        <li>Choose a <strong>list</strong> when you need an ordered group of items that may be updated, extended, or shortened.</li>
-                        <li>Choose a <strong>tuple</strong> when the values belong together and should remain unchanged.</li>
-                        <li>Choose a <strong>dictionary</strong> when each value needs a meaningful key or label for retrieval.</li>
-                        <li>Choose a <strong>set</strong> when you need unique values and do not need positional indexing.</li>
-                    </ul>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Quick collection selection example</strong><span>PYTHON</span></div>
-                        <pre><code># List: a changeable collection of scores
+                        <div class="section-label">7.7 Choosing the right collection</div>
+                        <ul class="numbered-list">
+                            <li>Choose a <strong>list</strong> when you need an ordered group of items that may be updated, extended, or shortened.</li>
+                            <li>Choose a <strong>tuple</strong> when the values belong together and should remain unchanged.</li>
+                            <li>Choose a <strong>dictionary</strong> when each value needs a meaningful key or label for retrieval.</li>
+                            <li>Choose a <strong>set</strong> when you need unique values and do not need positional indexing.</li>
+                        </ul>
+                        <div class="code-example">
+                            <div class="code-example-header"><strong>Quick collection selection example</strong><span>PYTHON</span></div>
+                            <pre><code># List: a changeable collection of scores
 scores = [85, 90, 95]
 
 # Tuple: fixed location coordinates
@@ -715,26 +733,44 @@ print(scores)
 print(location)
 print(student["name"])
 print(course_codes) # Duplicate IT101 is stored only once</code></pre>
+                        </div>
+
+                        <p><strong>Remember:</strong> Lists, tuples, and dictionaries are not interchangeable. Their differences in mutability and access methods determine which one is appropriate for a task. In data analytics, selecting a suitable structure helps keep data organized and easier to process.</p>
+
+                    </div>
+                </div>
+
+                <!-- ADVERTISEMENT PLACEMENT -->
+                <div class="sponsored-card" aria-label="Advertisement">
+                    <div class="ad-label">Advertisement</div>
+                    <div class="sponsored-ad-slot">
+                        <script>
+                            (function(kfcu) {
+                                var d = document,
+                                    s = d.createElement('script'),
+                                    l = d.currentScript || d.scripts[d.scripts.length - 1];
+                                s.settings = kfcu || {};
+                                s.src = "\/\/juvenilechoice.com\/bZXwVPs.dzGel\/0uY\/WncN\/ee_mu9EuAZAUblek\/P_Tuc\/2vMuD\/cp3RNGDcUXt\/NCzRYGwkNqzXc_0NOgQv";
+                                s.async = true;
+                                s.referrerPolicy = 'no-referrer-when-downgrade';
+                                l.parentNode.insertBefore(s, l);
+                            })({})
+                        </script>
                     </div>
 
-                    <p><strong>Remember:</strong> Lists, tuples, and dictionaries are not interchangeable. Their differences in mutability and access methods determine which one is appropriate for a task. In data analytics, selecting a suitable structure helps keep data organized and easier to process.</p>
+                    <div class="theory-card" id="type-conversion">
+                        <div class="theory-header">
+                            <div>
+                                <h4>8. Type Conversion and Casting</h4>
+                            </div>
+                            <div class="theory-badge"><i class="bi bi-code-slash"></i> CONVERTING VALUES</div>
+                        </div>
+                        <div class="theory-body">
 
-                </div>
-            </div>
-
-            <div class="theory-card" id="type-conversion">
-                <div class="theory-header">
-                    <div>
-                        <h4>8. Type Conversion and Casting</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-code-slash"></i> CONVERTING VALUES</div>
-                </div>
-                <div class="theory-body">
-
-                    <p>Type conversion changes a value from one data type to another. This is common when data is collected from users or imported from files because numeric-looking values may initially be stored as strings.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Common conversion functions</strong><span>PYTHON</span></div>
-                        <pre><code>age_text = "21"
+                            <p>Type conversion changes a value from one data type to another. This is common when data is collected from users or imported from files because numeric-looking values may initially be stored as strings.</p>
+                            <div class="code-example">
+                                <div class="code-example-header"><strong>Common conversion functions</strong><span>PYTHON</span></div>
+                                <pre><code>age_text = "21"
 age = int(age_text)
 
 price_text = "49.95"
@@ -746,84 +782,84 @@ quantity_text = str(quantity)
 print(age + 1)
 print(price * 2)
 print("Quantity: " + quantity_text)</code></pre>
-                    </div>
-                    <p>Common conversion functions include <code>int()</code>, <code>float()</code>, <code>str()</code>, and <code>bool()</code>. A conversion may fail if the original value cannot be interpreted as the requested type. For example, <code>int("hello")</code> raises a <code>ValueError</code>.</p>
+                            </div>
+                            <p>Common conversion functions include <code>int()</code>, <code>float()</code>, <code>str()</code>, and <code>bool()</code>. A conversion may fail if the original value cannot be interpreted as the requested type. For example, <code>int("hello")</code> raises a <code>ValueError</code>.</p>
 
-                </div>
-            </div>
-
-            <div class="theory-card" id="operators">
-                <div class="theory-header">
-                    <div>
-                        <h4>9. Python Operators</h4>
+                        </div>
                     </div>
-                    <div class="theory-badge"><i class="bi bi-code-slash"></i> PERFORMING OPERATIONS</div>
-                </div>
-                <div class="theory-body">
 
-                    <p>Operators are symbols or keywords that perform operations on values and variables. They are essential for calculations, comparisons, and logical decisions.</p>
-                    <div class="section-label">Arithmetic operators</div>
-                    <div class="course-info-table-wrap">
-                        <table class="course-info-table">
-                            <thead>
-                                <tr>
-                                    <th>Operator</th>
-                                    <th>Meaning</th>
-                                    <th>Example</th>
-                                    <th>Result</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>+</code></td>
-                                    <td>Addition</td>
-                                    <td><code>10 + 3</code></td>
-                                    <td>13</td>
-                                </tr>
-                                <tr>
-                                    <td><code>-</code></td>
-                                    <td>Subtraction</td>
-                                    <td><code>10 - 3</code></td>
-                                    <td>7</td>
-                                </tr>
-                                <tr>
-                                    <td><code>*</code></td>
-                                    <td>Multiplication</td>
-                                    <td><code>10 * 3</code></td>
-                                    <td>30</td>
-                                </tr>
-                                <tr>
-                                    <td><code>/</code></td>
-                                    <td>Division</td>
-                                    <td><code>10 / 3</code></td>
-                                    <td>3.333...</td>
-                                </tr>
-                                <tr>
-                                    <td><code>//</code></td>
-                                    <td>Floor division</td>
-                                    <td><code>10 // 3</code></td>
-                                    <td>3</td>
-                                </tr>
-                                <tr>
-                                    <td><code>%</code></td>
-                                    <td>Modulo (remainder)</td>
-                                    <td><code>10 % 3</code></td>
-                                    <td>1</td>
-                                </tr>
-                                <tr>
-                                    <td><code>**</code></td>
-                                    <td>Exponentiation</td>
-                                    <td><code>2 ** 3</code></td>
-                                    <td>8</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="section-label">Comparison operators</div>
-                    <p>Comparison operators evaluate a relationship and return either <code>True</code> or <code>False</code>.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Comparison examples</strong><span>PYTHON</span></div>
-                        <pre><code>score = 85
+                    <div class="theory-card" id="operators">
+                        <div class="theory-header">
+                            <div>
+                                <h4>9. Python Operators</h4>
+                            </div>
+                            <div class="theory-badge"><i class="bi bi-code-slash"></i> PERFORMING OPERATIONS</div>
+                        </div>
+                        <div class="theory-body">
+
+                            <p>Operators are symbols or keywords that perform operations on values and variables. They are essential for calculations, comparisons, and logical decisions.</p>
+                            <div class="section-label">Arithmetic operators</div>
+                            <div class="course-info-table-wrap">
+                                <table class="course-info-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Operator</th>
+                                            <th>Meaning</th>
+                                            <th>Example</th>
+                                            <th>Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>+</code></td>
+                                            <td>Addition</td>
+                                            <td><code>10 + 3</code></td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>-</code></td>
+                                            <td>Subtraction</td>
+                                            <td><code>10 - 3</code></td>
+                                            <td>7</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>*</code></td>
+                                            <td>Multiplication</td>
+                                            <td><code>10 * 3</code></td>
+                                            <td>30</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>/</code></td>
+                                            <td>Division</td>
+                                            <td><code>10 / 3</code></td>
+                                            <td>3.333...</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>//</code></td>
+                                            <td>Floor division</td>
+                                            <td><code>10 // 3</code></td>
+                                            <td>3</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>%</code></td>
+                                            <td>Modulo (remainder)</td>
+                                            <td><code>10 % 3</code></td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>**</code></td>
+                                            <td>Exponentiation</td>
+                                            <td><code>2 ** 3</code></td>
+                                            <td>8</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="section-label">Comparison operators</div>
+                            <p>Comparison operators evaluate a relationship and return either <code>True</code> or <code>False</code>.</p>
+                            <div class="code-example">
+                                <div class="code-example-header"><strong>Comparison examples</strong><span>PYTHON</span></div>
+                                <pre><code>score = 85
 
 print(score == 85)  # Equal to
 print(score != 75)  # Not equal to
@@ -831,35 +867,60 @@ print(score > 80)   # Greater than
 print(score < 90)   # Less than
 print(score >= 85)  # Greater than or equal
 print(score <= 100) # Less than or equal</code></pre>
-                    </div>
-                    <div class="section-label">Logical operators</div>
-                    <p><code>and</code> is True when both conditions are True. <code>or</code> is True when at least one condition is True. <code>not</code> reverses a Boolean value.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Logical examples</strong><span>PYTHON</span></div>
-                        <pre><code>age = 20
+                            </div>
+                            <div class="section-label">Logical operators</div>
+                            <p><code>and</code> is True when both conditions are True. <code>or</code> is True when at least one condition is True. <code>not</code> reverses a Boolean value.</p>
+                            <div class="code-example">
+                                <div class="code-example-header"><strong>Logical examples</strong><span>PYTHON</span></div>
+                                <pre><code>age = 20
 has_id = True
 
 print(age >= 18 and has_id)
 print(age < 18 or has_id)
 print(not has_id)</code></pre>
+                            </div>
+
+                        </div>
                     </div>
 
-                </div>
-            </div>
+                    <div class="sponsored-card" aria-label="Advertisement">
+                        <div class="ad-label">Advertisement</div>
+                        <div class="sponsored-ad-slot">
+                            <script>
+                                (function(kfcu) {
+                                    var d = document,
+                                        s = d.createElement('script'),
+                                        l = d.currentScript || d.scripts[d.scripts.length - 1];
+                                    s.settings = kfcu || {};
+                                    s.src = "\/\/juvenilechoice.com\/bZXwVPs.dzGel\/0uY\/WncN\/ee_mu9EuAZAUblek\/P_Tuc\/2vMuD\/cp3RNGDcUXt\/NCzRYGwkNqzXc_0NOgQv";
+                                    s.async = true;
+                                    s.referrerPolicy = 'no-referrer-when-downgrade';
+                                    l.parentNode.insertBefore(s, l);
+                                })({})
+                            </script>
+                        </div>
 
-            <div class="theory-card" id="input">
-                <div class="theory-header">
-                    <div>
-                        <h4>10. Getting User Input</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-code-slash"></i> INTERACTIVE PROGRAMS</div>
-                </div>
-                <div class="theory-body">
+                        <div class="theory-card" id="type-conversion">
+                            <div class="theory-header">
+                                <div>
+                                    <h4>8. Type Conversion and Casting</h4>
+                                </div>
+                                <div class="theory-badge"><i class="bi bi-code-slash"></i> CONVERTING VALUES</div>
+                            </div>
 
-                    <p>The <code>input()</code> function allows a program to receive information from the user. The value returned by <code>input()</code> is a string, so convert it when you need to perform numeric calculations.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Input and calculation</strong><span>PYTHON</span></div>
-                        <pre><code>name = input("Enter your name: ")
+                            <div class="theory-card" id="input">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>10. Getting User Input</h4>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-code-slash"></i> INTERACTIVE PROGRAMS</div>
+                                </div>
+                                <div class="theory-body">
+
+                                    <p>The <code>input()</code> function allows a program to receive information from the user. The value returned by <code>input()</code> is a string, so convert it when you need to perform numeric calculations.</p>
+                                    <div class="code-example">
+                                        <div class="code-example-header"><strong>Input and calculation</strong><span>PYTHON</span></div>
+                                        <pre><code>name = input("Enter your name: ")
 score1 = float(input("Enter first score: "))
 score2 = float(input("Enter second score: "))
 
@@ -867,33 +928,33 @@ average = (score1 + score2) / 2
 
 print(f"Hello, {name}!")
 print(f"Your average is {average:.2f}")</code></pre>
-                    </div>
-                    <p>The format specifier <code>:.2f</code> displays a floating-point number with two digits after the decimal point.</p>
+                                    </div>
+                                    <p>The format specifier <code>:.2f</code> displays a floating-point number with two digits after the decimal point.</p>
 
-                </div>
-            </div>
+                                </div>
+                            </div>
 
-            <div class="theory-card" id="if-elif-else">
-                <div class="theory-header">
-                    <div>
-                        <h4>11. Conditional Statements: if, elif, and else</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-code-slash"></i> DECISION MAKING</div>
-                </div>
-                <div class="theory-body">
+                            <div class="theory-card" id="if-elif-else">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>11. Conditional Statements: if, elif, and else</h4>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-code-slash"></i> DECISION MAKING</div>
+                                </div>
+                                <div class="theory-body">
 
-                    <p>Conditional statements allow a program to make decisions. A block of code runs only when its condition is satisfied. Python uses indentation to identify which statements belong to each block.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Basic if statement</strong><span>PYTHON</span></div>
-                        <pre><code>score = 90
+                                    <p>Conditional statements allow a program to make decisions. A block of code runs only when its condition is satisfied. Python uses indentation to identify which statements belong to each block.</p>
+                                    <div class="code-example">
+                                        <div class="code-example-header"><strong>Basic if statement</strong><span>PYTHON</span></div>
+                                        <pre><code>score = 90
 
 if score >= 75:
     print("Passed")</code></pre>
-                    </div>
-                    <p>Use <code>if</code> to test the first condition, <code>elif</code> (else if) to test another condition when earlier conditions are False, and <code>else</code> to handle all remaining cases.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>if, elif, and else example</strong><span>PYTHON</span></div>
-                        <pre><code>score = 87
+                                    </div>
+                                    <p>Use <code>if</code> to test the first condition, <code>elif</code> (else if) to test another condition when earlier conditions are False, and <code>else</code> to handle all remaining cases.</p>
+                                    <div class="code-example">
+                                        <div class="code-example-header"><strong>if, elif, and else example</strong><span>PYTHON</span></div>
+                                        <pre><code>score = 87
 
 if score >= 90:
     print("Excellent")
@@ -903,26 +964,26 @@ elif score >= 75:
     print("Passed")
 else:
     print("Needs Improvement")</code></pre>
-                    </div>
-                    <div class="result-box"><strong>How Python evaluates this example</strong><span>Python checks conditions from top to bottom. Since 87 is not at least 90, it checks the next condition. Because 87 is at least 85, it prints “Very Good” and skips the remaining branches.</span></div>
-                    <p><strong>Important:</strong> The order of conditions matters. Put more specific or higher-threshold conditions first when evaluating score ranges.</p>
+                                    </div>
+                                    <div class="result-box"><strong>How Python evaluates this example</strong><span>Python checks conditions from top to bottom. Since 87 is not at least 90, it checks the next condition. Because 87 is at least 85, it prints “Very Good” and skips the remaining branches.</span></div>
+                                    <p><strong>Important:</strong> The order of conditions matters. Put more specific or higher-threshold conditions first when evaluating score ranges.</p>
 
-                </div>
-            </div>
+                                </div>
+                            </div>
 
-            <div class="theory-card" id="analytics-example">
-                <div class="theory-header">
-                    <div>
-                        <h4>12. Putting the Fundamentals Together: A Mini Data Analysis</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> PRACTICAL EXAMPLE</div>
-                </div>
-                <div class="theory-body">
+                            <div class="theory-card" id="analytics-example">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>12. Putting the Fundamentals Together: A Mini Data Analysis</h4>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> PRACTICAL EXAMPLE</div>
+                                </div>
+                                <div class="theory-body">
 
-                    <p>This example uses variables, a list, arithmetic operations, the <code>len()</code> function, and a conditional statement to summarize a small set of examination scores.</p>
-                    <div class="code-example">
-                        <div class="code-example-header"><strong>Calculate and interpret class scores</strong><span>PYTHON</span></div>
-                        <pre><code>scores = [85, 92, 78, 88, 95]
+                                    <p>This example uses variables, a list, arithmetic operations, the <code>len()</code> function, and a conditional statement to summarize a small set of examination scores.</p>
+                                    <div class="code-example">
+                                        <div class="code-example-header"><strong>Calculate and interpret class scores</strong><span>PYTHON</span></div>
+                                        <pre><code>scores = [85, 92, 78, 88, 95]
 
 total = sum(scores)
 number_of_students = len(scores)
@@ -940,106 +1001,106 @@ elif average >= 75:
     print("Class performance: Satisfactory")
 else:
     print("Class performance: Needs Improvement")</code></pre>
-                    </div>
-                    <p>This is a simple example of turning raw data into a useful summary. Larger datasets can be analyzed more efficiently with libraries such as pandas, but the underlying logic remains important.</p>
+                                    </div>
+                                    <p>This is a simple example of turning raw data into a useful summary. Larger datasets can be analyzed more efficiently with libraries such as pandas, but the underlying logic remains important.</p>
 
-                </div>
-            </div>
-
-            <div class="theory-card" id="common-errors">
-                <div class="theory-header">
-                    <div>
-                        <h4>13. Common Beginner Errors and Good Programming Practices</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> DEBUGGING</div>
-                </div>
-                <div class="theory-body">
-
-                    <div class="troubleshooting-list">
-                        <div><strong>IndentationError</strong><span>Use consistent indentation after statements such as <code>if</code>. Python commonly uses four spaces.</span></div>
-                        <div><strong>SyntaxError</strong><span>Check missing quotation marks, parentheses, colons, and spelling of keywords.</span></div>
-                        <div><strong>TypeError</strong><span>Check whether an operation is being performed on compatible data types. Convert input values before numeric calculations.</span></div>
-                        <div><strong>NameError</strong><span>Check variable spelling and make sure the variable is defined before it is used.</span></div>
-                        <div><strong>Incorrect condition order</strong><span>Arrange conditional branches carefully because Python executes only the first matching branch.</span></div>
-                    </div>
-                    <div class="result-box"><strong>Programming habit</strong><span>Write a small part of the program, run it, inspect the output, and correct errors before adding more code. This makes debugging easier.</span></div>
-
-                </div>
-            </div>
-            <div class="reference-note" id="key-points">
-                <div class="reference-note-title"><i class="bi bi-lightbulb"></i> Key Points to Remember</div>
-                <div class="key-point-grid">
-                    <div><strong>01</strong><span>Python is a readable, general-purpose programming language.</span></div>
-                    <div><strong>02</strong><span>Python is widely used in data analytics, automation, AI, web development, and science.</span></div>
-                    <div><strong>03</strong><span><code>print()</code> displays output, while <code>input()</code> receives user input.</span></div>
-                    <div><strong>04</strong><span>Variables store values, and data types describe the kind of values stored.</span></div>
-                    <div><strong>05</strong><span>Operators perform calculations, comparisons, and logical evaluations.</span></div>
-                    <div><strong>06</strong><span>Type conversion helps prepare values for the operations a program needs.</span></div>
-                    <div><strong>07</strong><span><code>if</code>, <code>elif</code>, and <code>else</code> control program decisions.</span></div>
-                    <div><strong>08</strong><span>Python fundamentals provide the foundation for using data analytics libraries.</span></div>
-                </div>
-            </div>
-
-            <div class="theory-card" id="learning-guide">
-                <div class="theory-header">
-                    <div>
-                        <h4>15. Student Learning Guide</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> HOW TO PRACTICE</div>
-                </div>
-                <div class="theory-body">
-
-                    <div class="learning-cycle-grid">
-                        <article><span class="learning-step">01</span><strong>Read the concept</strong>
-                            <p>Understand what each Python instruction does before copying the example.</p>
-                        </article>
-                        <article><span class="learning-step">02</span><strong>Predict the output</strong>
-                            <p>Read the code and write down what you think the program will display.</p>
-                        </article>
-                        <article><span class="learning-step">03</span><strong>Run the code</strong>
-                            <p>Execute the example and compare the actual output with your prediction.</p>
-                        </article>
-                        <article><span class="learning-step">04</span><strong>Modify a value</strong>
-                            <p>Change a variable, operator, or condition and observe how the output changes.</p>
-                        </article>
-                        <article><span class="learning-step">05</span><strong>Fix an error</strong>
-                            <p>Intentionally introduce a small mistake, read the error message, and correct it.</p>
-                        </article>
-                        <article><span class="learning-step">06</span><strong>Explain your logic</strong>
-                            <p>Describe how the program processes the data and reaches its result.</p>
-                        </article>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="theory-card" id="virtual-labs">
-                <div class="theory-header">
-                    <div>
-                        <h4>16. Interactive Python Virtual Labs</h4>
-                        <p>Change the values, run each activity, and observe how Python logic changes the result.</p>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-code-square"></i> HANDS-ON PRACTICE</div>
-                </div>
-                <div class="theory-body">
-                    <p>These browser-based labs simulate beginner Python concepts. They do not execute Python on the server; instead, they reproduce the selected Python logic using JavaScript so you can experiment immediately. Try different numbers and text values.</p>
-
-                    <section class="python-lab" id="lab-condition">
-                        <div class="python-lab-heading"><span class="python-lab-number">LAB 01</span>
-                            <div>
-                                <h5>Condition and Grade Classifier</h5>
-                                <p>Practice <code>if</code>, <code>elif</code>, and <code>else</code>.</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="python-lab-controls">
-                            <label for="labGradeInput">Enter a score (0–100)</label>
-                            <input type="number" id="labGradeInput" min="0" max="100" value="88" step="1">
-                            <button type="button" class="python-lab-run" id="runGradeLab">Run condition</button>
-                        </div>
-                        <div class="python-lab-output" id="gradeLabOutput" aria-live="polite">Your result will appear here.</div>
-                        <div class="python-lab-code"><strong>Python logic:</strong>
-                            <pre><code>score = 88
+
+                            <div class="theory-card" id="common-errors">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>13. Common Beginner Errors and Good Programming Practices</h4>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> DEBUGGING</div>
+                                </div>
+                                <div class="theory-body">
+
+                                    <div class="troubleshooting-list">
+                                        <div><strong>IndentationError</strong><span>Use consistent indentation after statements such as <code>if</code>. Python commonly uses four spaces.</span></div>
+                                        <div><strong>SyntaxError</strong><span>Check missing quotation marks, parentheses, colons, and spelling of keywords.</span></div>
+                                        <div><strong>TypeError</strong><span>Check whether an operation is being performed on compatible data types. Convert input values before numeric calculations.</span></div>
+                                        <div><strong>NameError</strong><span>Check variable spelling and make sure the variable is defined before it is used.</span></div>
+                                        <div><strong>Incorrect condition order</strong><span>Arrange conditional branches carefully because Python executes only the first matching branch.</span></div>
+                                    </div>
+                                    <div class="result-box"><strong>Programming habit</strong><span>Write a small part of the program, run it, inspect the output, and correct errors before adding more code. This makes debugging easier.</span></div>
+
+                                </div>
+                            </div>
+                            <div class="reference-note" id="key-points">
+                                <div class="reference-note-title"><i class="bi bi-lightbulb"></i> Key Points to Remember</div>
+                                <div class="key-point-grid">
+                                    <div><strong>01</strong><span>Python is a readable, general-purpose programming language.</span></div>
+                                    <div><strong>02</strong><span>Python is widely used in data analytics, automation, AI, web development, and science.</span></div>
+                                    <div><strong>03</strong><span><code>print()</code> displays output, while <code>input()</code> receives user input.</span></div>
+                                    <div><strong>04</strong><span>Variables store values, and data types describe the kind of values stored.</span></div>
+                                    <div><strong>05</strong><span>Operators perform calculations, comparisons, and logical evaluations.</span></div>
+                                    <div><strong>06</strong><span>Type conversion helps prepare values for the operations a program needs.</span></div>
+                                    <div><strong>07</strong><span><code>if</code>, <code>elif</code>, and <code>else</code> control program decisions.</span></div>
+                                    <div><strong>08</strong><span>Python fundamentals provide the foundation for using data analytics libraries.</span></div>
+                                </div>
+                            </div>
+
+                            <div class="theory-card" id="learning-guide">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>15. Student Learning Guide</h4>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> HOW TO PRACTICE</div>
+                                </div>
+                                <div class="theory-body">
+
+                                    <div class="learning-cycle-grid">
+                                        <article><span class="learning-step">01</span><strong>Read the concept</strong>
+                                            <p>Understand what each Python instruction does before copying the example.</p>
+                                        </article>
+                                        <article><span class="learning-step">02</span><strong>Predict the output</strong>
+                                            <p>Read the code and write down what you think the program will display.</p>
+                                        </article>
+                                        <article><span class="learning-step">03</span><strong>Run the code</strong>
+                                            <p>Execute the example and compare the actual output with your prediction.</p>
+                                        </article>
+                                        <article><span class="learning-step">04</span><strong>Modify a value</strong>
+                                            <p>Change a variable, operator, or condition and observe how the output changes.</p>
+                                        </article>
+                                        <article><span class="learning-step">05</span><strong>Fix an error</strong>
+                                            <p>Intentionally introduce a small mistake, read the error message, and correct it.</p>
+                                        </article>
+                                        <article><span class="learning-step">06</span><strong>Explain your logic</strong>
+                                            <p>Describe how the program processes the data and reaches its result.</p>
+                                        </article>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="theory-card" id="virtual-labs">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>16. Interactive Python Virtual Labs</h4>
+                                        <p>Change the values, run each activity, and observe how Python logic changes the result.</p>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-code-square"></i> HANDS-ON PRACTICE</div>
+                                </div>
+                                <div class="theory-body">
+                                    <p>These browser-based labs simulate beginner Python concepts. They do not execute Python on the server; instead, they reproduce the selected Python logic using JavaScript so you can experiment immediately. Try different numbers and text values.</p>
+
+                                    <section class="python-lab" id="lab-condition">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 01</span>
+                                            <div>
+                                                <h5>Condition and Grade Classifier</h5>
+                                                <p>Practice <code>if</code>, <code>elif</code>, and <code>else</code>.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls">
+                                            <label for="labGradeInput">Enter a score (0–100)</label>
+                                            <input type="number" id="labGradeInput" min="0" max="100" value="88" step="1">
+                                            <button type="button" class="python-lab-run" id="runGradeLab">Run condition</button>
+                                        </div>
+                                        <div class="python-lab-output" id="gradeLabOutput" aria-live="polite">Your result will appear here.</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>score = 88
 
 if score >= 90:
     result = "Excellent"
@@ -1051,51 +1112,51 @@ else:
     result = "Needs Improvement"
 
 print(result)</code></pre>
-                        </div>
-                    </section>
+                                        </div>
+                                    </section>
 
-                    <section class="python-lab" id="lab-print">
-                        <div class="python-lab-heading"><span class="python-lab-number">LAB 02</span>
-                            <div>
-                                <h5>Text and print() Playground</h5>
-                                <p>Change the text variables and see how <code>print()</code> displays them.</p>
-                            </div>
-                        </div>
-                        <div class="python-lab-controls lab-two-column">
-                            <div><label for="labNameInput">Name</label><input type="text" id="labNameInput" value="Alex" maxlength="60"></div>
-                            <div><label for="labCourseInput">Course or subject</label><input type="text" id="labCourseInput" value="Data Analytics" maxlength="80"></div>
-                            <div class="lab-full"><label for="labMessageInput">Custom message</label><input type="text" id="labMessageInput" value="I am learning Python!" maxlength="120"></div>
-                            <button type="button" class="python-lab-run" id="runPrintLab">Run print()</button>
-                        </div>
-                        <div class="python-lab-output python-lab-preoutput" id="printLabOutput" aria-live="polite">Hello, Alex!
-                            I am studying Data Analytics.
-                            I am learning Python!</div>
-                        <div class="python-lab-code"><strong>Python logic:</strong>
-                            <pre><code>name = "Alex"
+                                    <section class="python-lab" id="lab-print">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 02</span>
+                                            <div>
+                                                <h5>Text and print() Playground</h5>
+                                                <p>Change the text variables and see how <code>print()</code> displays them.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls lab-two-column">
+                                            <div><label for="labNameInput">Name</label><input type="text" id="labNameInput" value="Alex" maxlength="60"></div>
+                                            <div><label for="labCourseInput">Course or subject</label><input type="text" id="labCourseInput" value="Data Analytics" maxlength="80"></div>
+                                            <div class="lab-full"><label for="labMessageInput">Custom message</label><input type="text" id="labMessageInput" value="I am learning Python!" maxlength="120"></div>
+                                            <button type="button" class="python-lab-run" id="runPrintLab">Run print()</button>
+                                        </div>
+                                        <div class="python-lab-output python-lab-preoutput" id="printLabOutput" aria-live="polite">Hello, Alex!
+                                            I am studying Data Analytics.
+                                            I am learning Python!</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>name = "Alex"
 course = "Data Analytics"
 message = "I am learning Python!"
 
 print("Hello,", name + "!")
 print("I am studying", course + ".")
 print(message)</code></pre>
-                        </div>
-                    </section>
+                                        </div>
+                                    </section>
 
-                    <section class="python-lab" id="lab-list">
-                        <div class="python-lab-heading"><span class="python-lab-number">LAB 03</span>
-                            <div>
-                                <h5>List and Data Summary Lab</h5>
-                                <p>Edit the numbers in the list to calculate the total, count, average, minimum, and maximum.</p>
-                            </div>
-                        </div>
-                        <div class="python-lab-controls">
-                            <label for="labListInput">Enter numbers separated by commas</label>
-                            <input type="text" id="labListInput" value="85, 90, 78, 92, 88" placeholder="Example: 85, 90, 78">
-                            <button type="button" class="python-lab-run" id="runListLab">Analyze list</button>
-                        </div>
-                        <div class="python-lab-output" id="listLabOutput" aria-live="polite">Your list summary will appear here.</div>
-                        <div class="python-lab-code"><strong>Python logic:</strong>
-                            <pre><code>scores = [85, 90, 78, 92, 88]
+                                    <section class="python-lab" id="lab-list">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 03</span>
+                                            <div>
+                                                <h5>List and Data Summary Lab</h5>
+                                                <p>Edit the numbers in the list to calculate the total, count, average, minimum, and maximum.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls">
+                                            <label for="labListInput">Enter numbers separated by commas</label>
+                                            <input type="text" id="labListInput" value="85, 90, 78, 92, 88" placeholder="Example: 85, 90, 78">
+                                            <button type="button" class="python-lab-run" id="runListLab">Analyze list</button>
+                                        </div>
+                                        <div class="python-lab-output" id="listLabOutput" aria-live="polite">Your list summary will appear here.</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>scores = [85, 90, 78, 92, 88]
 
 total = sum(scores)
 count = len(scores)
@@ -1106,29 +1167,29 @@ print("Count:", count)
 print("Average:", average)
 print("Lowest:", min(scores))
 print("Highest:", max(scores))</code></pre>
-                        </div>
-                    </section>
+                                        </div>
+                                    </section>
 
-                    <section class="python-lab" id="lab-dictionary">
-                        <div class="python-lab-heading"><span class="python-lab-number">LAB 04</span>
-                            <div>
-                                <h5>Dictionary Student Record Lab</h5>
-                                <p>Edit the text and score fields to update a Python-style key-value record.</p>
-                            </div>
-                        </div>
-                        <div class="python-lab-controls lab-two-column">
-                            <div><label for="labDictName">Student name</label><input type="text" id="labDictName" value="Jamie Cruz" maxlength="80"></div>
-                            <div><label for="labDictCourse">Course</label><input type="text" id="labDictCourse" value="BSIT" maxlength="40"></div>
-                            <div><label for="labDictScore">Score</label><input type="number" id="labDictScore" value="91" min="0" max="100" step="1"></div>
-                            <button type="button" class="python-lab-run" id="runDictionaryLab">Update dictionary</button>
-                        </div>
-                        <div class="python-lab-output python-lab-preoutput" id="dictionaryLabOutput" aria-live="polite">{
-                            'name': 'Jamie Cruz',
-                            'course': 'BSIT',
-                            'score': 91
-                            }</div>
-                        <div class="python-lab-code"><strong>Python logic:</strong>
-                            <pre><code>student = {
+                                    <section class="python-lab" id="lab-dictionary">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 04</span>
+                                            <div>
+                                                <h5>Dictionary Student Record Lab</h5>
+                                                <p>Edit the text and score fields to update a Python-style key-value record.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls lab-two-column">
+                                            <div><label for="labDictName">Student name</label><input type="text" id="labDictName" value="Jamie Cruz" maxlength="80"></div>
+                                            <div><label for="labDictCourse">Course</label><input type="text" id="labDictCourse" value="BSIT" maxlength="40"></div>
+                                            <div><label for="labDictScore">Score</label><input type="number" id="labDictScore" value="91" min="0" max="100" step="1"></div>
+                                            <button type="button" class="python-lab-run" id="runDictionaryLab">Update dictionary</button>
+                                        </div>
+                                        <div class="python-lab-output python-lab-preoutput" id="dictionaryLabOutput" aria-live="polite">{
+                                            'name': 'Jamie Cruz',
+                                            'course': 'BSIT',
+                                            'score': 91
+                                            }</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>student = {
     "name": "Jamie Cruz",
     "course": "BSIT",
     "score": 91
@@ -1136,108 +1197,251 @@ print("Highest:", max(scores))</code></pre>
 
 print(student)
 print(student["name"])</code></pre>
+                                        </div>
+                                    </section>
+
+
+                                    <section class="python-lab" id="lab-list-edit">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 05</span>
+                                            <div>
+                                                <h5>List Editing Workshop</h5>
+                                                <p>Append a value, remove a value, and observe how a mutable list changes.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls lab-two-column">
+                                            <div class="lab-full"><label for="labEditList">Starting list (comma-separated)</label><input type="text" id="labEditList" value="10, 20, 30, 40"></div>
+                                            <div><label for="labAppendValue">Value to append</label><input type="number" id="labAppendValue" value="50"></div>
+                                            <div><label for="labRemoveValue">Value to remove</label><input type="number" id="labRemoveValue" value="20"></div>
+                                            <button type="button" class="python-lab-run" id="runListEditLab">Edit list</button>
+                                        </div>
+                                        <div class="python-lab-output python-lab-preoutput" id="listEditOutput" aria-live="polite">The updated list will appear here.</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>numbers = [10, 20, 30, 40]
+numbers.append(50)
+numbers.remove(20)
+print(numbers)</code></pre>
+                                        </div>
+                                    </section>
+
+                                    <section class="python-lab" id="lab-list-filter">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 06</span>
+                                            <div>
+                                                <h5>List Filtering and Sorting Lab</h5>
+                                                <p>Set a minimum score and find which values meet the condition. Compare sorted and original data.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls">
+                                            <label for="labFilterList">Scores separated by commas</label>
+                                            <input type="text" id="labFilterList" value="65, 88, 92, 74, 81, 95">
+                                            <label for="labFilterThreshold">Minimum score</label>
+                                            <input type="number" id="labFilterThreshold" value="80">
+                                            <button type="button" class="python-lab-run" id="runListFilterLab">Filter scores</button>
+                                        </div>
+                                        <div class="python-lab-output python-lab-preoutput" id="listFilterOutput" aria-live="polite">Filtered results will appear here.</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>scores = [65, 88, 92, 74, 81, 95]
+passed_filter = []
+
+for score in scores:
+    if score >= 80:
+        passed_filter.append(score)
+
+print("Qualified:", passed_filter)
+print("Sorted:", sorted(scores))</code></pre>
+                                        </div>
+                                    </section>
+
+                                    <section class="python-lab" id="lab-tuple-unpack">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 07</span>
+                                            <div>
+                                                <h5>Tuple Coordinates and Unpacking</h5>
+                                                <p>Change the two values and practice accessing tuple items and unpacking them into variables.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls lab-two-column">
+                                            <div><label for="labTupleFirst">First value (latitude)</label><input type="number" id="labTupleFirst" value="14.60" step="any"></div>
+                                            <div><label for="labTupleSecond">Second value (longitude)</label><input type="number" id="labTupleSecond" value="120.98" step="any"></div>
+                                            <button type="button" class="python-lab-run" id="runTupleUnpackLab">Unpack tuple</button>
+                                        </div>
+                                        <div class="python-lab-output python-lab-preoutput" id="tupleUnpackOutput" aria-live="polite">Tuple output will appear here.</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>coordinates = (14.60, 120.98)
+latitude, longitude = coordinates
+
+print(coordinates[0])
+print("Latitude:", latitude)
+print("Longitude:", longitude)</code></pre>
+                                        </div>
+                                    </section>
+
+                                    <section class="python-lab" id="lab-tuple-methods">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 08</span>
+                                            <div>
+                                                <h5>Tuple Count and Index Lab</h5>
+                                                <p>Enter repeated items and discover how often a value appears and where it first occurs.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls lab-two-column">
+                                            <div class="lab-full"><label for="labTupleItems">Tuple items (comma-separated text)</label><input type="text" id="labTupleItems" value="red, blue, red, green, red, blue"></div>
+                                            <div class="lab-full"><label for="labTupleSearch">Value to search for</label><input type="text" id="labTupleSearch" value="red"></div>
+                                            <button type="button" class="python-lab-run" id="runTupleMethodsLab">Inspect tuple</button>
+                                        </div>
+                                        <div class="python-lab-output python-lab-preoutput" id="tupleMethodsOutput" aria-live="polite">Tuple inspection will appear here.</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>colors = ("red", "blue", "red", "green")
+print(colors.count("red"))
+print(colors.index("red"))</code></pre>
+                                        </div>
+                                    </section>
+
+                                    <section class="python-lab" id="lab-dictionary-edit">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 09</span>
+                                            <div>
+                                                <h5>Dictionary Add, Update, and Delete Lab</h5>
+                                                <p>Change a student's section and add a new field, then remove a selected key.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls lab-two-column">
+                                            <div><label for="labDictSection">New section value</label><input type="text" id="labDictSection" value="Section B"></div>
+                                            <div><label for="labDictNewKey">New field name</label><input type="text" id="labDictNewKey" value="year_level"></div>
+                                            <div><label for="labDictNewValue">New field value</label><input type="text" id="labDictNewValue" value="2"></div>
+                                            <div><label for="labDictDeleteKey">Key to delete</label><input type="text" id="labDictDeleteKey" value="status"></div>
+                                            <button type="button" class="python-lab-run" id="runDictionaryEditLab">Modify dictionary</button>
+                                        </div>
+                                        <div class="python-lab-output python-lab-preoutput" id="dictionaryEditOutput" aria-live="polite">Modified dictionary will appear here.</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>student = {"name": "Jamie", "section": "A", "status": "Enrolled"}
+student["section"] = "Section B"
+student["year_level"] = 2
+del student["status"]
+print(student)</code></pre>
+                                        </div>
+                                    </section>
+
+                                    <section class="python-lab" id="lab-dictionary-search">
+                                        <div class="python-lab-heading"><span class="python-lab-number">LAB 10</span>
+                                            <div>
+                                                <h5>Dictionary Lookup and Record Analysis</h5>
+                                                <p>Search a student record by key and display every key-value pair.</p>
+                                            </div>
+                                        </div>
+                                        <div class="python-lab-controls lab-two-column">
+                                            <div><label for="labLookupName">Student name</label><input type="text" id="labLookupName" value="Taylor"></div>
+                                            <div><label for="labLookupCourse">Course</label><input type="text" id="labLookupCourse" value="BSIT"></div>
+                                            <div><label for="labLookupScore">Score</label><input type="number" id="labLookupScore" value="87" min="0" max="100"></div>
+                                            <div><label for="labLookupKey">Key to look up</label><input type="text" id="labLookupKey" value="score"></div>
+                                            <button type="button" class="python-lab-run" id="runDictionarySearchLab">Search record</button>
+                                        </div>
+                                        <div class="python-lab-output python-lab-preoutput" id="dictionarySearchOutput" aria-live="polite">Record lookup will appear here.</div>
+                                        <div class="python-lab-code"><strong>Python logic:</strong>
+                                            <pre><code>student = {"name": "Taylor", "course": "BSIT", "score": 87}
+key = "score"
+
+print(student.get(key, "Key not found"))
+for field, value in student.items():
+    print(field, ":", value)</code></pre>
+                                        </div>
+                                    </section>
+
+                                    <div class="python-lab-challenge">
+                                        <strong>Lab challenge</strong>
+                                        <p>Try these changes after running the labs:</p>
+                                        <ol>
+                                            <li>Enter <code>74</code>, <code>85</code>, and <code>100</code> in the condition lab. Explain why the output changes.</li>
+                                            <li>Replace the print lab message with a sentence about why Python is useful in data analytics.</li>
+                                            <li>Use at least six numbers in the list lab. Make one value much larger and observe its effect on the average.</li>
+                                            <li>Change the student name, course, and score in the dictionary lab. Identify each key and its value.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="theory-card" id="exercises">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>17. Practice Exercises</h4>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> APPLY YOUR KNOWLEDGE</div>
+                                </div>
+                                <div class="theory-body">
+
+                                    <p>Complete the following exercises using Python. Write and run each program, then save your source code and output as evidence of your work.</p>
+                                    <div class="definition-list">
+                                        <div><strong>Exercise 1 – Personal Introduction</strong><span>Use <code>print()</code> to display your name, course, year level, and a short learning goal. Store at least two details in variables.</span></div>
+                                        <div><strong>Exercise 2 – Basic Calculator</strong><span>Ask the user for two numbers. Display their sum, difference, product, quotient, and remainder.</span></div>
+                                        <div><strong>Exercise 3 – Data Type Explorer</strong><span>Create one variable each for <code>int</code>, <code>float</code>, <code>str</code>, and <code>bool</code>. Use <code>type()</code> to display each data type.</span></div>
+                                        <div><strong>Exercise 4 – Average Score Calculator</strong><span>Ask for three examination scores, calculate the average, and display the result to two decimal places.</span></div>
+                                        <div><strong>Exercise 5 – Pass or Fail</strong><span>Ask for a student's score. Use <code>if</code> and <code>else</code> to display “Passed” if the score is at least 75, otherwise display “Failed”.</span></div>
+                                        <div><strong>Exercise 6 – Grade Description</strong><span>Use <code>if</code>, <code>elif</code>, and <code>else</code> to classify a score: 90–100 Excellent, 85–89 Very Good, 75–84 Passed, below 75 Needs Improvement. Validate that the score is between 0 and 100.</span></div>
+                                        <div><strong>Exercise 7 – Simple Data Summary</strong><span>Store at least five numerical values in a list. Calculate and display the total, number of values, and average. Use a conditional statement to describe the average.</span></div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="theory-card" id="review-questions">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>18. Review Questions and Answers</h4>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> SELF-ASSESSMENT</div>
+                                </div>
+                                <div class="theory-body">
+
+                                    <p>Try answering each question before selecting “View answer”.</p>
+                                    <div class="review-question-list">
+                                        <article class="review-question">
+                                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>1. What is Python, and why is it commonly used by beginners?</strong></div>
+                                            <div class="review-answer" hidden>Python is a high-level, general-purpose programming language. Its readable syntax and broad ecosystem make it suitable for learning programming and developing real applications.</div>
+                                        </article>
+                                        <article class="review-question">
+                                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>2. Why is Python useful in data analytics?</strong></div>
+                                            <div class="review-answer" hidden>It provides tools for collecting, cleaning, transforming, analyzing, and visualizing data, including libraries such as NumPy, pandas, and Matplotlib.</div>
+                                        </article>
+                                        <article class="review-question">
+                                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>3. What is the difference between an integer and a float?</strong></div>
+                                            <div class="review-answer" hidden>An integer represents a whole number, while a float represents a number with a decimal component.</div>
+                                        </article>
+                                        <article class="review-question">
+                                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>4. What does the input() function return by default?</strong></div>
+                                            <div class="review-answer" hidden>It returns the entered value as a string. Convert it with int() or float() when numeric calculations are required.</div>
+                                        </article>
+                                        <article class="review-question">
+                                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>5. What is the purpose of elif in a conditional statement?</strong></div>
+                                            <div class="review-answer" hidden>elif allows a program to test another condition when the preceding if or elif condition is False.</div>
+                                        </article>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="theory-card" id="references">
+                                <div class="theory-header">
+                                    <div>
+                                        <h4>19. References and Further Reading</h4>
+                                    </div>
+                                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> LEARNING RESOURCES</div>
+                                </div>
+                                <div class="theory-body">
+
+                                    <ol class="reference-list">
+                                        <li><strong>Python Software Foundation.</strong> <em>Python 3 Documentation.</em><span>Official Python language tutorial, library reference, and language reference. <a href="https://docs.python.org/3/" target="_blank" rel="noopener">https://docs.python.org/3/</a></span></li>
+                                        <li><strong>Python Software Foundation.</strong> <em>The Python Tutorial.</em><span>Introduction to Python syntax, data structures, control flow, and functions. <a href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener">https://docs.python.org/3/tutorial/</a></span></li>
+                                        <li><strong>Project Jupyter.</strong> <em>Jupyter Documentation.</em><span>Documentation for interactive notebooks used in programming, research, and data analysis. <a href="https://docs.jupyter.org/" target="_blank" rel="noopener">https://docs.jupyter.org/</a></span></li>
+                                        <li><strong>pandas Development Team.</strong> <em>pandas Documentation.</em><span>Documentation for data structures and data analysis tools in Python. <a href="https://pandas.pydata.org/docs/" target="_blank" rel="noopener">https://pandas.pydata.org/docs/</a></span></li>
+                                        <li><strong>NumPy Developers.</strong> <em>NumPy Documentation.</em><span>Documentation for numerical computing with Python. <a href="https://numpy.org/doc/" target="_blank" rel="noopener">https://numpy.org/doc/</a></span></li>
+                                    </ol>
+
+                                </div>
+                            </div>
+
+                            <footer class="async-lab-footer">
+                                <p><strong>Python Fundamentals – Data Analytics</strong></p>
+                                <p>Engineering and Technological Solutions</p>
+                                <small>&copy; <span id="labCopyrightYear"></span> All rights reserved.</small>
+                            </footer>
+
                         </div>
-                    </section>
-
-                    <div class="python-lab-challenge">
-                        <strong>Lab challenge</strong>
-                        <p>Try these changes after running the labs:</p>
-                        <ol>
-                            <li>Enter <code>74</code>, <code>85</code>, and <code>100</code> in the condition lab. Explain why the output changes.</li>
-                            <li>Replace the print lab message with a sentence about why Python is useful in data analytics.</li>
-                            <li>Use at least six numbers in the list lab. Make one value much larger and observe its effect on the average.</li>
-                            <li>Change the student name, course, and score in the dictionary lab. Identify each key and its value.</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-
-            <div class="theory-card" id="exercises">
-                <div class="theory-header">
-                    <div>
-                        <h4>17. Practice Exercises</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> APPLY YOUR KNOWLEDGE</div>
-                </div>
-                <div class="theory-body">
-
-                    <p>Complete the following exercises using Python. Write and run each program, then save your source code and output as evidence of your work.</p>
-                    <div class="definition-list">
-                        <div><strong>Exercise 1 – Personal Introduction</strong><span>Use <code>print()</code> to display your name, course, year level, and a short learning goal. Store at least two details in variables.</span></div>
-                        <div><strong>Exercise 2 – Basic Calculator</strong><span>Ask the user for two numbers. Display their sum, difference, product, quotient, and remainder.</span></div>
-                        <div><strong>Exercise 3 – Data Type Explorer</strong><span>Create one variable each for <code>int</code>, <code>float</code>, <code>str</code>, and <code>bool</code>. Use <code>type()</code> to display each data type.</span></div>
-                        <div><strong>Exercise 4 – Average Score Calculator</strong><span>Ask for three examination scores, calculate the average, and display the result to two decimal places.</span></div>
-                        <div><strong>Exercise 5 – Pass or Fail</strong><span>Ask for a student's score. Use <code>if</code> and <code>else</code> to display “Passed” if the score is at least 75, otherwise display “Failed”.</span></div>
-                        <div><strong>Exercise 6 – Grade Description</strong><span>Use <code>if</code>, <code>elif</code>, and <code>else</code> to classify a score: 90–100 Excellent, 85–89 Very Good, 75–84 Passed, below 75 Needs Improvement. Validate that the score is between 0 and 100.</span></div>
-                        <div><strong>Exercise 7 – Simple Data Summary</strong><span>Store at least five numerical values in a list. Calculate and display the total, number of values, and average. Use a conditional statement to describe the average.</span></div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="theory-card" id="review-questions">
-                <div class="theory-header">
-                    <div>
-                        <h4>18. Review Questions and Answers</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> SELF-ASSESSMENT</div>
-                </div>
-                <div class="theory-body">
-
-                    <p>Try answering each question before selecting “View answer”.</p>
-                    <div class="review-question-list">
-                        <article class="review-question">
-                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>1. What is Python, and why is it commonly used by beginners?</strong></div>
-                            <div class="review-answer" hidden>Python is a high-level, general-purpose programming language. Its readable syntax and broad ecosystem make it suitable for learning programming and developing real applications.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>2. Why is Python useful in data analytics?</strong></div>
-                            <div class="review-answer" hidden>It provides tools for collecting, cleaning, transforming, analyzing, and visualizing data, including libraries such as NumPy, pandas, and Matplotlib.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>3. What is the difference between an integer and a float?</strong></div>
-                            <div class="review-answer" hidden>An integer represents a whole number, while a float represents a number with a decimal component.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>4. What does the input() function return by default?</strong></div>
-                            <div class="review-answer" hidden>It returns the entered value as a string. Convert it with int() or float() when numeric calculations are required.</div>
-                        </article>
-                        <article class="review-question">
-                            <div class="review-question-heading"><button type="button" class="answer-toggle" aria-expanded="false">View answer</button><strong>5. What is the purpose of elif in a conditional statement?</strong></div>
-                            <div class="review-answer" hidden>elif allows a program to test another condition when the preceding if or elif condition is False.</div>
-                        </article>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="theory-card" id="references">
-                <div class="theory-header">
-                    <div>
-                        <h4>19. References and Further Reading</h4>
-                    </div>
-                    <div class="theory-badge"><i class="bi bi-bar-chart-line"></i> LEARNING RESOURCES</div>
-                </div>
-                <div class="theory-body">
-
-                    <ol class="reference-list">
-                        <li><strong>Python Software Foundation.</strong> <em>Python 3 Documentation.</em><span>Official Python language tutorial, library reference, and language reference. <a href="https://docs.python.org/3/" target="_blank" rel="noopener">https://docs.python.org/3/</a></span></li>
-                        <li><strong>Python Software Foundation.</strong> <em>The Python Tutorial.</em><span>Introduction to Python syntax, data structures, control flow, and functions. <a href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener">https://docs.python.org/3/tutorial/</a></span></li>
-                        <li><strong>Project Jupyter.</strong> <em>Jupyter Documentation.</em><span>Documentation for interactive notebooks used in programming, research, and data analysis. <a href="https://docs.jupyter.org/" target="_blank" rel="noopener">https://docs.jupyter.org/</a></span></li>
-                        <li><strong>pandas Development Team.</strong> <em>pandas Documentation.</em><span>Documentation for data structures and data analysis tools in Python. <a href="https://pandas.pydata.org/docs/" target="_blank" rel="noopener">https://pandas.pydata.org/docs/</a></span></li>
-                        <li><strong>NumPy Developers.</strong> <em>NumPy Documentation.</em><span>Documentation for numerical computing with Python. <a href="https://numpy.org/doc/" target="_blank" rel="noopener">https://numpy.org/doc/</a></span></li>
-                    </ol>
-
-                </div>
-            </div>
-
-            <footer class="async-lab-footer">
-                <p><strong>Python Fundamentals – Data Analytics</strong></p>
-                <p>Engineering and Technological Solutions</p>
-                <small>&copy; <span id="labCopyrightYear"></span> All rights reserved.</small>
-            </footer>
-
-        </div>
     </main>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap');
@@ -3518,11 +3722,125 @@ print(student["name"])</code></pre>
                 const quote = value => String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
                 show('dictionaryLabOutput', `student = {\n    'name': '${quote(name)}',\n    'course': '${quote(course)}',\n    'score': ${score}\n}\n\nStudent name: ${name}\nScore: ${score}`);
             });
+
+            const parseNumberList = raw => {
+                const parts = raw.split(',').map(v => v.trim());
+                if (!raw.trim() || parts.some(v => v === '')) return null;
+                const nums = parts.map(Number);
+                return nums.every(Number.isFinite) ? nums : null;
+            };
+            const fmt = n => Number.isInteger(n) ? String(n) : String(Number(n.toFixed(4)));
+            const quotePy = value => String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
+
+            const listEditButton = byId('runListEditLab');
+            if (listEditButton) listEditButton.addEventListener('click', () => {
+                const values = parseNumberList(byId('labEditList').value);
+                const add = Number(byId('labAppendValue').value);
+                const remove = Number(byId('labRemoveValue').value);
+                if (!values || byId('labAppendValue').value.trim() === '' || byId('labRemoveValue').value.trim() === '' || !Number.isFinite(add) || !Number.isFinite(remove)) {
+                    show('listEditOutput', 'Enter a valid comma-separated number list, append value, and remove value.', true);
+                    return;
+                }
+                const result = [...values, add];
+                const index = result.indexOf(remove);
+                if (index !== -1) result.splice(index, 1);
+                show('listEditOutput', `Starting list: [${values.join(', ')}]\nAfter append(${fmt(add)}): [${[...values,add].join(', ')}]\nAfter remove(${fmt(remove)}): [${result.join(', ')}]\nRemoved value found: ${index!==-1?'Yes':'No'}`);
+            });
+
+            const listFilterButton = byId('runListFilterLab');
+            if (listFilterButton) listFilterButton.addEventListener('click', () => {
+                const values = parseNumberList(byId('labFilterList').value);
+                const raw = byId('labFilterThreshold').value,
+                    threshold = Number(raw);
+                if (!values || raw.trim() === '' || !Number.isFinite(threshold)) {
+                    show('listFilterOutput', 'Enter valid scores and a numeric minimum score.', true);
+                    return;
+                }
+                const qualified = values.filter(v => v >= threshold);
+                show('listFilterOutput', `Original: [${values.join(', ')}]\nMinimum: ${fmt(threshold)}\nQualified values: [${qualified.join(', ')}]\nQualified count: ${qualified.length}\nAscending order: [${[...values].sort((a,b)=>a-b).join(', ')}]`);
+            });
+
+            const tupleUnpackButton = byId('runTupleUnpackLab');
+            if (tupleUnpackButton) tupleUnpackButton.addEventListener('click', () => {
+                const aRaw = byId('labTupleFirst').value,
+                    bRaw = byId('labTupleSecond').value;
+                const a = Number(aRaw),
+                    b = Number(bRaw);
+                if (aRaw.trim() === '' || bRaw.trim() === '' || !Number.isFinite(a) || !Number.isFinite(b)) {
+                    show('tupleUnpackOutput', 'Enter valid numbers for both tuple values.', true);
+                    return;
+                }
+                show('tupleUnpackOutput', `coordinates = (${fmt(a)}, ${fmt(b)})\ncoordinates[0] = ${fmt(a)}\ncoordinates[1] = ${fmt(b)}\nlatitude, longitude = coordinates\nLatitude: ${fmt(a)}\nLongitude: ${fmt(b)}\nTuple length: 2`);
+            });
+
+            const tupleMethodsButton = byId('runTupleMethodsLab');
+            if (tupleMethodsButton) tupleMethodsButton.addEventListener('click', () => {
+                const values = byId('labTupleItems').value.split(',').map(v => v.trim()).filter(v => v.length);
+                const target = byId('labTupleSearch').value.trim();
+                if (!values.length || !target) {
+                    show('tupleMethodsOutput', 'Enter tuple items and a value to search for.', true);
+                    return;
+                }
+                const first = values.indexOf(target),
+                    count = values.filter(v => v === target).length;
+                const pyTuple = '(' + values.map(v => `'${quotePy(v)}'`).join(', ') + (values.length === 1 ? ',' : '') + ')';
+                show('tupleMethodsOutput', `colors = ${pyTuple}\ncolors.count('${quotePy(target)}') = ${count}\n${first===-1?'The value is not in the tuple.':`colors.index('${quotePy(target)}') = ${first}`}\nTuple length: ${values.length}`);
+            });
+
+            const dictEditButton = byId('runDictionaryEditLab');
+            if (dictEditButton) dictEditButton.addEventListener('click', () => {
+                const section = byId('labDictSection').value.trim(),
+                    key = byId('labDictNewKey').value.trim();
+                const value = byId('labDictNewValue').value.trim(),
+                    deleteKey = byId('labDictDeleteKey').value.trim();
+                if (!section || !key || !value || !deleteKey) {
+                    show('dictionaryEditOutput', 'Complete all dictionary fields before running.', true);
+                    return;
+                }
+                const record = {
+                    name: 'Jamie',
+                    section: section,
+                    status: 'Enrolled'
+                };
+                record[key] = value;
+                const existed = Object.prototype.hasOwnProperty.call(record, deleteKey);
+                delete record[deleteKey];
+                const lines = Object.entries(record).map(([k, v]) => `    '${quotePy(k)}': '${quotePy(v)}'`);
+                show('dictionaryEditOutput', `student = {\n${lines.join(',\n')}\n}\nDeleted key '${deleteKey}': ${existed?'Yes':'No'}`);
+            });
+
+            const dictSearchButton = byId('runDictionarySearchLab');
+            if (dictSearchButton) dictSearchButton.addEventListener('click', () => {
+                const name = byId('labLookupName').value.trim(),
+                    course = byId('labLookupCourse').value.trim();
+                const raw = byId('labLookupScore').value,
+                    key = byId('labLookupKey').value.trim();
+                const score = Number(raw);
+                if (!name || !course || raw.trim() === '' || !Number.isFinite(score) || score < 0 || score > 100 || !key) {
+                    show('dictionarySearchOutput', 'Enter a name, course, valid score (0–100), and lookup key.', true);
+                    return;
+                }
+                const record = {
+                    name,
+                    course,
+                    score
+                };
+                const value = Object.prototype.hasOwnProperty.call(record, key) ? record[key] : 'Key not found';
+                const lines = Object.entries(record).map(([k, v]) => `${k} : ${v}`);
+                show('dictionarySearchOutput', `student = ${JSON.stringify(record,null,4)}\n\nstudent.get('${quotePy(key)}') = ${value}\n\nAll dictionary items:\n${lines.join('\n')}`);
+            });
+
             // Run once on page load so every lab has a meaningful initial result.
             if (gradeButton) gradeButton.click();
             if (printButton) printButton.click();
             if (listButton) listButton.click();
             if (dictButton) dictButton.click();
+            if (listEditButton) listEditButton.click();
+            if (listFilterButton) listFilterButton.click();
+            if (tupleUnpackButton) tupleUnpackButton.click();
+            if (tupleMethodsButton) tupleMethodsButton.click();
+            if (dictEditButton) dictEditButton.click();
+            if (dictSearchButton) dictSearchButton.click();
         })();
 
         const year = document.getElementById('labCopyrightYear');
