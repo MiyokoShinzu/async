@@ -351,7 +351,7 @@ include "globals/head.php";
 
                                 <div class="student-class-instructor">
                                     <?php if ($instructorInfo["photo"] !== ""): ?>
-                                        <img src="<?= "https://vertigation.com/uploads".e($instructorInfo["photo"]) ?>" alt="<?= e($instructorInfo["name"]) ?>" class="student-instructor-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <img src="<?=e($instructorInfo["photo"]) ?>" alt="<?= e($instructorInfo["name"]) ?>" class="student-instructor-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                         <span class="student-instructor-avatar student-instructor-fallback" style="display:none"><i class="bi bi-person-fill"></i></span>
                                     <?php else: ?>
                                         <span class="student-instructor-avatar student-instructor-fallback"><i class="bi bi-person-fill"></i></span>
