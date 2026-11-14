@@ -100,17 +100,15 @@ require_once "../src/connection.php";
                 <div class="ad-label">Advertisement</div>
                 <div class="sponsored-ad-slot">
                     <script>
-                        (function(kfcu) {
-                            var d = document,
-                                s = d.createElement('script'),
-                                l = d.currentScript || d.scripts[d.scripts.length - 1];
-                            s.settings = kfcu || {};
-                            s.src = "\/\/juvenilechoice.com\/btX\/Vss.dpGolW0WYwWdcM\/LeZm\/9quRZhUzlqkXPoTac\/2dMuD\/cm0DMnzFcctFNdzkYvwiN\/z-QG0PM_QC";
-                            s.async = true;
-                            s.referrerPolicy = 'no-referrer-when-downgrade';
-                            l.parentNode.insertBefore(s, l);
-                        })({})
+                        atOptions = {
+                            'key': 'cd3ce2cfd6fc9f0020dc158a1d07d66d',
+                            'format': 'iframe',
+                            'height': 250,
+                            'width': 300,
+                            'params': {}
+                        };
                     </script>
+                    <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
                 </div>
             </div>
 
@@ -421,19 +419,35 @@ require_once "../src/connection.php";
                 <div class="ad-label">Advertisement</div>
                 <div class="sponsored-ad-slot">
                     <script>
-                        (function(kfcu) {
-                            var d = document,
-                                s = d.createElement('script'),
-                                l = d.currentScript || d.scripts[d.scripts.length - 1];
-                            s.settings = kfcu || {};
-                            s.src = "\/\/juvenilechoice.com\/bZXwVPs.dzGel\/0uY\/WncN\/ee_mu9EuAZAUblek\/P_Tuc\/2vMuD\/cp3RNGDcUXt\/NCzRYGwkNqzXc_0NOgQv";
-                            s.async = true;
-                            s.referrerPolicy = 'no-referrer-when-downgrade';
-                            l.parentNode.insertBefore(s, l);
-                        })({})
+                        atOptions = {
+                            'key': 'c71a07de0372b420f0fed4572e53eb04',
+                            'format': 'iframe',
+                            'height': 60,
+                            'width': 468,
+                            'params': {}
+                        };
                     </script>
+                    <script src="https://bauval.org/22/c71a07de0372b420f0fed4572e53eb04"></script>
                 </div>
             </div>
+
+            <!-- THIRD BAUVAL ADVERTISEMENT PLACEMENT -->
+            <div class="sponsored-card" aria-label="Advertisement">
+                <div class="ad-label">Advertisement</div>
+                <div class="sponsored-ad-slot sponsored-ad-slot--third">
+                    <script>
+                        atOptions = {
+                            'key': '981d46f3eb1343ec22581b3edf14be30',
+                            'format': 'iframe',
+                            'height': 300,
+                            'width': 160,
+                            'params': {}
+                        };
+                    </script>
+                    <script src="https://bauval.org/22/981d46f3eb1343ec22581b3edf14be30"></script>
+                </div>
+            </div>
+
 
             <!-- MATERIALS -->
             <div class="theory-card" id="materials-equipment">
@@ -1076,6 +1090,16 @@ void loop() {
             border-radius: 7px;
             background: var(--theory-hover);
             overflow: hidden;
+        }
+
+        .sponsored-ad-slot iframe {
+            display: block;
+            max-width: 100%;
+            border: 0;
+        }
+
+        .sponsored-ad-slot--third {
+            min-height: 300px;
         }
 
         .schematic-panel {
