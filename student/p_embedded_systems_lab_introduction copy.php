@@ -3174,4 +3174,4 @@ void loop() {
     <?php include 'globals/academic_posts_scripts.php'; ?>
 </body>
 
-</html>
+</html> 
