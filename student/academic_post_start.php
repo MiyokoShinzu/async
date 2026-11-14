@@ -313,8 +313,7 @@ if ($redirectUrlJson === false) {
             display: grid;
             grid-template-columns: minmax(0, 300px) minmax(320px, 440px) minmax(0, 468px);
             grid-template-areas:
-                "ad-left dialog ad-right"
-                "ad-bottom ad-bottom ad-bottom";
+                "ad-left dialog ad-right";
             align-items: center;
             justify-content: center;
             gap: clamp(12px, 1.6vw, 24px);
@@ -342,8 +341,41 @@ if ($redirectUrlJson === false) {
             -webkit-backdrop-filter: blur(18px) saturate(135%);
         }
 
+        /* This extra ad is reserved for phone/small-screen layouts only. */
+        .async-ad-slot--top {
+            display: none;
+            grid-area: ad-top;
+            width: min(100%, 728px);
+            justify-self: center;
+        }
+
         .async-ad-box--left {
             grid-area: ad-left;
+        }
+
+        /* Keep the two right-side ads stacked beside the centered loader. */
+        .async-right-ads {
+            grid-area: ad-right;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            gap: 16px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .async-ad-slot--bottom {
+            width: 100%;
+        }
+
+        .async-ad-slot--second {
+            width: 100%;
+        }
+
+        .async-ad-slot--second #container-9432329e47d7c152de6660b387e159a1 {
+            width: 100%;
+            min-width: 0;
         }
 
         .async-ad-slot--small,
@@ -654,8 +686,7 @@ if ($redirectUrlJson === false) {
                 grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
                 grid-template-areas:
                     "dialog dialog"
-                    "ad-left ad-right"
-                    "ad-bottom ad-bottom";
+                    "ad-left ad-right";
                 align-content: center;
                 gap: 16px;
             }
@@ -668,9 +699,14 @@ if ($redirectUrlJson === false) {
             .async-ad-box {
                 min-height: 110px;
             }
+
         }
 
         @media (max-width: 600px) {
+            .async-ad-slot--top {
+                display: flex;
+            }
+
             body {
                 padding: 12px;
             }
@@ -680,7 +716,7 @@ if ($redirectUrlJson === false) {
                 min-height: calc(100svh - 24px);
                 grid-template-columns: minmax(0, 1fr);
                 grid-template-areas:
-                    "ad-small"
+                    "ad-top"
                     "dialog"
                     "ad-left"
                     "ad-large"
@@ -690,8 +726,18 @@ if ($redirectUrlJson === false) {
                 gap: 12px;
             }
 
-            .async-ad-slot--large {
+            .async-right-ads {
+                display: contents;
+            }
+
+            .async-ad-slot--second {
                 grid-area: ad-large;
+                width: min(100%, 520px);
+                justify-self: center;
+            }
+
+            .async-ad-slot--bottom {
+                grid-area: ad-bottom;
                 width: min(100%, 520px);
                 justify-self: center;
             }
@@ -815,20 +861,32 @@ if ($redirectUrlJson === false) {
 
 <body>
     <div class="async-page-shell">
+        <aside class="async-ad-box async-ad-slot--top" aria-label="Advertisement before loader">
+            <span class="async-ad-label">ADVERTISEMENT</span>
+            <script>
+                atOptions = {
+                    'key': 'cd3ce2cfd6fc9f0020dc158a1d07d66d',
+                    'format': 'iframe',
+                    'height': 250,
+                    'width': 300,
+                    'params': {}
+                };
+            </script>
+            <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
+        </aside>
+
         <aside class="async-ad-box async-ad-box--left" aria-label="Advertisement">
             <span class="async-ad-label">ADVERTISEMENT</span>
             <script>
-                (function(bgj) {
-                    var d = document,
-                        s = d.createElement('script'),
-                        l = d.currentScript || d.scripts[d.scripts.length - 1];
-                    s.settings = bgj || {};
-                    s.src = "\/\/juvenilechoice.com\/b\/XSVIsnd.G\/lu0\/YlWIcY\/fermF9EuGZTUplJk\/P\/TGcG2tMpD\/cj0yMNzcc\/t-N\/zWYbwZNYzHQi0nMBQj";
-                    s.async = true;
-                    s.referrerPolicy = 'no-referrer-when-downgrade';
-                    l.parentNode.insertBefore(s, l);
-                })({})
+                atOptions = {
+                    'key': 'cd3ce2cfd6fc9f0020dc158a1d07d66d',
+                    'format': 'iframe',
+                    'height': 250,
+                    'width': 300,
+                    'params': {}
+                };
             </script>
+            <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
         </aside>
 
         <main class="async-loader-card" role="dialog" aria-modal="false" aria-labelledby="asyncLoaderTitle">
@@ -878,23 +936,28 @@ if ($redirectUrlJson === false) {
                 View Post <span aria-hidden="true">→</span>
             </button>
         </main>
-        <aside class="async-ad-box async-ad-slot--large" aria-label="Right-side advertisement">
-            <span class="async-ad-label">ADVERTISEMENT</span>
-            <div class="async-ad-frame-wrap">
-                <script>
-                    (function(rchdn) {
-                        var d = document,
-                            s = d.createElement('script'),
-                            l = d.currentScript || d.scripts[d.scripts.length - 1];
-                        s.settings = rchdn || {};
-                        s.src = "\/\/juvenilechoice.com\/b.XAVqsmdSGllC0-YDWKcP\/Deimn9lu\/ZeUPlMkXPnTjcN2yMWDEcp3\/NfDrU-trNqzxYJwJNczmc\/0DORQm";
-                        s.async = true;
-                        s.referrerPolicy = 'no-referrer-when-downgrade';
-                        l.parentNode.insertBefore(s, l);
-                    })({})
-                </script>
-            </div>
-        </aside>
+        <div class="async-right-ads">
+            <aside class="async-ad-box async-ad-slot--second" aria-label="Second advertisement">
+                <span class="async-ad-label">ADVERTISEMENT</span>
+                <script async="async" data-cfasync="false" src="https://bauval.org/21/9432329e47d7c152de6660b387e159a1"></script>
+                <div id="container-9432329e47d7c152de6660b387e159a1"></div>
+            </aside>
+            <aside class="async-ad-box async-ad-slot--bottom" aria-label="Third advertisement">
+                <span class="async-ad-label">ADVERTISEMENT</span>
+                <div class="async-ad-frame-wrap">
+                    <script>
+                        atOptions = {
+                            'key': 'c71a07de0372b420f0fed4572e53eb04',
+                            'format': 'iframe',
+                            'height': 60,
+                            'width': 468,
+                            'params': {}
+                        };
+                    </script>
+                    <script src="https://bauval.org/22/c71a07de0372b420f0fed4572e53eb04"></script>
+                </div>
+            </aside>
+        </div>
     </div>
 
 
