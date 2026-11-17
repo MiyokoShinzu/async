@@ -51,9 +51,15 @@ $readingActivityId =
     ? (int)trim($_GET["id"])
     : 0;
 
+$assignmentId =
+    isset($_GET["assignment_id"])
+    ? (int)$_GET["assignment_id"]
+    : 0;
+
 
 if (
     $readingActivityId <= 0 ||
+    $assignmentId <= 0 ||
     $studentId === ""
 ) {
 
@@ -87,63 +93,60 @@ if ($studentName === "") {
    ========================================================= */
 
 $activitySQL = "
-
     SELECT
-
-        id,
-        title,
-        description,
-        file_url,
-        file_type,
-        department,
-        year_level,
-        section,
-        start_date,
-        due_date,
-        status,
-        required_reading_minutes,
-        created_at
-
-    FROM reading_activity_table
-
+        r.id,
+        r.title,
+        r.description,
+        r.file_url,
+        r.file_type,
+        r.department,
+        r.year_level,
+        r.section,
+        a.assigned_at AS start_date,
+        a.due_date,
+        r.status,
+        r.required_reading_minutes,
+        r.created_at,
+        a.id AS assignment_id,
+        cc.course_code
+    FROM class_code_reading_assignments a
+    INNER JOIN class_codes cc
+        ON cc.id = a.class_code_id
+    INNER JOIN academic_year_semesters ays
+        ON ays.id = cc.academic_year_semester_id
+    INNER JOIN class_code_enrollments cce
+        ON cce.class_code_id = cc.id
+        AND cce.student_id = ?
+        AND cce.status = 'Accepted'
+    INNER JOIN reading_activity_table r
+        ON r.id = a.reading_activity_id
     WHERE
-
-        id = ?
-
+        a.id = ?
+        AND a.reading_activity_id = ?
+        AND a.status = 'Active'
+        AND cc.status = 'Active'
+        AND ays.status = 'Active'
+        AND (r.status = 'active' OR r.status IS NULL OR r.status = '')
     LIMIT 1
 ";
 
-
-$activityStmt =
-    $mysqli->prepare(
-        $activitySQL
-    );
-
+$activityStmt = $mysqli->prepare($activitySQL);
 
 if (!$activityStmt) {
-
     header("Location: reading_activities.php");
     exit;
 }
 
-
 $activityStmt->bind_param(
-    "i",
+    "sii",
+    $studentId,
+    $assignmentId,
     $readingActivityId
 );
 
-
 $activityStmt->execute();
-
-
-$activityResult =
-    $activityStmt->get_result();
-
-
-$activity =
-    $activityResult->fetch_assoc();
-
-
+$activityResult = $activityStmt->get_result();
+$activity = $activityResult->fetch_assoc();
 $activityStmt->close();
 
 
@@ -1086,8 +1089,6 @@ include 'globals/head.php';
         }
 
     }
-
-
 </style>
 
 <?php
@@ -1799,6 +1800,9 @@ include 'globals/scripts.php';
     const readingActivityId =
         <?= (int)$readingActivityId ?>;
 
+    const assignmentId =
+        <?= (int)$assignmentId ?>;
+
 
     const requiredReadingSeconds =
         <?= (int)$requiredReadingSeconds ?>;
@@ -2173,6 +2177,11 @@ include 'globals/scripts.php';
                 readingActivityId
             );
 
+            formData.append(
+                "assignment_id",
+                assignmentId
+            );
+
 
             formData.append(
                 "reading_seconds",
@@ -2279,6 +2288,11 @@ include 'globals/scripts.php';
             formData.append(
                 "reading_activity_id",
                 readingActivityId
+            );
+
+            formData.append(
+                "assignment_id",
+                assignmentId
             );
 
 
@@ -2560,6 +2574,11 @@ include 'globals/scripts.php';
             formData.append(
                 "reading_activity_id",
                 readingActivityId
+            );
+
+            formData.append(
+                "assignment_id",
+                assignmentId
             );
 
 

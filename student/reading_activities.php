@@ -138,87 +138,44 @@ if (!empty($parts[1])) {
    GET READING ACTIVITIES 
    ========================================================= */
 
-$sql = " 
-    SELECT 
- 
-        r.id, 
- 
-        r.title, 
- 
-        r.description, 
- 
-        r.file_url, 
- 
-        r.file_type, 
- 
-        r.department, 
- 
-        r.year_level, 
- 
-        r.section, 
- 
-        r.start_date, 
- 
-        r.due_date, 
- 
-        r.required_reading_minutes, 
- 
-        rp.started_at, 
- 
-        rp.last_accessed_at, 
- 
-        rp.access_count, 
- 
-        rp.completed_at, 
- 
-        rp.status AS progress_status, 
- 
-        rp.reading_seconds 
- 
-    FROM reading_activity_table r 
- 
-    LEFT JOIN reading_activity_progress rp 
- 
-        ON rp.reading_activity_id = r.id 
- 
-        AND rp.student_id = ? 
- 
-    WHERE 
- 
-        ( 
-            r.department = ? 
-            OR r.department = '' 
-            OR r.department IS NULL 
-        ) 
- 
-        AND 
- 
-        ( 
-            CAST(r.year_level AS CHAR) = ? 
-            OR r.year_level = '' 
-            OR r.year_level IS NULL 
-        ) 
- 
-        AND 
- 
-        ( 
-            r.section = ? 
-            OR r.section = '' 
-            OR r.section IS NULL 
-        ) 
- 
-        AND 
- 
-        ( 
-            r.status = 'active' 
-            OR r.status IS NULL 
-        ) 
- 
-    ORDER BY 
- 
-        r.start_date DESC, 
- 
-        r.id DESC 
+$sql = "
+    SELECT
+        r.id,
+        a.id AS assignment_id,
+        cc.course_code,
+        r.title,
+        r.description,
+        r.file_url,
+        r.file_type,
+        r.required_reading_minutes,
+        a.assigned_at AS start_date,
+        a.due_date,
+        rp.started_at,
+        rp.last_accessed_at,
+        rp.access_count,
+        rp.completed_at,
+        rp.status AS progress_status,
+        rp.reading_seconds
+    FROM class_code_reading_assignments a
+    INNER JOIN class_codes cc
+        ON cc.id = a.class_code_id
+    INNER JOIN academic_year_semesters ays
+        ON ays.id = cc.academic_year_semester_id
+    INNER JOIN class_code_enrollments cce
+        ON cce.class_code_id = cc.id
+        AND cce.student_id = ?
+        AND cce.status = 'Accepted'
+    INNER JOIN reading_activity_table r
+        ON r.id = a.reading_activity_id
+    LEFT JOIN reading_activity_progress rp
+        ON rp.reading_activity_id = r.id
+        AND rp.student_id = ?
+    WHERE
+        a.status = 'Active'
+        AND cc.status = 'Active'
+        AND ays.status = 'Active'
+        AND (r.status = 'active' OR r.status IS NULL OR r.status = '')
+    ORDER BY a.due_date ASC, a.assigned_at DESC, a.id DESC
 ";
 
 
@@ -236,11 +193,9 @@ if (!$stmt) {
 
 
 $stmt->bind_param(
-    "ssss",
+    "ss",
     $studentId,
-    $department,
-    $yearLevel,
-    $section
+    $studentId
 );
 
 
@@ -1040,6 +995,13 @@ $completionPercentage =
                                         class="activity-meta">
 
 
+                                        <?php if (!empty($reading["course_code"])): ?>
+                                            <span>
+                                                <i class="bi bi-people"></i>
+                                                <?= htmlspecialchars($reading["course_code"]) ?>
+                                            </span>
+                                        <?php endif; ?>
+
                                         <?php if (
                                             $startText !== ""
                                         ): ?>
@@ -1224,7 +1186,7 @@ $completionPercentage =
                                 -->
 
                                     <a
-                                        href="reading_activity_view.php?id=<?= $readingId ?>"
+                                        href="reading_activity_view.php?id=<?= $readingId ?>&assignment_id=<?= (int)$reading["assignment_id"] ?>"
                                         class="btn btn-primary">
 
 

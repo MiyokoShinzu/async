@@ -1,281 +1,57 @@
 <?php
-
 /* =========================================================
-   SAVE READING PROGRESS
-   ETS-Async Learning Portal
+   SAVE READING PROGRESS — ETS-Async Learning Portal
    ========================================================= */
-
 session_start();
+header("Content-Type: application/json; charset=utf-8");
 
-header("Content-Type: application/json");
-
-
-/* =========================================================
-   AUTHENTICATION
-   ========================================================= */
-
-if (
-    !isset($_SESSION["logged_in"]) ||
-    $_SESSION["logged_in"] !== true ||
-    !isset($_SESSION["user"]) ||
-    ($_SESSION["user"]["access"] ?? "") !== "student"
-) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Unauthorized"
-    ]);
-
+function jsonResponse(array $data): void
+{
+    echo json_encode($data);
     exit;
 }
 
-
-/* =========================================================
-   DATABASE
-   ========================================================= */
+if (
+    !isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true ||
+    !isset($_SESSION["user"]) || ($_SESSION["user"]["access"] ?? "") !== "student"
+) {
+    http_response_code(401);
+    jsonResponse(["success" => false, "message" => "Unauthorized"]);
+}
 
 require_once "../src/connection.php";
+require_once __DIR__ . "/reading_assignment_access.php";
 
+$studentId = trim((string)($_SESSION["user"]["student_id"] ?? ""));
+$readingActivityId = (int)($_POST["reading_activity_id"] ?? 0);
+$assignmentId = (int)($_POST["assignment_id"] ?? 0);
+$readingSeconds = max(0, (float)($_POST["reading_seconds"] ?? 0));
 
-/* =========================================================
-   STUDENT
-   ========================================================= */
-
-$studentId =
-    $_SESSION["user"]["student_id"] ?? "";
-
-
-/* =========================================================
-   INPUT
-   ========================================================= */
-
-$readingActivityId =
-    isset($_POST["reading_activity_id"])
-    ? (int)$_POST["reading_activity_id"]
-    : 0;
-
-
-$readingSeconds =
-    isset($_POST["reading_seconds"])
-    ? (float)$_POST["reading_seconds"]
-    : 0;
-
-
-/* =========================================================
-   VALIDATION
-   ========================================================= */
-
-if (
-    $readingActivityId <= 0 ||
-    $studentId === ""
-) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid data"
-    ]);
-
-    exit;
+if ($studentId === "" || $readingActivityId < 1 || $assignmentId < 1) {
+    http_response_code(400);
+    jsonResponse(["success" => false, "message" => "Invalid data"]);
 }
 
-
-/* =========================================================
-   SANITIZE VALUES
-   ========================================================= */
-
-$readingSeconds =
-    max(
-        0,
-        $readingSeconds
-    );
-
-
-/* =========================================================
-   CHECK EXISTING PROGRESS
-   ========================================================= */
-
-$checkSQL = "
-    SELECT
-        id,
-        status,
-        reading_seconds
-
-    FROM reading_activity_progress
-
-    WHERE
-        reading_activity_id = ?
-        AND student_id = ?
-
-    LIMIT 1
-";
-
-
-$checkStmt =
-    $mysqli->prepare(
-        $checkSQL
-    );
-
-
-if (!$checkStmt) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => $mysqli->error
-    ]);
-
-    exit;
+if (!studentHasActiveReadingAssignment($mysqli, $studentId, $assignmentId, $readingActivityId)) {
+    http_response_code(403);
+    jsonResponse(["success" => false, "message" => "This reading assignment is not available to your account."]);
 }
 
-
-$checkStmt->bind_param(
-    "is",
-    $readingActivityId,
-    $studentId
-);
-
-
-$checkStmt->execute();
-
-
-$result =
-    $checkStmt->get_result();
-
-
-$existing =
-    $result->fetch_assoc();
-
-
-$checkStmt->close();
-
-
-/* =========================================================
-   NO EXISTING RECORD
-   ========================================================= */
-
-if (!$existing) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Progress record not found"
-    ]);
-
-    exit;
+$check = $mysqli->prepare("SELECT id, status, reading_seconds FROM reading_activity_progress WHERE reading_activity_id=? AND student_id=? LIMIT 1");
+if (!$check) jsonResponse(["success" => false, "message" => "Unable to check progress"]);
+$check->bind_param("is", $readingActivityId, $studentId);
+$check->execute();
+$existing = $check->get_result()->fetch_assoc();
+$check->close();
+if (!$existing) jsonResponse(["success" => false, "message" => "Progress record not found"]);
+if (($existing["status"] ?? "") === "completed") {
+    jsonResponse(["success" => true, "message" => "Already completed", "reading_seconds" => (float)$existing["reading_seconds"]]);
 }
 
-
-/* =========================================================
-   UPDATE EXISTING RECORD
-   ========================================================= */
-
-if ($existing) {
-
-
-    /*
-       NEVER change completed back
-       to in_progress.
-    */
-
-    if (
-        ($existing["status"] ?? "") ===
-        "completed"
-    ) {
-
-        /*
-           Keep completed state.
-
-           Do not modify the reading time
-           or status anymore.
-        */
-
-        echo json_encode([
-            "success" => true,
-            "message" => "Already completed",
-            "reading_seconds" =>
-            (float)(
-                $existing["reading_seconds"]
-                ?? 0
-            )
-        ]);
-
-        exit;
-    }
-
-
-    /* =====================================================
-       KEEP THE HIGHEST READING TIME
-    ====================================================== */
-
-    $sql = "
-        UPDATE reading_activity_progress
-
-        SET
-
-            reading_seconds =
-                GREATEST(
-                    reading_seconds,
-                    ?
-                ),
-
-            last_accessed_at =
-                NOW()
-
-        WHERE
-            id = ?
-
-            AND status <> 'completed'
-    ";
-
-
-    $stmt =
-        $mysqli->prepare(
-            $sql
-        );
-
-
-    if (!$stmt) {
-
-        echo json_encode([
-            "success" => false,
-            "message" => $mysqli->error
-        ]);
-
-        exit;
-    }
-
-
-    $stmt->bind_param(
-        "di",
-        $readingSeconds,
-        $existing["id"]
-    );
-
-
-    $success =
-        $stmt->execute();
-
-
-    $stmt->close();
-
-
-    if (!$success) {
-
-        echo json_encode([
-            "success" => false,
-            "message" => "Unable to save progress"
-        ]);
-
-        exit;
-    }
-}
-
-
-/* =========================================================
-   RESPONSE
-   ========================================================= */
-
-echo json_encode([
-    "success" => true,
-    "reading_seconds" => $readingSeconds
-]);
-
-exit;
+$update = $mysqli->prepare("UPDATE reading_activity_progress SET reading_seconds=GREATEST(reading_seconds, ?), last_accessed_at=NOW() WHERE id=? AND status <> 'completed'");
+if (!$update) jsonResponse(["success" => false, "message" => "Unable to prepare progress update"]);
+$update->bind_param("di", $readingSeconds, $existing["id"]);
+$ok = $update->execute();
+$update->close();
+if (!$ok) jsonResponse(["success" => false, "message" => "Unable to save progress"]);
+jsonResponse(["success" => true, "reading_seconds" => max($readingSeconds, (float)$existing["reading_seconds"])]);
