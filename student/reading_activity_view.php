@@ -814,8 +814,6 @@ include 'globals/head.php';
 
         height: 100%;
 
-        overflow: auto;
-
         background: var(--bs-body-bg);
 
         transition:
@@ -834,24 +832,7 @@ include 'globals/head.php';
         display: block;
 
         background: var(--bs-body-bg);
-        transform: scale(1);
-        transform-origin: top left;
-        transition: transform 0.15s ease;
 
-    }
-
-    .reader-zoom-controls {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .reader-zoom-level {
-        min-width: 48px;
-        text-align: center;
-        font-size: 0.82rem;
-        font-weight: 700;
-        font-variant-numeric: tabular-nums;
     }
 
 
@@ -1517,19 +1498,6 @@ include 'globals/topbar.php';
                         <?= strtoupper(htmlspecialchars($fileType)) ?>
                     </span>
 
-                    <div class="reader-zoom-controls" role="group" aria-label="Document zoom controls">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="readerZoomOut" aria-label="Zoom out" title="Zoom out">
-                            <i class="bi bi-zoom-out"></i>
-                        </button>
-                        <span class="reader-zoom-level" id="readerZoomLevel">100%</span>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="readerZoomIn" aria-label="Zoom in" title="Zoom in">
-                            <i class="bi bi-zoom-in"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="readerZoomReset" title="Reset zoom">
-                            Reset
-                        </button>
-                    </div>
-
                     <button
                         type="button"
                         class="btn btn-primary btn-sm"
@@ -1554,8 +1522,7 @@ include 'globals/topbar.php';
                 <?php if ($viewerUrl !== ""): ?>
 
                     <div
-                        class="reading-viewer-frame-wrapper"
-                        id="readingViewerFrameWrapper">
+                        class="reading-viewer-frame-wrapper">
 
                         <iframe
                             id="readingViewer"
@@ -1955,14 +1922,6 @@ include 'globals/scripts.php';
 
     const readerFullscreenButton =
         document.getElementById("readerFullscreenButton");
-
-    const readingViewer = document.getElementById("readingViewer");
-    const readerZoomIn = document.getElementById("readerZoomIn");
-    const readerZoomOut = document.getElementById("readerZoomOut");
-    const readerZoomReset = document.getElementById("readerZoomReset");
-    const readerZoomLevel = document.getElementById("readerZoomLevel");
-    const readingViewerFrameWrapper = document.getElementById("readingViewerFrameWrapper");
-    let readerZoom = 1;
 
     const readingViewerCard =
         document.querySelector(".reading-viewer-card");
@@ -2514,53 +2473,6 @@ include 'globals/scripts.php';
 
     }
 
-
-    /* =========================================================
-       DOCUMENT ZOOM CONTROLS
-       These controls scale the embedded document frame. The
-       portal remains active, so the reading timer keeps running.
-       ========================================================= */
-
-    function applyReaderZoom() {
-        if (!readingViewer) return;
-
-        readingViewer.style.transform = `scale(${readerZoom})`;
-        readingViewer.style.transformOrigin = "top left";
-        readingViewer.style.width = `${100 / readerZoom}%`;
-        readingViewer.style.height = `${100 / readerZoom}%`;
-
-        if (readerZoomLevel) {
-            readerZoomLevel.textContent = `${Math.round(readerZoom * 100)}%`;
-        }
-    }
-
-    if (readerZoomIn) {
-        readerZoomIn.addEventListener("click", function() {
-            readerZoom = Math.min(2, Math.round((readerZoom + 0.1) * 100) / 100);
-            applyReaderZoom();
-        });
-    }
-
-    if (readerZoomOut) {
-        readerZoomOut.addEventListener("click", function() {
-            readerZoom = Math.max(0.5, Math.round((readerZoom - 0.1) * 100) / 100);
-            applyReaderZoom();
-        });
-    }
-
-    if (readerZoomReset) {
-        readerZoomReset.addEventListener("click", function() {
-            readerZoom = 1;
-            applyReaderZoom();
-            if (readingViewerFrameWrapper) {
-                readingViewerFrameWrapper.scrollTo({
-                    top: 0,
-                    left: 0,
-                    behavior: "smooth"
-                });
-            }
-        });
-    }
 
     /* =========================================================
        FULL-SCREEN READING MODE
