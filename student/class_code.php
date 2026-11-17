@@ -275,9 +275,128 @@ function resolveInstructor(mysqli $db, int $instructorId): array
     return ["name" => $name, "photo" => $photo];
 }
 
-include "globals/head.php";
-?>
 
+/* Load only accepted classmates for a specific class code. The student profile
+   table/columns are detected so this works with common student account schemas. */
+function resolveClassmates(mysqli $db, int $classCodeId): array
+{
+    static $schema = false;
+    if ($classCodeId < 1) return [];
+
+    if ($schema === false) {
+        $schema = null;
+        $tables = ["students", "student", "student_profiles", "users", "user_accounts", "accounts"];
+        $idCandidates = ["student_id", "id", "user_id", "account_id"];
+        $nameCandidates = ["full_name", "name", "student_name", "display_name"];
+        $photoCandidates = ["profile_picture", "profile_photo", "profile_image", "profile_img", "profile_pic", "avatar", "avatar_url", "photo", "image", "image_path", "user_image"];
+
+        foreach ($tables as $tableName) {
+            $safeTable = $db->real_escape_string($tableName);
+            $exists = $db->query("SHOW TABLES LIKE '{$safeTable}'");
+            if (!$exists || $exists->num_rows < 1) {
+                if ($exists) $exists->free();
+                continue;
+            }
+            $exists->free();
+            $columnsResult = $db->query("SHOW COLUMNS FROM `{$tableName}`");
+            if (!$columnsResult) continue;
+            $columns = [];
+            while ($column = $columnsResult->fetch_assoc()) $columns[] = (string)$column["Field"];
+            $columnsResult->free();
+
+            $idCol = null;
+            foreach ($idCandidates as $candidate) {
+                if (in_array($candidate, $columns, true)) {
+                    $idCol = $candidate;
+                    break;
+                }
+            }
+            if (!$idCol) continue;
+
+            $nameCol = null;
+            foreach ($nameCandidates as $candidate) {
+                if (in_array($candidate, $columns, true)) {
+                    $nameCol = $candidate;
+                    break;
+                }
+            }
+            $firstCol = in_array("first_name", $columns, true) ? "first_name" : null;
+            $lastCol = in_array("last_name", $columns, true) ? "last_name" : null;
+            $photoCol = null;
+            foreach ($photoCandidates as $candidate) {
+                if (in_array($candidate, $columns, true)) {
+                    $photoCol = $candidate;
+                    break;
+                }
+            }
+
+            if ($nameCol || $firstCol || $lastCol || $photoCol) {
+                $schema = [
+                    "table" => $tableName,
+                    "id" => $idCol,
+                    "name" => $nameCol,
+                    "first" => $firstCol,
+                    "last" => $lastCol,
+                    "photo" => $photoCol
+                ];
+                break;
+            }
+        }
+    }
+
+    $nameExpr = "CAST(cce.student_id AS CHAR)";
+    $photoExpr = "''";
+    $join = "";
+    if ($schema) {
+        $table = "`" . $schema["table"] . "`";
+        $idCol = "`" . $schema["id"] . "`";
+        $join = " LEFT JOIN {$table} sp ON CAST(sp.{$idCol} AS CHAR) = CAST(cce.student_id AS CHAR) ";
+        if ($schema["name"]) {
+            $nameCol = "sp.`" . $schema["name"] . "`";
+            $nameExpr = "COALESCE(NULLIF(TRIM({$nameCol}), ''), CAST(cce.student_id AS CHAR))";
+        } elseif ($schema["first"] || $schema["last"]) {
+            $parts = [];
+            if ($schema["first"]) $parts[] = "NULLIF(TRIM(sp.`" . $schema["first"] . "`), '')";
+            if ($schema["last"]) $parts[] = "NULLIF(TRIM(sp.`" . $schema["last"] . "`), '')";
+            $nameExpr = "COALESCE(NULLIF(TRIM(CONCAT_WS(' ', " . implode(", ", $parts) . ")), ''), CAST(cce.student_id AS CHAR))";
+        }
+        if ($schema["photo"]) $photoExpr = "sp.`" . $schema["photo"] . "`";
+    }
+
+    $sql = "SELECT cce.student_id, {$nameExpr} AS classmate_name, {$photoExpr} AS classmate_photo
+            FROM class_code_enrollments cce {$join}
+            WHERE cce.class_code_id = ? AND cce.status = 'Accepted'
+            ORDER BY classmate_name ASC";
+    $stmt = $db->prepare($sql);
+    if (!$stmt) return [];
+    $stmt->bind_param("i", $classCodeId);
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return [];
+    }
+    $result = $stmt->get_result();
+    $classmates = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $photo = trim(str_replace("\\", "/", (string)($row["classmate_photo"] ?? "")));
+            if ($photo !== "" && !preg_match('~^(?:https?:)?//|^/~i', $photo)) {
+                $photo = preg_replace('~^(?:\./)+~', "", $photo);
+                $photo = "../" . ltrim($photo, "/");
+            }
+            if (preg_match('~^(?:javascript:|data:)~i', $photo)) $photo = "";
+            $classmates[] = [
+                "name" => trim((string)($row["classmate_name"] ?? "")) ?: (string)($row["student_id"] ?? "Student"),
+                "student_id" => (string)($row["student_id"] ?? ""),
+                "photo" => $photo
+            ];
+        }
+        $result->free();
+    }
+    $stmt->close();
+    return $classmates;
+}
+
+include "globals/head.php";
 ?>
 
 <body>
@@ -351,7 +470,7 @@ include "globals/head.php";
 
                                 <div class="student-class-instructor">
                                     <?php if ($instructorInfo["photo"] !== ""): ?>
-                                        <img src="<?=e($instructorInfo["photo"]) ?>" alt="<?= e($instructorInfo["name"]) ?>" class="student-instructor-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <img src="<?= e($instructorInfo["photo"]) ?>" alt="<?= e($instructorInfo["name"]) ?>" class="student-instructor-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                         <span class="student-instructor-avatar student-instructor-fallback" style="display:none"><i class="bi bi-person-fill"></i></span>
                                     <?php else: ?>
                                         <span class="student-instructor-avatar student-instructor-fallback"><i class="bi bi-person-fill"></i></span>
@@ -387,17 +506,49 @@ include "globals/head.php";
                                         <span><?= e($studentStatusMessages[$studentEnrollmentStatus] ?? "Your enrollment status is being processed.") ?></span>
                                     </div>
                                     <?php if ($studentEnrollmentStatus === "Accepted"): ?>
-                                        <?php // Replace the placeholder URL below when the class destination is ready. 
-                                        ?>
-                                        <?php if ($classRoomUrl !== ""): ?>
-                                            <a href="<?= e($classRoomUrl) ?>" class="student-enter-class-btn" target="_blank" rel="noopener noreferrer">
-                                                <i class="bi bi-box-arrow-in-right"></i> Enter Class
-                                            </a>
-                                        <?php else: ?>
-                                            <a href="#" class="student-enter-class-btn is-placeholder" aria-disabled="true" title="The class link will be provided soon" onclick="return false;">
-                                                <i class="bi bi-box-arrow-in-right"></i> Enter Class <span>Coming soon</span>
-                                            </a>
-                                        <?php endif; ?>
+                                        <?php $classmates = resolveClassmates($mysqli, (int)$classCode["id"]); ?>
+                                        <button type="button" class="student-classmates-btn" data-classmates-open="classmatesModal<?= (int)$classCode["id"] ?>">
+                                            <i class="bi bi-people-fill"></i> Classmates
+                                            <span class="student-classmates-count"><?= count($classmates) ?></span>
+                                        </button>
+
+                                        <div class="classmates-modal" id="classmatesModal<?= (int)$classCode["id"] ?>" aria-hidden="true">
+                                            <div class="classmates-modal-backdrop" data-classmates-close></div>
+                                            <section class="classmates-modal-panel" role="dialog" aria-modal="true" aria-labelledby="classmatesTitle<?= (int)$classCode["id"] ?>">
+                                                <header class="classmates-modal-header">
+                                                    <div>
+                                                        <span class="classmates-modal-eyebrow">YOUR CLASS</span>
+                                                        <h3 id="classmatesTitle<?= (int)$classCode["id"] ?>">Classmates</h3>
+                                                        <p><?= e($classCode["course_code"]) ?> · <?= count($classmates) ?> accepted student<?= count($classmates) === 1 ? "" : "s" ?></p>
+                                                    </div>
+                                                    <button type="button" class="classmates-modal-close" data-classmates-close aria-label="Close classmates"><i class="bi bi-x-lg"></i></button>
+                                                </header>
+                                                <div class="classmates-modal-body">
+                                                    <?php if (!empty($classmates)): ?>
+                                                        <div class="classmates-grid">
+                                                            <?php foreach ($classmates as $classmate): ?>
+                                                                <div class="classmate-card">
+                                                                    <?php if ($classmate["photo"] !== ""): ?>
+                                                                        <img class="classmate-avatar" src="<?= e($classmate["photo"]) ?>" alt="<?= e($classmate["name"]) ?>" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                                        <span class="classmate-avatar classmate-avatar-fallback" style="display:none"><i class="bi bi-person-fill"></i></span>
+                                                                    <?php else: ?>
+                                                                        <span class="classmate-avatar classmate-avatar-fallback"><i class="bi bi-person-fill"></i></span>
+                                                                    <?php endif; ?>
+                                                                    <strong><?= e($classmate["name"]) ?></strong>
+                                                                    <small><?= e($classmate["student_id"]) ?></small>
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="classmates-empty">
+                                                            <i class="bi bi-people"></i>
+                                                            <strong>No accepted classmates yet</strong>
+                                                            <span>Accepted students will appear here when their enrollment is approved.</span>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </section>
+                                        </div>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <form method="POST" class="student-class-enroll-form">
@@ -853,34 +1004,297 @@ include "globals/head.php";
             background: #94a3b8;
         }
 
-        .student-enter-class-btn {
-            display: flex;
+        .student-classmates-btn {
+            width: 100%;
+            min-height: 42px;
+            margin-top: 12px;
+            padding: 10px 13px;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            width: 100%;
-            margin-top: 12px;
-            padding: 11px 14px;
-            border-radius: 11px;
-            background: #1d4ed8;
-            color: #fff !important;
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none !important;
+            border: 1px solid var(--academic-blue-dark);
+            border-radius: 10px;
+            background: var(--academic-blue-dark);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 750;
+            cursor: pointer;
+            transition: transform .18s ease, opacity .18s ease;
         }
 
-        .student-enter-class-btn.is-placeholder {
-            opacity: .72;
-            cursor: not-allowed;
+        .student-classmates-btn:hover {
+            transform: translateY(-1px);
+            opacity: .92;
         }
 
-        .student-enter-class-btn span {
-            margin-left: auto;
+        .student-classmates-count {
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, .2);
             font-size: 10px;
-            font-weight: 600;
-            opacity: .85;
+        }
+
+        .classmates-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 12000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .classmates-modal.is-open {
+            display: flex;
+        }
+
+        .classmates-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 18, 35, .62);
+            backdrop-filter: blur(4px);
+        }
+
+        .classmates-modal-panel {
+            position: relative;
+            z-index: 1;
+            width: min(680px, 100%);
+            max-height: min(82vh, 760px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--activity-border);
+            border-radius: 18px;
+            background: var(--activity-card-bg);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .25);
+            animation: classmatesModalIn .2s ease-out;
+        }
+
+        @keyframes classmatesModalIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(.985);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .classmates-modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--activity-border);
+        }
+
+        .classmates-modal-eyebrow {
+            color: var(--text-secondary);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .12em;
+        }
+
+        .classmates-modal-header h3 {
+            margin: 4px 0 3px;
+            color: var(--academic-blue-dark);
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .classmates-modal-header p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .classmates-modal-close {
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--activity-border);
+            border-radius: 10px;
+            background: var(--activity-progress-bg, var(--activity-card-bg));
+            color: var(--academic-blue-dark);
+            cursor: pointer;
+        }
+
+        .classmates-modal-body {
+            overflow-y: auto;
+            padding: 20px 22px 24px;
+        }
+
+        .classmates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            gap: 13px;
+        }
+
+        .classmate-card {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 15px 10px 13px;
+            border: 1px solid var(--activity-border);
+            border-radius: 13px;
+            background: var(--activity-progress-bg, var(--activity-card-bg));
+            text-align: center;
+        }
+
+        .classmate-avatar {
+            width: 68px;
+            height: 68px;
+            flex: 0 0 68px;
+            border: 3px solid var(--activity-card-bg);
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .classmate-avatar-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--activity-card-bg);
+            color: var(--academic-blue-dark);
+            font-size: 28px;
+        }
+
+        .classmate-card strong {
+            max-width: 100%;
+            color: var(--academic-blue-dark);
+            font-size: 12px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        .classmate-card small {
+            color: var(--text-secondary);
+            font-size: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .classmates-empty {
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .classmates-empty i {
+            color: var(--academic-blue-dark);
+            font-size: 32px;
+        }
+
+        .classmates-empty strong {
+            color: var(--academic-blue-dark);
+            font-size: 14px;
+        }
+
+        .classmates-empty span {
+            max-width: 320px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        body.classmates-modal-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 575px) {
+            .classmates-modal {
+                padding: 10px;
+            }
+
+            .classmates-modal-panel {
+                max-height: 88vh;
+                border-radius: 15px;
+            }
+
+            .classmates-modal-header {
+                padding: 17px;
+            }
+
+            .classmates-modal-body {
+                padding: 15px 17px 19px;
+            }
+
+            .classmates-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 9px;
+            }
+
+            .classmate-card {
+                padding: 12px 7px;
+            }
+
+            .classmate-avatar {
+                width: 60px;
+                height: 60px;
+                flex-basis: 60px;
+            }
         }
     </style>
+
+    <script>
+        (() => {
+            let activeModal = null;
+            let previousFocus = null;
+
+            function closeClassmatesModal(modal) {
+                if (!modal) return;
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('classmates-modal-open');
+                if (activeModal === modal) activeModal = null;
+                if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
+            }
+
+            document.addEventListener('click', (event) => {
+                const openButton = event.target.closest('[data-classmates-open]');
+                if (openButton) {
+                    const modal = document.getElementById(openButton.getAttribute('data-classmates-open'));
+                    if (!modal) return;
+                    previousFocus = openButton;
+                    activeModal = modal;
+                    modal.classList.add('is-open');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('classmates-modal-open');
+                    const closeButton = modal.querySelector('[data-classmates-close]');
+                    if (closeButton) closeButton.focus();
+                    return;
+                }
+
+                const closeTarget = event.target.closest('[data-classmates-close]');
+                if (closeTarget) {
+                    const modal = closeTarget.closest('.classmates-modal');
+                    closeClassmatesModal(modal);
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && activeModal) closeClassmatesModal(activeModal);
+            });
+        })();
+    </script>
+
 </body>
 
 </html>
