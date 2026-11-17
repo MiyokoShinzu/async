@@ -404,6 +404,340 @@ function resolveClassmates(mysqli $db, int $classCodeId): array
     return $classmates;
 }
 
+
+/* Dedicated classmates page: opened through ?view=classmates&class_code_id=... */
+if (($_GET["view"] ?? "") === "classmates") {
+    $requestedClassCodeId = filter_var($_GET["class_code_id"] ?? null, FILTER_VALIDATE_INT);
+    $classPageInfo = null;
+    if ($requestedClassCodeId && $requestedClassCodeId > 0 && $studentId !== "") {
+        $pageStmt = $mysqli->prepare(
+            "SELECT cc.id, cc.course_code, cc.description, cc.instructor_id,
+                    ays.academic_year, ays.semester
+             FROM class_codes cc
+             INNER JOIN academic_year_semesters ays ON ays.id = cc.academic_year_semester_id
+             INNER JOIN class_code_enrollments mine ON mine.class_code_id = cc.id
+             WHERE cc.id = ? AND mine.student_id = ? AND mine.status = 'Accepted'
+             LIMIT 1"
+        );
+        if ($pageStmt) {
+            $pageStmt->bind_param("is", $requestedClassCodeId, $studentId);
+            if ($pageStmt->execute()) $classPageInfo = $pageStmt->get_result()->fetch_assoc();
+            $pageStmt->close();
+        }
+    }
+    $pageClassmates = $classPageInfo ? resolveClassmates($mysqli, (int)$classPageInfo["id"]) : [];
+    $pageInstructor = $classPageInfo ? resolveInstructor($mysqli, (int)($classPageInfo["instructor_id"] ?? 0)) : ["name" => "Instructor", "photo" => ""];
+
+    include "globals/head.php";
+?>
+
+    <body>
+        <?php include "globals/sidebar.php"; ?>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <?php include "globals/topbar.php"; ?>
+        <main class="main-content classmates-page-main">
+            <div class="content-wrapper">
+                <div class="classmates-page-topbar">
+                    <a class="classmates-back-link" href="<?= e($_SERVER["PHP_SELF"]) ?>"><i class="bi bi-arrow-left"></i> Back to My Class Codes</a>
+                </div>
+                <?php if (!$classPageInfo): ?>
+                    <section class="classmates-page-empty">
+                        <i class="bi bi-shield-lock"></i>
+                        <h2>Classmates unavailable</h2>
+                        <p>This class was not found, or your enrollment has not been accepted.</p>
+                        <a href="<?= e($_SERVER["PHP_SELF"]) ?>" class="classmates-back-button">Return to My Class Codes</a>
+                    </section>
+                <?php else: ?>
+                    <section class="classmates-page-heading">
+                        <div>
+                            <span class="classmates-page-eyebrow">YOUR CLASS</span>
+                            <h1>Classmates</h1>
+                            <p><?= e($classPageInfo["course_code"]) ?> · <?= e($classPageInfo["academic_year"]) ?> · <?= e($classPageInfo["semester"]) ?></p>
+                        </div>
+                        <div class="classmates-total"><strong><?= count($pageClassmates) ?></strong><span>Accepted students</span></div>
+                    </section>
+                    <section class="classmates-instructor-card">
+                        <?php if ($pageInstructor["photo"] !== ""): ?>
+                            <img src="<?= e($pageInstructor["photo"]) ?>" alt="<?= e($pageInstructor["name"]) ?>" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <span class="classmates-instructor-fallback" style="display:none"><i class="bi bi-person-fill"></i></span>
+                        <?php else: ?>
+                            <span class="classmates-instructor-fallback"><i class="bi bi-person-fill"></i></span>
+                        <?php endif; ?>
+                        <div><small>ASSIGNED INSTRUCTOR</small><strong><?= e($pageInstructor["name"]) ?></strong></div>
+                    </section>
+                    <?php if ($pageClassmates): ?>
+                        <section class="classmates-page-grid" aria-label="Accepted classmates">
+                            <?php foreach ($pageClassmates as $classmate): ?>
+                                <article class="classmates-page-card">
+                                    <?php if ($classmate["photo"] !== ""): ?>
+                                        <img src="<?= e($classmate["photo"]) ?>" alt="<?= e($classmate["name"]) ?>" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                                        <span class="classmates-page-avatar-fallback" style="display:none"><i class="bi bi-person-fill"></i></span>
+                                    <?php else: ?>
+                                        <span class="classmates-page-avatar-fallback"><i class="bi bi-person-fill"></i></span>
+                                    <?php endif; ?>
+                                    <strong><?= e($classmate["name"]) ?></strong>
+                                    <small><?= e($classmate["student_id"]) ?></small>
+                                </article>
+                            <?php endforeach; ?>
+                        </section>
+                    <?php else: ?>
+                        <section class="classmates-page-empty">
+                            <i class="bi bi-people"></i>
+                            <h2>No accepted classmates yet</h2>
+                            <p>Other accepted students will appear here when their enrollment is approved.</p>
+                        </section>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        </main>
+        <style>
+            .classmates-page-main .content-wrapper {
+                width: 100%;
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: clamp(16px, 3vw, 32px)
+            }
+
+            .classmates-page-topbar {
+                margin-bottom: 22px
+            }
+
+            .classmates-back-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 9px;
+                color: var(--academic-blue-dark, #174a7e);
+                font-weight: 700;
+                text-decoration: none
+            }
+
+            .classmates-page-heading {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 22px;
+                padding: clamp(18px, 3vw, 28px);
+                background: #fff;
+                border: 1px solid #e7edf4;
+                border-radius: 18px
+            }
+
+            .classmates-page-eyebrow {
+                font-size: 10px;
+                letter-spacing: .13em;
+                font-weight: 800;
+                color: #e58a18
+            }
+
+            .classmates-page-heading h1 {
+                margin: 5px 0;
+                font-size: clamp(25px, 4vw, 34px);
+                font-weight: 850;
+                color: #183b5b
+            }
+
+            .classmates-page-heading p {
+                margin: 0;
+                color: #687789;
+                font-size: 14px
+            }
+
+            .classmates-total {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-width: 100px;
+                padding: 12px;
+                border-radius: 14px;
+                background: #fff4e5;
+                color: #9b5a0a
+            }
+
+            .classmates-total strong {
+                font-size: 27px;
+                line-height: 1.1
+            }
+
+            .classmates-total span {
+                font-size: 11px;
+                font-weight: 700;
+                text-align: center
+            }
+
+            .classmates-instructor-card {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                padding: 15px 18px;
+                margin-bottom: 22px;
+                background: #fff;
+                border: 1px solid #e7edf4;
+                border-radius: 16px
+            }
+
+            .classmates-instructor-card img,
+            .classmates-instructor-fallback {
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                object-fit: cover;
+                flex: 0 0 52px
+            }
+
+            .classmates-instructor-fallback {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #edf2f7;
+                color: #64748b;
+                font-size: 23px
+            }
+
+            .classmates-instructor-card div {
+                display: flex;
+                flex-direction: column;
+                gap: 3px
+            }
+
+            .classmates-instructor-card small {
+                font-size: 9px;
+                letter-spacing: .1em;
+                font-weight: 800;
+                color: #8793a1
+            }
+
+            .classmates-instructor-card strong {
+                font-size: 14px;
+                color: #233e58
+            }
+
+            .classmates-page-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(min(190px, 100%), 1fr));
+                gap: 14px
+            }
+
+            .classmates-page-card {
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 22px 14px;
+                background: #fff;
+                border: 1px solid #e7edf4;
+                border-radius: 16px;
+                box-shadow: 0 5px 18px rgba(20, 48, 75, .045)
+            }
+
+            .classmates-page-card img,
+            .classmates-page-avatar-fallback {
+                width: 76px;
+                height: 76px;
+                flex: 0 0 76px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-bottom: 12px
+            }
+
+            .classmates-page-avatar-fallback {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #edf2f7;
+                color: #64748b;
+                font-size: 31px
+            }
+
+            .classmates-page-card strong {
+                max-width: 100%;
+                overflow-wrap: anywhere;
+                color: #203b55;
+                font-size: 14px
+            }
+
+            .classmates-page-card small {
+                margin-top: 4px;
+                color: #7b8794;
+                font-size: 11px;
+                overflow-wrap: anywhere
+            }
+
+            .classmates-page-empty {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                justify-content: center;
+                min-height: 240px;
+                padding: 28px;
+                background: #fff;
+                border: 1px solid #e7edf4;
+                border-radius: 18px
+            }
+
+            .classmates-page-empty>i {
+                font-size: 38px;
+                color: #d98a22
+            }
+
+            .classmates-page-empty h2 {
+                margin: 10px 0 4px;
+                color: #203b55;
+                font-size: 19px
+            }
+
+            .classmates-page-empty p {
+                margin: 0;
+                color: #718096;
+                font-size: 13px
+            }
+
+            .classmates-back-button {
+                margin-top: 16px;
+                padding: 10px 15px;
+                border-radius: 9px;
+                background: #e98b1b;
+                color: #fff;
+                text-decoration: none;
+                font-weight: 700
+            }
+
+            @media(max-width:520px) {
+                .classmates-page-heading {
+                    align-items: flex-start
+                }
+
+                .classmates-total {
+                    min-width: 82px
+                }
+
+                .classmates-page-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 9px
+                }
+
+                .classmates-page-card {
+                    padding: 17px 9px
+                }
+
+                .classmates-page-card img,
+                .classmates-page-avatar-fallback {
+                    width: 62px;
+                    height: 62px;
+                    flex-basis: 62px
+                }
+            }
+        </style>
+    </body>
+
+    </html>
+<?php
+    exit;
+}
+
 include "globals/head.php";
 ?>
 
@@ -515,48 +849,10 @@ include "globals/head.php";
                                     </div>
                                     <?php if ($studentEnrollmentStatus === "Accepted"): ?>
                                         <?php $classmates = resolveClassmates($mysqli, (int)$classCode["id"]); ?>
-                                        <button type="button" class="student-classmates-btn" data-classmates-open="classmatesModal<?= (int)$classCode["id"] ?>">
-                                            <i class="bi bi-people-fill"></i> Classmates
+                                        <a class="student-classmates-btn" href="<?= e($_SERVER["PHP_SELF"]) ?>?view=classmates&amp;class_code_id=<?= (int)$classCode["id"] ?>">
+                                            <i class="bi bi-people-fill"></i> View Classmates
                                             <span class="student-classmates-count"><?= count($classmates) ?></span>
-                                        </button>
-
-                                        <div class="classmates-modal" id="classmatesModal<?= (int)$classCode["id"] ?>" aria-hidden="true">
-                                            <div class="classmates-modal-backdrop" data-classmates-close></div>
-                                            <section class="classmates-modal-panel" role="dialog" aria-modal="true" aria-labelledby="classmatesTitle<?= (int)$classCode["id"] ?>">
-                                                <header class="classmates-modal-header">
-                                                    <div>
-                                                        <span class="classmates-modal-eyebrow">YOUR CLASS</span>
-                                                        <h3 id="classmatesTitle<?= (int)$classCode["id"] ?>">Classmates</h3>
-                                                        <p><?= e($classCode["course_code"]) ?> · <?= count($classmates) ?> accepted student<?= count($classmates) === 1 ? "" : "s" ?></p>
-                                                    </div>
-                                                    <button type="button" class="classmates-modal-close" data-classmates-close aria-label="Close classmates"><i class="bi bi-x-lg"></i></button>
-                                                </header>
-                                                <div class="classmates-modal-body">
-                                                    <?php if (!empty($classmates)): ?>
-                                                        <div class="classmates-grid">
-                                                            <?php foreach ($classmates as $classmate): ?>
-                                                                <div class="classmate-card">
-                                                                    <?php if ($classmate["photo"] !== ""): ?>
-                                                                        <img class="classmate-avatar" src="<?= e($classmate["photo"]) ?>" alt="<?= e($classmate["name"]) ?>" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                                        <span class="classmate-avatar classmate-avatar-fallback" style="display:none"><i class="bi bi-person-fill"></i></span>
-                                                                    <?php else: ?>
-                                                                        <span class="classmate-avatar classmate-avatar-fallback"><i class="bi bi-person-fill"></i></span>
-                                                                    <?php endif; ?>
-                                                                    <strong><?= e($classmate["name"]) ?></strong>
-                                                                    <small><?= e($classmate["student_id"]) ?></small>
-                                                                </div>
-                                                            <?php endforeach; ?>
-                                                        </div>
-                                                    <?php else: ?>
-                                                        <div class="classmates-empty">
-                                                            <i class="bi bi-people"></i>
-                                                            <strong>No accepted classmates yet</strong>
-                                                            <span>Accepted students will appear here when their enrollment is approved.</span>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </section>
-                                        </div>
+                                        </a>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <form method="POST" class="student-class-enroll-form">
@@ -1422,65 +1718,6 @@ include "globals/head.php";
             }
         }
     </style>
-
-    <script>
-        (() => {
-            let activeModal = null;
-            let previousFocus = null;
-
-            function closeClassmatesModal(modal) {
-                if (!modal) return;
-                modal.classList.remove('is-open');
-                modal.setAttribute('aria-hidden', 'true');
-                document.body.classList.remove('classmates-modal-open');
-                if (activeModal === modal) activeModal = null;
-                if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
-            }
-
-            document.addEventListener('click', (event) => {
-                const openButton = event.target.closest('[data-classmates-open]');
-                if (openButton) {
-                    const modal = document.getElementById(openButton.getAttribute('data-classmates-open'));
-                    if (!modal) return;
-                    previousFocus = openButton;
-                    activeModal = modal;
-                    modal.classList.add('is-open');
-                    modal.setAttribute('aria-hidden', 'false');
-                    document.body.classList.add('classmates-modal-open');
-                    const closeButton = modal.querySelector('[data-classmates-close]');
-                    if (closeButton) closeButton.focus();
-                    return;
-                }
-
-                const closeTarget = event.target.closest('[data-classmates-close]');
-                if (closeTarget) {
-                    const modal = closeTarget.closest('.classmates-modal');
-                    closeClassmatesModal(modal);
-                }
-            });
-
-            document.addEventListener('keydown', (event) => {
-                if (!activeModal) return;
-                if (event.key === 'Escape') {
-                    closeClassmatesModal(activeModal);
-                    return;
-                }
-                if (event.key === 'Tab') {
-                    const focusable = activeModal.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])');
-                    if (!focusable.length) return;
-                    const first = focusable[0],
-                        last = focusable[focusable.length - 1];
-                    if (event.shiftKey && document.activeElement === first) {
-                        event.preventDefault();
-                        last.focus();
-                    } else if (!event.shiftKey && document.activeElement === last) {
-                        event.preventDefault();
-                        first.focus();
-                    }
-                }
-            });
-        })();
-    </script>
 
 </body>
 
