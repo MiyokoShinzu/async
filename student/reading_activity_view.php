@@ -836,6 +836,72 @@ include 'globals/head.php';
     }
 
 
+    /* Full-screen reader keeps the portal page and timer running. */
+    .reading-viewer-card:fullscreen,
+    .reading-viewer-card.reader-fullscreen-mode {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        width: 100%;
+        height: 100%;
+        margin: 0 !important;
+        border: 0;
+        border-radius: 0;
+        background: var(--bs-body-bg);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .reading-viewer-card:fullscreen .reading-viewer-container,
+    .reading-viewer-card.reader-fullscreen-mode .reading-viewer-container {
+        height: auto;
+        min-height: 0;
+        flex: 1 1 auto;
+    }
+
+    .reading-viewer-card:fullscreen .reading-viewer-frame-wrapper,
+    .reading-viewer-card.reader-fullscreen-mode .reading-viewer-frame-wrapper {
+        height: 100%;
+    }
+
+    .reading-viewer-controls {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .reader-live-time {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 11px;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 8px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 575.98px) {
+        .reading-viewer-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .reading-viewer-controls {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .reading-viewer-container {
+            height: 65vh;
+        }
+    }
+
+
     /* =========================================================
    DARK MODE
    ========================================================= */
@@ -1420,17 +1486,28 @@ include 'globals/topbar.php';
                 </div>
 
 
-                <span
-                    class="badge text-bg-secondary">
+                <div class="reading-viewer-controls">
 
-                    <?= strtoupper(
-                        htmlspecialchars(
-                            $fileType
-                        )
-                    ) ?>
+                    <span class="reader-live-time" title="Total time spent reading">
+                        <i class="bi bi-stopwatch"></i>
+                        <span id="readerLiveTime"><?= htmlspecialchars($initialReadingTime) ?></span>
+                        <small class="text-secondary">total</small>
+                    </span>
 
-                </span>
+                    <span class="badge text-bg-secondary">
+                        <?= strtoupper(htmlspecialchars($fileType)) ?>
+                    </span>
 
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        id="readerFullscreenButton"
+                        aria-label="Open full-screen reader">
+                        <i class="bi bi-arrows-fullscreen me-1"></i>
+                        Read Full Screen
+                    </button>
+
+                </div>
 
             </div>
 
@@ -1840,6 +1917,16 @@ include 'globals/scripts.php';
         );
 
 
+    const readerLiveTime =
+        document.getElementById("readerLiveTime");
+
+    const readerFullscreenButton =
+        document.getElementById("readerFullscreenButton");
+
+    const readingViewerCard =
+        document.querySelector(".reading-viewer-card");
+
+
     const activityDetailsTime =
         document.getElementById(
             "activityDetailsTime"
@@ -1963,6 +2050,11 @@ include 'globals/scripts.php';
             readingTimeElement.textContent =
                 formattedTime;
 
+        }
+
+
+        if (readerLiveTime) {
+            readerLiveTime.textContent = formattedTime;
         }
 
 
@@ -2380,6 +2472,82 @@ include 'globals/scripts.php';
         }
 
     }
+
+
+    /* =========================================================
+       FULL-SCREEN READING MODE
+       ========================================================= */
+
+    async function enterReaderFullscreen() {
+        if (!readingViewerCard) return;
+
+        try {
+            if (readingViewerCard.requestFullscreen) {
+                await readingViewerCard.requestFullscreen();
+            } else {
+                readingViewerCard.classList.add("reader-fullscreen-mode");
+            }
+        } catch (error) {
+            // Fallback keeps the document inside this page so the timer continues.
+            readingViewerCard.classList.add("reader-fullscreen-mode");
+        }
+
+        if (readerFullscreenButton) {
+            readerFullscreenButton.innerHTML =
+                '<i class="bi bi-fullscreen-exit me-1"></i> Exit Full Screen';
+            readerFullscreenButton.setAttribute("aria-label", "Exit full-screen reader");
+        }
+    }
+
+    async function exitReaderFullscreen() {
+        if (document.fullscreenElement && document.exitFullscreen) {
+            try {
+                await document.exitFullscreen();
+            } catch (error) {
+                /* no-op */ }
+        }
+
+        if (readingViewerCard) {
+            readingViewerCard.classList.remove("reader-fullscreen-mode");
+        }
+
+        if (readerFullscreenButton) {
+            readerFullscreenButton.innerHTML =
+                '<i class="bi bi-arrows-fullscreen me-1"></i> Read Full Screen';
+            readerFullscreenButton.setAttribute("aria-label", "Open full-screen reader");
+        }
+    }
+
+    if (readerFullscreenButton) {
+        readerFullscreenButton.addEventListener("click", function() {
+            const isFullscreen =
+                document.fullscreenElement === readingViewerCard ||
+                readingViewerCard?.classList.contains("reader-fullscreen-mode");
+
+            if (isFullscreen) {
+                exitReaderFullscreen();
+            } else {
+                enterReaderFullscreen();
+            }
+        });
+    }
+
+    document.addEventListener("fullscreenchange", function() {
+        const isFullscreen = document.fullscreenElement === readingViewerCard;
+        if (readerFullscreenButton && !isFullscreen && readingViewerCard) {
+            readingViewerCard.classList.remove("reader-fullscreen-mode");
+            readerFullscreenButton.innerHTML =
+                '<i class="bi bi-arrows-fullscreen me-1"></i> Read Full Screen';
+            readerFullscreenButton.setAttribute("aria-label", "Open full-screen reader");
+        }
+    });
+
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape" && readingViewerCard?.classList.contains("reader-fullscreen-mode")) {
+            exitReaderFullscreen();
+        }
+    });
 
 
     /* =========================================================
