@@ -81,21 +81,19 @@ $currentYear = date('Y');
 
         :root {
 
-            --github-bg: #0B1F3A;
-            --github-bg-soft: #10294A;
-            --github-card: #15345B;
-            --github-border: #25466F;
+            --github-bg: #0d1117;
+            --github-bg-soft: #161b22;
+            --github-card: #1c2128;
+            --github-border: #30363d;
 
             --white: #ffffff;
             --text: #f0f6fc;
             --muted: #8b949e;
 
-            --blue: #2563EB;
-            --blue-light: #60A5FA;
+            --blue: #2f81f7;
+            --blue-light: #58a6ff;
 
-            --cyan: #60A5FA;
-            --purple: #2563EB;
-            --pink: #60A5FA;
+            --cyan: #56d4dd;
 
             --green: #3fb950;
 
@@ -230,7 +228,7 @@ $currentYear = date('Y');
             width: 380px;
             height: 380px;
 
-            background: var(--blue);
+            background: var(--cyan);
 
             top: 45%;
             right: -160px;
@@ -628,11 +626,11 @@ $currentYear = date('Y');
 
             background:
                 linear-gradient(135deg,
-                    #238636,
-                    #2ea043);
+                    var(--blue),
+                    var(--cyan));
 
             box-shadow:
-                0 10px 30px rgba(46, 160, 67, 0.18);
+                0 10px 30px rgba(47, 129, 247, 0.22);
 
             transition:
                 all 0.25s ease;
@@ -647,7 +645,51 @@ $currentYear = date('Y');
                 translateY(-2px);
 
             box-shadow:
-                0 15px 35px rgba(46, 160, 67, 0.28);
+                0 15px 35px rgba(47, 129, 247, 0.30);
+        }
+
+
+        .btn-register {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 9px;
+
+            min-width: 155px;
+
+            padding: 13px 22px;
+
+            color: var(--blue-light);
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            border-radius: 8px;
+
+            border: 1px solid rgba(88, 166, 255, 0.42);
+
+            background: rgba(47, 129, 247, 0.09);
+
+            transition: all 0.25s ease;
+        }
+
+
+        .btn-register:hover {
+
+            color: white;
+
+            border-color: var(--blue-light);
+
+            background: rgba(47, 129, 247, 0.18);
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 12px 28px rgba(47, 129, 247, 0.16);
         }
 
 
@@ -734,7 +776,7 @@ $currentYear = date('Y');
                 rotateX(67deg) rotateZ(-18deg);
 
             box-shadow:
-                0 0 60px rgba(37, 99, 235, 0.06);
+                0 0 60px rgba(47, 129, 247, 0.06);
         }
 
 
@@ -747,7 +789,7 @@ $currentYear = date('Y');
                 rotateX(67deg) rotateZ(32deg);
 
             border-color:
-                rgba(163, 113, 247, 0.12);
+                rgba(88, 166, 255, 0.22);
         }
 
 
@@ -1063,7 +1105,7 @@ $currentYear = date('Y');
             background:
                 linear-gradient(90deg,
                     var(--blue),
-                    var(--blue));
+                    var(--cyan));
 
             border-radius: inherit;
         }
@@ -1247,10 +1289,10 @@ $currentYear = date('Y');
             margin-right: 8px;
 
             background:
-                rgba(163, 113, 247, 0.15);
+                rgba(47, 129, 247, 0.16);
 
             color:
-                var(--blue);
+                var(--blue-light);
         }
 
 
@@ -1605,7 +1647,7 @@ $currentYear = date('Y');
 
             background:
                 linear-gradient(135deg,
-                    #111827,
+                    #161b22,
                     #0d1117);
         }
 
@@ -1629,7 +1671,7 @@ $currentYear = date('Y');
 
             background:
                 radial-gradient(circle,
-                    rgba(37, 99, 235, 0.12),
+                    rgba(47, 129, 247, 0.16),
                     transparent 65%);
         }
 
@@ -1685,7 +1727,7 @@ $currentYear = date('Y');
                 35px 0;
 
             background:
-                #080b0f;
+                #0d1117;
 
             border-top:
                 1px solid rgba(255, 255, 255, 0.06);
@@ -1913,7 +1955,8 @@ $currentYear = date('Y');
             }
 
 
-            .btn-login {
+            .btn-login,
+            .btn-register {
 
                 width: 100%;
             }
@@ -2036,61 +2079,6 @@ $currentYear = date('Y');
         .resource-card p,
         .guideline p {
             color: var(--muted);
-        }
-
-        .ad-network-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-            width: 100%;
-            margin-top: 18px;
-        }
-
-        .ad-network-slot {
-            width: 100%;
-            min-width: 0;
-            min-height: 280px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: flex-start;
-            gap: 10px;
-            /* Do not clip native creatives injected by the ad network. */
-            overflow: visible;
-            border: 1px solid var(--github-border);
-            border-radius: 12px;
-            background: var(--github-bg-soft);
-        }
-
-        .ad-network-slot>div {
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
-            min-height: 240px;
-            display: block;
-            overflow: visible;
-            text-align: center;
-        }
-
-        .ad-network-slot iframe,
-        .ad-network-slot img,
-        .ad-network-slot video {
-            max-width: 100% !important;
-        }
-
-        .ad-network-slot script {
-            max-width: 100%;
-        }
-
-        @media (max-width: 700px) {
-            .ad-network-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .ad-network-slot {
-                min-height: 250px;
-            }
         }
 
         /* =====================================================
@@ -2266,6 +2254,15 @@ $currentYear = date('Y');
                                 <i class="bi bi-box-arrow-in-right"></i>
 
                                 Login
+
+                            </a>
+
+                            <a href="register.php"
+                                class="btn-register">
+
+                                <i class="bi bi-person-plus"></i>
+
+                                Register Now
 
                             </a>
 
@@ -2615,44 +2612,6 @@ $currentYear = date('Y');
                             };
                         </script>
                         <script src="https://bauval.org/22/cd3ce2cfd6fc9f0020dc158a1d07d66d"></script>
-                    </div>
-                </div>
-
-                <div class="ad-network-grid">
-                    <div class="ad-network-slot">
-                        <span class="ad-label">Advertisement</span>
-                        <div id="async-juvenile-ad-one">
-                            <script>
-                                (function(yliil) {
-                                    var d = document,
-                                        s = d.createElement('script'),
-                                        l = d.currentScript || d.scripts[d.scripts.length - 1];
-                                    s.settings = yliil || {};
-                                    s.src = "//juvenilechoice.com/bEXCVHs.dXGJlD0/Y/Wqc-/ve/m-9OuBZvUilekkPOTacA2SM_Dfci3uNjDIUTtoN/z/Y/w/Ngz/c/0bOnQF";
-                                    s.async = true;
-                                    s.referrerPolicy = 'no-referrer-when-downgrade';
-                                    l.parentNode.insertBefore(s, l);
-                                })({})
-                            </script>
-                        </div>
-                    </div>
-
-                    <div class="ad-network-slot">
-                        <span class="ad-label">Advertisement</span>
-                        <div id="async-juvenile-ad-two">
-                            <script>
-                                (function(yliil) {
-                                    var d = document,
-                                        s = d.createElement('script'),
-                                        l = d.currentScript || d.scripts[d.scripts.length - 1];
-                                    s.settings = yliil || {};
-                                    s.src = "//juvenilechoice.com/bvX.Vhsud/GBlf0VYRWbcs/_eVm/9eurZqUwlUkxP/TAck2fMGDdcv0SMwzfc_tlNBzlYpwMNnz-Qm0AM/QQ";
-                                    s.async = true;
-                                    s.referrerPolicy = 'no-referrer-when-downgrade';
-                                    l.parentNode.insertBefore(s, l);
-                                })({})
-                            </script>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -3107,14 +3066,27 @@ $currentYear = date('Y');
                 </p>
 
 
-                <a href="login.php"
-                    class="btn-login">
+                <div class="hero-buttons" style="justify-content:center;">
 
-                    <i class="bi bi-box-arrow-in-right"></i>
+                    <a href="login.php"
+                        class="btn-login">
 
-                    Login
+                        <i class="bi bi-box-arrow-in-right"></i>
 
-                </a>
+                        Login
+
+                    </a>
+
+                    <a href="register.php"
+                        class="btn-register">
+
+                        <i class="bi bi-person-plus"></i>
+
+                        Register Now
+
+                    </a>
+
+                </div>
 
             </div>
 

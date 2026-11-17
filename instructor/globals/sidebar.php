@@ -119,10 +119,10 @@ function sidebarActive($page)
         </a>
 
 
-        
 
 
-       
+
+
 
         <!-- =================================================
              Academic Year & Semester / Class Codes
@@ -158,6 +158,17 @@ function sidebarActive($page)
 
             <span>
                 Class Codes
+            </span>
+
+        </a>
+        <a
+            href="reading_activity_repository.php"
+            class="sidebar-link <?= sidebarActive('reading_activity_repository.php') ?>">
+
+            <i class="bi bi-book"></i>
+
+            <span>
+                Reading Activities
             </span>
 
         </a>
