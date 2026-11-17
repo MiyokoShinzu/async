@@ -833,9 +833,11 @@ include 'globals/head.php';
 
         display: block;
 
+        margin-inline: auto;
+
         background: var(--bs-body-bg);
         transform: scale(1);
-        transform-origin: top left;
+        transform-origin: top center;
         transition: transform 0.15s ease;
 
     }
@@ -2563,10 +2565,17 @@ include 'globals/scripts.php';
     function applyReaderZoom() {
         if (!readingViewer) return;
 
+        /*
+         * Keep the visible iframe viewport centered as it scales.
+         * Reducing its layout width/height before scaling preserves the
+         * viewer's outer dimensions while enlarging the document content.
+         */
         readingViewer.style.transform = `scale(${readerZoom})`;
-        readingViewer.style.transformOrigin = "top left";
+        readingViewer.style.transformOrigin = "top center";
         readingViewer.style.width = `${100 / readerZoom}%`;
         readingViewer.style.height = `${100 / readerZoom}%`;
+        readingViewer.style.marginLeft = "auto";
+        readingViewer.style.marginRight = "auto";
 
         if (readerZoomLevel) {
             readerZoomLevel.textContent = `${Math.round(readerZoom * 100)}%`;
