@@ -840,18 +840,68 @@ include 'globals/head.php';
 
     }
 
+    /* Compact toolbar indicators and controls. These remain outside
+       the transformed iframe, so portal controls never scale with the page. */
     .reader-zoom-controls {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
+        flex: 0 0 auto;
+    }
+
+    .reader-zoom-controls .btn {
+        min-width: 29px;
+        min-height: 29px;
+        padding: 3px 7px;
+        font-size: 0.72rem;
+        line-height: 1.15;
     }
 
     .reader-zoom-level {
-        min-width: 48px;
+        min-width: 39px;
         text-align: center;
-        font-size: 0.82rem;
+        font-size: 0.70rem;
         font-weight: 700;
         font-variant-numeric: tabular-nums;
+    }
+
+    .reading-viewer-controls>.badge {
+        padding: 4px 6px;
+        font-size: 0.62rem;
+        font-weight: 600;
+    }
+
+    .reader-live-time {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 7px;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 7px;
+        font-size: 0.72rem;
+        font-weight: 650;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .reader-live-time small {
+        font-size: 0.62rem;
+    }
+
+    .reading-viewer-controls>.btn {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    /* Keep the toolbar fixed at its normal size; only the iframe is scaled. */
+    .reading-viewer-header,
+    .reading-viewer-controls,
+    .reader-zoom-controls,
+    .reader-live-time {
+        transform: none !important;
+        zoom: 1 !important;
     }
 
 
@@ -890,18 +940,6 @@ include 'globals/head.php';
         justify-content: flex-end;
         flex-wrap: wrap;
         gap: 10px;
-    }
-
-    .reader-live-time {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        padding: 7px 11px;
-        border: 1px solid var(--bs-border-color);
-        border-radius: 8px;
-        font-weight: 700;
-        font-variant-numeric: tabular-nums;
-        white-space: nowrap;
     }
 
     @media (max-width: 575.98px) {
@@ -2517,8 +2555,9 @@ include 'globals/scripts.php';
 
     /* =========================================================
        DOCUMENT ZOOM CONTROLS
-       These controls scale the embedded document frame. The
-       portal remains active, so the reading timer keeps running.
+       Only the embedded iframe is scaled. The portal toolbar and its
+       indicators are separate siblings and retain their normal size.
+       The portal remains active, so the reading timer keeps running.
        ========================================================= */
 
     function applyReaderZoom() {
@@ -2536,7 +2575,7 @@ include 'globals/scripts.php';
 
     if (readerZoomIn) {
         readerZoomIn.addEventListener("click", function() {
-            readerZoom = Math.min(2, Math.round((readerZoom + 0.1) * 100) / 100);
+            readerZoom = Math.min(3, Math.round((readerZoom + 0.1) * 100) / 100);
             applyReaderZoom();
         });
     }
