@@ -1043,41 +1043,34 @@ $recentReadingQuery = "
         AND rp.student_id = ?
 
     WHERE
-
-        (
-            r.department = ?
-            OR r.department = ''
-            OR r.department IS NULL
-        )
+        LOWER(TRIM(COALESCE(r.status, ''))) = 'active'
 
         AND
-
-        (
-            CAST(r.year_level AS CHAR) = ?
-            OR r.year_level = ''
-            OR r.year_level IS NULL
-        )
-
-        AND
-
-        (
-            r.section = ?
-            OR r.section = ''
-            OR r.section IS NULL
-        )
-
-        AND
-
-        (
-            r.status = 'active'
-            OR r.status IS NULL
-        )
-
-        AND
-
         (
             r.start_date IS NULL
             OR r.start_date <= NOW()
+        )
+
+        AND EXISTS (
+            SELECT 1
+            FROM class_code_reading_assignments cra
+
+            INNER JOIN class_codes cc
+                ON cc.id = cra.class_code_id
+
+            INNER JOIN academic_year_semesters ays
+                ON ays.id = cc.academic_year_semester_id
+
+            INNER JOIN class_code_enrollments cce
+                ON cce.class_code_id = cc.id
+
+            WHERE
+                cra.reading_activity_id = r.id
+                AND LOWER(TRIM(COALESCE(cra.status, ''))) = 'active'
+                AND LOWER(TRIM(COALESCE(cc.status, ''))) = 'active'
+                AND LOWER(TRIM(COALESCE(ays.status, ''))) = 'active'
+                AND cce.student_id = ?
+                AND LOWER(TRIM(COALESCE(cce.status, ''))) = 'accepted'
         )
 
     ORDER BY
@@ -1098,11 +1091,9 @@ $stmt =
 if ($stmt) {
 
     $stmt->bind_param(
-        "ssss",
+        "ss",
         $studentId,
-        $department,
-        $yearLevel,
-        $section
+        $studentId
     );
 
     $stmt->execute();
