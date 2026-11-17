@@ -254,6 +254,76 @@ if ($result) {
     $dbError = "Unable to load class codes. Please make sure the class_codes table has been created and linked to academic_year_semesters.";
 }
 
+/* LOAD THE ENROLLMENT ROSTER FOR A SELECTED CLASS CODE */
+$rosterMode = isset($_GET["students"]);
+$rosterClassCode = null;
+$rosterStudents = [];
+$rosterLoadError = "";
+$rosterStatusCounts = ["Pending" => 0, "Accepted" => 0, "On Hold" => 0, "Denied" => 0, "Other" => 0];
+
+if ($rosterMode) {
+    $rosterClassId = filter_var($_GET["students"], FILTER_VALIDATE_INT);
+
+    if (!$rosterClassId || $rosterClassId < 1 || $currentInstructorId < 1) {
+        redirectWithMessage("warning", "Invalid class code selection.");
+    }
+
+    // Verify that this class code belongs to the currently logged-in instructor.
+    $rosterClassStmt = $mysqli->prepare(
+        "SELECT cc.id, cc.course_code, cc.description, cc.status,
+                ays.academic_year, ays.semester
+         FROM class_codes cc
+         INNER JOIN academic_year_semesters ays
+            ON ays.id = cc.academic_year_semester_id
+         WHERE cc.id = ? AND cc.instructor_id = ?
+         LIMIT 1"
+    );
+
+    if ($rosterClassStmt) {
+        $rosterClassStmt->bind_param("ii", $rosterClassId, $currentInstructorId);
+        $rosterClassStmt->execute();
+        $rosterClassCode = $rosterClassStmt->get_result()->fetch_assoc() ?: null;
+        $rosterClassStmt->close();
+    }
+
+    if (!$rosterClassCode) {
+        redirectWithMessage("warning", "The selected class code was not found under your instructor account.");
+    }
+
+    $rosterStmt = $mysqli->prepare(
+        "SELECT cce.id AS enrollment_id, cce.student_id,
+                cce.status AS enrollment_status, cce.enrolled_at, cce.reviewed_at,
+                a.first_name, a.last_name, a.middle_initial, a.extension_name, a.profile_photo
+         FROM class_code_enrollments cce
+         LEFT JOIN accounts a ON a.student_id = cce.student_id
+         WHERE cce.class_code_id = ?
+         ORDER BY COALESCE(NULLIF(a.last_name, ''), cce.student_id) ASC,
+                  a.first_name ASC, cce.enrolled_at DESC, cce.id DESC"
+    );
+
+    if ($rosterStmt) {
+        $rosterStmt->bind_param("i", $rosterClassId);
+        if ($rosterStmt->execute()) {
+            $rosterResult = $rosterStmt->get_result();
+            while ($studentRow = $rosterResult->fetch_assoc()) {
+                $rosterStudents[] = $studentRow;
+                $statusKey = (string)($studentRow["enrollment_status"] ?? "");
+                if (array_key_exists($statusKey, $rosterStatusCounts)) {
+                    $rosterStatusCounts[$statusKey]++;
+                } else {
+                    $rosterStatusCounts["Other"]++;
+                }
+            }
+            $rosterResult->free();
+        } else {
+            $rosterLoadError = "Unable to load enrolled students for this class code.";
+        }
+        $rosterStmt->close();
+    } else {
+        $rosterLoadError = "Unable to prepare the student roster. Please check the class_code_enrollments table and enrollment status migration.";
+    }
+}
+
 include "globals/head.php";
 ?>
 
@@ -262,6 +332,124 @@ include "globals/head.php";
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <?php include "globals/topbar.php"; ?>
 
+    <?php if ($rosterMode): ?>
+        <main class="main-content">
+            <div class="content-wrapper class-code-page roster-page">
+                <div class="page-heading roster-heading">
+                    <div>
+                        <div class="page-eyebrow"><i class="bi bi-people"></i> CLASS MANAGEMENT</div>
+                        <h2>Enrolled Students</h2>
+                        <p><?= e($rosterClassCode["course_code"]) ?> — <?= e($rosterClassCode["description"]) ?></p>
+                        <div class="roster-period"><i class="bi bi-calendar3"></i> <?= e($rosterClassCode["academic_year"] . " • " . $rosterClassCode["semester"]) ?></div>
+                    </div>
+                    <a href="class_code.php" class="btn-secondary-custom roster-back"><i class="bi bi-arrow-left"></i> Back to Class Codes</a>
+                </div>
+
+                <?php if ($flash): ?>
+                    <div class="page-alert alert-<?= e($flash["type"]) ?>" role="alert">
+                        <i class="bi <?= $flash["type"] === "success" ? "bi-check-circle-fill" : "bi-exclamation-circle-fill" ?>"></i>
+                        <span><?= e($flash["message"]) ?></span>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($rosterLoadError): ?>
+                    <div class="page-alert alert-danger" role="alert"><i class="bi bi-exclamation-triangle-fill"></i><span><?= e($rosterLoadError) ?></span></div>
+                <?php else: ?>
+                    <section class="roster-summary-grid" aria-label="Enrollment status summary">
+                        <div class="roster-summary-card"><span>Total Enrollments</span><strong><?= count($rosterStudents) ?></strong></div>
+                        <div class="roster-summary-card pending"><span>Pending</span><strong><?= $rosterStatusCounts["Pending"] ?></strong></div>
+                        <div class="roster-summary-card accepted"><span>Accepted</span><strong><?= $rosterStatusCounts["Accepted"] ?></strong></div>
+                        <div class="roster-summary-card on-hold"><span>On Hold</span><strong><?= $rosterStatusCounts["On Hold"] ?></strong></div>
+                        <div class="roster-summary-card denied"><span>Denied</span><strong><?= $rosterStatusCounts["Denied"] ?></strong></div>
+                    </section>
+
+                    <section class="management-card roster-card">
+                        <div class="roster-tools">
+                            <div class="roster-search">
+                                <i class="bi bi-search"></i>
+                                <input type="search" id="studentRosterSearch" placeholder="Search student name or ID..." aria-label="Search students by name or ID">
+                            </div>
+                            <div class="roster-select-wrap">
+                                <label for="studentStatusFilter">Filter status</label>
+                                <select id="studentStatusFilter">
+                                    <option value="all">All statuses</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Accepted">Accepted</option>
+                                    <option value="On Hold">On Hold</option>
+                                    <option value="Denied">Denied</option>
+                                    <option value="Other">Other statuses</option>
+                                </select>
+                            </div>
+                            <div class="roster-select-wrap">
+                                <label for="studentSort">Sort by</label>
+                                <select id="studentSort">
+                                    <option value="date-desc">Newest enrollment</option>
+                                    <option value="date-asc">Oldest enrollment</option>
+                                    <option value="student-asc">Last Name (A–Z)</option>
+                                    <option value="student-desc">Last Name (Z–A)</option>
+                                    <option value="status-asc">Status</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="roster-table-wrap">
+                            <table class="table roster-table" id="studentRosterTable">
+                                <thead><tr><th>#</th><th>Student</th><th>Enrollment Status</th><th>Date Enrolled</th><th>Last Reviewed</th></tr></thead>
+                                <tbody>
+                                    <?php foreach ($rosterStudents as $index => $student): ?>
+                                        <?php
+                                            $studentStatus = (string)($student["enrollment_status"] ?? "Unknown");
+                                            $studentStatusClass = strtolower(str_replace(" ", "-", $studentStatus));
+                                            $studentDate = !empty($student["enrolled_at"]) ? strtotime($student["enrolled_at"]) : 0;
+                                            $reviewedDate = !empty($student["reviewed_at"]) ? strtotime($student["reviewed_at"]) : 0;
+                                            $studentLastName = trim((string)($student["last_name"] ?? ""));
+                                            $studentFirstName = trim((string)($student["first_name"] ?? ""));
+                                            $studentMiddle = trim((string)($student["middle_initial"] ?? ""));
+                                            $studentExtension = trim((string)($student["extension_name"] ?? ""));
+                                            $studentDisplayName = trim($studentLastName . ", " . $studentFirstName . " " . $studentMiddle . " " . $studentExtension, " ,");
+                                            if ($studentDisplayName === "") $studentDisplayName = "Name unavailable";
+                                            $studentPhotoFile = basename(str_replace("\\", "/", trim((string)($student["profile_photo"] ?? ""))));
+                                            $studentPhotoUrl = $studentPhotoFile !== "" ? "https://vertigation.com/shared/uploads/profile_photos/" . rawurlencode($studentPhotoFile) : "";
+                                            $studentSortName = strtolower(trim($studentLastName . " " . $studentFirstName . " " . $studentMiddle . " " . $studentExtension));
+                                        ?>
+                                        <tr data-student="<?= e(strtolower($student["student_id"])) ?>"
+                                            data-name="<?= e($studentSortName) ?>"
+                                            data-status="<?= e(in_array($studentStatus, ["Pending", "Accepted", "On Hold", "Denied"], true) ? $studentStatus : "Other") ?>"
+                                            data-date="<?= (int)$studentDate ?>"
+                                            data-status-sort="<?= e(strtolower($studentStatus)) ?>">
+                                            <td class="roster-row-number"><?= $index + 1 ?></td>
+                                            <td>
+                                                <div class="roster-student-cell">
+                                                    <?php if ($studentPhotoUrl !== ""): ?>
+                                                        <img class="roster-student-photo" src="<?= e($studentPhotoUrl) ?>" alt="<?= e($studentDisplayName) ?>" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+                                                        <span class="roster-student-photo roster-student-photo-fallback" style="display:none"><i class="bi bi-person-fill"></i></span>
+                                                    <?php else: ?>
+                                                        <span class="roster-student-photo roster-student-photo-fallback"><i class="bi bi-person-fill"></i></span>
+                                                    <?php endif; ?>
+                                                    <div class="roster-student-details">
+                                                        <strong class="roster-student-id"><?= e($studentDisplayName) ?></strong>
+                                                        <small><?= e($student["student_id"]) ?></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="roster-status status-<?= e($studentStatusClass) ?>"><?= e($studentStatus) ?></span></td>
+                                            <td><?= $studentDate ? e(date("M d, Y · h:i A", $studentDate)) : "—" ?></td>
+                                            <td><?= $reviewedDate ? e(date("M d, Y · h:i A", $reviewedDate)) : "Not reviewed" ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php if (!$rosterStudents): ?>
+                                        <tr class="roster-empty-row"><td colspan="5"><div class="empty-state"><div><i class="bi bi-people"></i></div><strong>No enrollment records yet</strong><p>Student enrollment requests for this class code will appear here.</p></div></td></tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                            <div class="roster-no-results" id="rosterNoResults" hidden><i class="bi bi-search"></i> No students match your search or filter.</div>
+                        </div>
+                        <div class="roster-footer"><span id="rosterVisibleCount"><?= count($rosterStudents) ?></span> of <?= count($rosterStudents) ?> enrollment records</div>
+                    </section>
+                <?php endif; ?>
+            </div>
+        </main>
+    <?php else: ?>
     <main class="main-content">
         <div class="content-wrapper class-code-page">
             <div class="page-heading">
@@ -433,7 +621,13 @@ include "globals/head.php";
                                     <tr>
                                         <td class="row-number"><?= $index + 1 ?></td>
                                         <td>
-                                            <div class="code-cell"><span class="code-icon"><i class="bi bi-code-square"></i></span><strong><?= e($record["course_code"]) ?></strong></div>
+                                            <div class="code-cell">
+                                                <a class="students-icon-btn" href="class_code.php?students=<?= (int)$record["id"] ?>" title="View enrolled students and statuses" aria-label="View enrolled students for <?= e($record["course_code"]) ?>">
+                                                    <i class="bi bi-people-fill"></i>
+                                                </a>
+                                                <span class="code-icon"><i class="bi bi-code-square"></i></span>
+                                                <strong><?= e($record["course_code"]) ?></strong>
+                                            </div>
                                         </td>
                                         <td><span class="description-label"><?= e($record["description"]) ?></span></td>
                                         <td><?= e($record["academic_year"]) ?></td>
@@ -471,6 +665,7 @@ include "globals/head.php";
             </section>
         </div>
     </main>
+    <?php endif; ?>
 
     <?php require_once "./globals/scripts.php"; ?>
 
@@ -1049,6 +1244,71 @@ include "globals/head.php";
             margin-right: 6px
         }
 
+        .students-icon-btn {
+            width: 32px;
+            height: 32px;
+            flex: 0 0 32px;
+            display: inline-grid;
+            place-items: center;
+            border-radius: 9px;
+            color: #fff;
+            background: var(--academic-blue-dark, #3456b8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: transform .18s ease, filter .18s ease;
+        }
+        .students-icon-btn:hover { color: #fff; filter: brightness(.92); transform: translateY(-1px); }
+        .students-icon-btn:focus-visible { outline: 3px solid rgba(65,101,197,.28); outline-offset: 2px; }
+
+        .roster-heading { align-items: flex-start; }
+        .roster-period { margin-top: 10px; color: var(--text-secondary); font-size: 12px; }
+        .roster-period i { margin-right: 5px; }
+        .roster-back { white-space: nowrap; }
+        .roster-summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; margin-bottom: 20px; }
+        .roster-summary-card { padding: 15px 16px; border: 1px solid var(--activity-border,#e7eaf0); border-radius: 13px; background: var(--activity-card-bg,var(--card-bg,#fff)); }
+        .roster-summary-card span { display:block; color:var(--text-secondary); font-size:11px; margin-bottom:5px; }
+        .roster-summary-card strong { display:block; color:var(--text-color); font-size:23px; line-height:1.2; }
+        .roster-summary-card.pending { border-top:3px solid #d69a28; }
+        .roster-summary-card.accepted { border-top:3px solid #269653; }
+        .roster-summary-card.on-hold { border-top:3px solid #5579c8; }
+        .roster-summary-card.denied { border-top:3px solid #d14c4c; }
+        .roster-card { padding: 18px 0 0; }
+        .roster-tools { display:flex; align-items:flex-end; flex-wrap:wrap; gap:12px; padding:0 20px 16px; }
+        .roster-search { position:relative; flex:1 1 260px; }
+        .roster-search i { position:absolute; top:50%; left:12px; transform:translateY(-50%); color:var(--text-secondary); }
+        .roster-search input, .roster-select-wrap select { width:100%; min-height:40px; padding:8px 12px; border:1px solid var(--activity-border,#dfe3eb); border-radius:9px; background:var(--input-bg,var(--activity-card-bg,#fff)); color:var(--text-color); font-size:12px; outline:none; }
+        .roster-search input { padding-left:36px; }
+        .roster-search input:focus, .roster-select-wrap select:focus { border-color:var(--academic-blue-dark,#4968c4); box-shadow:0 0 0 3px rgba(73,104,196,.10); }
+        .roster-select-wrap { flex:0 1 180px; min-width:145px; }
+        .roster-select-wrap label { display:block; margin-bottom:5px; color:var(--text-secondary); font-size:11px; font-weight:700; }
+        .roster-table { min-width:650px; margin:0; color:var(--text-color); }
+        .roster-table thead th { padding:12px 16px; white-space:nowrap; border-top:1px solid var(--activity-border,#e7eaf0); border-bottom:1px solid var(--activity-border,#e7eaf0); background:var(--activity-progress-bg,#f6f7fa); color:var(--text-secondary); font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
+        .roster-table tbody td { padding:13px 16px; vertical-align:middle; border-bottom:1px solid var(--activity-border,#edf0f4); background:transparent; font-size:12px; }
+        .roster-student-id { color:var(--text-color); font-size:13px; display:block; }
+        .roster-student-cell { display:flex; align-items:center; gap:11px; min-width:190px; }
+        .roster-student-photo { width:40px; height:40px; flex:0 0 40px; border-radius:50%; object-fit:cover; border:2px solid var(--activity-border,#e7eaf0); background:var(--activity-progress-bg,#f1f3f8); }
+        .roster-student-photo-fallback { display:grid; place-items:center; color:var(--text-secondary); font-size:18px; }
+        .roster-student-details small { display:block; margin-top:3px; color:var(--text-secondary); font-size:10px; }
+        .roster-row-number { width:55px; color:var(--text-secondary); }
+        .roster-status { display:inline-flex; padding:5px 10px; border-radius:20px; font-size:10px; font-weight:750; background:#eff1f4; color:#697382; }
+        .roster-status.status-pending { background:#fff5df; color:#9a690d; }
+        .roster-status.status-accepted { background:#e8f7ee; color:#20834b; }
+        .roster-status.status-on-hold { background:#edf2ff; color:#4165b5; }
+        .roster-status.status-denied { background:#fff0f0; color:#bd3f3f; }
+        .roster-footer { padding:12px 20px; color:var(--text-secondary); font-size:11px; border-top:1px solid var(--activity-border,#edf0f4); }
+        .roster-no-results { padding:25px; text-align:center; color:var(--text-secondary); font-size:12px; }
+        .roster-no-results i { margin-right:6px; }
+        @media(max-width:900px) { .roster-summary-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+        @media(max-width:767px) {
+            .roster-heading { flex-direction:column; }
+            .roster-back { width:100%; }
+            .roster-summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+            .roster-summary-card { padding:12px; }
+            .roster-tools { padding:0 14px 14px; }
+            .roster-search, .roster-select-wrap { flex:1 1 100%; min-width:0; }
+            .roster-footer { padding:12px 14px; }
+        }
+
         @media(max-width:767px) {
             .page-heading h2 {
                 font-size: 21px
@@ -1120,6 +1380,53 @@ include "globals/head.php";
                 });
                 noResults.hidden = visibleCount > 0 || rows.length === 0 || query === "";
             });
+        })();
+
+        (() => {
+            const table = document.getElementById("studentRosterTable");
+            if (!table) return;
+
+            const search = document.getElementById("studentRosterSearch");
+            const statusFilter = document.getElementById("studentStatusFilter");
+            const sortSelect = document.getElementById("studentSort");
+            const noResults = document.getElementById("rosterNoResults");
+            const visibleCount = document.getElementById("rosterVisibleCount");
+            const tbody = table.querySelector("tbody");
+
+            const applyRosterControls = () => {
+                const query = (search.value || "").trim().toLowerCase();
+                const selectedStatus = statusFilter.value;
+                const rows = Array.from(tbody.querySelectorAll("tr[data-student]"));
+
+                rows.forEach(row => {
+                    const matchesSearch = row.dataset.student.includes(query) || (row.dataset.name || "").includes(query);
+                    const matchesStatus = selectedStatus === "all" ||
+                        (selectedStatus === "Other" ? row.dataset.status === "Other" : row.dataset.status === selectedStatus);
+                    row.hidden = !(matchesSearch && matchesStatus);
+                });
+
+                const sortMode = sortSelect.value;
+                rows.sort((a, b) => {
+                    if (sortMode === "student-asc") return (a.dataset.name || a.dataset.student).localeCompare((b.dataset.name || b.dataset.student), undefined, {numeric:true});
+                    if (sortMode === "student-desc") return (b.dataset.name || b.dataset.student).localeCompare((a.dataset.name || a.dataset.student), undefined, {numeric:true});
+                    if (sortMode === "status-asc") return a.dataset.statusSort.localeCompare(b.dataset.statusSort);
+                    if (sortMode === "date-asc") return Number(a.dataset.date) - Number(b.dataset.date);
+                    return Number(b.dataset.date) - Number(a.dataset.date);
+                });
+                rows.forEach((row, index) => {
+                    row.querySelector(".roster-row-number").textContent = index + 1;
+                    tbody.appendChild(row);
+                });
+
+                const visible = rows.filter(row => !row.hidden).length;
+                noResults.hidden = visible > 0 || rows.length === 0;
+                visibleCount.textContent = visible;
+            };
+
+            search.addEventListener("input", applyRosterControls);
+            statusFilter.addEventListener("change", applyRosterControls);
+            sortSelect.addEventListener("change", applyRosterControls);
+            applyRosterControls();
         })();
     </script>
 </body>
