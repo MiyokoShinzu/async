@@ -228,20 +228,89 @@ function sidebarActive($page)
             </span>
 
         </a>
-        <a
-            href="binary_bits.php"
-            class="sidebar-link <?= sidebarActive('binary_bits.php') ?>">
+        <!-- =================================================
+             GAMES DROPDOWN
+        ================================================== -->
 
-            <i class="bi bi-file-binary"></i>
+        <div class="sidebar-dropdown <?= sidebarActive('binary_bits.php') ? 'open' : '' ?>">
 
-            <span>
-                Binary Bits
-            </span>
+            <button
+                type="button"
+                class="sidebar-link sidebar-dropdown-toggle <?= sidebarActive('binary_bits.php') ?>"
+                id="gamesDropdownToggle"
+                aria-expanded="<?= sidebarActive('binary_bits.php') ? 'true' : 'false' ?>"
+                aria-controls="gamesDropdownMenu">
 
-        </a>
+                <i class="bi bi-controller"></i>
+
+                <span>
+                    Games
+                </span>
+
+                <i class="bi bi-chevron-down dropdown-chevron"></i>
+
+            </button>
+
+            <div
+                class="sidebar-submenu"
+                id="gamesDropdownMenu"
+                <?= sidebarActive('binary_bits.php') ? '' : 'hidden' ?>>
+
+                <a
+                    href="binary_bits.php"
+                    class="sidebar-link sidebar-submenu-link <?= sidebarActive('binary_bits.php') ?>">
+
+                    <i class="bi bi-file-binary"></i>
+
+                    <span>
+                        Binary Bits
+                    </span>
+
+                </a>
+
+            </div>
+
+        </div>
 
 
         <style>
+            /* Games dropdown */
+            .sidebar-dropdown {
+                width: 100%;
+            }
+
+            .sidebar-dropdown-toggle {
+                width: 100%;
+                border: 0;
+                background: transparent;
+                text-align: left;
+                cursor: pointer;
+                font: inherit;
+            }
+
+            .sidebar-dropdown-toggle .dropdown-chevron {
+                margin-left: auto;
+                font-size: 0.75rem;
+                transition: transform 0.2s ease;
+            }
+
+            .sidebar-dropdown.open .dropdown-chevron {
+                transform: rotate(180deg);
+            }
+
+            .sidebar-submenu {
+                padding-left: 18px;
+                margin: 3px 0 7px;
+            }
+
+            .sidebar-submenu-link {
+                font-size: 0.94em;
+            }
+
+            .sidebar-submenu-link i {
+                font-size: 0.95em;
+            }
+
             /* Hide scrollbar but keep scrolling enabled */
             .sidebar {
                 overflow-y: auto;
@@ -351,6 +420,24 @@ function sidebarActive($page)
 
             return;
 
+        }
+
+
+        /* =====================================================
+           GAMES DROPDOWN
+        ====================================================== */
+
+        const gamesDropdown = document.querySelector(".sidebar-dropdown");
+        const gamesDropdownToggle = document.getElementById("gamesDropdownToggle");
+        const gamesDropdownMenu = document.getElementById("gamesDropdownMenu");
+
+        if (gamesDropdown && gamesDropdownToggle && gamesDropdownMenu) {
+            gamesDropdownToggle.addEventListener("click", function() {
+                const isOpen = gamesDropdown.classList.toggle("open");
+
+                gamesDropdownMenu.hidden = !isOpen;
+                gamesDropdownToggle.setAttribute("aria-expanded", String(isOpen));
+            });
         }
 
 
