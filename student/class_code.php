@@ -378,12 +378,12 @@ function resolveClassmates(mysqli $db, int $classCodeId): array
     $classmates = [];
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $photo = trim(str_replace("\\", "/", (string)($row["classmate_photo"] ?? "")));
-            if ($photo !== "" && !preg_match('~^(?:https?:)?//|^/~i', $photo)) {
-                $photo = preg_replace('~^(?:\./)+~', "", $photo);
-                $photo = "../" . ltrim($photo, "/");
-            }
-            if (preg_match('~^(?:javascript:|data:)~i', $photo)) $photo = "";
+            /* Use the same central profile-photo URL as the supplied Classmates page. */
+            $photoValue = trim(str_replace("\\", "/", (string)($row["classmate_photo"] ?? "")));
+            $photoName = basename($photoValue);
+            $photo = ($photoName !== "" && $photoName !== "." && $photoName !== "..")
+                ? "https://vertigation.com/shared/uploads/profile_photos/" . rawurlencode($photoName)
+                : "";
             $classmates[] = [
                 "name" => trim((string)($row["classmate_name"] ?? "")) ?: (string)($row["student_id"] ?? "Student"),
                 "student_id" => (string)($row["student_id"] ?? ""),
@@ -1040,6 +1040,7 @@ include "globals/head.php";
             font-size: 10px;
         }
 
+        /* Responsive classmates dialog: fits phones, tablets, laptops and desktops. */
         .classmates-modal {
             position: fixed;
             inset: 0;
@@ -1047,7 +1048,8 @@ include "globals/head.php";
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+            overflow: hidden;
         }
 
         .classmates-modal.is-open {
@@ -1057,44 +1059,53 @@ include "globals/head.php";
         .classmates-modal-backdrop {
             position: absolute;
             inset: 0;
-            background: rgba(10, 18, 35, .62);
-            backdrop-filter: blur(4px);
+            background: rgba(10, 18, 35, .66);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
         }
 
         .classmates-modal-panel {
             position: relative;
             z-index: 1;
-            width: min(680px, 100%);
-            max-height: min(82vh, 760px);
+            width: min(760px, calc(100vw - 24px));
+            max-width: 760px;
+            max-height: min(820px, calc(100vh - 24px));
+            max-height: min(820px, calc(100dvh - 24px));
             display: flex;
             flex-direction: column;
+            min-height: 0;
             overflow: hidden;
             border: 1px solid var(--activity-border);
-            border-radius: 18px;
+            border-radius: clamp(12px, 2vw, 20px);
             background: var(--activity-card-bg);
-            box-shadow: 0 24px 70px rgba(0, 0, 0, .25);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
             animation: classmatesModalIn .2s ease-out;
         }
 
         @keyframes classmatesModalIn {
             from {
                 opacity: 0;
-                transform: translateY(10px) scale(.985);
+                transform: translateY(10px) scale(.985)
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0) scale(1)
             }
         }
 
         .classmates-modal-header {
+            flex: 0 0 auto;
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 15px;
-            padding: 20px 22px;
+            gap: 14px;
+            padding: clamp(15px, 2.5vw, 22px);
             border-bottom: 1px solid var(--activity-border);
+        }
+
+        .classmates-modal-header>div {
+            min-width: 0;
         }
 
         .classmates-modal-eyebrow {
@@ -1107,20 +1118,23 @@ include "globals/head.php";
         .classmates-modal-header h3 {
             margin: 4px 0 3px;
             color: var(--academic-blue-dark);
-            font-size: 20px;
+            font-size: clamp(18px, 2.5vw, 22px);
             font-weight: 800;
+            overflow-wrap: anywhere;
         }
 
         .classmates-modal-header p {
             margin: 0;
             color: var(--text-secondary);
-            font-size: 12px;
+            font-size: clamp(11px, 1.7vw, 12px);
+            line-height: 1.45;
+            overflow-wrap: anywhere;
         }
 
         .classmates-modal-close {
-            width: 34px;
-            height: 34px;
-            flex: 0 0 34px;
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
             display: grid;
             place-items: center;
             border: 1px solid var(--activity-border);
@@ -1128,17 +1142,27 @@ include "globals/head.php";
             background: var(--activity-progress-bg, var(--activity-card-bg));
             color: var(--academic-blue-dark);
             cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .classmates-modal-close:focus-visible,
+        .student-classmates-btn:focus-visible {
+            outline: 3px solid var(--academic-blue);
+            outline-offset: 3px;
         }
 
         .classmates-modal-body {
-            overflow-y: auto;
-            padding: 20px 22px 24px;
+            min-height: 0;
+            overflow: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            padding: clamp(14px, 2.5vw, 22px);
         }
 
         .classmates-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
-            gap: 13px;
+            grid-template-columns: repeat(auto-fill, minmax(min(145px, 100%), 1fr));
+            gap: clamp(9px, 1.8vw, 14px);
         }
 
         .classmate-card {
@@ -1146,8 +1170,8 @@ include "globals/head.php";
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            padding: 15px 10px 13px;
+            gap: 7px;
+            padding: clamp(11px, 1.8vw, 16px) 9px 13px;
             border: 1px solid var(--activity-border);
             border-radius: 13px;
             background: var(--activity-progress-bg, var(--activity-card-bg));
@@ -1155,9 +1179,9 @@ include "globals/head.php";
         }
 
         .classmate-avatar {
-            width: 68px;
-            height: 68px;
-            flex: 0 0 68px;
+            width: clamp(54px, 8vw, 72px);
+            height: clamp(54px, 8vw, 72px);
+            flex: 0 0 auto;
             border: 3px solid var(--activity-card-bg);
             border-radius: 50%;
             object-fit: cover;
@@ -1177,23 +1201,27 @@ include "globals/head.php";
             max-width: 100%;
             color: var(--academic-blue-dark);
             font-size: 12px;
-            line-height: 1.35;
+            line-height: 1.4;
             overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .classmate-card small {
+            max-width: 100%;
             color: var(--text-secondary);
             font-size: 10px;
             overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .classmates-empty {
-            min-height: 180px;
+            min-height: clamp(150px, 25vh, 210px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            padding: 20px;
             color: var(--text-secondary);
             text-align: center;
         }
@@ -1218,37 +1246,96 @@ include "globals/head.php";
             overflow: hidden;
         }
 
-        @media (max-width: 575px) {
+        @media (max-width: 480px) {
             .classmates-modal {
-                padding: 10px;
+                padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
             }
 
             .classmates-modal-panel {
-                max-height: 88vh;
-                border-radius: 15px;
+                width: 100%;
+                max-height: calc(100vh - 16px);
+                max-height: calc(100dvh - 16px);
+                border-radius: 14px;
             }
 
             .classmates-modal-header {
-                padding: 17px;
+                padding: 14px;
             }
 
             .classmates-modal-body {
-                padding: 15px 17px 19px;
+                padding: 12px;
             }
 
             .classmates-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 9px;
+                gap: 8px;
             }
 
             .classmate-card {
-                padding: 12px 7px;
+                padding: 11px 6px;
+            }
+        }
+
+        @media (max-width: 340px) {
+            .classmates-modal-header {
+                gap: 8px;
+            }
+
+            .classmates-modal-close {
+                width: 34px;
+                height: 34px;
+                flex-basis: 34px;
+            }
+
+            .classmates-modal-body {
+                padding: 9px;
+            }
+
+            .classmates-grid {
+                gap: 7px;
+            }
+
+            .classmate-card strong {
+                font-size: 11px;
+            }
+
+            .classmate-card small {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-height: 520px) and (orientation: landscape) {
+            .classmates-modal {
+                align-items: flex-start;
+            }
+
+            .classmates-modal-panel {
+                margin-block: 4px;
+                max-height: calc(100vh - 8px);
+                max-height: calc(100dvh - 8px);
+            }
+
+            .classmates-modal-header {
+                padding: 10px 14px;
+            }
+
+            .classmates-modal-body {
+                padding: 10px 14px;
+            }
+
+            .classmates-grid {
+                grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
             }
 
             .classmate-avatar {
-                width: 60px;
-                height: 60px;
-                flex-basis: 60px;
+                width: 48px;
+                height: 48px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .classmates-modal-panel {
+                animation: none;
             }
         }
     </style>
@@ -1290,7 +1377,24 @@ include "globals/head.php";
             });
 
             document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && activeModal) closeClassmatesModal(activeModal);
+                if (!activeModal) return;
+                if (event.key === 'Escape') {
+                    closeClassmatesModal(activeModal);
+                    return;
+                }
+                if (event.key === 'Tab') {
+                    const focusable = activeModal.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])');
+                    if (!focusable.length) return;
+                    const first = focusable[0],
+                        last = focusable[focusable.length - 1];
+                    if (event.shiftKey && document.activeElement === first) {
+                        event.preventDefault();
+                        last.focus();
+                    } else if (!event.shiftKey && document.activeElement === last) {
+                        event.preventDefault();
+                        first.focus();
+                    }
+                }
             });
         })();
     </script>
