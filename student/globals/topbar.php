@@ -645,6 +645,68 @@ if (
 
 
                 </a>
+                <!-- =================================================
+                    LF's
+                ================================================== -->
+
+                <a
+                    href="lf.php"
+                    class="topbar-profile-menu-link"
+                    role="menuitem">
+
+
+                    <span class="topbar-profile-menu-icon">
+
+                        <i class="bi bi-search-heart"></i>
+
+                    </span>
+
+
+                    <span class="topbar-profile-menu-text">
+
+                        <strong>
+                            LF's
+                        </strong>
+
+                        <small>
+                            ---Looking for something?---
+                        </small>
+
+                    </span>
+
+
+                </a>
+                <!-- =================================================
+                    FS'
+                ================================================== -->
+
+                <a
+                    href="fs.php"
+                    class="topbar-profile-menu-link"
+                    role="menuitem">
+
+
+                    <span class="topbar-profile-menu-icon">
+
+                        <i class="bi bi-cart"></i>
+
+                    </span>
+
+
+                    <span class="topbar-profile-menu-text">
+
+                        <strong>
+                            FS'
+                        </strong>
+
+                        <small>
+                            View items for sale.
+                        </small>
+
+                    </span>
+
+
+                </a>
 
 
                 <!-- =================================================
