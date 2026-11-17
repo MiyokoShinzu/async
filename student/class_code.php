@@ -266,12 +266,20 @@ function resolveInstructor(mysqli $db, int $instructorId): array
     $name = trim((string)($row["instructor_name"] ?? ""));
     if ($name === "") $name = trim((string)($row["first_name"] ?? "") . " " . (string)($row["last_name"] ?? ""));
     if ($name === "") $name = "Instructor";
-    $photo = trim(str_replace("\\", "/", (string)($row["instructor_photo"] ?? "")));
-    if ($photo !== "" && !preg_match('~^(?:https?:)?//|^/~i', $photo)) {
-        $photo = preg_replace('~^(?:\./)+~', "", $photo);
-        $photo = "../" . ltrim($photo, "/");
+    /* Instructor photos use the same shared upload directory as student photos.
+       Database values may be a bare filename or a stored path; normalize both. */
+    $photoValue = trim(str_replace("\\", "/", (string)($row["instructor_photo"] ?? "")));
+    $photo = "";
+    if ($photoValue !== "" && !preg_match('~^(?:javascript:|data:)~i', $photoValue)) {
+        if (preg_match('~^https?://~i', $photoValue)) {
+            $photo = $photoValue;
+        } else {
+            $photoName = basename(parse_url($photoValue, PHP_URL_PATH) ?: $photoValue);
+            if ($photoName !== "" && $photoName !== "." && $photoName !== "..") {
+                $photo = "https://vertigation.com/shared/uploads/profile_photos/" . rawurlencode($photoName);
+            }
+        }
     }
-    if (preg_match('~^(?:javascript:|data:)~i', $photo)) $photo = "";
     return ["name" => $name, "photo" => $photo];
 }
 
@@ -1330,6 +1338,81 @@ include "globals/head.php";
             .classmate-avatar {
                 width: 48px;
                 height: 48px;
+            }
+        }
+
+        /* Full-window classmates dialog on every screen size, including small phones. */
+        .classmates-modal {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            padding: 0;
+            margin: 0;
+            align-items: stretch;
+            justify-content: stretch;
+        }
+
+        .classmates-modal-panel {
+            width: 100%;
+            max-width: none;
+            height: 100%;
+            height: 100dvh;
+            max-height: none;
+            min-height: 0;
+            margin: 0;
+            border-radius: 0;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .classmates-modal-header {
+            padding-top: max(14px, env(safe-area-inset-top));
+            padding-left: max(14px, env(safe-area-inset-left));
+            padding-right: max(14px, env(safe-area-inset-right));
+        }
+
+        .classmates-modal-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            padding-bottom: max(14px, env(safe-area-inset-bottom));
+            padding-left: max(14px, env(safe-area-inset-left));
+            padding-right: max(14px, env(safe-area-inset-right));
+        }
+
+        @supports not (height: 100dvh) {
+
+            .classmates-modal,
+            .classmates-modal-panel {
+                height: 100vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .classmates-modal {
+                padding: 0;
+            }
+
+            .classmates-modal-panel {
+                width: 100%;
+                height: 100%;
+                height: 100dvh;
+                max-height: none;
+                border-radius: 0;
+            }
+        }
+
+        @media (max-height: 520px) and (orientation: landscape) {
+            .classmates-modal {
+                align-items: stretch;
+            }
+
+            .classmates-modal-panel {
+                height: 100%;
+                height: 100dvh;
+                max-height: none;
+                margin: 0;
             }
         }
 
