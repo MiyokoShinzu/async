@@ -224,7 +224,8 @@ $result = false;
 if ($currentInstructorId > 0) {
     $listStmt = $mysqli->prepare(
         "SELECT cc.id, cc.course_code, cc.description, cc.academic_year_semester_id,
-                cc.status, cc.created_at, ays.academic_year, ays.semester
+                cc.status, cc.created_at, ays.academic_year, ays.semester,
+                ays.status AS academic_period_status
          FROM class_codes cc
          INNER JOIN academic_year_semesters ays
             ON ays.id = cc.academic_year_semester_id
@@ -394,23 +395,31 @@ include "globals/head.php";
 
                         <div class="roster-table-wrap">
                             <table class="table roster-table" id="studentRosterTable">
-                                <thead><tr><th>#</th><th>Student</th><th>Enrollment Status</th><th>Date Enrolled</th><th>Last Reviewed</th></tr></thead>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Student</th>
+                                        <th>Enrollment Status</th>
+                                        <th>Date Enrolled</th>
+                                        <th>Last Reviewed</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
                                     <?php foreach ($rosterStudents as $index => $student): ?>
                                         <?php
-                                            $studentStatus = (string)($student["enrollment_status"] ?? "Unknown");
-                                            $studentStatusClass = strtolower(str_replace(" ", "-", $studentStatus));
-                                            $studentDate = !empty($student["enrolled_at"]) ? strtotime($student["enrolled_at"]) : 0;
-                                            $reviewedDate = !empty($student["reviewed_at"]) ? strtotime($student["reviewed_at"]) : 0;
-                                            $studentLastName = trim((string)($student["last_name"] ?? ""));
-                                            $studentFirstName = trim((string)($student["first_name"] ?? ""));
-                                            $studentMiddle = trim((string)($student["middle_initial"] ?? ""));
-                                            $studentExtension = trim((string)($student["extension_name"] ?? ""));
-                                            $studentDisplayName = trim($studentLastName . ", " . $studentFirstName . " " . $studentMiddle . " " . $studentExtension, " ,");
-                                            if ($studentDisplayName === "") $studentDisplayName = "Name unavailable";
-                                            $studentPhotoFile = basename(str_replace("\\", "/", trim((string)($student["profile_photo"] ?? ""))));
-                                            $studentPhotoUrl = $studentPhotoFile !== "" ? "https://vertigation.com/shared/uploads/profile_photos/" . rawurlencode($studentPhotoFile) : "";
-                                            $studentSortName = strtolower(trim($studentLastName . " " . $studentFirstName . " " . $studentMiddle . " " . $studentExtension));
+                                        $studentStatus = (string)($student["enrollment_status"] ?? "Unknown");
+                                        $studentStatusClass = strtolower(str_replace(" ", "-", $studentStatus));
+                                        $studentDate = !empty($student["enrolled_at"]) ? strtotime($student["enrolled_at"]) : 0;
+                                        $reviewedDate = !empty($student["reviewed_at"]) ? strtotime($student["reviewed_at"]) : 0;
+                                        $studentLastName = trim((string)($student["last_name"] ?? ""));
+                                        $studentFirstName = trim((string)($student["first_name"] ?? ""));
+                                        $studentMiddle = trim((string)($student["middle_initial"] ?? ""));
+                                        $studentExtension = trim((string)($student["extension_name"] ?? ""));
+                                        $studentDisplayName = trim($studentLastName . ", " . $studentFirstName . " " . $studentMiddle . " " . $studentExtension, " ,");
+                                        if ($studentDisplayName === "") $studentDisplayName = "Name unavailable";
+                                        $studentPhotoFile = basename(str_replace("\\", "/", trim((string)($student["profile_photo"] ?? ""))));
+                                        $studentPhotoUrl = $studentPhotoFile !== "" ? "https://vertigation.com/shared/uploads/profile_photos/" . rawurlencode($studentPhotoFile) : "";
+                                        $studentSortName = strtolower(trim($studentLastName . " " . $studentFirstName . " " . $studentMiddle . " " . $studentExtension));
                                         ?>
                                         <tr data-student="<?= e(strtolower($student["student_id"])) ?>"
                                             data-name="<?= e($studentSortName) ?>"
@@ -438,7 +447,14 @@ include "globals/head.php";
                                         </tr>
                                     <?php endforeach; ?>
                                     <?php if (!$rosterStudents): ?>
-                                        <tr class="roster-empty-row"><td colspan="5"><div class="empty-state"><div><i class="bi bi-people"></i></div><strong>No enrollment records yet</strong><p>Student enrollment requests for this class code will appear here.</p></div></td></tr>
+                                        <tr class="roster-empty-row">
+                                            <td colspan="5">
+                                                <div class="empty-state">
+                                                    <div><i class="bi bi-people"></i></div><strong>No enrollment records yet</strong>
+                                                    <p>Student enrollment requests for this class code will appear here.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
@@ -450,221 +466,222 @@ include "globals/head.php";
             </div>
         </main>
     <?php else: ?>
-    <main class="main-content">
-        <div class="content-wrapper class-code-page">
-            <div class="page-heading">
-                <div>
-                    <div class="page-eyebrow"><i class="bi bi-grid-3x3-gap"></i> ACADEMIC SETTINGS</div>
-                    <h2>Class Code Management</h2>
-                    <p>Manage course codes, descriptions, and their assigned academic periods.</p>
-                </div>
-                <div class="heading-icon"><i class="bi bi-journal-code"></i></div>
-            </div>
-
-            <?php if ($flash): ?>
-                <div class="page-alert alert-<?= e($flash["type"]) ?>" role="alert">
-                    <i class="bi <?= $flash["type"] === "success" ? "bi-check-circle-fill" : "bi-exclamation-circle-fill" ?>"></i>
-                    <span><?= e($flash["message"]) ?></span>
-                    <button type="button" class="alert-close" aria-label="Close" onclick="this.parentElement.remove()">&times;</button>
-                </div>
-            <?php endif; ?>
-
-            <?php if ($dbError): ?>
-                <div class="page-alert alert-danger" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill"></i><span><?= e($dbError) ?></span>
-                </div>
-            <?php endif; ?>
-
-            <?php if (!$academicPeriods): ?>
-                <div class="page-alert alert-warning" role="alert">
-                    <i class="bi bi-info-circle-fill"></i>
-                    <span>Add an academic year and semester first. Only saved academic periods can be assigned to class codes.</span>
-                </div>
-            <?php endif; ?>
-
-            <?php if ($errors): ?>
-                <div class="page-alert alert-danger" role="alert">
-                    <i class="bi bi-exclamation-circle-fill"></i>
-                    <div><strong>Please check the following:</strong>
-                        <ul class="mb-0 mt-1">
-                            <?php foreach ($errors as $error): ?><li><?= e($error) ?></li><?php endforeach; ?>
-                        </ul>
-                    </div>
-                </div>
-            <?php endif; ?>
-
-            <section class="summary-grid" aria-label="Class code summary">
-                <div class="summary-card">
-                    <div class="summary-icon blue"><i class="bi bi-collection"></i></div>
-                    <div><span>Total Class Codes</span><strong><?= $totalRecords ?></strong></div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-icon green"><i class="bi bi-check-circle"></i></div>
-                    <div><span>Active</span><strong><?= $activeRecords ?></strong></div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-icon gray"><i class="bi bi-pause-circle"></i></div>
-                    <div><span>Inactive</span><strong><?= $inactiveRecords ?></strong></div>
-                </div>
-            </section>
-
-            <section class="management-card form-card">
-                <div class="section-header">
-                    <div class="section-heading-icon"><i class="bi bi-<?= $editRecord ? "pencil-square" : "plus-circle" ?>"></i></div>
+        <main class="main-content">
+            <div class="content-wrapper class-code-page">
+                <div class="page-heading">
                     <div>
-                        <h5><?= $editRecord ? "Edit Class Code" : "Add Class Code" ?></h5>
-                        <p><?= $editRecord ? "Update the selected class code and its details." : "Register a course code, describe its class, and assign an academic period." ?></p>
+                        <div class="page-eyebrow"><i class="bi bi-grid-3x3-gap"></i> ACADEMIC SETTINGS</div>
+                        <h2>Class Code Management</h2>
+                        <p>Manage course codes, descriptions, and their assigned academic periods.</p>
                     </div>
+                    <div class="heading-icon"><i class="bi bi-journal-code"></i></div>
                 </div>
 
-                <form method="POST" action="class_code.php" class="class-code-form">
-                    <input type="hidden" name="csrf_token" value="<?= e($_SESSION["csrf_class_code"]) ?>">
-                    <input type="hidden" name="action" value="save">
-                    <input type="hidden" name="id" value="<?= e($editRecord["id"] ?? 0) ?>">
+                <?php if ($flash): ?>
+                    <div class="page-alert alert-<?= e($flash["type"]) ?>" role="alert">
+                        <i class="bi <?= $flash["type"] === "success" ? "bi-check-circle-fill" : "bi-exclamation-circle-fill" ?>"></i>
+                        <span><?= e($flash["message"]) ?></span>
+                        <button type="button" class="alert-close" aria-label="Close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                <?php endif; ?>
 
-                    <div class="form-grid">
-                        <div class="form-field">
-                            <label for="course_code">Course Code <span>*</span></label>
-                            <div class="input-wrap">
-                                <i class="bi bi-code-square"></i>
-                                <input type="text" id="course_code" name="course_code" placeholder="e.g. CPE 101"
-                                    maxlength="30" value="<?= e($editRecord["course_code"] ?? "") ?>" required>
-                            </div>
-                            <small>Enter the official course code.</small>
-                        </div>
+                <?php if ($dbError): ?>
+                    <div class="page-alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i><span><?= e($dbError) ?></span>
+                    </div>
+                <?php endif; ?>
 
-                        <div class="form-field">
-                            <label for="description">Class Description <span>*</span></label>
-                            <div class="input-wrap">
-                                <i class="bi bi-card-text"></i>
-                                <input type="text" id="description" name="description" placeholder="e.g. Computer Engineering - First Year"
-                                    maxlength="255" value="<?= e($editRecord["description"] ?? "") ?>" required>
-                            </div>
-                        </div>
+                <?php if (!$academicPeriods): ?>
+                    <div class="page-alert alert-warning" role="alert">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span>Add an academic year and semester first. Only saved academic periods can be assigned to class codes.</span>
+                    </div>
+                <?php endif; ?>
 
-                        <div class="form-field">
-                            <label for="academic_year_semester_id">Academic Year &amp; Semester <span>*</span></label>
-                            <div class="input-wrap">
-                                <i class="bi bi-calendar2-week"></i>
-                                <select id="academic_year_semester_id" name="academic_year_semester_id" required>
-                                    <option value="">Select academic period</option>
-                                    <?php foreach ($academicPeriods as $period): ?>
-                                        <option value="<?= (int)$period["id"] ?>"
-                                            <?= ((string)($editRecord["academic_year_semester_id"] ?? "") === (string)$period["id"]) ? "selected" : "" ?>>
-                                            <?= e($period["academic_year"] . " • " . $period["semester"]) ?><?= $period["status"] !== "Active" ? " (Inactive)" : "" ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-field">
-                            <label for="status">Status <span>*</span></label>
-                            <div class="input-wrap">
-                                <i class="bi bi-toggle-on"></i>
-                                <select id="status" name="status" required>
-                                    <option value="Active" <?= (($editRecord["status"] ?? "Active") === "Active") ? "selected" : "" ?>>Active</option>
-                                    <option value="Inactive" <?= (($editRecord["status"] ?? "") === "Inactive") ? "selected" : "" ?>>Inactive</option>
-                                </select>
-                            </div>
+                <?php if ($errors): ?>
+                    <div class="page-alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <div><strong>Please check the following:</strong>
+                            <ul class="mb-0 mt-1">
+                                <?php foreach ($errors as $error): ?><li><?= e($error) ?></li><?php endforeach; ?>
+                            </ul>
                         </div>
                     </div>
+                <?php endif; ?>
 
-                    <div class="form-actions">
-                        <?php if ($editRecord): ?>
-                            <a href="class_code.php" class="btn-secondary-custom"><i class="bi bi-x-lg"></i> Cancel</a>
-                        <?php endif; ?>
-                        <button type="submit" class="btn-primary-custom" <?= !$academicPeriods ? "disabled" : "" ?>>
-                            <i class="bi bi-<?= $editRecord ? "save" : "plus-lg" ?>"></i>
-                            <?= $editRecord ? "Save Changes" : "Add Class Code" ?>
-                        </button>
+                <section class="summary-grid" aria-label="Class code summary">
+                    <div class="summary-card">
+                        <div class="summary-icon blue"><i class="bi bi-collection"></i></div>
+                        <div><span>Total Class Codes</span><strong><?= $totalRecords ?></strong></div>
                     </div>
-                </form>
-            </section>
+                    <div class="summary-card">
+                        <div class="summary-icon green"><i class="bi bi-check-circle"></i></div>
+                        <div><span>Active</span><strong><?= $activeRecords ?></strong></div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon gray"><i class="bi bi-pause-circle"></i></div>
+                        <div><span>Inactive</span><strong><?= $inactiveRecords ?></strong></div>
+                    </div>
+                </section>
 
-            <section class="management-card records-card">
-                <div class="records-heading">
+                <section class="management-card form-card">
                     <div class="section-header">
-                        <div class="section-heading-icon"><i class="bi bi-table"></i></div>
+                        <div class="section-heading-icon"><i class="bi bi-<?= $editRecord ? "pencil-square" : "plus-circle" ?>"></i></div>
                         <div>
-                            <h5>Class Code Records</h5>
-                            <p>View, edit, and manage registered course codes and class descriptions.</p>
+                            <h5><?= $editRecord ? "Edit Class Code" : "Add Class Code" ?></h5>
+                            <p><?= $editRecord ? "Update the selected class code and its details." : "Register a course code, describe its class, and assign an academic period." ?></p>
                         </div>
                     </div>
-                    <div class="record-count"><i class="bi bi-collection"></i> <?= $totalRecords ?> Records</div>
-                </div>
 
-                <div class="table-tools">
-                    <div class="search-box">
-                        <i class="bi bi-search"></i>
-                        <input type="search" id="recordSearch" placeholder="Search course code, description, or academic period..." aria-label="Search class codes">
+                    <form method="POST" action="class_code.php" class="class-code-form">
+                        <input type="hidden" name="csrf_token" value="<?= e($_SESSION["csrf_class_code"]) ?>">
+                        <input type="hidden" name="action" value="save">
+                        <input type="hidden" name="id" value="<?= e($editRecord["id"] ?? 0) ?>">
+
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="course_code">Course Code <span>*</span></label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-code-square"></i>
+                                    <input type="text" id="course_code" name="course_code" placeholder="e.g. CPE 101"
+                                        maxlength="30" value="<?= e($editRecord["course_code"] ?? "") ?>" required>
+                                </div>
+                                <small>Enter the official course code.</small>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="description">Class Description <span>*</span></label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-card-text"></i>
+                                    <input type="text" id="description" name="description" placeholder="e.g. Computer Engineering - First Year"
+                                        maxlength="255" value="<?= e($editRecord["description"] ?? "") ?>" required>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="academic_year_semester_id">Academic Year &amp; Semester <span>*</span></label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-calendar2-week"></i>
+                                    <select id="academic_year_semester_id" name="academic_year_semester_id" required>
+                                        <option value="">Select academic period</option>
+                                        <?php foreach ($academicPeriods as $period): ?>
+                                            <option value="<?= (int)$period["id"] ?>"
+                                                <?= ((string)($editRecord["academic_year_semester_id"] ?? "") === (string)$period["id"]) ? "selected" : "" ?>>
+                                                <?= e($period["academic_year"] . " • " . $period["semester"]) ?><?= $period["status"] !== "Active" ? " (Inactive)" : "" ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="status">Status <span>*</span></label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-toggle-on"></i>
+                                    <select id="status" name="status" required>
+                                        <option value="Active" <?= (($editRecord["status"] ?? "Active") === "Active") ? "selected" : "" ?>>Active</option>
+                                        <option value="Inactive" <?= (($editRecord["status"] ?? "") === "Inactive") ? "selected" : "" ?>>Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <?php if ($editRecord): ?>
+                                <a href="class_code.php" class="btn-secondary-custom"><i class="bi bi-x-lg"></i> Cancel</a>
+                            <?php endif; ?>
+                            <button type="submit" class="btn-primary-custom" <?= !$academicPeriods ? "disabled" : "" ?>>
+                                <i class="bi bi-<?= $editRecord ? "save" : "plus-lg" ?>"></i>
+                                <?= $editRecord ? "Save Changes" : "Add Class Code" ?>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="management-card records-card">
+                    <div class="records-heading">
+                        <div class="section-header">
+                            <div class="section-heading-icon"><i class="bi bi-table"></i></div>
+                            <div>
+                                <h5>Class Code Records</h5>
+                                <p>View, edit, and manage registered course codes and class descriptions.</p>
+                            </div>
+                        </div>
+                        <div class="record-count"><i class="bi bi-collection"></i> <?= $totalRecords ?> Records</div>
                     </div>
-                </div>
 
-                <div class="table-responsive">
-                    <table class="table class-code-table" id="classCodeTable">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Course Code</th>
-                                <th>Class Description</th>
-                                <th>Academic Year</th>
-                                <th>Semester</th>
-                                <th>Status</th>
-                                <th>Date Added</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($records): ?>
-                                <?php foreach ($records as $index => $record): ?>
-                                    <tr>
-                                        <td class="row-number"><?= $index + 1 ?></td>
-                                        <td>
-                                            <div class="code-cell">
-                                                <a class="students-icon-btn" href="class_code.php?students=<?= (int)$record["id"] ?>" title="View enrolled students and statuses" aria-label="View enrolled students for <?= e($record["course_code"]) ?>">
-                                                    <i class="bi bi-people-fill"></i>
-                                                </a>
-                                                <span class="code-icon"><i class="bi bi-code-square"></i></span>
-                                                <strong><?= e($record["course_code"]) ?></strong>
-                                            </div>
-                                        </td>
-                                        <td><span class="description-label"><?= e($record["description"]) ?></span></td>
-                                        <td><?= e($record["academic_year"]) ?></td>
-                                        <td><span class="semester-label"><?= e($record["semester"]) ?></span></td>
-                                        <td><span class="status-pill <?= $record["status"] === "Active" ? "status-active" : "status-inactive" ?>"><span></span><?= e($record["status"]) ?></span></td>
-                                        <td class="date-cell"><?= !empty($record["created_at"]) ? e(date("M d, Y", strtotime($record["created_at"]))) : "—" ?></td>
-                                        <td>
-                                            <div class="action-buttons">
-                                                <a class="action-btn edit-btn" href="class_code.php?edit=<?= (int)$record["id"] ?>" title="Edit record" aria-label="Edit record"><i class="bi bi-pencil-square"></i></a>
-                                                <form method="POST" action="class_code.php" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this class code?');">
-                                                    <input type="hidden" name="csrf_token" value="<?= e($_SESSION["csrf_class_code"]) ?>">
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="id" value="<?= (int)$record["id"] ?>">
-                                                    <button type="submit" class="action-btn delete-btn" title="Delete record" aria-label="Delete record"><i class="bi bi-trash3"></i></button>
-                                                </form>
+                    <div class="table-tools">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="search" id="recordSearch" placeholder="Search course code, description, or academic period..." aria-label="Search class codes">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table class-code-table" id="classCodeTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Course Code</th>
+                                    <th>Class Description</th>
+                                    <th>Academic Year</th>
+                                    <th>Semester</th>
+                                    <th>Status</th>
+                                    <th>Date Added</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if ($records): ?>
+                                    <?php foreach ($records as $index => $record): ?>
+                                        <tr>
+                                            <td class="row-number"><?= $index + 1 ?></td>
+                                            <td>
+                                                <div class="code-cell">
+                                                    <a class="students-icon-btn" href="class_code.php?students=<?= (int)$record["id"] ?>" title="View enrolled students and statuses" aria-label="View enrolled students for <?= e($record["course_code"]) ?>">
+                                                        <i class="bi bi-people-fill"></i>
+                                                    </a>
+                                                    <span class="code-icon"><i class="bi bi-code-square"></i></span>
+                                                    <strong><?= e($record["course_code"]) ?></strong>
+                                                </div>
+                                            </td>
+                                            <td><span class="description-label"><?= e($record["description"]) ?></span></td>
+                                            <td><?= e($record["academic_year"]) ?></td>
+                                            <td><span class="semester-label"><?= e($record["semester"]) ?></span></td>
+                                            <td><span class="status-pill <?= $record["status"] === "Active" ? "status-active" : "status-inactive" ?>"><span></span><?= e($record["status"]) ?></span></td>
+                                            <td class="date-cell"><?= !empty($record["created_at"]) ? e(date("M d, Y", strtotime($record["created_at"]))) : "—" ?></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <a class="action-btn reading-btn" href="class_code_reading_assignments.php?class_code_id=<?= (int)$record["id"] ?>" title="Assign reading activities and monitor progress" aria-label="Manage reading activities"><i class="bi bi-book-half"></i></a>
+                                                    <a class="action-btn edit-btn" href="class_code.php?edit=<?= (int)$record["id"] ?>" title="Edit record" aria-label="Edit record"><i class="bi bi-pencil-square"></i></a>
+                                                    <form method="POST" action="class_code.php" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this class code?');">
+                                                        <input type="hidden" name="csrf_token" value="<?= e($_SESSION["csrf_class_code"]) ?>">
+                                                        <input type="hidden" name="action" value="delete">
+                                                        <input type="hidden" name="id" value="<?= (int)$record["id"] ?>">
+                                                        <button type="submit" class="action-btn delete-btn" title="Delete record" aria-label="Delete record"><i class="bi bi-trash3"></i></button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr id="emptyRow">
+                                        <td colspan="8">
+                                            <div class="empty-state">
+                                                <div><i class="bi bi-journal-x"></i></div>
+                                                <strong>No Class Codes Assigned to You</strong>
+                                                <p>Class codes created under your instructor account will appear here.</p>
                                             </div>
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr id="emptyRow">
-                                    <td colspan="8">
-                                        <div class="empty-state">
-                                            <div><i class="bi bi-journal-x"></i></div>
-                                            <strong>No Class Codes Assigned to You</strong>
-                                            <p>Class codes created under your instructor account will appear here.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                    <div class="no-search-results" id="noSearchResults" hidden><i class="bi bi-search"></i><span>No matching class codes found.</span></div>
-                </div>
-            </section>
-        </div>
-    </main>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                        <div class="no-search-results" id="noSearchResults" hidden><i class="bi bi-search"></i><span>No matching class codes found.</span></div>
+                    </div>
+                </section>
+            </div>
+        </main>
     <?php endif; ?>
 
     <?php require_once "./globals/scripts.php"; ?>
@@ -1180,6 +1197,16 @@ include "globals/head.php";
             transition: all .18s ease
         }
 
+        .reading-btn {
+            color: #087f9b;
+            background: #e6f7fb;
+        }
+
+        .reading-btn:hover {
+            color: #fff;
+            background: #087f9b;
+        }
+
         .edit-btn {
             color: #4165c5;
             background: #edf1ff
@@ -1257,56 +1284,295 @@ include "globals/head.php";
             font-size: 14px;
             transition: transform .18s ease, filter .18s ease;
         }
-        .students-icon-btn:hover { color: #fff; filter: brightness(.92); transform: translateY(-1px); }
-        .students-icon-btn:focus-visible { outline: 3px solid rgba(65,101,197,.28); outline-offset: 2px; }
 
-        .roster-heading { align-items: flex-start; }
-        .roster-period { margin-top: 10px; color: var(--text-secondary); font-size: 12px; }
-        .roster-period i { margin-right: 5px; }
-        .roster-back { white-space: nowrap; }
-        .roster-summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; margin-bottom: 20px; }
-        .roster-summary-card { padding: 15px 16px; border: 1px solid var(--activity-border,#e7eaf0); border-radius: 13px; background: var(--activity-card-bg,var(--card-bg,#fff)); }
-        .roster-summary-card span { display:block; color:var(--text-secondary); font-size:11px; margin-bottom:5px; }
-        .roster-summary-card strong { display:block; color:var(--text-color); font-size:23px; line-height:1.2; }
-        .roster-summary-card.pending { border-top:3px solid #d69a28; }
-        .roster-summary-card.accepted { border-top:3px solid #269653; }
-        .roster-summary-card.on-hold { border-top:3px solid #5579c8; }
-        .roster-summary-card.denied { border-top:3px solid #d14c4c; }
-        .roster-card { padding: 18px 0 0; }
-        .roster-tools { display:flex; align-items:flex-end; flex-wrap:wrap; gap:12px; padding:0 20px 16px; }
-        .roster-search { position:relative; flex:1 1 260px; }
-        .roster-search i { position:absolute; top:50%; left:12px; transform:translateY(-50%); color:var(--text-secondary); }
-        .roster-search input, .roster-select-wrap select { width:100%; min-height:40px; padding:8px 12px; border:1px solid var(--activity-border,#dfe3eb); border-radius:9px; background:var(--input-bg,var(--activity-card-bg,#fff)); color:var(--text-color); font-size:12px; outline:none; }
-        .roster-search input { padding-left:36px; }
-        .roster-search input:focus, .roster-select-wrap select:focus { border-color:var(--academic-blue-dark,#4968c4); box-shadow:0 0 0 3px rgba(73,104,196,.10); }
-        .roster-select-wrap { flex:0 1 180px; min-width:145px; }
-        .roster-select-wrap label { display:block; margin-bottom:5px; color:var(--text-secondary); font-size:11px; font-weight:700; }
-        .roster-table { min-width:650px; margin:0; color:var(--text-color); }
-        .roster-table thead th { padding:12px 16px; white-space:nowrap; border-top:1px solid var(--activity-border,#e7eaf0); border-bottom:1px solid var(--activity-border,#e7eaf0); background:var(--activity-progress-bg,#f6f7fa); color:var(--text-secondary); font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
-        .roster-table tbody td { padding:13px 16px; vertical-align:middle; border-bottom:1px solid var(--activity-border,#edf0f4); background:transparent; font-size:12px; }
-        .roster-student-id { color:var(--text-color); font-size:13px; display:block; }
-        .roster-student-cell { display:flex; align-items:center; gap:11px; min-width:190px; }
-        .roster-student-photo { width:40px; height:40px; flex:0 0 40px; border-radius:50%; object-fit:cover; border:2px solid var(--activity-border,#e7eaf0); background:var(--activity-progress-bg,#f1f3f8); }
-        .roster-student-photo-fallback { display:grid; place-items:center; color:var(--text-secondary); font-size:18px; }
-        .roster-student-details small { display:block; margin-top:3px; color:var(--text-secondary); font-size:10px; }
-        .roster-row-number { width:55px; color:var(--text-secondary); }
-        .roster-status { display:inline-flex; padding:5px 10px; border-radius:20px; font-size:10px; font-weight:750; background:#eff1f4; color:#697382; }
-        .roster-status.status-pending { background:#fff5df; color:#9a690d; }
-        .roster-status.status-accepted { background:#e8f7ee; color:#20834b; }
-        .roster-status.status-on-hold { background:#edf2ff; color:#4165b5; }
-        .roster-status.status-denied { background:#fff0f0; color:#bd3f3f; }
-        .roster-footer { padding:12px 20px; color:var(--text-secondary); font-size:11px; border-top:1px solid var(--activity-border,#edf0f4); }
-        .roster-no-results { padding:25px; text-align:center; color:var(--text-secondary); font-size:12px; }
-        .roster-no-results i { margin-right:6px; }
-        @media(max-width:900px) { .roster-summary-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+        .students-icon-btn:hover {
+            color: #fff;
+            filter: brightness(.92);
+            transform: translateY(-1px);
+        }
+
+        .students-icon-btn:focus-visible {
+            outline: 3px solid rgba(65, 101, 197, .28);
+            outline-offset: 2px;
+        }
+
+        .roster-heading {
+            align-items: flex-start;
+        }
+
+        .roster-period {
+            margin-top: 10px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .roster-period i {
+            margin-right: 5px;
+        }
+
+        .roster-back {
+            white-space: nowrap;
+        }
+
+        .roster-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .roster-summary-card {
+            padding: 15px 16px;
+            border: 1px solid var(--activity-border, #e7eaf0);
+            border-radius: 13px;
+            background: var(--activity-card-bg, var(--card-bg, #fff));
+        }
+
+        .roster-summary-card span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        .roster-summary-card strong {
+            display: block;
+            color: var(--text-color);
+            font-size: 23px;
+            line-height: 1.2;
+        }
+
+        .roster-summary-card.pending {
+            border-top: 3px solid #d69a28;
+        }
+
+        .roster-summary-card.accepted {
+            border-top: 3px solid #269653;
+        }
+
+        .roster-summary-card.on-hold {
+            border-top: 3px solid #5579c8;
+        }
+
+        .roster-summary-card.denied {
+            border-top: 3px solid #d14c4c;
+        }
+
+        .roster-card {
+            padding: 18px 0 0;
+        }
+
+        .roster-tools {
+            display: flex;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 0 20px 16px;
+        }
+
+        .roster-search {
+            position: relative;
+            flex: 1 1 260px;
+        }
+
+        .roster-search i {
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .roster-search input,
+        .roster-select-wrap select {
+            width: 100%;
+            min-height: 40px;
+            padding: 8px 12px;
+            border: 1px solid var(--activity-border, #dfe3eb);
+            border-radius: 9px;
+            background: var(--input-bg, var(--activity-card-bg, #fff));
+            color: var(--text-color);
+            font-size: 12px;
+            outline: none;
+        }
+
+        .roster-search input {
+            padding-left: 36px;
+        }
+
+        .roster-search input:focus,
+        .roster-select-wrap select:focus {
+            border-color: var(--academic-blue-dark, #4968c4);
+            box-shadow: 0 0 0 3px rgba(73, 104, 196, .10);
+        }
+
+        .roster-select-wrap {
+            flex: 0 1 180px;
+            min-width: 145px;
+        }
+
+        .roster-select-wrap label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .roster-table {
+            min-width: 650px;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .roster-table thead th {
+            padding: 12px 16px;
+            white-space: nowrap;
+            border-top: 1px solid var(--activity-border, #e7eaf0);
+            border-bottom: 1px solid var(--activity-border, #e7eaf0);
+            background: var(--activity-progress-bg, #f6f7fa);
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        .roster-table tbody td {
+            padding: 13px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--activity-border, #edf0f4);
+            background: transparent;
+            font-size: 12px;
+        }
+
+        .roster-student-id {
+            color: var(--text-color);
+            font-size: 13px;
+            display: block;
+        }
+
+        .roster-student-cell {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 190px;
+        }
+
+        .roster-student-photo {
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--activity-border, #e7eaf0);
+            background: var(--activity-progress-bg, #f1f3f8);
+        }
+
+        .roster-student-photo-fallback {
+            display: grid;
+            place-items: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        .roster-student-details small {
+            display: block;
+            margin-top: 3px;
+            color: var(--text-secondary);
+            font-size: 10px;
+        }
+
+        .roster-row-number {
+            width: 55px;
+            color: var(--text-secondary);
+        }
+
+        .roster-status {
+            display: inline-flex;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 750;
+            background: #eff1f4;
+            color: #697382;
+        }
+
+        .roster-status.status-pending {
+            background: #fff5df;
+            color: #9a690d;
+        }
+
+        .roster-status.status-accepted {
+            background: #e8f7ee;
+            color: #20834b;
+        }
+
+        .roster-status.status-on-hold {
+            background: #edf2ff;
+            color: #4165b5;
+        }
+
+        .roster-status.status-denied {
+            background: #fff0f0;
+            color: #bd3f3f;
+        }
+
+        .roster-footer {
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            border-top: 1px solid var(--activity-border, #edf0f4);
+        }
+
+        .roster-no-results {
+            padding: 25px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .roster-no-results i {
+            margin-right: 6px;
+        }
+
+        @media(max-width:900px) {
+            .roster-summary-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
         @media(max-width:767px) {
-            .roster-heading { flex-direction:column; }
-            .roster-back { width:100%; }
-            .roster-summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
-            .roster-summary-card { padding:12px; }
-            .roster-tools { padding:0 14px 14px; }
-            .roster-search, .roster-select-wrap { flex:1 1 100%; min-width:0; }
-            .roster-footer { padding:12px 14px; }
+            .roster-heading {
+                flex-direction: column;
+            }
+
+            .roster-back {
+                width: 100%;
+            }
+
+            .roster-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 9px;
+            }
+
+            .roster-summary-card {
+                padding: 12px;
+            }
+
+            .roster-tools {
+                padding: 0 14px 14px;
+            }
+
+            .roster-search,
+            .roster-select-wrap {
+                flex: 1 1 100%;
+                min-width: 0;
+            }
+
+            .roster-footer {
+                padding: 12px 14px;
+            }
         }
 
         @media(max-width:767px) {
@@ -1407,8 +1673,12 @@ include "globals/head.php";
 
                 const sortMode = sortSelect.value;
                 rows.sort((a, b) => {
-                    if (sortMode === "student-asc") return (a.dataset.name || a.dataset.student).localeCompare((b.dataset.name || b.dataset.student), undefined, {numeric:true});
-                    if (sortMode === "student-desc") return (b.dataset.name || b.dataset.student).localeCompare((a.dataset.name || a.dataset.student), undefined, {numeric:true});
+                    if (sortMode === "student-asc") return (a.dataset.name || a.dataset.student).localeCompare((b.dataset.name || b.dataset.student), undefined, {
+                        numeric: true
+                    });
+                    if (sortMode === "student-desc") return (b.dataset.name || b.dataset.student).localeCompare((a.dataset.name || a.dataset.student), undefined, {
+                        numeric: true
+                    });
                     if (sortMode === "status-asc") return a.dataset.statusSort.localeCompare(b.dataset.statusSort);
                     if (sortMode === "date-asc") return Number(a.dataset.date) - Number(b.dataset.date);
                     return Number(b.dataset.date) - Number(a.dataset.date);
