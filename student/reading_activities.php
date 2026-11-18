@@ -1284,6 +1284,7 @@ $completionPercentage =
                         </p>
 
 
+
                     </div>
 
 
@@ -1291,7 +1292,21 @@ $completionPercentage =
 
 
             </div>
+            <div class="row">
+                <div class="col-lg-4">
 
+                    <?php include 'globals/ads_square.php'; ?>
+                </div>
+                <div class="col-lg-4">
+
+                    <?php include 'globals/ads_square.php'; ?>
+                </div>
+                <div class="col-lg-4">
+
+                    <?php include 'globals/ads_square.php'; ?>
+                </div>
+            </div>
+           
 
         </div>
 
