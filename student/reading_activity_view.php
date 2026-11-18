@@ -1340,6 +1340,19 @@ include 'globals/topbar.php';
         <!-- =================================================
          PROGRESS CARD
     ================================================== -->
+        <div class="row">
+            <div class="col-12 col-lg-4">
+                <?php include 'globals/ads_square.php'; ?>
+            </div>
+
+            <div class="d-none d-lg-block col-lg-4">
+                <?php include 'globals/ads_square.php'; ?>
+            </div>
+
+            <div class="d-none d-lg-block col-lg-4">
+                <?php include 'globals/ads_square.php'; ?>
+            </div>
+        </div>
 
         <div class="activity-progress-card mt-4">
 
@@ -2640,7 +2653,8 @@ include 'globals/scripts.php';
             try {
                 await document.exitFullscreen();
             } catch (error) {
-                /* no-op */ }
+                /* no-op */
+            }
         }
 
         if (readingViewerCard) {
