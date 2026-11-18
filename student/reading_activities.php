@@ -1291,7 +1291,7 @@ $completionPercentage =
 
 
             </div>
-
+                    <?php include 'globals/ads_square.php'; ?>
 
         </div>
 
