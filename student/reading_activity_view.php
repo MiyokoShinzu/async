@@ -1340,20 +1340,6 @@ include 'globals/topbar.php';
         <!-- =================================================
          PROGRESS CARD
     ================================================== -->
-        <div class="row">
-            <div class="col-12 col-lg-4">
-                <?php include 'globals/ads_square.php'; ?>
-            </div>
-
-            <div class="d-none d-lg-block col-lg-4">
-                <?php include 'globals/ads_square.php'; ?>
-            </div>
-
-            <div class="d-none d-lg-block col-lg-4">
-                <?php include 'globals/ads_square.php'; ?>
-            </div>
-        </div>
-
         <div class="activity-progress-card mt-4">
 
 
@@ -1508,6 +1494,21 @@ include 'globals/topbar.php';
 
 
         </div>
+        <div class="row">
+            <div class="col-12 col-lg-4">
+                <?php include 'globals/ads_square.php'; ?>
+            </div>
+
+            <div class="d-none d-lg-block col-lg-4">
+                <?php include 'globals/ads_square.php'; ?>
+            </div>
+
+            <div class="d-none d-lg-block col-lg-4">
+                <?php include 'globals/ads_square.php'; ?>
+            </div>
+        </div>
+
+
 
 
         <!-- =================================================
