@@ -1303,7 +1303,7 @@ $completionPercentage =
  JAVASCRIPT 
 ========================================================= -->
 
-
+    <?php include 'globals/ads_social_bar.php'; ?>
     <?php include 'globals/scripts.php'; ?>
 
 
