@@ -93,35 +93,6 @@ include "globals/head.php";
                     <button type="submit"><i class="bi bi-send-fill"></i><span>Send</span></button>
                 </form>
                 <div class="chat-note"><i class="bi bi-info-circle"></i> Be respectful and keep the conversation learning-focused.</div>
-                <!-- Edit Message Modal -->
-                <div class="message-modal-backdrop" id="editMessageModal" hidden>
-                    <section class="message-modal" role="dialog" aria-modal="true" aria-labelledby="editMessageTitle">
-                        <div class="message-modal-header">
-                            <div>
-                                <span class="message-modal-eyebrow">MESSAGE OPTIONS</span>
-                                <h3 id="editMessageTitle">Edit message</h3>
-                            </div>
-                            <button type="button" class="message-modal-close" id="closeEditModal" aria-label="Close">
-                                <i class="bi bi-x-lg"></i>
-                            </button>
-                        </div>
-                        <form id="editMessageForm">
-                            <label for="editMessageText">Your message</label>
-                            <textarea id="editMessageText" maxlength="500" rows="4" required></textarea>
-                            <div class="message-modal-footer">
-                                <span class="edit-char-count"><span id="editCharCount">0</span>/500</span>
-                                <div class="message-modal-buttons">
-                                    <button type="button" class="modal-cancel-btn" id="cancelEditModal">Cancel</button>
-                                    <button type="submit" class="modal-save-btn" id="saveEditMessage">
-                                        <i class="bi bi-check2"></i> Save changes
-                                    </button>
-                                </div>
-                            </div>
-                            <p class="message-modal-error" id="editMessageError" role="alert"></p>
-                        </form>
-                    </section>
-                </div>
-
             </section>
         </div>
     </main>
@@ -282,221 +253,29 @@ include "globals/head.php";
             text-align: center;
         }
 
-        .message-menu-wrap {
-            position: relative;
-            display: inline-flex;
-            margin-left: auto;
+        .message-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin: 5px 2px 0;
         }
 
-        .message-menu-trigger {
-            width: 25px;
-            height: 25px;
-            display: inline-grid;
-            place-items: center;
+        .message-action-btn {
             padding: 0;
             border: 0;
-            border-radius: 50%;
             background: transparent;
-            color: var(--text-secondary, #7b8494);
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .message-menu-trigger:hover,
-        .message-menu-trigger[aria-expanded="true"] {
-            background: rgba(36, 111, 192, .10);
             color: #246fc0;
-        }
-
-        .message-menu {
-            position: absolute;
-            z-index: 30;
-            top: 27px;
-            right: 0;
-            min-width: 155px;
-            padding: 5px;
-            border: 1px solid var(--activity-border, #e2e8f0);
-            border-radius: 10px;
-            background: var(--activity-card-bg, #fff);
-            box-shadow: 0 10px 28px rgba(15, 23, 42, .16);
-        }
-
-        .message-menu[hidden] {
-            display: none !important;
-        }
-
-        .message-menu-item {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 9px 10px;
-            border: 0;
-            border-radius: 7px;
-            background: transparent;
-            color: var(--text-color, #344054);
-            text-align: left;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        .message-menu-item:hover {
-            background: var(--activity-progress-bg, #f3f7fc);
-        }
-
-        .message-menu-delete {
-            color: #d04444;
-        }
-
-        .message-modal-backdrop[hidden] {
-            display: none !important;
-        }
-
-        .message-modal-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: 2000;
-            display: grid;
-            place-items: center;
-            padding: 18px;
-            background: rgba(15, 23, 42, .48);
-            backdrop-filter: blur(3px);
-        }
-
-        .message-modal {
-            width: min(100%, 460px);
-            padding: 22px;
-            border: 1px solid var(--activity-border, #e2e8f0);
-            border-radius: 16px;
-            background: var(--activity-card-bg, #fff);
-            box-shadow: 0 24px 70px rgba(15, 23, 42, .24);
-        }
-
-        .message-modal-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 18px;
-        }
-
-        .message-modal-eyebrow {
-            color: #246fc0;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: .1em;
-        }
-
-        .message-modal-header h3 {
-            margin: 4px 0 0;
-            color: var(--text-color, #172033);
-            font-size: 19px;
-            font-weight: 800;
-        }
-
-        .message-modal-close {
-            width: 32px;
-            height: 32px;
-            border: 0;
-            border-radius: 8px;
-            background: var(--activity-progress-bg, #f3f6fa);
-            color: var(--text-secondary, #667085);
-        }
-
-        .message-modal label {
-            display: block;
-            margin-bottom: 7px;
-            color: var(--text-color, #344054);
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .message-modal textarea {
-            width: 100%;
-            min-height: 115px;
-            resize: vertical;
-            padding: 12px;
-            border: 1px solid var(--activity-border, #dfe5ed);
-            border-radius: 10px;
-            outline: none;
-            background: var(--activity-progress-bg, #f8fafc);
-            color: var(--text-color, #172033);
-            font: inherit;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .message-modal textarea:focus {
-            border-color: #398bd0;
-            box-shadow: 0 0 0 3px rgba(57, 139, 208, .12);
-        }
-
-        .message-modal-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .edit-char-count {
-            color: var(--text-secondary, #929baa);
             font-size: 10px;
-        }
-
-        .message-modal-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .modal-cancel-btn,
-        .modal-save-btn {
-            min-height: 36px;
-            padding: 0 13px;
-            border-radius: 8px;
-            font-size: 11px;
             font-weight: 700;
             cursor: pointer;
         }
 
-        .modal-cancel-btn {
-            border: 1px solid var(--activity-border, #dfe5ed);
-            background: transparent;
-            color: var(--text-color, #344054);
+        .message-action-btn:hover {
+            text-decoration: underline;
         }
 
-        .modal-save-btn {
-            border: 0;
-            background: #246fc0;
-            color: #fff;
-        }
-
-        .modal-save-btn:disabled {
-            opacity: .6;
-            cursor: not-allowed;
-        }
-
-        .message-modal-error {
-            min-height: 15px;
-            margin: 8px 0 0;
+        .message-unsend-btn {
             color: #d04444;
-            font-size: 10px;
-        }
-
-        @media (max-width: 480px) {
-            .message-modal {
-                padding: 17px;
-            }
-
-            .message-modal-footer {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .message-modal-buttons {
-                width: 100%;
-                justify-content: flex-end;
-            }
         }
 
         .message-edited-label {
@@ -878,52 +657,18 @@ include "globals/head.php";
                     body.appendChild(makeElement("div", "message-bubble", item.message || ""));
 
                     if (ownMessage) {
-                        const actionWrap = makeElement("div", "message-menu-wrap");
-                        const menuButton = makeElement("button", "message-menu-trigger");
-                        menuButton.type = "button";
-                        menuButton.setAttribute("aria-label", "Message options");
-                        menuButton.setAttribute("aria-haspopup", "true");
-                        menuButton.setAttribute("aria-expanded", "false");
-                        menuButton.innerHTML = '<i class="bi bi-three-dots-vertical"></i>';
-
-                        const menu = makeElement("div", "message-menu");
-                        menu.hidden = true;
-
-                        const editButton = makeElement("button", "message-menu-item", "Edit message");
+                        const actions = makeElement("div", "message-actions");
+                        const editButton = makeElement("button", "message-action-btn", "Edit");
                         editButton.type = "button";
-                        editButton.innerHTML = '<i class="bi bi-pencil"></i><span>Edit message</span>';
-                        editButton.addEventListener("click", () => {
-                            closeAllMessageMenus();
-                            openEditModal(item);
-                        });
-
-                        const unsendButton = makeElement("button", "message-menu-item message-menu-delete", "Unsend");
+                        editButton.addEventListener("click", () => editMessage(item));
+                        const unsendButton = makeElement("button", "message-action-btn message-unsend-btn", "Unsend");
                         unsendButton.type = "button";
-                        unsendButton.innerHTML = '<i class="bi bi-trash3"></i><span>Unsend</span>';
-                        unsendButton.addEventListener("click", () => {
-                            closeAllMessageMenus();
-                            unsendMessage(item.id);
-                        });
-
-                        menu.append(editButton, unsendButton);
-                        menuButton.addEventListener("click", function(event) {
-                            event.stopPropagation();
-                            const willOpen = menu.hidden;
-                            closeAllMessageMenus();
-                            menu.hidden = !willOpen;
-                            menuButton.setAttribute("aria-expanded", willOpen ? "true" : "false");
-                        });
-
-                        actionWrap.append(menuButton, menu);
-                        meta.appendChild(actionWrap);
-
-                        body.appendChild(meta);
-                        body.appendChild(makeElement("div", "message-bubble", item.message || ""));
+                        unsendButton.addEventListener("click", () => unsendMessage(item.id));
+                        actions.append(editButton, unsendButton);
+                        body.appendChild(actions);
                         row.appendChild(body);
                         row.appendChild(makeElement("div", "message-avatar avatar-own", item.sender_initials || "ST"));
                     } else {
-                        body.appendChild(meta);
-                        body.appendChild(makeElement("div", "message-bubble", item.message || ""));
                         row.appendChild(body);
                     }
 
@@ -954,101 +699,29 @@ include "globals/head.php";
                 return data;
             }
 
-            const editModal = document.getElementById("editMessageModal");
-            const editForm = document.getElementById("editMessageForm");
-            const editText = document.getElementById("editMessageText");
-            const editCharCount = document.getElementById("editCharCount");
-            const editError = document.getElementById("editMessageError");
-            const saveEditButton = document.getElementById("saveEditMessage");
-            let editingMessageId = null;
-            let originalMessageText = "";
+            async function editMessage(item) {
+                const updatedText = window.prompt("Edit your message:", item.message || "");
+                if (updatedText === null) return;
 
-            function closeAllMessageMenus() {
-                document.querySelectorAll(".message-menu").forEach(menu => {
-                    menu.hidden = true;
-                    const trigger = menu.parentElement.querySelector(".message-menu-trigger");
-                    if (trigger) trigger.setAttribute("aria-expanded", "false");
-                });
-            }
-
-            function openEditModal(item) {
-                editingMessageId = item.id;
-                originalMessageText = item.message || "";
-                editText.value = originalMessageText;
-                editCharCount.textContent = editText.value.length;
-                editError.textContent = "";
-                editModal.hidden = false;
-                document.body.style.overflow = "hidden";
-                window.setTimeout(() => {
-                    editText.focus();
-                    editText.setSelectionRange(editText.value.length, editText.value.length);
-                }, 30);
-            }
-
-            function closeEditModal() {
-                editModal.hidden = true;
-                document.body.style.overflow = "";
-                editingMessageId = null;
-                editForm.reset();
-                editError.textContent = "";
-            }
-
-            editText.addEventListener("input", function() {
-                editCharCount.textContent = editText.value.length;
-            });
-
-            document.getElementById("closeEditModal").addEventListener("click", closeEditModal);
-            document.getElementById("cancelEditModal").addEventListener("click", closeEditModal);
-
-            editModal.addEventListener("click", function(event) {
-                if (event.target === editModal) closeEditModal();
-            });
-
-            document.addEventListener("click", function() {
-                closeAllMessageMenus();
-            });
-
-            document.addEventListener("keydown", function(event) {
-                if (event.key === "Escape") {
-                    closeAllMessageMenus();
-                    if (!editModal.hidden) closeEditModal();
-                }
-            });
-
-            editForm.addEventListener("submit", async function(event) {
-                event.preventDefault();
-                const cleaned = editText.value.trim();
-
+                const cleaned = updatedText.trim();
                 if (!cleaned) {
-                    editError.textContent = "A message cannot be empty.";
-                    editText.focus();
+                    alert("A message cannot be empty. Use Unsend if you want to remove it.");
                     return;
                 }
                 if (cleaned.length > 500) {
-                    editError.textContent = "Your message must not exceed 500 characters.";
+                    alert("Your message must not exceed 500 characters.");
                     return;
                 }
-                if (cleaned === originalMessageText) {
-                    closeEditModal();
-                    return;
-                }
-                if (!editingMessageId) return;
-
-                saveEditButton.disabled = true;
-                saveEditButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+                if (cleaned === item.message) return;
 
                 try {
-                    await manageMessage("edit", editingMessageId, cleaned);
-                    closeEditModal();
+                    await manageMessage("edit", item.id, cleaned);
                     lastRenderedSignature = "";
                     await loadMessages();
                 } catch (error) {
-                    editError.textContent = error.message || "Unable to edit your message.";
-                } finally {
-                    saveEditButton.disabled = false;
-                    saveEditButton.innerHTML = '<i class="bi bi-check2"></i> Save changes';
+                    alert(error.message || "Unable to edit your message.");
                 }
-            });
+            }
 
             async function unsendMessage(id) {
                 if (!window.confirm("Unsend this message? It will be removed from the chat for everyone.")) return;
