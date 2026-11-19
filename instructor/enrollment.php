@@ -237,6 +237,11 @@ include "globals/head.php";
                         <option>On Hold</option>
                         <option>Denied</option>
                     </select>
+                    <select id="lastNameSort" class="status-filter" aria-label="Sort students by last name">
+                        <option value="">Default order</option>
+                        <option value="asc">Last name: A to Z</option>
+                        <option value="desc">Last name: Z to A</option>
+                    </select>
                 </div>
 
                 <?php if ($studentEnrollments): ?>
@@ -285,7 +290,7 @@ include "globals/head.php";
                                         $periodKey = (string)$enrollment["academic_year"] . "|" . (string)$enrollment["semester"];
                                         $initials = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
                                     ?>
-                                        <tr data-status="<?= e($status) ?>" data-class-code="<?= (int)$enrollment["class_code_id"] ?>" data-period="<?= e($periodKey) ?>">
+                                        <tr data-status="<?= e($status) ?>" data-class-code="<?= (int)$enrollment["class_code_id"] ?>" data-period="<?= e($periodKey) ?>" data-last-name="<?= e($lastName) ?>">
                                             <td class="check-column"><input class="row-checkbox" type="checkbox" name="enrollment_ids[]" value="<?= (int)$enrollment["enrollment_id"] ?>" aria-label="Select student <?= e($enrollment["student_id"]) ?>"></td>
                                             <td class="row-number"><?= $index + 1 ?></td>
                                             <td>
@@ -841,6 +846,7 @@ include "globals/head.php";
             const statusFilter = document.getElementById("statusFilter");
             const classCodeFilter = document.getElementById("classCodeFilter");
             const periodFilter = document.getElementById("periodFilter");
+            const lastNameSort = document.getElementById("lastNameSort");
             const selectAll = document.getElementById("selectAll");
             const selectedCount = document.getElementById("selectedCount");
             const noResults = document.getElementById("noSearchResults");
@@ -870,6 +876,38 @@ include "globals/head.php";
                     if (!matches) row.querySelector(".row-checkbox").checked = false;
                 });
                 noResults.hidden = visible > 0;
+
+                // Sort rows by last name while preserving the other filters.
+                const sortDirection = lastNameSort ? lastNameSort.value : "";
+                const tbody = table.querySelector("tbody");
+                const rows = [...tbody.querySelectorAll("tr")];
+
+                if (sortDirection) {
+                    rows.sort((a, b) => {
+                        const aName = (a.dataset.lastName || "").trim();
+                        const bName = (b.dataset.lastName || "").trim();
+                        const comparison = aName.localeCompare(bName, undefined, {
+                            sensitivity: "base",
+                            numeric: true
+                        });
+                        return sortDirection === "desc" ? -comparison : comparison;
+                    });
+                } else {
+                    rows.sort((a, b) =>
+                        Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex)
+                    );
+                }
+
+                rows.forEach(row => tbody.appendChild(row));
+
+                let rowNumber = 1;
+                rows.forEach(row => {
+                    if (!row.hidden) {
+                        const numberCell = row.querySelector(".row-number");
+                        if (numberCell) numberCell.textContent = rowNumber++;
+                    }
+                });
+
                 updateSelected();
             }
 
@@ -877,6 +915,10 @@ include "globals/head.php";
             statusFilter.addEventListener("change", updateRows);
             classCodeFilter.addEventListener("change", updateRows);
             periodFilter.addEventListener("change", updateRows);
+            if (lastNameSort) lastNameSort.addEventListener("change", updateRows);
+            [...table.querySelectorAll("tbody tr")].forEach((row, index) => {
+                row.dataset.originalIndex = String(index);
+            });
             selectAll.addEventListener("change", () => {
                 table.querySelectorAll("tbody tr").forEach(row => {
                     if (!row.hidden) row.querySelector(".row-checkbox").checked = selectAll.checked;
