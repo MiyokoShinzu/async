@@ -88,658 +88,476 @@ include 'globals/head.php';
                                 </div><span class="tag tag-question"><i class="bi bi-question-circle-fill"></i> Question</span>
                             </div>
                             <p class="post-text">Hello, classmates! Does anyone know if we need to submit the programming activity as a PDF or should we upload the source code? Thank you!</p>
-                            <div class="post-actions"><button type="button" class="like-btn"><i class="bi bi-heart"></i> Like <span class="like-count">7</span></button><button type="button" class="comment-toggle"><i class="bi bi-chat"></i> Comment <span class="comment-count">1</span></button></div>
-                            <div class="comment-area" hidden>
-                                <div class="comment"><b>Kevin P.:</b> I think we need to upload both. Let's wait for the instructor's confirmation.</div>
-                                <form class="comment-form"><input maxlength="250" placeholder="Write a comment..." required><button aria-label="Send comment"><i class="bi bi-send-fill"></i></button></form>
-                            </div>
-                        </article>
-
-                        <article class="shout-card post" data-category="all">
-                            <div class="post-head">
-                                <div class="author-row">
-                                    <div class="avatar avatar-violet">KC</div>
-                                    <div><strong>Kyle Cruz</strong><small>BS Information Technology · 1 hour ago</small></div>
-                                </div><span class="tag tag-general"><i class="bi bi-chat-dots-fill"></i> General</span>
-                            </div>
-                            <p class="post-text">Finally finished my Arduino LED blinking activity! It was challenging at first, but I learned a lot. Keep practicing, everyone!</p>
-                            <div class="post-actions"><button type="button" class="like-btn"><i class="bi bi-heart"></i> Like <span class="like-count">3</span></button><button type="button" class="comment-toggle"><i class="bi bi-chat"></i> Comment <span class="comment-count">0</span></button></div>
-                            <div class="comment-area" hidden>
-                                <form class="comment-form"><input maxlength="250" placeholder="Write a comment..." required><button aria-label="Send comment"><i class="bi bi-send-fill"></i></button></form>
-                            </div>
-                        </article>
-                    </div>
-                    <div id="feedEmpty" class="empty-state" hidden><i class="bi bi-chat-square-text"></i><b>No posts found</b><small>Try another feed filter.</small></div>
-                </section>
-
-                <aside class="side-column">
-                    <div class="shout-card side-card">
-                        <div class="side-icon"><i class="bi bi-people-fill"></i></div>
-                        <h3>Your learning community</h3>
-                        <p>A space to communicate, collaborate, and learn from one another.</p>
-                    </div>
-                    <div class="shout-card side-card">
-                        <h3><i class="bi bi-shield-check"></i> Community Guidelines</h3>
-                        <ul>
-                            <li><i class="bi bi-check-circle-fill"></i> Be respectful and supportive.</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Keep discussions related to learning.</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Do not share private information.</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Avoid spam and inappropriate content.</li>
-                        </ul>
-                    </div>
-                    <div class="shout-card tip-card"><i class="bi bi-lightbulb-fill"></i>
-                        <div><b>Have a question?</b>
-                            <p>Post it in the Shout Box. Your classmates may be able to help!</p>
-                        </div>
-                    </div>
-                </aside>
-            </div>
-        </div>
-    </main>
-
-    <?php require_once './globals/scripts.php'; ?>
-
-    <style>
-        .shout-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 18px;
-            margin-bottom: 25px
-        }
-
-        .eyebrow {
-            color: #2474c7;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: .1em;
-            margin-bottom: 8px
-        }
-
-        .eyebrow i {
-            margin-right: 6px
-        }
-
-        .shout-header h1 {
-            margin: 0 0 6px;
-            color: var(--text-color, #172033);
-            font-size: clamp(27px, 3vw, 34px);
-            font-weight: 800
-        }
-
-        .shout-header p,
-        .feed-heading p {
-            margin: 0;
-            color: var(--text-secondary, #667085);
-            font-size: 13px;
-            line-height: 1.6
-        }
-
-        .community-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 13px;
-            border: 1px solid var(--activity-border, #e5eaf1);
-            border-radius: 30px;
-            background: var(--activity-card-bg, #fff);
-            color: var(--text-secondary, #667085);
-            font-size: 11px;
-            font-weight: 700;
-            white-space: nowrap
-        }
-
-        .community-status i {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #16a36a
-        }
-
-        .shout-layout {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 280px;
-            gap: 20px;
-            align-items: start
-        }
-
-        .feed-column,
-        .side-column {
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 16px
-        }
-
-        .shout-card {
-            background: var(--activity-card-bg, #fff);
-            border: 1px solid var(--activity-border, #e5eaf1);
-            border-radius: 15px;
-            box-shadow: 0 5px 18px rgba(15, 23, 42, .035)
-        }
-
-        .composer,
-        .post {
-            padding: 19px
-        }
-
-        .author-row {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            min-width: 0
-        }
-
-        .author-row strong {
-            display: block;
-            color: var(--text-color, #172033);
-            font-size: 13px;
-            font-weight: 800
-        }
-
-        .author-row small {
-            display: block;
-            margin-top: 3px;
-            color: var(--text-secondary, #7b8494);
-            font-size: 11px;
-            line-height: 1.4
-        }
-
-        .avatar {
-            width: 41px;
-            height: 41px;
-            flex: 0 0 41px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-size: 12px;
-            font-weight: 800
-        }
-
-        .current-avatar {
-            color: #fff;
-            background: linear-gradient(135deg, #1769c2, #28a9cf)
-        }
-
-        .avatar-blue {
-            background: #e8f0ff;
-            color: #2458b7
-        }
-
-        .avatar-cyan {
-            background: #e1f8fc;
-            color: #087d99
-        }
-
-        .avatar-violet {
-            background: #f0ebff;
-            color: #6952b5
-        }
-
-        #shoutMessage {
-            display: block;
-            width: 100%;
-            min-height: 105px;
-            margin-top: 16px;
-            padding: 13px 14px;
-            resize: vertical;
-            border: 1px solid var(--activity-border, #e1e7ef);
-            border-radius: 11px;
-            outline: none;
-            background: var(--activity-progress-bg, #f8fafc);
-            color: var(--text-color, #172033);
-            font: inherit;
-            font-size: 13px;
-            line-height: 1.65
-        }
-
-        #shoutMessage:focus,
-        .comment-form input:focus {
-            border-color: #398bd0;
-            box-shadow: 0 0 0 3px rgba(57, 139, 208, .12)
-        }
-
-        #shoutMessage::placeholder,
-        .comment-form input::placeholder {
-            color: #9aa4b2
-        }
-
-        .composer-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 11px
-        }
-
-        .composer-bottom small {
-            color: var(--text-secondary, #8992a1);
-            font-size: 11px
-        }
-
-        .primary-btn {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            padding: 10px 16px;
-            border: 0;
-            border-radius: 9px;
-            background: #246fc0;
-            color: #fff;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer
-        }
-
-        .primary-btn:hover {
-            background: #185da8
-        }
-
-        .feed-heading {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px
-        }
-
-        .feed-heading h2 {
-            margin: 0 0 4px;
-            color: var(--text-color, #172033);
-            font-size: 17px;
-            font-weight: 800
-        }
-
-        .feed-heading select {
-            max-width: 140px;
-            padding: 9px 10px;
-            border: 1px solid var(--activity-border, #e5eaf1);
-            border-radius: 9px;
-            background: var(--activity-card-bg, #fff);
-            color: var(--text-color, #344054);
-            font-size: 11px
-        }
-
-        .shout-feed {
-            display: flex;
-            flex-direction: column;
-            gap: 14px
-        }
-
-        .post-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px
-        }
-
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 6px 9px;
-            border-radius: 30px;
-            font-size: 10px;
-            font-weight: 800;
-            white-space: nowrap
-        }
-
-        .tag-announcement {
-            background: #fff5dc;
-            color: #98620a
-        }
-
-        .tag-question {
-            background: #e8f6fc;
-            color: #176b9c
-        }
-
-        .tag-general {
-            background: #f0edfb;
-            color: #6551a3
-        }
-
-        .post-text {
-            margin: 16px 0;
-            color: var(--text-color, #344054);
-            font-size: 13px;
-            line-height: 1.75;
-            overflow-wrap: anywhere
-        }
-
-        .post-actions {
-            display: flex;
-            gap: 20px;
-            padding-top: 12px;
-            border-top: 1px solid var(--activity-border, #edf0f4)
-        }
-
-        .post-actions button {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 2px 0;
-            border: 0;
-            background: none;
-            color: var(--text-secondary, #7b8494);
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer
-        }
-
-        .post-actions button:hover,
-        .post-actions button.liked {
-            color: #df4e69
-        }
-
-        .comment-area {
-            margin-top: 12px;
-            padding: 12px;
-            border-radius: 10px;
-            background: var(--activity-progress-bg, #f7f9fc)
-        }
-
-        .comment {
-            margin-bottom: 8px;
-            color: var(--text-secondary, #667085);
-            font-size: 11px;
-            line-height: 1.55
-        }
-
-        .comment b {
-            color: var(--text-color, #344054)
-        }
-
-        .comment-form {
-            display: flex;
-            gap: 8px;
-            margin-top: 9px
-        }
-
-        .comment-form input {
-            width: 100%;
-            min-width: 0;
-            padding: 9px 10px;
-            border: 1px solid var(--activity-border, #e1e7ef);
-            border-radius: 8px;
-            outline: 0;
-            background: var(--activity-card-bg, #fff);
-            color: var(--text-color, #172033);
-            font-size: 11px
-        }
-
-        .comment-form button {
-            width: 34px;
-            height: 34px;
-            flex: 0 0 34px;
-            border: 0;
-            border-radius: 8px;
-            background: #246fc0;
-            color: #fff;
-            cursor: pointer
-        }
-
-        .side-card {
-            padding: 19px
-        }
-
-        .side-icon {
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 13px;
-            border-radius: 12px;
-            background: #e8f3ff;
-            color: #246fc0;
-            font-size: 20px
-        }
-
-        .side-card h3 {
-            margin: 0 0 8px;
-            color: var(--text-color, #172033);
-            font-size: 13px;
-            font-weight: 800
-        }
-
-        .side-card p {
-            margin: 0;
-            color: var(--text-secondary, #7b8494);
-            font-size: 11px;
-            line-height: 1.7
-        }
-
-        .side-card h3 i {
-            color: #2474c7;
-            margin-right: 5px
-        }
-
-        .side-card ul {
-            display: flex;
-            flex-direction: column;
-            gap: 11px;
-            margin: 14px 0 0;
-            padding: 0;
-            list-style: none
-        }
-
-        .side-card li {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            color: var(--text-secondary, #667085);
-            font-size: 11px;
-            line-height: 1.5
-        }
-
-        .side-card li i {
-            color: #1a9b72
-        }
-
-        .tip-card {
-            display: flex;
-            align-items: flex-start;
-            gap: 11px;
-            padding: 16px;
-            background: #f0f8ff;
-            border-color: #dcecfb
-        }
-
-        .tip-card>i {
-            color: #226fc0;
-            font-size: 20px
-        }
-
-        .tip-card b {
-            display: block;
-            margin-bottom: 4px;
-            color: #245b91;
-            font-size: 12px
-        }
-
-        .tip-card p {
-            color: #54718e;
-            font-size: 11px
-        }
-
-        .empty-state {
-            padding: 30px;
-            text-align: center;
-            border: 1px dashed var(--activity-border, #d8e0ea);
-            border-radius: 13px;
-            color: var(--text-secondary, #7b8494)
-        }
-
-        .empty-state i,
-        .empty-state b,
-        .empty-state small {
-            display: block
-        }
-
-        .empty-state i {
-            font-size: 25px;
-            margin-bottom: 8px
-        }
-
-        .empty-state b {
-            color: var(--text-color, #344054);
-            font-size: 13px
-        }
-
-        .empty-state small {
-            margin-top: 4px;
-            font-size: 11px
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0
-        }
-
-        @media(max-width:1000px) {
-            .shout-layout {
-                grid-template-columns: minmax(0, 1fr) 245px;
-                gap: 15px
-            }
-        }
-
-        @media(max-width:800px) {
-            .shout-layout {
-                grid-template-columns: 1fr
-            }
-
-            .side-column {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr))
-            }
-
-            .tip-card {
-                grid-column: 1/-1
-            }
-        }
-
-        @media(max-width:560px) {
-            .shout-header {
-                align-items: flex-start;
-                flex-direction: column
-            }
-
-            .composer,
-            .post {
-                padding: 15px
-            }
-
-            .post-head {
-                flex-direction: column
-            }
-
-            .tag {
-                margin-left: 52px
-            }
-
-            .side-column {
-                grid-template-columns: 1fr
-            }
-
-            .tip-card {
-                grid-column: auto
-            }
-
-            .feed-heading {
-                align-items: flex-start;
-                flex-direction: column
-            }
-        }
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('shoutForm');
-            const messageInput = document.getElementById('shoutMessage');
-            const charCount = document.getElementById('charCount');
-            const feed = document.getElementById('shoutFeed');
-            const filter = document.getElementById('feedFilter');
-            const empty = document.getElementById('feedEmpty');
-            const currentName = <?= json_encode($displayName, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
-            const currentInitials = <?= json_encode($initials ?: 'ST', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
-            const escapeHTML = value => value.replace(/[&<>"']/g, c => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            } [c]));
-
-            messageInput.addEventListener('input', () => charCount.textContent = messageInput.value.length);
-
-            function applyFilter() {
-                let visible = 0;
-                feed.querySelectorAll('.post').forEach(post => {
-                    const category = post.dataset.category;
-                    const show = filter.value === 'all' || category === filter.value;
-                    post.style.display = show ? '' : 'none';
-                    if (show) visible++;
-                });
-                empty.hidden = visible > 0;
-            }
-            filter.addEventListener('change', applyFilter);
-
-            form.addEventListener('submit', event => {
-                event.preventDefault();
-                const message = messageInput.value.trim();
-                if (!message) return;
-                const post = document.createElement('article');
-                post.className = 'shout-card post';
-                post.dataset.category = 'all';
-                post.innerHTML = `<div class="post-head"><div class="author-row"><div class="avatar current-avatar">${escapeHTML(currentInitials)}</div><div><strong>${escapeHTML(currentName)}</strong><small>Just now</small></div></div><span class="tag tag-general"><i class="bi bi-chat-dots-fill"></i> General</span></div><p class="post-text">${escapeHTML(message).replace(/\n/g,'<br>')}</p><div class="post-actions"><button type="button" class="like-btn"><i class="bi bi-heart"></i> Like <span class="like-count">0</span></button><button type="button" class="comment-toggle"><i class="bi bi-chat"></i> Comment <span class="comment-count">0</span></button></div><div class="comment-area" hidden><form class="comment-form"><input maxlength="250" placeholder="Write a comment..." required><button aria-label="Send comment"><i class="bi bi-send-fill"></i></button></form></div>`;
-                feed.prepend(post);
-                messageInput.value = '';
-                charCount.textContent = '0';
-                filter.value = 'all';
-                applyFilter();
-            });
-
-            feed.addEventListener('click', event => {
-                const like = event.target.closest('.like-btn');
-                if (like) {
-                    const count = like.querySelector('.like-count');
-                    const liked = like.classList.toggle('liked');
-                    count.textContent = Math.max(0, (parseInt(count.textContent, 10) || 0) + (liked ? 1 : -1));
-                    like.querySelector('i').className = liked ? 'bi bi-heart-fill' : 'bi bi-heart';
-                    return;
-                }
-                const toggle = event.target.closest('.comment-toggle');
-                if (toggle) {
-                    const area = toggle.closest('.post').querySelector('.comment-area');
-                    area.hidden = !area.hidden;
-                }
-            });
-
-            feed.addEventListener('submit', event => {
-                if (!event.target.matches('.comment-form')) return;
-                event.preventDefault();
-                const commentForm = event.target;
-                const input = commentForm.querySelector('input');
-                const value = input.value.trim();
-                if (!value) return;
-                const comment = document.createElement('div');
-                comment.className = 'comment';
-                comment.innerHTML = `<b>${escapeHTML(currentName)}:</b> ${escapeHTML(value)}`;
-                commentForm.parentElement.insertBefore(comment, commentForm);
-                const count = commentForm.closest('.post').querySelector('.comment-count');
-                count.textContent = (parseInt(count.textContent, 10) || 0) + 1;
-                input.value = '';
-            });
-            applyFilter();
-        });
-    </script>
+                            <div class="post-actions"><button type="button" class="like-btn"><i class="bi bi-heart"></i> Like <span clas <style>
+                                        .shout-main-content { min-height: 0; }
+                                        .shout-content-wrapper {
+                                        min-height: calc(100vh - 125px);
+                                        display: flex;
+                                        flex-direction: column;
+                                        }
+
+                                        .shout-page-heading {
+                                        display: flex;
+                                        justify-content: space-between;
+                                        align-items: flex-end;
+                                        gap: 16px;
+                                        margin-bottom: 18px;
+                                        flex: 0 0 auto;
+                                        }
+
+                                        .eyebrow {
+                                        color: #2474c7;
+                                        font-size: 11px;
+                                        font-weight: 800;
+                                        letter-spacing: .1em;
+                                        margin-bottom: 7px;
+                                        }
+
+                                        .eyebrow i { margin-right: 6px; }
+                                        .shout-page-heading h1 {
+                                        margin: 0 0 5px;
+                                        color: var(--text-color, #172033);
+                                        font-size: clamp(25px, 3vw, 32px);
+                                        font-weight: 800;
+                                        }
+
+                                        .shout-page-heading p {
+                                        margin: 0;
+                                        color: var(--text-secondary, #667085);
+                                        font-size: 13px;
+                                        }
+
+                                        .community-status {
+                                        display: inline-flex;
+                                        align-items: center;
+                                        gap: 8px;
+                                        padding: 8px 12px;
+                                        border: 1px solid var(--activity-border, #e5eaf1);
+                                        border-radius: 30px;
+                                        background: var(--activity-card-bg, #fff);
+                                        color: var(--text-secondary, #667085);
+                                        font-size: 11px;
+                                        font-weight: 700;
+                                        white-space: nowrap;
+                                        }
+
+                                        .community-status i, .chat-header-details span i {
+                                        width: 8px;
+                                        height: 8px;
+                                        display: inline-block;
+                                        border-radius: 50%;
+                                        background: #16a36a;
+                                        }
+
+                                        .chat-panel {
+                                        width: 100%;
+                                        max-width: 1100px;
+                                        height: clamp(430px, calc(100vh - 225px), 760px);
+                                        min-height: 430px;
+                                        margin: 0 auto;
+                                        display: flex;
+                                        flex-direction: column;
+                                        overflow: hidden;
+                                        border: 1px solid var(--activity-border, #e2e8f0);
+                                        border-radius: 17px;
+                                        background: var(--activity-card-bg, #fff);
+                                        box-shadow: 0 10px 35px rgba(15, 23, 42, .07);
+                                        }
+
+                                        .chat-header {
+                                        min-height: 72px;
+                                        flex: 0 0 auto;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        padding: 13px 20px;
+                                        border-bottom: 1px solid var(--activity-border, #e9edf3);
+                                        background: var(--activity-card-bg, #fff);
+                                        }
+
+                                        .chat-header-icon {
+                                        width: 43px;
+                                        height: 43px;
+                                        flex: 0 0 43px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        border-radius: 13px;
+                                        background: #e8f3ff;
+                                        color: #246fc0;
+                                        font-size: 19px;
+                                        }
+
+                                        .chat-header-details { min-width: 0; }
+                                        .chat-header-details strong {
+                                        display: block;
+                                        color: var(--text-color, #172033);
+                                        font-size: 14px;
+                                        font-weight: 800;
+                                        }
+
+                                        .chat-header-details span {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 7px;
+                                        margin-top: 4px;
+                                        color: var(--text-secondary, #7b8494);
+                                        font-size: 11px;
+                                        }
+
+                                        .chat-header-details span i { width: 7px; height: 7px; }
+                                        .chat-header-label {
+                                        margin-left: auto;
+                                        padding: 6px 9px;
+                                        border-radius: 6px;
+                                        background: #edf5ff;
+                                        color: #286bb0;
+                                        font-size: 9px;
+                                        font-weight: 800;
+                                        letter-spacing: .07em;
+                                        }
+
+                                        /* The message area intentionally has no scrollbar. */
+                                        .chat-messages {
+                                        min-height: 0;
+                                        flex: 1 1 auto;
+                                        display: flex;
+                                        flex-direction: column;
+                                        justify-content: flex-end;
+                                        gap: 15px;
+                                        padding: 20px 22px;
+                                        overflow: hidden;
+                                        background:
+                                        radial-gradient(circle at 1px 1px, rgba(130, 151, 178, .10) 1px, transparent 0) 0 0 / 20px 20px,
+                                        var(--activity-progress-bg, #f7f9fc);
+                                        }
+
+                                        .chat-date-divider {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        justify-content: center;
+                                        margin: 0 0 2px;
+                                        color: var(--text-secondary, #8a94a4);
+                                        font-size: 10px;
+                                        }
+
+                                        .chat-date-divider::before, .chat-date-divider::after {
+                                        content: "";
+                                        width: min(18%, 100px);
+                                        height: 1px;
+                                        background: var(--activity-border, #dfe5ed);
+                                        }
+
+                                        .chat-message-row {
+                                        max-width: 82%;
+                                        display: flex;
+                                        align-items: flex-end;
+                                        gap: 9px;
+                                        }
+
+                                        .chat-message-row.own-message {
+                                        align-self: flex-end;
+                                        justify-content: flex-end;
+                                        }
+
+                                        .chat-avatar {
+                                        width: 32px;
+                                        height: 32px;
+                                        flex: 0 0 32px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        border-radius: 50%;
+                                        font-size: 10px;
+                                        font-weight: 800;
+                                        }
+
+                                        .avatar-blue { background: #e5efff; color: #2458b7; }
+                                        .avatar-cyan { background: #e1f8fc; color: #087d99; }
+                                        .avatar-violet { background: #f0ebff; color: #6952b5; }
+                                        .current-avatar { background: linear-gradient(135deg, #1769c2, #28a9cf); color: #fff; }
+
+                                        .chat-message-content { min-width: 0; }
+                                        .chat-sender {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 8px;
+                                        margin: 0 0 5px 3px;
+                                        color: var(--text-color, #344054);
+                                        font-size: 10px;
+                                        font-weight: 800;
+                                        }
+
+                                        .chat-sender time {
+                                        color: var(--text-secondary, #929baa);
+                                        font-size: 9px;
+                                        font-weight: 500;
+                                        }
+
+                                        .chat-bubble {
+                                        width: fit-content;
+                                        max-width: 100%;
+                                        padding: 10px 13px;
+                                        border: 1px solid var(--activity-border, #e5eaf1);
+                                        border-radius: 4px 13px 13px 13px;
+                                        background: var(--activity-card-bg, #fff);
+                                        color: var(--text-color, #344054);
+                                        font-size: 12px;
+                                        line-height: 1.55;
+                                        overflow-wrap: anywhere;
+                                        box-shadow: 0 2px 5px rgba(15, 23, 42, .025);
+                                        }
+
+                                        .own-message .chat-bubble {
+                                        margin-left: auto;
+                                        border-color: #246fc0;
+                                        border-radius: 13px 4px 13px 13px;
+                                        background: #246fc0;
+                                        color: #fff;
+                                        }
+
+                                        .own-message .chat-sender { justify-content: flex-end; }
+
+                                        .chat-composer {
+                                        min-height: 76px;
+                                        flex: 0 0 auto;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 10px;
+                                        padding: 13px 18px;
+                                        border-top: 1px solid var(--activity-border, #e5eaf1);
+                                        background: var(--activity-card-bg, #fff);
+                                        }
+
+                                        .chat-composer input {
+                                        width: 100%;
+                                        min-width: 0;
+                                        height: 44px;
+                                        padding: 0 15px;
+                                        border: 1px solid var(--activity-border, #dfe5ed);
+                                        border-radius: 11px;
+                                        outline: none;
+                                        background: var(--activity-progress-bg, #f8fafc);
+                                        color: var(--text-color, #172033);
+                                        font: inherit;
+                                        font-size: 12px;
+                                        transition: border-color .2s, box-shadow .2s;
+                                        }
+
+                                        .chat-composer input:focus {
+                                        border-color: #398bd0;
+                                        box-shadow: 0 0 0 3px rgba(57, 139, 208, .12);
+                                        }
+
+                                        .chat-composer input::placeholder { color: #9aa4b2; }
+                                        .chat-char-count {
+                                        flex: 0 0 auto;
+                                        color: var(--text-secondary, #929baa);
+                                        font-size: 9px;
+                                        }
+
+                                        .chat-composer button {
+                                        height: 43px;
+                                        flex: 0 0 auto;
+                                        display: inline-flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        gap: 8px;
+                                        padding: 0 17px;
+                                        border: 0;
+                                        border-radius: 10px;
+                                        background: #246fc0;
+                                        color: #fff;
+                                        font-size: 11px;
+                                        font-weight: 800;
+                                        cursor: pointer;
+                                        transition: background .2s;
+                                        }
+
+                                        .chat-composer button:hover { background: #185da8; }
+                                        .chat-footer-note {
+                                        flex: 0 0 auto;
+                                        padding: 0 18px 11px;
+                                        background: var(--activity-card-bg, #fff);
+                                        color: var(--text-secondary, #929baa);
+                                        font-size: 9px;
+                                        }
+
+                                        .chat-footer-note i { margin-right: 4px; color: #398bd0; }
+                                        .visually-hidden {
+                                        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+                                        overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+                                        }
+
+                                        @media (max-width: 700px) {
+                                        .shout-content-wrapper { min-height: calc(100vh - 110px); }
+                                        .chat-panel { height: calc(100vh - 205px); min-height: 390px; border-radius: 13px; }
+                                        .chat-header { min-height: 65px; padding: 11px 14px; }
+                                        .chat-messages { padding: 15px 12px; gap: 13px; }
+                                        .chat-message-row { max-width: 92%; }
+                                        .chat-composer { gap: 7px; padding: 10px; }
+                                        .chat-composer input { height: 42px; padding: 0 11px; }
+                                        .chat-composer button { width: 43px; padding: 0; }
+                                        .chat-composer button span { display: none; }
+                                        .chat-char-count { display: none; }
+                                        }
+
+                                        @media (max-width: 420px) {
+                                        .shout-page-heading { align-items: flex-start; flex-direction: column; }
+                                        .community-status { align-self: flex-start; }
+                                        .chat-header-label { display: none; }
+                                        .chat-bubble { font-size: 11px; padding: 9px 11px; }
+                                        .chat-message-row { max-width: 96%; }
+                                        }
+                                        </style>
+
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', () => {
+                                                const form = document.getElementById('chatForm');
+                                                const input = document.getElementById('chatInput');
+                                                const messages = document.getElementById('chatMessages');
+                                                const count = document.getElementById('chatCharCount');
+
+                                                const currentName = <?= json_encode($displayName, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+                                                const currentInitials = <?= json_encode($initials ?: 'ST', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+
+                                                const escapeHTML = value => value.replace(/[&<>"']/g, char => ({
+                                                    '&': '&amp;',
+                                                    '<': '&lt;',
+                                                    '>': '&gt;',
+                                                    '"': '&quot;',
+                                                    "'": '&#039;'
+                                                })[char]);
+
+                                                input.addEventListener('input', () => {
+                                                    count.textContent = input.value.length;
+                                                });
+
+                                                form.addEventListener('submit', event => {
+                                                    event.preventDefault();
+                                                    const message = input.value.trim();
+                                                    if (!message) return;
+
+                                                    const row = document.createElement('div');
+                                                    row.className = 'chat-message-row own-message';
+                                                    const now = new Date();
+                                                    const time = now.toLocaleTimeString([], {
+                                                        hour: 'numeric',
+                                                        minute: '2-digit'
+                                                    });
+
+                                                    row.innerHTML = `
+                <div class="chat-message-content">
+                    <div class="chat-sender">${escapeHTML(currentName)} <time>${escapeHTML(time)}</time></div>
+                    <div class="chat-bubble">${escapeHTML(message).replace(/\n/g, '<br>')}</div>
+                </div>
+                <div class="chat-avatar current-avatar">${escapeHTML(currentInitials)}</div>
+            `;
+
+                                                    messages.appendChild(row);
+
+                                                    // Keep the chat area non-scrollable and show only the newest messages.
+                                                    const chatRows = messages.querySelectorAll('.chat-message-row');
+                                                    while (chatRows.length > 5) {
+                                                        chatRows[0].remove();
+                                                        break;
+                                                    }
+
+                                                    input.value = '';
+                                                    count.textContent = '0';
+                                                });
+                                            });
+                                        </script>
+                                        lue.trim();
+                                        if (!message) return;
+
+                                        const row = document.createElement('div');
+                                        row.className = 'chat-message-row own-message';
+                                        const now = new Date();
+                                        const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+                                        row.innerHTML = `
+                                        <div class="chat-message-content">
+                                            <div class="chat-sender">${escapeHTML(currentName)} <time>${escapeHTML(time)}</time></div>
+                                            <div class="chat-bubble">${escapeHTML(message).replace(/\n/g, '<br>')}</div>
+                                        </div>
+                                        <div class="chat-avatar current-avatar">${escapeHTML(currentInitials)}</div>
+                                        `;
+
+                                        messages.appendChild(row);
+
+                                        // Keep the chat area non-scrollable and show only the newest messages.
+                                        const chatRows = messages.querySelectorAll('.chat-message-row');
+                                        while (chatRows.length > 5) {
+                                        chatRows[0].remove();
+                                        break;
+                                        }
+
+                                        input.value = '';
+                                        count.textContent = '0';
+                                        });
+                                        });
+                                        </script>
+                                        form.addEventListener('submit', event => {
+                                        event.preventDefault();
+                                        const message = messageInput.value.trim();
+                                        if (!message) return;
+                                        const post = document.createElement('article');
+                                        post.className = 'shout-card post';
+                                        post.dataset.category = 'all';
+                                        post.innerHTML = `<div class="post-head">
+                                            <div class="author-row">
+                                                <div class="avatar current-avatar">${escapeHTML(currentInitials)}</div>
+                                                <div><strong>${escapeHTML(currentName)}</strong><small>Just now</small></div>
+                                            </div><span class="tag tag-general"><i class="bi bi-chat-dots-fill"></i> General</span>
+                                        </div>
+                                        <p class="post-text">${escapeHTML(message).replace(/\n/g,'<br>')}</p>
+                                        <div class="post-actions"><button type="button" class="like-btn"><i class="bi bi-heart"></i> Like <span class="like-count">0</span></button><button type="button" class="comment-toggle"><i class="bi bi-chat"></i> Comment <span class="comment-count">0</span></button></div>
+                                        <div class="comment-area" hidden>
+                                            <form class="comment-form"><input maxlength="250" placeholder="Write a comment..." required><button aria-label="Send comment"><i class="bi bi-send-fill"></i></button></form>
+                                        </div>`;
+                                        feed.prepend(post);
+                                        messageInput.value = '';
+                                        charCount.textContent = '0';
+                                        filter.value = 'all';
+                                        applyFilter();
+                                        });
+
+                                        feed.addEventListener('click', event => {
+                                        const like = event.target.closest('.like-btn');
+                                        if (like) {
+                                        const count = like.querySelector('.like-count');
+                                        const liked = like.classList.toggle('liked');
+                                        count.textContent = Math.max(0, (parseInt(count.textContent, 10) || 0) + (liked ? 1 : -1));
+                                        like.querySelector('i').className = liked ? 'bi bi-heart-fill' : 'bi bi-heart';
+                                        return;
+                                        }
+                                        const toggle = event.target.closest('.comment-toggle');
+                                        if (toggle) {
+                                        const area = toggle.closest('.post').querySelector('.comment-area');
+                                        area.hidden = !area.hidden;
+                                        }
+                                        });
+
+                                        feed.addEventListener('submit', event => {
+                                        if (!event.target.matches('.comment-form')) return;
+                                        event.preventDefault();
+                                        const commentForm = event.target;
+                                        const input = commentForm.querySelector('input');
+                                        const value = input.value.trim();
+                                        if (!value) return;
+                                        const comment = document.createElement('div');
+                                        comment.className = 'comment';
+                                        comment.innerHTML = `<b>${escapeHTML(currentName)}:</b> ${escapeHTML(value)}`;
+                                        commentForm.parentElement.insertBefore(comment, commentForm);
+                                        const count = commentForm.closest('.post').querySelector('.comment-count');
+                                        count.textContent = (parseInt(count.textContent, 10) || 0) + 1;
+                                        input.value = '';
+                                        });
+                                        applyFilter();
+                                        });
+                                        </script>
 </body>
 
 </html>
