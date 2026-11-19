@@ -124,8 +124,8 @@ function sidebarActive($page)
         ================================================== -->
 
         <a
-            href="shout_box.php"
-            class="sidebar-link <?= sidebarActive('shout_box.php') ?>">
+            href="student_shout_box.php"
+            class="sidebar-link <?= sidebarActive('student_shout_box.php') ?>">
 
             <i class="bi bi-chat-dots"></i>
 
