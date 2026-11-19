@@ -35,7 +35,7 @@ include "globals/head.php";
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <?php include "globals/topbar.php"; ?>
 
-    <main class="main-content mt-2 ">
+    <main class="main-content mt-2">
         <div class="content-wrapper shout-content">
             <section class="chat-box" aria-label="Student community chat">
                 <header class="chat-topbar">
