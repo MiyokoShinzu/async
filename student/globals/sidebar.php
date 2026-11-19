@@ -120,9 +120,24 @@ function sidebarActive($page)
 
 
         <!-- =================================================
-             Class Code
+             Shout Box
         ================================================== -->
 
+        <a
+            href="shout_box.php"
+            class="sidebar-link <?= sidebarActive('shout_box.php') ?>">
+
+            <i class="bi bi-chat-dots"></i>
+
+            <span>
+                Shout Box
+            </span>
+
+        </a>
+        <!-- =================================================
+             Class Code
+        ================================================== -->
+        
         <a
             href="class_code.php"
             class="sidebar-link <?= sidebarActive('class_code.php') ?>">
