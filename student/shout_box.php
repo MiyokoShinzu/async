@@ -37,15 +37,6 @@ include "globals/head.php";
 
     <main class="main-content">
         <div class="content-wrapper shout-content">
-            <div class="shout-heading">
-                <div>
-                    <div class="shout-eyebrow"><i class="bi bi-chat-square-dots-fill"></i> STUDENT COMMUNITY</div>
-                    <h1>Shout Box</h1>
-                    <p>Chat and share messages with your classmates.</p>
-                </div>
-                <span class="shout-online"><span></span> Community chat</span>
-            </div>
-
             <section class="chat-box" aria-label="Student community chat">
                 <header class="chat-topbar">
                     <div class="chat-top-icon"><i class="bi bi-people-fill"></i></div>
@@ -511,6 +502,46 @@ include "globals/head.php";
             .message-bubble {
                 font-size: 11px;
                 padding: 8px 10px;
+            }
+        }
+    </style>
+
+
+    <style>
+        /* Full-width, full-height chat layout; no page heading above the chat. */
+        .main-content {
+            min-height: 100vh;
+        }
+
+        .shout-content {
+            width: 100%;
+            max-width: none;
+            height: calc(100vh - 80px);
+            min-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-box {
+            width: 100%;
+            max-width: none;
+            height: 100%;
+            min-height: 0;
+            flex: 1 1 auto;
+            margin: 0;
+        }
+
+        @media (max-width: 700px) {
+            .shout-content {
+                height: calc(100vh - 70px);
+                min-height: 0;
+            }
+
+            .chat-box {
+                height: 100%;
+                min-height: 0;
             }
         }
     </style>
