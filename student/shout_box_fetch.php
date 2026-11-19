@@ -3,7 +3,8 @@ session_start();
 header("Content-Type: application/json; charset=utf-8");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 
-function shoutJson(int $status, array $payload): void {
+function shoutJson(int $status, array $payload): void
+{
     http_response_code($status);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     exit;
@@ -24,7 +25,8 @@ if (!isset($mysqli) || !($mysqli instanceof mysqli)) {
 try {
     $result = $mysqli->query("
         SELECT id, student_id AS sender_student_id, sender_name, sender_initials,
-               message, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at
+               message, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at,
+               DATE_FORMAT(edited_at, '%Y-%m-%d %H:%i:%s') AS edited_at
         FROM shout_box_messages
         WHERE is_deleted = 0
         ORDER BY id DESC
@@ -39,7 +41,9 @@ try {
             "sender_name" => (string)$row["sender_name"],
             "sender_initials" => (string)$row["sender_initials"],
             "message" => (string)$row["message"],
-            "created_at" => (string)$row["created_at"]
+            "created_at" => (string)$row["created_at"],
+            "edited" => !empty($row["edited_at"]),
+            "edited_at" => (string)($row["edited_at"] ?? "")
         ];
     }
 

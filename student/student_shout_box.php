@@ -26,9 +26,9 @@ $studentId     = trim((string)($user["student_id"] ?? $_SESSION["user_id"]));
 
 $displayName = trim(
     $firstName . " " .
-    ($middleInitial !== "" ? $middleInitial . ". " : "") .
-    $lastName .
-    ($extensionName !== "" ? " " . $extensionName : "")
+        ($middleInitial !== "" ? $middleInitial . ". " : "") .
+        $lastName .
+        ($extensionName !== "" ? " " . $extensionName : "")
 );
 if ($displayName === "") {
     $displayName = trim((string)($user["username"] ?? "Student"));
@@ -251,6 +251,37 @@ include "globals/head.php";
             color: var(--text-secondary, #7b8494);
             font-size: 12px;
             text-align: center;
+        }
+
+        .message-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin: 5px 2px 0;
+        }
+
+        .message-action-btn {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #246fc0;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .message-action-btn:hover {
+            text-decoration: underline;
+        }
+
+        .message-unsend-btn {
+            color: #d04444;
+        }
+
+        .message-edited-label {
+            color: var(--text-secondary, #929baa);
+            font-size: 9px;
+            font-weight: 500;
         }
 
         .chat-day {
@@ -558,7 +589,7 @@ include "globals/head.php";
     </style>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             const form = document.getElementById("chatForm");
             const input = document.getElementById("chatInput");
             const messages = document.getElementById("chatMessages");
@@ -581,12 +612,15 @@ include "globals/head.php";
             function formatTime(value) {
                 const date = new Date(value.replace(" ", "T"));
                 if (Number.isNaN(date.getTime())) return "";
-                return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+                return date.toLocaleTimeString([], {
+                    hour: "numeric",
+                    minute: "2-digit"
+                });
             }
 
             function renderMessages(items) {
                 const signature = JSON.stringify(items.map(item => [
-                    item.id, item.message, item.created_at, item.sender_student_id
+                    item.id, item.message, item.created_at, item.edited_at, item.sender_student_id
                 ]));
 
                 if (signature === lastRenderedSignature) return;
@@ -615,16 +649,90 @@ include "globals/head.php";
                     meta.appendChild(document.createTextNode(item.sender_name || "Student"));
                     meta.appendChild(makeElement("time", "", formatTime(item.created_at || "")));
 
+                    if (item.edited) {
+                        meta.appendChild(makeElement("span", "message-edited-label", "(edited)"));
+                    }
+
                     body.appendChild(meta);
                     body.appendChild(makeElement("div", "message-bubble", item.message || ""));
-                    row.appendChild(body);
 
                     if (ownMessage) {
+                        const actions = makeElement("div", "message-actions");
+                        const editButton = makeElement("button", "message-action-btn", "Edit");
+                        editButton.type = "button";
+                        editButton.addEventListener("click", () => editMessage(item));
+                        const unsendButton = makeElement("button", "message-action-btn message-unsend-btn", "Unsend");
+                        unsendButton.type = "button";
+                        unsendButton.addEventListener("click", () => unsendMessage(item.id));
+                        actions.append(editButton, unsendButton);
+                        body.appendChild(actions);
+                        row.appendChild(body);
                         row.appendChild(makeElement("div", "message-avatar avatar-own", item.sender_initials || "ST"));
+                    } else {
+                        row.appendChild(body);
                     }
 
                     messages.appendChild(row);
                 });
+            }
+
+            async function manageMessage(action, id, message = "") {
+                const body = new URLSearchParams();
+                body.set("action", action);
+                body.set("message_id", String(id));
+                body.set("csrf_token", csrfToken);
+                if (action === "edit") body.set("message", message);
+
+                const response = await fetch("shout_box_manage.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                        "Accept": "application/json"
+                    },
+                    body: body.toString()
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || "Unable to update this message.");
+                }
+                return data;
+            }
+
+            async function editMessage(item) {
+                const updatedText = window.prompt("Edit your message:", item.message || "");
+                if (updatedText === null) return;
+
+                const cleaned = updatedText.trim();
+                if (!cleaned) {
+                    alert("A message cannot be empty. Use Unsend if you want to remove it.");
+                    return;
+                }
+                if (cleaned.length > 500) {
+                    alert("Your message must not exceed 500 characters.");
+                    return;
+                }
+                if (cleaned === item.message) return;
+
+                try {
+                    await manageMessage("edit", item.id, cleaned);
+                    lastRenderedSignature = "";
+                    await loadMessages();
+                } catch (error) {
+                    alert(error.message || "Unable to edit your message.");
+                }
+            }
+
+            async function unsendMessage(id) {
+                if (!window.confirm("Unsend this message? It will be removed from the chat for everyone.")) return;
+
+                try {
+                    await manageMessage("unsend", id);
+                    lastRenderedSignature = "";
+                    await loadMessages();
+                } catch (error) {
+                    alert(error.message || "Unable to unsend your message.");
+                }
             }
 
             async function loadMessages() {
@@ -632,7 +740,9 @@ include "globals/head.php";
                     const response = await fetch("shout_box_fetch.php", {
                         method: "GET",
                         cache: "no-store",
-                        headers: { "Accept": "application/json" }
+                        headers: {
+                            "Accept": "application/json"
+                        }
                     });
 
                     const data = await response.json();
@@ -649,11 +759,11 @@ include "globals/head.php";
                 }
             }
 
-            input.addEventListener("input", function () {
+            input.addEventListener("input", function() {
                 charCount.textContent = input.value.length;
             });
 
-            form.addEventListener("submit", async function (event) {
+            form.addEventListener("submit", async function(event) {
                 event.preventDefault();
 
                 const message = input.value.trim();
