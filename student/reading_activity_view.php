@@ -3063,4 +3063,3 @@ include 'globals/scripts.php';
 
     })();
 </script>
-<?php include 'globals/ads_social_bar.php'; ?>
